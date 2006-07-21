@@ -299,10 +299,15 @@ function IceBarElement.prototype:SetBottomText2(text, color, alpha)
 		color = "text"
 	end
 	if not (alpha) then
-		alpha = self.alpha + 0.1
-		if (alpha > 1) then
-			alpha = 1
+		-- boost text alpha a bit to make it easier to see
+		if (self.alpha > 0) then
+			alpha = self.alpha + 0.1
+			
+			if (alpha > 1) then
+				alpha = 1
+			end
 		end
+		
 	end
 	self.frame.bottomLowerText:SetTextColor(self:GetColor(color, alpha))
 	self.frame.bottomLowerText:SetText(text)
