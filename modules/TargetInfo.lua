@@ -25,13 +25,14 @@ function TargetInfo.prototype:Enable()
 	self:RegisterEvent("UNIT_AURA", "AuraChanged")
 	
 	self:RegisterEvent("UNIT_FACTION", "InfoTextChanged")
-	self:RegisterEvent("UNIT_LEVEL", "InfoTextChanged");
-	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", "InfoTextChanged");
-	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "InfoTextChanged");
+	self:RegisterEvent("UNIT_LEVEL", "InfoTextChanged")
+	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", "InfoTextChanged")
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "InfoTextChanged")
+	self:RegisterEvent("UNIT_DYNAMIC_FLAGS", "InfoTextChanged")
 	
-	self:RegisterEvent("RAID_TARGET_UPDATE", "RaidIconChanged");
+	self:RegisterEvent("RAID_TARGET_UPDATE", "RaidIconChanged")
 	
-	self:RegisterEvent("PLAYER_COMBO_POINTS", "ComboPointsChanged");
+	self:RegisterEvent("PLAYER_COMBO_POINTS", "ComboPointsChanged")
 end
 
 
@@ -100,7 +101,7 @@ end
 
 
 function TargetInfo.prototype:CreateComboFrame()
-	self.frame.comboPoints = self:FontFactory("Bold", 18)
+	self.frame.comboPoints = self:FontFactory("Bold", 20)
 	
 	self.frame.comboPoints:SetWidth(TargetInfo.Width)
 	self.frame.comboPoints:SetJustifyH("CENTER")
@@ -268,6 +269,12 @@ function TargetInfo.prototype:TargetChanged()
 end
 
 
+function TargetInfo.prototype:CombatCheck(arg1)
+	print(arg1)
+end
+
+
+
 function TargetInfo.prototype:GetInfoString()
 	local u = "target"
 	
@@ -275,14 +282,14 @@ function TargetInfo.prototype:GetInfoString()
 		return ""
 	end
 	
-	local class, _ = UnitClass(u)
+	local class, unitClass = UnitClass(u)
 	local creatureType = UnitCreatureType(u)
 	local classification = UnitClassification(u)
 	local level = UnitLevel(u)
 	
 	local isPlayer = UnitIsPlayer(u)
 	
-	local classColor = self:GetHexColor(class)
+	local classColor = self:GetHexColor(unitClass)
 	
 	local sLevel = "[??] "
 	if (level > 0) then
@@ -326,14 +333,13 @@ function TargetInfo.prototype:GetInfoString()
 		sLeader = "[Leader] "
 	end
 	
-	local guildName, guildRankName, guildRankIndex = GetGuildInfo("target")
-	local sGuild = ""
-	if (guildName) then
-		--sGuild = " <" .. guildName .. ">"
-	end
+	local sCombat = ""
+	--if (UnitAffectingCombat(u)) then
+	--	sCombat = " +Combat+"
+	--end
 	
 	return string.format("%s%s%s%s%s%s",
-		sLevel, sClass, sPVP, sClassification, sLeader, sGuild)
+		sLevel, sClass, sPVP, sClassification, sLeader, sCombat)
 end
 
 

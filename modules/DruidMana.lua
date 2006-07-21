@@ -16,6 +16,14 @@ function DruidMana.prototype:init()
 end
 
 
+function DruidMana.prototype:GetDefaultSettings()
+	local settings = DruidMana.super.prototype.GetDefaultSettings(self)
+	settings["side"] = IceCore.Side.Right
+	settings["offset"] = 0
+	return settings
+end
+
+
 function DruidMana.prototype:Enable()
 	DruidMana.super.prototype.Enable(self)
 	
@@ -26,6 +34,7 @@ function DruidMana.prototype:Enable()
 	
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "FormsChanged")
 	
+	self:FormsChanged(self.unit)
 	self:Update()
 end
 

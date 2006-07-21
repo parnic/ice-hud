@@ -3,15 +3,16 @@ local AceOO = AceLibrary("AceOO-2.0")
 IceElement = AceOO.Class("AceEvent-2.0")
 IceElement.virtual = true
 
-IceElement.Alpha = 0.3 -- default alpha for hud elements
-
--- Private variables --
+-- Protected variables --
 IceElement.prototype.name = nil
 IceElement.prototype.parent = nil
 IceElement.prototype.frame = nil
 
 IceElement.prototype.colors = {} -- Shared table for all child classes to save some memory
 IceElement.prototype.alpha = nil
+
+IceElement.settings = nil
+IceElement.moduleSettings = nil
 
 
 -- Constructor --
@@ -20,11 +21,10 @@ IceElement.prototype.alpha = nil
 -- module to the core with another event.
 function IceElement.prototype:init(name)
 	IceElement.super.prototype.init(self)
-	
 	assert(name, "IceElement must have a name")
 	
 	self.name = name
-	self.alpha = IceElement.Alpha
+	self.alpha = 1
 	
 	-- Some common colors
 	self:SetColor("text", 1, 1, 1)
@@ -54,6 +54,17 @@ function IceElement.prototype:Create(parent)
 end
 
 
+function IceElement.prototype:SetDatabase(db)
+	self.settings = db
+	self.moduleSettings = db.modules[self.name]
+end
+
+
+function IceElement.prototype:IsEnabled()
+	return self.moduleSettings.enabled
+end
+
+
 function IceElement.prototype:Enable()
 	self.frame:Show()
 end
@@ -65,12 +76,56 @@ function IceElement.prototype:Disable()
 end
 
 
+-- inherting classes should override this and provide
+-- make sure they refresh any changes made to them
+function IceElement.prototype:Redraw()
+	
+end
+
+
+-- inheriting classes should override this and provide
+-- AceOptions table for configuration
+function IceElement.prototype:GetOptions()
+	local opts = {}
+	opts["enabled"] = {
+		type = "toggle",
+		name = "Enabled",
+		desc = "Enable/disable module",
+		get = function()
+			return self.moduleSettings.enabled
+		end,
+		set = function(value)
+			self.moduleSettings.enabled = value
+			if (value) then
+				self:Enable()
+			else
+				self:Disable()
+			end
+		end,
+		order = 20
+	}
+	return opts
+end
+
+
+
+-- inheriting classes should override this and provide
+-- default settings to populate db
+function IceElement.prototype:GetDefaultSettings()
+	local defaults = {}
+	defaults["enabled"] = true
+	return defaults
+end
+
+
 
 -- 'Protected' methods --------------------------------------------------------
 
 -- This should be overwritten by inheriting classes
 function IceElement.prototype:CreateFrame()
-	self.frame = CreateFrame("Frame", nil, self.parent)
+	if not (self.frame) then
+		self.frame = CreateFrame("Frame", nil, self.parent)
+	end
 end
 
 
@@ -132,6 +187,8 @@ function IceElement.prototype:FontFactory(weight, size, frame)
 	
 	return font
 end
+
+
 
 -- Event Handlers -------------------------------------------------------------
 

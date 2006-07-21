@@ -10,11 +10,12 @@ IceBarElement.BackgroundTexture = IceHUD.Location .. "\\textures\\HiBarBG"
 IceBarElement.BarProportion = 0.25 -- 0.18
 
 IceBarElement.prototype.barFrame = nil
-IceBarElement.prototype.side = nil
-IceBarElement.prototype.offset = nil --offsets less than 0 should be reserved for pets etc
 IceBarElement.prototype.width = nil
 IceBarElement.prototype.height = nil
 IceBarElement.prototype.backgroundAlpha = nil
+
+IceBarElement.prototype.combat = nil
+
 
 
 -- Constructor --
@@ -23,6 +24,7 @@ function IceBarElement.prototype:init(name)
 	
 	self.width = 77
 	self.height = 154
+	
 	self.backgroundAlpha = IceBarElement.BackgroundAlpha
 end
 
@@ -31,11 +33,85 @@ end
 
 -- 'Public' methods -----------------------------------------------------------
 
+-- OVERRIDE
+function IceBarElement.prototype:Enable()
+	IceBarElement.super.prototype.Enable(self)
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "InCombat")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OutCombat")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckCombat")
+end
+
+
+-- OVERRIDE
+function IceBarElement.prototype:GetOptions()
+	local opts = IceBarElement.super.prototype.GetOptions(self)
+	
+	opts["side"] = 
+	{
+		type = 'group',
+		name = 'side',
+		desc = 'Side of the HUD where the bar appears',
+		args = {
+			left = {
+				type = 'execute',
+				name = 'left',
+				desc = "Left side",
+				func = function()
+					self.moduleSettings.side = IceCore.Side.Left
+					self:Redraw()
+				end
+			},
+			right = {
+				type = 'execute',
+				name = 'right',
+				desc = "Right side",
+				func = function()
+					self.moduleSettings.side = IceCore.Side.Right
+					self:Redraw()
+				end
+			}
+		},
+		order = 30
+	}
+	opts["offset"] = 
+	{
+		type = 'range',
+		name = 'offset',
+		desc = 'Offset of the bar',
+		min = -1,
+		max = 10,
+		step = 1,
+		get = function()
+			return self.moduleSettings.offset
+		end,
+		set = function(value)
+			self.moduleSettings.offset = value
+			self:Redraw()
+		end,
+		order = 31
+	}
+	
+	return opts
+end
+
+
+-- OVERRIDE
+function IceBarElement.prototype:Redraw()
+	IceBarElement.super.prototype.Redraw(self)
+	
+	self.alpha = self.settings.alphaooc
+	
+	self:CreateFrame()
+	
+	self.frame:SetAlpha(self.alpha)
+end
+
+
+
 function IceBarElement.prototype:SetPosition(side, offset)
 	IceBarElement.prototype.side = side
 	IceBarElement.prototype.offset = offset
 end
-
 
 
 -- 'Protected' methods --------------------------------------------------------
@@ -43,6 +119,8 @@ end
 -- OVERRIDE
 function IceBarElement.prototype:CreateFrame()
 	-- don't call overridden method
+	self.alpha = self.settings.alphaooc
+	
 	self:CreateBackground()
 	self:CreateBar()
 	self:CreateTexts()
@@ -51,77 +129,97 @@ end
 
 -- Creates background for the bar
 function IceBarElement.prototype:CreateBackground()
-	self.frame = CreateFrame("StatusBar", nil, self.parent)
+	if not (self.frame) then
+		self.frame = CreateFrame("StatusBar", nil, self.parent)
+	end
 	
 	self.frame:SetFrameStrata("BACKGROUND")
 	self.frame:SetWidth(self.width)
 	self.frame:SetHeight(self.height)
 	
-	local bg = self.frame:CreateTexture(nil, "BACKGROUND")
-	
-	bg:SetTexture(IceBarElement.BackgroundTexture)
-	bg:SetAllPoints(self.frame)
-	
-	if (self.side == IceCore.Side.Left) then
-		bg:SetTexCoord(1, 0, 0, 1)
+	if not (self.frame.bg) then
+		self.frame.bg = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
 	
-	self.frame:SetStatusBarTexture(bg)
+	self.frame.bg:SetTexture(IceBarElement.BackgroundTexture)
+	self.frame.bg:ClearAllPoints()
+	self.frame.bg:SetAllPoints(self.frame)
+	
+	if (self.moduleSettings.side == IceCore.Side.Left) then
+		self.frame.bg:SetTexCoord(1, 0, 0, 1)
+	else
+		self.frame.bg:SetTexCoord(1, 0, 1, 0)
+	end
+	
+	self.frame:SetStatusBarTexture(self.frame.bg)
 	self.frame:SetStatusBarColor(self:GetColor("undef", self.backgroundAlpha))
 	
 	local ownPoint = "LEFT"
-	if (self.side == ownPoint) then
+	if (self.moduleSettings.side == ownPoint) then
 		ownPoint = "RIGHT"
 	end
 	
 	-- ofxx = (bar width) + (extra space in between the bars)
-	local offx = (IceBarElement.BarProportion * self.width * self.offset) + (self.offset * 10)
-	if (self.side == IceCore.Side.Left) then
+	local offx = (IceBarElement.BarProportion * self.width * self.moduleSettings.offset)
+		+ (self.moduleSettings.offset * 10)
+	if (self.moduleSettings.side == IceCore.Side.Left) then
 		offx = offx * -1
 	end	
 	
-	self.frame:SetPoint("BOTTOM"..ownPoint, self.parent, "BOTTOM"..self.side, offx, 0)
+	self.frame:ClearAllPoints()
+	self.frame:SetPoint("BOTTOM"..ownPoint, self.parent, "BOTTOM"..self.moduleSettings.side, offx, 0)
 end
 
 
 -- Creates the actual bar
 function IceBarElement.prototype:CreateBar()
-	self.barFrame = CreateFrame("StatusBar", nil, self.frame)
+	if not (self.barFrame) then
+		self.barFrame = CreateFrame("StatusBar", nil, self.frame)
+	end
 	
 	self.barFrame:SetFrameStrata("BACKGROUND")
 	self.barFrame:SetWidth(self.width)
 	self.barFrame:SetHeight(self.height)
 	
 	
-	local bar = self.frame:CreateTexture(nil, "BACKGROUND")
-	self.barFrame.texture = bar
+	if not (self.barFrame.bar) then
+		self.barFrame.bar = self.frame:CreateTexture(nil, "BACKGROUND")
+	end
 	
-	bar:SetTexture(IceBarElement.BarTexture)
-	bar:SetAllPoints(self.frame)
+	self.barFrame.bar:SetTexture(IceBarElement.BarTexture)
+	self.barFrame.bar:SetAllPoints(self.frame)
 	
-	self.barFrame:SetStatusBarTexture(bar)
+	self.barFrame:SetStatusBarTexture(self.barFrame.bar)
 	
 	self:UpdateBar(1, "undef")
 	
 	local point = "LEFT"
-	if (self.side == point) then
+	if (self.moduleSettings.side == point) then
 		point = "RIGHT"
 	end
 	
-	self.barFrame:SetPoint("BOTTOM"..point, self.frame, "BOTTOM"..self.side, 0, 0)
+	self.barFrame:ClearAllPoints()
+	self.barFrame:SetPoint("BOTTOM"..point, self.frame, "BOTTOM"..self.moduleSettings.side, 0, 0)
 end
 
 
 function IceBarElement.prototype:CreateTexts()
-	self.frame.bottomUpperText = self:FontFactory(nil, 13)
-	self.frame.bottomLowerText = self:FontFactory(nil, 13)
+	if not (self.frame.bottomUpperText) then
+		self.frame.bottomUpperText = self:FontFactory(nil, 13)
+	end
+	if not (self.frame.bottomLowerText) then
+		self.frame.bottomLowerText = self:FontFactory(nil, 13)
+	end
 
 	self.frame.bottomUpperText:SetWidth(80)
 	self.frame.bottomLowerText:SetWidth(120)
+	
+	self.frame.bottomUpperText:SetHeight(14)
+	self.frame.bottomLowerText:SetHeight(14)
 
 	local justify = "RIGHT"
-	if ((self.side == "LEFT" and self.offset <= 1) or
-		(self.side == "RIGHT" and self.offset > 1)) 
+	if ((self.moduleSettings.side == "LEFT" and self.moduleSettings.offset <= 1) or
+		(self.moduleSettings.side == "RIGHT" and self.moduleSettings.offset > 1)) 
 	then
 		justify = "LEFT"
 	end
@@ -131,24 +229,27 @@ function IceBarElement.prototype:CreateTexts()
 	self.frame.bottomLowerText:SetJustifyH(justify)
 
 
-	local ownPoint = self.side
-	if (self.offset > 1) then
+	local ownPoint = self.moduleSettings.side
+	if (self.moduleSettings.offset > 1) then
 		ownPoint = self:Flip(ownPoint)
 	end
 	
-	local parentPoint = self:Flip(self.side)
+	local parentPoint = self:Flip(self.moduleSettings.side)
 	
 	
 	local offx = 2
 	-- adjust offset for bars where text is aligned to the outer side
-	if (self.offset <= 1) then
+	if (self.moduleSettings.offset <= 1) then
 		offx = IceBarElement.BarProportion * self.width + 6
 	end
 
 
-	if (self.side == IceCore.Side.Left) then
+	if (self.moduleSettings.side == IceCore.Side.Left) then
 		offx = offx * -1
 	end
+
+	self.frame.bottomUpperText:ClearAllPoints()
+	self.frame.bottomLowerText:ClearAllPoints()
 
 	self.frame.bottomUpperText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, -1)
 	self.frame.bottomLowerText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, -15)
@@ -165,7 +266,7 @@ end
 
 
 function IceBarElement.prototype:SetScale(texture, scale)
-	if (self.side == IceCore.Side.Left) then
+	if (self.moduleSettings.side == IceCore.Side.Left) then
 		texture:SetTexCoord(1, 0, 1-scale, 1)
 	else
 		texture:SetTexCoord(0, 1, 1-scale, 1)
@@ -177,11 +278,11 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	alpha = alpha or 1
 	self.frame:SetAlpha(alpha)
 	
-	self.frame:SetStatusBarColor(self:GetColor(color, self.backgroundAlpha))
+	self.frame:SetStatusBarColor(self:GetColor(color, self.alpha))
 	
 	self.barFrame:SetStatusBarColor(self:GetColor(color))
 	
-	self:SetScale(self.barFrame.texture, scale)
+	self:SetScale(self.barFrame.bar, scale)
 end
 
 
@@ -203,6 +304,9 @@ function IceBarElement.prototype:SetBottomText2(text, color, alpha)
 	end
 	if not (alpha) then
 		alpha = self.alpha + 0.1
+		if (alpha > 1) then
+			alpha = 1
+		end
 	end
 	self.frame.bottomLowerText:SetTextColor(self:GetColor(color, alpha))
 	self.frame.bottomLowerText:SetText(text)
@@ -217,3 +321,36 @@ function IceBarElement.prototype:GetFormattedText(value1, value2)
 	return string.format("|c%s[|r%s|c%s/|r%s|c%s]|r", color, value1, color, value2, color)
 end
 
+
+-- To be overridden
+function IceBarElement.prototype:Update()
+	if (self.combat) then
+		self.alpha = self.settings.alphaic
+		self.backgroundAlpha = IceBarElement.BackgroundAlpha
+	else
+		self.alpha = self.settings.alphaooc
+		self.backgroundAlpha = IceBarElement.BackgroundAlpha
+	end
+end
+
+
+
+
+-- Combat event handlers ------------------------------------------------------
+
+function IceBarElement.prototype:InCombat()
+	self.combat = true
+	self:Update(self.unit)
+end
+
+
+function IceBarElement.prototype:OutCombat()
+	self.combat = false
+	self:Update(self.unit)
+end
+
+
+function IceBarElement.prototype:CheckCombat()
+	self.combat = UnitAffectingCombat("player")
+	self:Update(self.unit)
+end

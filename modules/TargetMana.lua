@@ -2,16 +2,23 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 local TargetMana = AceOO.Class(IceUnitBar)
 
+
 -- Constructor --
 function TargetMana.prototype:init()
 	TargetMana.super.prototype.init(self, "TargetMana", "target")
-	self.side = IceCore.Side.Right
-	self.offset = 2
 	
 	self:SetColor("targetMana", 52, 64, 221)
 	self:SetColor("targetRage", 235, 44, 26)
 	self:SetColor("targetEnergy", 228, 242, 31)
 	self:SetColor("targetFocus", 242, 149, 98)
+end
+
+
+function TargetMana.prototype:GetDefaultSettings()
+	local settings = TargetMana.super.prototype.GetDefaultSettings(self)
+	settings["side"] = IceCore.Side.Right
+	settings["offset"] = 2
+	return settings
 end
 
 

@@ -19,8 +19,6 @@ CastBar.prototype.debug = 0
 -- Constructor --
 function CastBar.prototype:init()
 	CastBar.super.prototype.init(self, "CastBar")
-	self.side = IceCore.Side.Left
-	self.offset = 0
 
 	self:SetColor("castCasting", 242, 242, 10)
 	self:SetColor("castChanneling", 117, 113, 161)
@@ -32,10 +30,19 @@ end
 
 -- 'Public' methods -----------------------------------------------------------
 
+
+function CastBar.prototype:GetDefaultSettings()
+	local settings = CastBar.super.prototype.GetDefaultSettings(self)
+	settings["side"] = IceCore.Side.Left
+	settings["offset"] = 0
+	return settings
+end
+
+
 function CastBar.prototype:Enable()
 	CastBar.super.prototype.Enable(self)
 	
-	self.frame.bottomUpperText:SetWidth(200)
+	self.frame.bottomUpperText:SetWidth(180)
 	
 	self:RegisterEvent("SPELLCAST_START", "CastStart")
 	self:RegisterEvent("SPELLCAST_STOP", "CastStop")
@@ -76,12 +83,14 @@ function CastBar.prototype:OnUpdate()
 	local taken = GetTime() - self.startTime
 	local scale = taken / (self.castTime + self.delay)
 		
+	self:Update()
+	
 	if (self.casting or self.channeling) then
 		if (scale > 1) then -- lag compensation
 			scale = 1
 		end
 		
-		local timeRemaining = self.castTime - taken
+		local timeRemaining = self.castTime + self.delay - taken
 		local remaining = string.format("%.1f", timeRemaining)
 		if (timeRemaining < 0 and timeRemaining > -1.5) then -- lag compensation
 			remaining = 0
@@ -92,7 +101,7 @@ function CastBar.prototype:OnUpdate()
 		end
 		
 		self:UpdateBar(scale, "castCasting")
-		self:SetBottomText1(remaining .. "s  " .. self:GetFormattedText(self.spellName))
+		self:SetBottomText1(remaining .. "s  " .. self.spellName)
 	
 	elseif (self.failing) then
 		self.alpha = 0.7
@@ -180,12 +189,9 @@ function CastBar.prototype:CastTerminated(reason)
 end
 
 
-
 function CastBar.prototype:CastDelayed(delay)
 	self.delay = self.delay + (delay / 1000)
 end
-
-
 
 
 
@@ -225,7 +231,7 @@ function CastBar.prototype:CleanUp()
 	self.failing = false
 	self.succeeding = false
 	self:SetBottomText1()
-	self.alpha = IceElement.Alpha
+	self.alpha = self.settings.alphaooc
 end
 
 

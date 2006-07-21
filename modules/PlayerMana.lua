@@ -7,13 +7,19 @@ PlayerMana.prototype.manaType = nil
 -- Constructor --
 function PlayerMana.prototype:init()
 	PlayerMana.super.prototype.init(self, "PlayerMana", "player")
-	self.side = IceCore.Side.Right
-	self.offset = 1
 	
 	self:SetColor("playerMana", 62, 54, 152)
 	self:SetColor("playerRage", 171, 59, 59)
 	self:SetColor("playerEnergy", 218, 231, 31)	
 end
+
+function PlayerMana.prototype:GetDefaultSettings()
+	local settings = PlayerMana.super.prototype.GetDefaultSettings(self)
+	settings["side"] = IceCore.Side.Right
+	settings["offset"] = 1
+	return settings
+end
+
 
 
 function PlayerMana.prototype:Enable()
@@ -29,7 +35,6 @@ function PlayerMana.prototype:Enable()
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 	
 	self:ManaType(self.unit)
-	self:Update("player")
 end
 
 

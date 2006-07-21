@@ -5,13 +5,20 @@ local TargetHealth = AceOO.Class(IceUnitBar)
 -- Constructor --
 function TargetHealth.prototype:init()
 	TargetHealth.super.prototype.init(self, "TargetHealth", "target")
-	self.side = IceCore.Side.Left
-	self.offset = 2
 	
 	self:SetColor("targetHealthHostile", 231, 31, 36)
 	self:SetColor("targetHealthFriendly", 46, 223, 37)
 	self:SetColor("targetHealthNeutral", 210, 219, 87)
 end
+
+
+function TargetHealth.prototype:GetDefaultSettings()
+	local settings = TargetHealth.super.prototype.GetDefaultSettings(self)
+	settings["side"] = IceCore.Side.Left
+	settings["offset"] = 2
+	return settings
+end
+
 
 
 function TargetHealth.prototype:Enable()

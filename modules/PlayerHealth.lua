@@ -5,10 +5,16 @@ local PlayerHealth = AceOO.Class(IceUnitBar)
 -- Constructor --
 function PlayerHealth.prototype:init()
 	PlayerHealth.super.prototype.init(self, "PlayerHealth", "player")
-	self.side = IceCore.Side.Left
-	self.offset = 1
 	
 	self:SetColor("playerHealth", 37, 164, 30)
+end
+
+
+function PlayerHealth.prototype:GetDefaultSettings()
+	local settings = PlayerHealth.super.prototype.GetDefaultSettings(self)
+	settings["side"] = IceCore.Side.Left
+	settings["offset"] = 1
+	return settings
 end
 
 

@@ -5,7 +5,7 @@ IceUnitBar.virtual = true
 
 IceUnitBar.prototype.unit = nil
 IceUnitBar.prototype.alive = nil
-IceUnitBar.prototype.combat = nil
+
 IceUnitBar.prototype.tapped = nil
 
 IceUnitBar.prototype.health = nil
@@ -17,6 +17,8 @@ IceUnitBar.prototype.maxMana = nil
 IceUnitBar.prototype.manaPercentage = nil
 
 IceUnitBar.prototype.unitClass = nil
+
+IceUnitBar.prototype.hasPet = nil
 
 
 -- Constructor --
@@ -41,27 +43,23 @@ function IceUnitBar.prototype:Enable()
 	self:RegisterEvent("PLAYER_ALIVE", "Alive")
 	self:RegisterEvent("PLAYER_DEAD", "Dead")
 	
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "InCombat")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OutCombat")
-	
 	self.alive = not UnitIsDeadOrGhost(self.unit)
 	self.combat = UnitAffectingCombat(self.unit)
 end
 
 
+-- OVERRIDE
+function IceUnitBar.prototype:Redraw()
+	IceUnitBar.super.prototype.Redraw(self)
+	
+	self:Update(self.unit)
+end
 
 -- 'Protected' methods --------------------------------------------------------
 
--- To be overridden
-function IceUnitBar.prototype:Update(unit)
-	if (self.combat) then
-		self.alpha = IceElement.Alpha + 0.2
-		self.backgroundAlpha = IceBarElement.BackgroundAlpha
-	else
-		self.alpha = IceElement.Alpha
-		self.backgroundAlpha = IceBarElement.BackgroundAlpha
-	end
-	
+
+function IceUnitBar.prototype:Update()
+	IceUnitBar.super.prototype.Update(self)
 	self.tapped = UnitIsTapped(self.unit) and (not UnitIsTappedByPlayer(self.unit))
 	
 	self.health = UnitHealth(self.unit)
@@ -88,13 +86,3 @@ function IceUnitBar.prototype:Dead()
 end
 
 
-function IceUnitBar.prototype:InCombat()
-	self.combat = true
-	self:Update(self.unit)
-end
-
-
-function IceUnitBar.prototype:OutCombat()
-	self.combat = false
-	self:Update(self.unit)
-end

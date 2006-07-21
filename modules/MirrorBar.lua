@@ -1,7 +1,7 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 -- 2 classes in the same file.. ugly but keeps the idea of
--- "1 module, 1 file" intact
+-- "1 module = 1 file" intact
 
 
 -------------------------------------------------------------------------------
@@ -19,14 +19,22 @@ MirrorBar.prototype.label = nil
 
 
 -- Constructor --
-function MirrorBar.prototype:init(side, offset, name)
+function MirrorBar.prototype:init(side, offset, name, db)
 	MirrorBar.super.prototype.init(self, name)
-	self.side = side
-	self.offset = offset
+	self.settings = db
+	self.moduleSettings = {}
+	self.moduleSettings.side = side
+	self.moduleSettings.offset = offset
 
 	-- unregister the event superclass registered, we don't want to register
 	-- this to the core
 	self:UnregisterEvent(IceCore.Loaded)
+end
+
+
+function MirrorBar.prototype:UpdatePosition(side, offset)
+	self.moduleSettings.side = side
+	self.moduleSettings.offset = offset
 end
 
 
@@ -68,9 +76,11 @@ function MirrorBar.prototype:OnUpdate(elapsed)
 	
 	local text = self.label .. " " .. remaining .. "s"
 	
-	if (math.mod(self.offset, 2) == 1) then
+	if (math.mod(self.moduleSettings.offset, 2) == 1) then
 		self:SetBottomText1(text)
+		self:SetBottomText2()
 	else
+		self:SetBottomText1()
 		self:SetBottomText2(text, "text", 1)
 	end
 end
@@ -136,15 +146,72 @@ MirrorBarHandler.prototype.bars = nil
 -- Constructor --
 function MirrorBarHandler.prototype:init()
 	MirrorBarHandler.super.prototype.init(self, "MirrorBarHandler")
-	self.side = IceCore.Side.Left
-	self.offset = 3
-	
+
 	self.bars = {}
 
 	self:SetColor("EXHAUSTION", 1, 0.9, 0)
 	self:SetColor("BREATH", 0, 0.5, 1)
 	self:SetColor("DEATH", 1, 0.7, 0)
 	self:SetColor("FEIGNDEATH", 1, 0.9, 0)
+end
+
+
+function MirrorBarHandler.prototype:GetDefaultSettings()
+	local settings = MirrorBarHandler.super.prototype.GetDefaultSettings(self)
+	settings["side"] = IceCore.Side.Left
+	settings["offset"] = 3
+	return settings
+end
+
+
+-- OVERRIDE
+function MirrorBarHandler.prototype:GetOptions()
+	local opts = MirrorBarHandler.super.prototype.GetOptions(self)
+	
+	opts["side"] = 
+	{
+		type = 'group',
+		name = 'side',
+		desc = 'Side of the HUD where the bar appears',
+		args = {
+			left = {
+				type = 'execute',
+				name = 'left',
+				desc = "Left side",
+				func = function()
+					self.moduleSettings.side = IceCore.Side.Left
+					self:Redraw()
+				end
+			},
+			right = {
+				type = 'execute',
+				name = 'right',
+				desc = "Right side",
+				func = function()
+					self.moduleSettings.side = IceCore.Side.Right
+					self:Redraw()
+				end
+			}
+		}
+	}
+	opts["offset"] = 
+	{
+		type = 'range',
+		name = 'offset',
+		desc = 'Offset of the bar',
+		min = -1,
+		max = 10,
+		step = 1,
+		get = function()
+			return self.moduleSettings.offset
+		end,
+		set = function(value)
+			self.moduleSettings.offset = value
+			self:Redraw()
+		end
+	}
+	
+	return opts
 end
 
 
@@ -163,6 +230,16 @@ function MirrorBarHandler.prototype:Disable()
 	MirrorBarHandler.super.prototype.Disable(self)
 	
 	UIParent:RegisterEvent("MIRROR_TIMER_START");
+end
+
+
+function MirrorBarHandler.prototype:Redraw()
+	MirrorBarHandler.super.prototype.Redraw(self)
+	
+	for i = 1, table.getn(self.bars) do
+		self.bars[i]:UpdatePosition(self.moduleSettings.side, self.moduleSettings.offset + (i-1))
+		self.bars[i]:Create(self.parent)
+	end
 end
 
 
@@ -190,7 +267,7 @@ function MirrorBarHandler.prototype:MirrorStart(timer, value, maxValue, scale, p
 	-- finally create a new instance if no available ones were found
 	if not (done) then
 		local count = table.getn(self.bars)
-		self.bars[count + 1] = MirrorBar:new(self.side, self.offset + count, "MirrorBar" .. tostring(count+1))
+		self.bars[count + 1] = MirrorBar:new(self.moduleSettings.side, self.moduleSettings.offset + count, "MirrorBar" .. tostring(count+1), self.settings)
 		self.bars[count + 1]:Create(self.parent)
 		self.bars[count + 1]:Enable()
 		self.bars[count + 1]:MirrorStart(timer, value, maxValue, scale, paused, label)

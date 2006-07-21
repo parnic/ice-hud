@@ -27,6 +27,12 @@ function TargetOfTarget.prototype:Enable()
 end
 
 
+function TargetOfTarget.prototype:Disable()
+	TargetOfTarget.super.prototype.Disable(self)
+	Metrognome:Unregister("TargetOfTarget")
+end
+
+
 -- 'Protected' methods --------------------------------------------------------
 
 -- OVERRIDE
