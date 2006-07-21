@@ -48,35 +48,31 @@ function IceBarElement.prototype:GetOptions()
 	
 	opts["side"] = 
 	{
-		type = 'group',
-		name = 'side',
+		type = 'text',
+		name = 'Side',
 		desc = 'Side of the HUD where the bar appears',
-		args = {
-			left = {
-				type = 'execute',
-				name = 'left',
-				desc = "Left side",
-				func = function()
-					self.moduleSettings.side = IceCore.Side.Left
-					self:Redraw()
-				end
-			},
-			right = {
-				type = 'execute',
-				name = 'right',
-				desc = "Right side",
-				func = function()
-					self.moduleSettings.side = IceCore.Side.Right
-					self:Redraw()
-				end
-			}
-		},
+		get = function()
+			if (self.moduleSettings.side == IceCore.Side.Right) then
+				return "Right"
+			else
+				return "Left"
+			end
+		end,
+		set = function(value)
+			if (value == "Right") then
+				self.moduleSettings.side = IceCore.Side.Right
+			else
+				self.moduleSettings.side = IceCore.Side.Left
+			end
+			self:Redraw()
+		end,
+		validate = { "Left", "Right" },		
 		order = 30
 	}
 	opts["offset"] = 
 	{
 		type = 'range',
-		name = 'offset',
+		name = 'Offset',
 		desc = 'Offset of the bar',
 		min = -1,
 		max = 10,

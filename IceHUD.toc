@@ -3,7 +3,7 @@
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
 ## Notes: Another HUD mod
-## Version: 0.2 ($Revision$)
+## Version: 0.2.1 ($Revision$)
 ## SavedVariables: IceCoreDB
 ## X-Category: UnitFrame
 ## X-Date: $Date$

@@ -51,6 +51,7 @@ function IceElement.prototype:Create(parent)
 	
 	self.parent = parent
 	self:CreateFrame()
+	self.frame:Hide()
 end
 
 
