@@ -3,13 +3,14 @@
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
 ## Notes: Another HUD mod
-## Version: 0.2.1 ($Revision$)
+## Version: 0.3 ($Revision$)
 ## SavedVariables: IceCoreDB
+## OptionalDeps: FuBar_ToFu, DruidBar, SoleManax
 ## X-Category: UnitFrame
 ## X-Date: $Date$
 ## X-Website: http://www.wowace.com/forums/index.php/topic,1705.0.html
 
-
+# Libraries
 libs\AceLibrary\AceLibrary.lua
 libs\AceOO-2.0\AceOO-2.0.lua
 libs\AceDB-2.0\AceDB-2.0.lua
@@ -21,13 +22,14 @@ libs\AceAddon-2.0\AceAddon-2.0.lua
 libs\Metrognome-2.0\Metrognome-2.0.lua
 libs\Dewdrop-2.0\Dewdrop-2.0.lua
 
+# IceHUD core functionality
 IceCore.lua
 IceHUD.lua
-
 IceElement.lua
 IceBarElement.lua
 IceUnitBar.lua
 
+# IceHUD modules
 modules\PlayerHealth.lua
 modules\PlayerMana.lua
 modules\TargetHealth.lua
@@ -39,3 +41,4 @@ modules\TargetInfo.lua
 modules\TargetOfTarget.lua
 modules\CastBar.lua
 modules\MirrorBar.lua
+modules\TimerBar.lua

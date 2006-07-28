@@ -18,6 +18,68 @@ end
 
 -- 'Public' methods -----------------------------------------------------------
 
+
+-- OVERRIDE
+function TargetInfo.prototype:GetOptions()
+	local opts = TargetInfo.super.prototype.GetOptions(self)
+
+	opts["fontSize"] = {
+		type = 'range',
+		name = 'Font Size',
+		desc = 'Font Size',
+		get = function()
+			return self.moduleSettings.fontSize
+		end,
+		set = function(v)
+			self.moduleSettings.fontSize = v
+			self:Redraw()
+		end,
+		min = 8,
+		max = 20,
+		step = 1,
+		order = 31
+	}
+	
+	opts["comboFontSize"] = {
+		type = 'range',
+		name = 'Combo Points Font Size',
+		desc = 'Combo Points Font Size',
+		get = function()
+			return self.moduleSettings.comboFontSize
+		end,
+		set = function(v)
+			self.moduleSettings.comboFontSize = v
+			self:Redraw()
+		end,
+		min = 10,
+		max = 40,
+		step = 1,
+		order = 32
+	}
+	
+	return opts
+end
+
+
+-- OVERRIDE
+function TargetInfo.prototype:GetDefaultSettings()
+	local defaults =  TargetInfo.super.prototype.GetDefaultSettings(self)
+	defaults["fontSize"] = 13
+	defaults["comboFontSize"] = 20
+	return defaults
+end
+
+
+-- OVERRIDE
+function TargetInfo.prototype:Redraw()
+	TargetInfo.super.prototype.Redraw(self)
+	
+	self:CreateTextFrame()
+	self:CreateInfoTextFrame()
+	self:CreateComboFrame()
+end
+
+
 function TargetInfo.prototype:Enable()
 	TargetInfo.super.prototype.Enable(self)
 	
@@ -45,25 +107,10 @@ function TargetInfo.prototype:CreateFrame()
 	self.frame:SetFrameStrata("BACKGROUND")
 	self.frame:SetWidth(TargetInfo.Width)
 	self.frame:SetHeight(42)
+	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, -50)
 	
-	--[[
-	self.frame:SetBackdrop(
-	{
-		bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
-        edgeFile = "Interface/Tooltips/UI-ToolTip-Border", 
-        tile = false,
-		tileSize = 32,
-		edgeSize = 5, 
-        insets = { left = 1, right = 1, top = 1, bottom = 1 }
-	} )
-
-	self.frame:SetBackdropColor(0.5, 0.5, 0.5, 0.2)
-	self.frame:SetBackdropBorderColor(0.4, 0.4, 0.4, 0.4)
-	--]]
-	
 	self.frame:Show()
-	
 	
 	self:CreateTextFrame()
 	self:CreateInfoTextFrame()
@@ -75,9 +122,9 @@ end
 
 
 function TargetInfo.prototype:CreateTextFrame()
-	self.frame.targetName = self:FontFactory("Bold", 15)
+	self.frame.targetName = self:FontFactory("Bold", self.moduleSettings.fontSize+1, nil, self.frame.targetName)
 	
-	self.frame.targetName:SetWidth(TargetInfo.Width)
+	self.frame.targetName:SetWidth(TargetInfo.Width - 120)
 	self.frame.targetName:SetHeight(14)
 	self.frame.targetName:SetJustifyH("LEFT")
 	self.frame.targetName:SetJustifyV("BOTTOM")
@@ -88,7 +135,7 @@ end
 
 
 function TargetInfo.prototype:CreateInfoTextFrame()
-	self.frame.targetInfo = self:FontFactory(nil, 13)
+	self.frame.targetInfo = self:FontFactory(nil, self.moduleSettings.fontSize, nil, self.frame.targetInfo)
 	
 	self.frame.targetInfo:SetWidth(TargetInfo.Width)
 	self.frame.targetInfo:SetHeight(14)
@@ -101,7 +148,7 @@ end
 
 
 function TargetInfo.prototype:CreateComboFrame()
-	self.frame.comboPoints = self:FontFactory("Bold", 20)
+	self.frame.comboPoints = self:FontFactory("Bold", self.moduleSettings.comboFontSize, nil, self.frame.comboPoints)
 	
 	self.frame.comboPoints:SetWidth(TargetInfo.Width)
 	self.frame.comboPoints:SetJustifyH("CENTER")

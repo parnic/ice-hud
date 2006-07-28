@@ -3,7 +3,6 @@ IceHUD = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDebug-2.0")
 IceHUD.dewdrop = AceLibrary("Dewdrop-2.0")
 
 IceHUD.Location = "Interface\\AddOns\\IceHUD"
-IceHUD.temp = nil
 IceHUD.options =
 {
 	type = 'group',
@@ -14,6 +13,7 @@ IceHUD.options =
 			name = "General Settings",
 			order = 10
 		},
+		
 		vpos = {
 			type = 'range',
 			name = 'Vertical position',
@@ -94,7 +94,68 @@ IceHUD.options =
 			order = 15
 		},
 		
+		alphaooc = {
+			type = 'range',
+			name = 'Alpha OOC',
+			desc = 'Bar alpha Out Of Combat',
+			get = function()
+				return IceHUD.IceCore:GetAlphaOOC()
+			end,
+			set = function(v)
+				IceHUD.IceCore:SetAlphaOOC(v)
+			end,
+			min = 0,
+			max = 1,
+			step = 0.05,
+			order = 16,
+		},
 		
+		lockFontAlpha = {
+			type = "toggle",
+			name = "Lock Bar Text Alpha",
+			desc = "Lock Bar Text Alpha",
+			get = function()
+				return IceHUD.IceCore:GetLockTextAlpha()
+			end,
+			set = function(value)
+				IceHUD.IceCore:SetLockTextAlpha(value)
+			end,
+			order = 17
+		},
+		
+		fontsize = {
+			type = 'range',
+			name = 'Bar Font Size',
+			desc = 'Bar Font Size',
+			get = function()
+				return IceHUD.IceCore:GetBarFontSize()
+			end,
+			set = function(v)
+				IceHUD.IceCore:SetBarFontSize(v)
+			end,
+			min = 8,
+			max = 20,
+			step = 1,
+			order = 18
+		},
+		
+		barTexture = {
+			type = 'text',
+			name = 'Bar Texture',
+			desc = 'IceHUD Bar Texture',
+			get = function()
+				return IceHUD.IceCore:GetBarTexture()
+			end,
+			set = function(value)
+				IceHUD.IceCore:SetBarTexture(value)
+			end,
+			validate = { "Bar", "HiBar" },		
+			order = 19
+		},
+		
+		
+		
+		headerModulesBlank = { type = 'header', name = ' ', order = 40 },
 		headerModules = {
 			type = 'header',
 			name = 'Module Settings',
@@ -110,11 +171,28 @@ IceHUD.options =
 		},
 		
 		
-		
+		headerOtherBlank = { type = 'header', name = ' ', order = 90 },
 		headerOther = {
 			type = 'header',
-			name = 'Other Settings',
+			name = 'Other',
 			order = 90
+		},
+		
+		enabled = {
+			type = "toggle",
+			name = "|cff8888ffEnabled|r",
+			desc = "Enable/disable IceHUD",
+			get = function()
+				return IceHUD.IceCore:IsEnabled()
+			end,
+			set = function(value)
+				if (value) then
+					IceHUD.IceCore:Enable()
+				else
+					IceHUD.IceCore:Disable()
+				end
+			end,
+			order = 91
 		},
 		
 		reset = {
@@ -124,28 +202,44 @@ IceHUD.options =
 			func = function()
 				IceHUD.IceCore:ResetSettings()
 			end,
-			order = 91
+			order = 92
 		},
 		
-		dewdrop = {
+		about = {
 			type = 'execute',
-			name = 'dewdrop',
-			desc = 'Open Dewdrop menu for commands',
+			name = 'About',
+			desc = "Prints info about IceHUD",
 			func = function()
-				if not (IceHUD.dewdrop:IsRegistered(IceHUD.IceCore.IceHUDFrame)) then
-					IceHUD.dewdrop:Register(IceHUD.IceCore.IceHUDFrame, 
-						'children', IceHUD.options,
-						'point', "BOTTOMLEFT",
-						'relativePoint', "TOPLEFT",
-						'dontHook', true
-					)
-				end
-				IceHUD.dewdrop:Open(IceHUD.IceCore.IceHUDFrame)
+				IceHUD:PrintAddonInfo()
 			end,
-			order = 92
-		}
+			order = 93
+		},
+		
+		endSpace = {
+			type = 'header',
+			name = ' ',
+			order = 1000
+		},
+
 	}
 }
+
+IceHUD.slashMenu =
+{
+	type = 'execute',
+	func = function()
+		if not (IceHUD.dewdrop:IsRegistered(IceHUD.IceCore.IceHUDFrame)) then
+			IceHUD.dewdrop:Register(IceHUD.IceCore.IceHUDFrame, 
+				'children', IceHUD.options,
+				'point', "BOTTOMLEFT",
+				'relativePoint', "TOPLEFT",
+				'dontHook', true
+			)
+		end
+		IceHUD.dewdrop:Open(IceHUD.IceCore.IceHUDFrame)
+	end
+}
+
 
 
 function IceHUD:OnInitialize()
@@ -156,7 +250,7 @@ function IceHUD:OnInitialize()
 	
 	self.options.args.modules.args = self.IceCore:GetModuleOptions()
 	
-	self:RegisterChatCommand({ "/icehud" }, IceHUD.options)
+	self:RegisterChatCommand({ "/icehud" }, IceHUD.slashMenu)
 end
 
 
@@ -165,5 +259,4 @@ function IceHUD:OnEnable()
 	
 	self.IceCore:Enable()
 end
-
 

@@ -90,7 +90,7 @@ function IceElement.prototype:GetOptions()
 	local opts = {}
 	opts["enabled"] = {
 		type = "toggle",
-		name = "Enabled",
+		name = "|cff8888ffEnabled|r",
 		desc = "Enable/disable module",
 		get = function()
 			return self.moduleSettings.enabled
@@ -173,7 +173,7 @@ function IceElement.prototype:GetClassColor(class)
 end
 
 
-function IceElement.prototype:FontFactory(weight, size, frame)
+function IceElement.prototype:FontFactory(weight, size, frame, font)
 	weight = weight or ""
 	local fontFile = IceHUD.Location .. "\\fonts\\Calibri" .. weight ..".ttf"
 	
@@ -181,12 +181,17 @@ function IceElement.prototype:FontFactory(weight, size, frame)
 		frame = self.frame
 	end
 	
-	local font = frame:CreateFontString()
-	font:SetFont(fontFile, size)
-	font:SetShadowColor(0, 0, 0, 1)
-	font:SetShadowOffset(1, -1)
+	local fontString = nil
+	if not (font) then
+		fontString = frame:CreateFontString()
+	else
+		fontString = font
+	end
+	fontString:SetFont(fontFile, size)
+	fontString:SetShadowColor(0, 0, 0, 1)
+	fontString:SetShadowOffset(1, -1)
 	
-	return font
+	return fontString
 end
 
 

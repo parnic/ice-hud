@@ -13,6 +13,7 @@ IceCore.RegisterModule = "IceCore_RegisterModule"
 IceCore.prototype.settings = nil
 IceCore.prototype.IceHUDFrame = nil
 IceCore.prototype.elements = {}
+IceCore.prototype.enabled = nil
 
 
 -- Constructor --
@@ -22,7 +23,7 @@ function IceCore.prototype:init()
 	
 	self:RegisterDB("IceCoreDB")
 	
-	self.IceHUDFrame = CreateFrame("Frame","IceHUDFrame", WorldFrame)
+	self.IceHUDFrame = CreateFrame("Frame","IceHUDFrame", UIParent)
 	
 	
 	-- We are ready to load modules
@@ -36,17 +37,17 @@ function IceCore.prototype:init()
 		verticalPos = -150,
 		scale = 1,
 		alphaooc = 0.3,
-		alphaic = 0.6
+		alphaic = 0.6,
+		lockTextAlpha = true,
+		barTexture = "Bar",
 	}
 	
-
 	-- get default settings from the modules
 	defaults.modules = {}
 	for i = 1, table.getn(self.elements) do
 		local name = self.elements[i]:GetName()
 		defaults.modules[name] = self.elements[i]:GetDefaultSettings()	
 	end
-	
 	
 	self:RegisterDefaults('account', defaults)
 end
@@ -65,8 +66,26 @@ function IceCore.prototype:Enable()
 			self.elements[i]:Enable()
 		end
 	end
+	
+	self.enabled = true
 end
 
+
+function IceCore.prototype:Disable()
+	for i = 1, table.getn(self.elements) do
+		if (self.elements[i]:IsEnabled()) then
+			self.elements[i]:Disable()
+		end
+	end
+	
+	self.IceHUDFrame:Hide()
+	self.enabled = false
+end
+
+
+function IceCore.prototype:IsEnabled()
+	return self.enabled
+end
 
 function IceCore.prototype:DrawFrame()
 	self.IceHUDFrame:SetFrameStrata("BACKGROUND")
@@ -147,8 +166,7 @@ end
 function IceCore.prototype:SetScale(value)
 	self.settings.scale = value
 	
-	local scale = UIParent:GetScale() * value
-	self.IceHUDFrame:SetScale(scale)
+	self.IceHUDFrame:SetScale(value)
 end
 
 
@@ -166,6 +184,33 @@ function IceCore.prototype:GetAlphaIC()
 end
 function IceCore.prototype:SetAlphaIC(value)
 	self.settings.alphaic = value
+	self:Redraw()
+end
+
+
+function IceCore.prototype:GetLockTextAlpha()
+	return self.settings.lockTextAlpha
+end
+function IceCore.prototype:SetLockTextAlpha(value)
+	self.settings.lockTextAlpha = value
+	self:Redraw()
+end
+
+
+function IceCore.prototype:GetBarFontSize()
+	return self.settings.barFontSize
+end
+function IceCore.prototype:SetBarFontSize(value)
+	self.settings.barFontSize = value
+	self:Redraw()
+end
+
+
+function IceCore.prototype:GetBarTexture()
+	return self.settings.barTexture
+end
+function IceCore.prototype:SetBarTexture(value)
+	self.settings.barTexture = value
 	self:Redraw()
 end
 

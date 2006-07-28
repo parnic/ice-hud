@@ -1,7 +1,9 @@
 local AceOO = AceLibrary("AceOO-2.0")
-local Metrognome = AceLibrary("Metrognome-2.0")
 
-local TargetOfTarget = AceOO.Class(IceElement)
+local TargetOfTarget = AceOO.Class(IceElement, "Metrognome-2.0")
+
+TargetOfTarget.prototype.stackedDebuffs = nil
+TargetOfTarget.prototype.buffSize = nil
 
 
 -- Constructor --
@@ -11,17 +13,76 @@ function TargetOfTarget.prototype:init()
 	self:SetColor("totHostile", 0.8, 0.1, 0.1)
 	self:SetColor("totFriendly", 0.2, 1, 0.2)
 	self:SetColor("totNeutral", 0.9, 0.9, 0)
+	
+	self.buffSize = 15
+	self.stackedDebuffs = {}
 end
 
+
+-- OVERRIDE
+function TargetOfTarget.prototype:GetOptions()
+	local opts = TargetOfTarget.super.prototype.GetOptions(self)
+	
+	opts["showDebuffs"] = {
+		type = "toggle",
+		name = "Show stacking debuffs",
+		desc = "Show stacking debuffs in ToT info",
+		get = function()
+			return self.moduleSettings.showDebuffs
+		end,
+		set = function(value)
+			self.moduleSettings.showDebuffs = value
+			self:UpdateBuffs()
+		end,
+		order = 31
+	}
+	
+	opts["fontSize"] = {
+		type = 'range',
+		name = 'Font Size',
+		desc = 'Font Size',
+		get = function()
+			return self.moduleSettings.fontSize
+		end,
+		set = function(v)
+			self.moduleSettings.fontSize = v
+			self:Redraw()
+		end,
+		min = 8,
+		max = 20,
+		step = 1,
+		order = 32
+	}
+	
+	return opts
+end
+
+
+-- OVERRIDE
+function TargetOfTarget.prototype:GetDefaultSettings()
+	local defaults =  TargetOfTarget.super.prototype.GetDefaultSettings(self)
+	defaults["showDebuffs"] = true
+	defaults["fontSize"] = 13
+	return defaults
+end
+
+
+-- OVERRIDE
+function TargetOfTarget.prototype:Redraw()
+	TargetOfTarget.super.prototype.Redraw(self)
+	
+	self:CreateToTFrame()
+	self:CreateToTHPFrame()
+end
 
 
 function TargetOfTarget.prototype:Enable()
 	TargetOfTarget.super.prototype.Enable(self)
 	
-	Metrognome:Register("TargetOfTarget", self.Update, 0.2, self)
-	Metrognome:Start("TargetOfTarget")
-	
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "Update")
+	
+	self:RegisterMetro(self.name, self.Update, 0.33, self)
+	self:StartMetro(self.name)
 	
 	self:Update()
 end
@@ -29,7 +90,7 @@ end
 
 function TargetOfTarget.prototype:Disable()
 	TargetOfTarget.super.prototype.Disable(self)
-	Metrognome:Unregister("TargetOfTarget")
+	self:UnregisterMetro(self.name)
 end
 
 
@@ -47,36 +108,107 @@ function TargetOfTarget.prototype:CreateFrame()
 	
 	self:CreateToTFrame()
 	self:CreateToTHPFrame()
+	self:CreateDebuffFrame()
 end
 
 
-
 function TargetOfTarget.prototype:CreateToTFrame()
-	self.frame.totName = self:FontFactory("Bold", 14)
+	self.frame.totName = self:FontFactory("Bold", self.moduleSettings.fontSize+1, nil, self.frame.totName)
 	
 	self.frame.totName:SetWidth(120)
 	self.frame.totName:SetHeight(14)
 	self.frame.totName:SetJustifyH("RIGHT")
 	self.frame.totName:SetJustifyV("BOTTOM")
 	
-	self.frame.totName:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", -2, -2)
+	self.frame.totName:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, -2)
 	self.frame.totName:Show()
 end
 
+
 function TargetOfTarget.prototype:CreateToTHPFrame()
-	self.frame.totHealth = self:FontFactory(nil, 12)
+	self.frame.totHealth = self:FontFactory(nil, self.moduleSettings.fontSize, nil, self.frame.totHealth)
 	
 	self.frame.totHealth:SetWidth(120)
 	self.frame.totHealth:SetHeight(14)
 	self.frame.totHealth:SetJustifyH("RIGHT")
 	self.frame.totHealth:SetJustifyV("TOP")
 	
-	self.frame.totHealth:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", -2, -16)
+	self.frame.totHealth:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, -16)
 	self.frame.totHealth:Show()
 end
 
 
+function TargetOfTarget.prototype:CreateDebuffFrame()
+	self.frame.debuffFrame = CreateFrame("Frame", nil, self.frame)
+	
+	self.frame.debuffFrame:SetFrameStrata("BACKGROUND")
+	self.frame.debuffFrame:SetWidth(200)
+	self.frame.debuffFrame:SetHeight(20)
+	
+	self.frame.debuffFrame:SetPoint("TOPLEFT", self.frame, "TOPRIGHT", 4, 0)
+	self.frame.debuffFrame:Show()
+		
+	self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame)
+end
+
+
+function TargetOfTarget.prototype:CreateIconFrames(parent)
+	local buffs = {}
+	
+	for i = 1, 16 do
+		buffs[i] = CreateFrame("Frame", nil, parent)
+		buffs[i]:SetFrameStrata("BACKGROUND")
+		buffs[i]:SetWidth(self.buffSize)
+		buffs[i]:SetHeight(self.buffSize)
+		buffs[i]:SetPoint("LEFT", (i-1) * self.buffSize + (i-1), 0)
+		buffs[i]:Show()
+		
+		buffs[i].texture = buffs[i]:CreateTexture()
+		buffs[i].texture:SetTexture(nil)
+		buffs[i].texture:SetAllPoints(buffs[i])
+		
+		buffs[i].stack = self:FontFactory("Bold", 15, buffs[i])
+		buffs[i].stack:SetPoint("BOTTOMRIGHT" , buffs[i], "BOTTOMRIGHT", 0, -1)
+	end
+	return buffs
+end
+
+
+function TargetOfTarget.prototype:UpdateBuffs()
+	local debuffs = 0
+	
+	if (self.moduleSettings.showDebuffs) then
+		for i = 1, 16 do
+			local buffTexture, buffApplications = UnitDebuff("targettarget", i)
+	
+			if (buffApplications and (buffApplications > 1)) then
+				debuffs = debuffs + 1
+				
+				if not (self.stackedDebuffs[debuffs]) then
+					self.stackedDebuffs[debuffs] = {}
+				end
+				
+				self.stackedDebuffs[debuffs].texture = buffTexture
+				self.stackedDebuffs[debuffs].count = buffApplications
+			end
+		end
+	end
+	
+	for i = 1, 16 do
+		if (self.moduleSettings.showDebuffs and (i <= debuffs)) then
+			self.frame.debuffFrame.buffs[i].texture:SetTexture(self.stackedDebuffs[i].texture)
+			self.frame.debuffFrame.buffs[i].stack:SetText(self.stackedDebuffs[i].count)
+		else
+			self.frame.debuffFrame.buffs[i].texture:SetTexture(nil)
+			self.frame.debuffFrame.buffs[i].stack:SetText(nil)
+		end
+	end
+end
+
+
 function TargetOfTarget.prototype:Update()
+	self:UpdateBuffs()
+	
 	if not (UnitExists("targettarget")) then
 		self.frame.totName:SetText()
 		self.frame.totHealth:SetText()

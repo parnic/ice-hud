@@ -19,7 +19,7 @@ function PetMana.prototype:GetOptions()
 	opts["scale"] = 
 	{
 		type = 'range',
-		name = 'scale',
+		name = 'Scale',
 		desc = 'Scale of the bar',
 		min = 0.2,
 		max = 1,
@@ -30,7 +30,8 @@ function PetMana.prototype:GetOptions()
 		set = function(value)
 			self.moduleSettings.scale = value
 			self:Redraw()
-		end
+		end,
+		order = 31
 	}
 	return opts
 end

@@ -4,6 +4,9 @@ local Metrognome = AceLibrary("Metrognome-2.0")
 local DruidMana = AceOO.Class(IceUnitBar)
 
 DruidMana.prototype.inForms = nil
+DruidMana.prototype.mode = nil
+DruidMana.prototype.mana = nil
+DruidMana.prototype.maxMana = nil
 
 
 -- Constructor --
@@ -27,15 +30,29 @@ end
 function DruidMana.prototype:Enable()
 	DruidMana.super.prototype.Enable(self)
 	
-	if (DruidBar_OnLoad) then
-		Metrognome:Register("DruidMana", self.Update, 0.1, self)
+	if (IsAddOnLoaded("SoleManax")) then
+		self.mode = "SoleManax"
+		SoleManax:AddUser(self.UpdateSoleManax, TRUE, self)
+		self:UpdateSoleManax(SoleManax:GetPlayerMana())
+		
+	elseif (DruidBar_OnLoad) then
+		self.mode = "DruidBar"
+		Metrognome:Register("DruidMana", self.UpdateDruidBarMana, 0.1, self)
 		Metrognome:Start("DruidMana")
 	end
 	
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "FormsChanged")
 	
 	self:FormsChanged(self.unit)
-	self:Update()
+end
+
+
+function DruidMana.prototype:Disable()
+	DruidMana.super.prototype.Disable(self)
+	
+	if (IsAddOnLoaded("SoleManax")) then
+        SoleManax.DelUser(self.UpdateSoleManax)
+    end
 end
 
 
@@ -45,10 +62,25 @@ function DruidMana.prototype:FormsChanged(unit)
 	end
 
 	self.inForms = (UnitPowerType(self.unit) ~= 0)
+	self:Update()
 end
 
 
-function DruidMana.prototype:Update(unit)
+function DruidMana.prototype:UpdateSoleManax(mana, maxMana)
+	self.mana = mana
+	self.maxMana = maxMana
+	self:Update()
+end
+
+
+function DruidMana.prototype:UpdateDruidBarMana()
+	self.mana = DruidBarKey.keepthemana
+	self.maxMana = DruidBarKey.maxmana
+	self:Update()
+end
+
+
+function DruidMana.prototype:Update()
 	if ((not self.alive) or (not self.inForms)) then
 		self.frame:Hide()
 		return
@@ -56,13 +88,12 @@ function DruidMana.prototype:Update(unit)
 		self.frame:Show()
 	end
 	
-	--IceHUD:Debug(self.alive, self.inForms)
-	
 	local color = "druidMana"
-	self:UpdateBar(DruidBarKey.keepthemana / DruidBarKey.maxmana, color)
-	local percentage = DruidBarKey.keepthemana / DruidBarKey.maxmana * 100
+
+	self:UpdateBar(self.mana / self.maxMana, color)
+
+	local percentage = (self.mana / self.maxMana) * 100
 	self:SetBottomText1(math.floor(percentage))
-	--self:SetBottomText2(self:GetFormattedText(DruidBarKey.keepthemana, DruidBarKey.maxmana), color)
 end
 
 

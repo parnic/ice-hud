@@ -57,7 +57,6 @@ function CastBar.prototype:Enable()
 	
 	self.frame:Hide()
 	
-	
 	-- remove blizz cast bar
 	CastingBarFrame:UnregisterAllEvents()
 end
@@ -75,6 +74,16 @@ function CastBar.prototype:Disable()
 	CastingBarFrame:RegisterEvent("SPELLCAST_CHANNEL_UPDATE");
 	CastingBarFrame:RegisterEvent("SPELLCAST_CHANNEL_STOP");
 end
+
+
+-- OVERRIDE
+function CastBar.prototype:Redraw()
+	CastBar.super.prototype.Redraw(self)
+	
+	self.frame.bottomUpperText:SetWidth(180)
+end
+
+
 
 -- 'Protected' methods --------------------------------------------------------
 
@@ -118,7 +127,7 @@ function CastBar.prototype:OnUpdate()
 		if (scale < 0.1) then -- "wait" for possible fail event before showing success animation
 			return
 		end
-		self.alpha = 0.5
+		self.alpha = 0.9
 		self:UpdateBar(1, "castSuccess", 1.1-scale)
 		
 		if (scale >= 1) then
