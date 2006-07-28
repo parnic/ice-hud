@@ -40,6 +40,7 @@ function IceCore.prototype:init()
 		alphaic = 0.6,
 		lockTextAlpha = true,
 		barTexture = "Bar",
+		barFontSize = 13,
 	}
 	
 	-- get default settings from the modules

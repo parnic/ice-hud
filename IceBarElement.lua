@@ -93,12 +93,6 @@ function IceBarElement.prototype:GetOptions()
 end
 
 
-function IceBarElement.prototype:GetDefaultSettings()
-	local defaults = IceBarElement.super.prototype.GetDefaultSettings(self)
-	defaults["barFontSize"] = 13
-	return defaults
-end
-
 
 -- OVERRIDE
 function IceBarElement.prototype:Redraw()
