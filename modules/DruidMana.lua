@@ -53,6 +53,10 @@ function DruidMana.prototype:Disable()
 	if (IsAddOnLoaded("SoleManax")) then
         SoleManax.DelUser(self.UpdateSoleManax)
     end
+	
+	if (IsAddOnLoaded("DruidBar")) then
+		Metrognome:Unregister("DruidMana")
+	end
 end
 
 
