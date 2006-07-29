@@ -2,7 +2,6 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 local TargetHealth = AceOO.Class(IceUnitBar, "AceHook-2.0")
 
-TargetHealth.prototype.mobHealthEnabled = nil
 TargetHealth.prototype.mobHealth = nil
 TargetHealth.prototype.mobMaxHealth = nil
 TargetHealth.prototype.color = nil
@@ -15,8 +14,6 @@ function TargetHealth.prototype:init()
 	self:SetColor("targetHealthHostile", 231, 31, 36)
 	self:SetColor("targetHealthFriendly", 46, 223, 37)
 	self:SetColor("targetHealthNeutral", 210, 219, 87)
-	
-	self.mobHealthEnabled = IsAddOnLoaded("MobHealth")
 end
 
 
@@ -24,9 +21,35 @@ function TargetHealth.prototype:GetDefaultSettings()
 	local settings = TargetHealth.super.prototype.GetDefaultSettings(self)
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 2
+	settings["mobhealth"] = false
 	return settings
 end
 
+
+-- OVERRIDE
+function TargetHealth.prototype:GetOptions()
+	local opts = TargetHealth.super.prototype.GetOptions(self)
+	
+	opts["mobhealth"] = {
+		type = "toggle",
+		name = "MobHealth2 support",
+		desc = "Will NOT work with the original MobHealth addon",
+		get = function()
+			return self.moduleSettings.mobhealth
+		end,
+		set = function(value)
+			self.moduleSettings.mobhealth = value
+			if (self.moduleSettings.mobhealth) then
+				self:EnableMobHealth()
+			else
+				self:DisableMobHealth()
+			end
+		end,
+		order = 40
+	}
+	
+	return opts
+end
 
 
 function TargetHealth.prototype:Enable()
@@ -36,8 +59,8 @@ function TargetHealth.prototype:Enable()
 	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
 	
-	if (self.mobHealthEnabled) then
-		self:Hook("MobHealth_OnEvent", "MobHealth")
+	if (self.moduleSettings.mobhealth) then
+		self:EnableMobHealth()
 	end
 	
 	self:Update("target")
@@ -47,7 +70,19 @@ end
 function TargetHealth.prototype:Disable()
 	TargetHealth.super.prototype.Disable(self)
 	
-	if (self.mobHealthEnabled) then
+	self:DisableMobHealth()
+end
+
+
+function TargetHealth.prototype:EnableMobHealth()
+	if (IsAddOnLoaded("MobHealth")) then
+		self:Hook("MobHealth_OnEvent", "MobHealth")
+	end
+end
+
+
+function TargetHealth.prototype:DisableMobHealth()
+	if (self:IsHooked("MobHealth_OnEvent")) then
 		self:Unhook("MobHealth_OnEvent")
 	end
 end
@@ -94,6 +129,7 @@ end
 function TargetHealth.prototype:MobHealth(event)
 	self.hooks.MobHealth_OnEvent.orig(event)
 	
+	-- we are getting valid values from the server, no need for MobHealth2
 	if (self.maxHealth ~= 100) then
 		return
 	end
@@ -115,7 +151,7 @@ function TargetHealth.prototype:UpdateHealthText(mobHealth)
 			self:SetBottomText2()
 		end
 	else
-		if (validData) then
+		if (validData and self.moduleSettings.mobhealth) then
 			return
 		end
 	
