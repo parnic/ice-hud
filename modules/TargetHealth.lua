@@ -1,6 +1,12 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-local TargetHealth = AceOO.Class(IceUnitBar)
+local TargetHealth = AceOO.Class(IceUnitBar, "AceHook-2.0")
+
+TargetHealth.prototype.mobHealthEnabled = nil
+TargetHealth.prototype.mobHealth = nil
+TargetHealth.prototype.mobMaxHealth = nil
+TargetHealth.prototype.color = nil
+
 
 -- Constructor --
 function TargetHealth.prototype:init()
@@ -9,6 +15,8 @@ function TargetHealth.prototype:init()
 	self:SetColor("targetHealthHostile", 231, 31, 36)
 	self:SetColor("targetHealthFriendly", 46, 223, 37)
 	self:SetColor("targetHealthNeutral", 210, 219, 87)
+	
+	self.mobHealthEnabled = IsAddOnLoaded("MobHealth")
 end
 
 
@@ -28,7 +36,20 @@ function TargetHealth.prototype:Enable()
 	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
 	
+	if (self.mobHealthEnabled) then
+		self:Hook("MobHealth_OnEvent", "MobHealth")
+	end
+	
 	self:Update("target")
+end
+
+
+function TargetHealth.prototype:Disable()
+	TargetHealth.super.prototype.Disable(self)
+	
+	if (self.mobHealthEnabled) then
+		self:Unhook("MobHealth_OnEvent")
+	end
 end
 
 
@@ -50,28 +71,62 @@ function TargetHealth.prototype:Update(unit)
 		self.frame:Show()
 	end
 	
-	local color = "targetHealthFriendly" -- friendly > 4
+	self.color = "targetHealthFriendly" -- friendly > 4
 	
 	local reaction = UnitReaction("target", "player")
 	if (reaction and (reaction == 4)) then
-		color = "targetHealthNeutral"
+		self.color = "targetHealthNeutral"
 	elseif (reaction and (reaction < 4)) then
-		color = "targetHealthHostile"
+		self.color = "targetHealthHostile"
 	end
 	
 	if (self.tapped) then
-		color = "tapped"
+		self.color = "tapped"
 	end
 
-	self:UpdateBar(self.health/self.maxHealth, color)
+	self:UpdateBar(self.health/self.maxHealth, self.color)
 	self:SetBottomText1(self.healthPercentage)
 	
-	-- assumption that if a unit's max health is 100, it's not actual amount
-	-- but rather a percentage - this obviously has one caveat though
+	self:UpdateHealthText(false)
+end
+
+
+function TargetHealth.prototype:MobHealth(event)
+	self.hooks.MobHealth_OnEvent.orig(event)
+	
 	if (self.maxHealth ~= 100) then
-		self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), color)
+		return
+	end
+	
+	self.mobHealth = MobHealth_GetTargetCurHP()
+	self.mobMaxHealth = MobHealth_GetTargetMaxHP()
+
+	self:UpdateHealthText(true)
+end
+
+
+function TargetHealth.prototype:UpdateHealthText(mobHealth)
+	local validData = (self.mobHealth and self.mobMaxHealth and self.health > 0 and self.mobMaxHealth > 0)
+
+	if (mobHealth) then
+		if (validData)  then
+			self:SetBottomText2(self:GetFormattedText(self.mobHealth, self.mobMaxHealth), self.color)
+		else
+			self:SetBottomText2()
+		end
 	else
-		self:SetBottomText2(nil, color)
+		if (validData) then
+			return
+		end
+	
+		-- assumption that if a unit's max health is 100, it's not actual amount
+		-- but rather a percentage - this obviously has one caveat though
+	
+		if (self.maxHealth ~= 100) then
+			self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
+		else
+			self:SetBottomText2()
+		end
 	end
 end
 

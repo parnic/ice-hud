@@ -41,7 +41,6 @@ end
 
 -- 'Protected' methods --------------------------------------------------------
 
-
 function TimerBar.prototype:OnUpdate(object, timeSinceLast)
 	self.hooks[object].OnUpdate.orig(object, timeSinceLast)
 	
@@ -67,4 +66,6 @@ end
 
 
 -- Load us up
-TimerBar:new()
+if (IsAddOnLoaded("FuBar_ToFu")) then
+	TimerBar:new()
+end
