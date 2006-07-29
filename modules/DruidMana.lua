@@ -35,7 +35,7 @@ function DruidMana.prototype:Enable()
 		SoleManax:AddUser(self.UpdateSoleManax, TRUE, self)
 		self:UpdateSoleManax(SoleManax:GetPlayerMana())
 		
-	elseif (DruidBar_OnLoad) then
+	elseif (IsAddOnLoaded("DruidBar")) then
 		self.mode = "DruidBar"
 		Metrognome:Register("DruidMana", self.UpdateDruidBarMana, 0.1, self)
 		Metrognome:Start("DruidMana")
@@ -100,6 +100,6 @@ end
 
 -- Load us up (if we are a druid)
 local _, unitClass = UnitClass("player")
-if (unitClass == "DRUID") then
+if (unitClass == "DRUID" and (IsAddOnLoaded("SoleManax") or IsAddOnLoaded("DruidBar"))) then
 	DruidMana:new()
 end
