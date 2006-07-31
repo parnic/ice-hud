@@ -125,7 +125,7 @@ end
 -- This should be overwritten by inheriting classes
 function IceElement.prototype:CreateFrame()
 	if not (self.frame) then
-		self.frame = CreateFrame("Frame", nil, self.parent)
+		self.frame = CreateFrame("Frame", "IceHUD_"..self.name, self.parent)
 	end
 end
 

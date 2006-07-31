@@ -131,6 +131,9 @@ function TargetHealth.prototype:MobHealth(event)
 	
 	-- we are getting valid values from the server, no need for MobHealth2
 	if (self.maxHealth ~= 100) then
+		self.mobHealth = nil
+		self.mobMaxHealth = nil
+		self:UpdateHealthText(false)
 		return
 	end
 	
