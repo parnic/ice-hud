@@ -4,6 +4,7 @@ local PlayerMana = AceOO.Class(IceUnitBar)
 
 PlayerMana.prototype.manaType = nil
 PlayerMana.prototype.tickStart = nil
+PlayerMana.prototype.previousEnergy = nil
 
 -- Constructor --
 function PlayerMana.prototype:init()
@@ -143,8 +144,12 @@ function PlayerMana.prototype:UpdateEnergy(unit)
 		return
 	end
 	
-	self.tickStart = GetTime()
-	self.tickerFrame:Show()
+	if (not (self.previousEnergy) or (self.previousEnergy <= UnitMana(self.unit))) then
+		self.previousEnergy = UnitMana(self.unit)
+		self.tickStart = GetTime()
+		self.tickerFrame:Show()
+	end
+	
 	self:Update(unit)
 end
 
