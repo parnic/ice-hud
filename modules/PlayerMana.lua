@@ -144,12 +144,13 @@ function PlayerMana.prototype:UpdateEnergy(unit)
 		return
 	end
 	
+	
 	if (not (self.previousEnergy) or (self.previousEnergy <= UnitMana(self.unit))) then
-		self.previousEnergy = UnitMana(self.unit)
 		self.tickStart = GetTime()
 		self.tickerFrame:Show()
 	end
 	
+	self.previousEnergy = UnitMana(self.unit)
 	self:Update(unit)
 end
 
