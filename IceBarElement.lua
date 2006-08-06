@@ -3,17 +3,10 @@ local AceOO = AceLibrary("AceOO-2.0")
 IceBarElement = AceOO.Class(IceElement)
 IceBarElement.virtual = true
 
-IceBarElement.BackgroundAlpha = 0.25
-
 IceBarElement.TexturePath = IceHUD.Location .. "\\textures\\"
-IceBarElement.BackgroundTexture = IceHUD.Location .. "\\textures\\HiBarBG"
-IceBarElement.BarProportion = 0.36
 IceBarElement.BarTextureWidth = 128
 
 IceBarElement.prototype.barFrame = nil
-IceBarElement.prototype.width = nil
-IceBarElement.prototype.height = nil
-IceBarElement.prototype.backgroundAlpha = nil
 
 IceBarElement.prototype.combat = nil
 
@@ -23,12 +16,8 @@ IceBarElement.prototype.combat = nil
 function IceBarElement.prototype:init(name)
 	IceBarElement.super.prototype.init(self, name)
 	
-	self.width = 77
-	self.height = 154
-	
-	self.backgroundAlpha = IceBarElement.BackgroundAlpha
+	self:SetColor("background", 50, 50, 50)
 end
-
 
 
 
@@ -37,6 +26,7 @@ end
 -- OVERRIDE
 function IceBarElement.prototype:Enable()
 	IceBarElement.super.prototype.Enable(self)
+
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "InCombat")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OutCombat")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckCombat")
@@ -133,25 +123,25 @@ function IceBarElement.prototype:CreateBackground()
 	end
 	
 	self.frame:SetFrameStrata("BACKGROUND")
-	self.frame:SetWidth(self.width)
-	self.frame:SetHeight(self.height)
+	self.frame:SetWidth(self.settings.barWidth)
+	self.frame:SetHeight(self.settings.barHeight)
 	
 	if not (self.frame.bg) then
 		self.frame.bg = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
 	
-	self.frame.bg:SetTexture(IceBarElement.BackgroundTexture)
+	self.frame.bg:SetTexture(IceBarElement.TexturePath .. self.settings.barTexture.."BG")
 	self.frame.bg:ClearAllPoints()
 	self.frame.bg:SetAllPoints(self.frame)
 	
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.frame.bg:SetTexCoord(1, 0, 0, 1)
 	else
-		self.frame.bg:SetTexCoord(1, 0, 1, 0)
+		self.frame.bg:SetTexCoord(0, 1, 0, 1)
 	end
 	
 	self.frame:SetStatusBarTexture(self.frame.bg)
-	self.frame:SetStatusBarColor(self:GetColor("undef", self.backgroundAlpha))
+	self.frame:SetStatusBarColor(self:GetColor("undef", self.settings.alphabg))
 	
 	local ownPoint = "LEFT"
 	if (self.moduleSettings.side == ownPoint) then
@@ -159,8 +149,8 @@ function IceBarElement.prototype:CreateBackground()
 	end
 	
 	-- ofxx = (bar width) + (extra space in between the bars)
-	local offx = (IceBarElement.BarProportion * self.width * self.moduleSettings.offset)
-		+ (self.moduleSettings.offset * 5)
+	local offx = (self.settings.barProportion * self.settings.barWidth * self.moduleSettings.offset)
+		+ (self.moduleSettings.offset * self.settings.barSpace)
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		offx = offx * -1
 	end	
@@ -177,8 +167,8 @@ function IceBarElement.prototype:CreateBar()
 	end
 	
 	self.barFrame:SetFrameStrata("BACKGROUND")
-	self.barFrame:SetWidth(self.width)
-	self.barFrame:SetHeight(self.height)
+	self.barFrame:SetWidth(self.settings.barWidth)
+	self.barFrame:SetHeight(self.settings.barHeight)
 	
 	
 	if not (self.barFrame.bar) then
@@ -203,8 +193,8 @@ end
 
 
 function IceBarElement.prototype:CreateTexts()
-	self.frame.bottomUpperText = self:FontFactory(nil, self.settings.barFontSize, nil, self.frame.bottomUpperText)
-	self.frame.bottomLowerText = self:FontFactory(nil, self.settings.barFontSize, nil, self.frame.bottomLowerText)
+	self.frame.bottomUpperText = self:FontFactory(self.settings.barFontBold, self.settings.barFontSize, nil, self.frame.bottomUpperText)
+	self.frame.bottomLowerText = self:FontFactory(self.settings.barFontBold, self.settings.barFontSize, nil, self.frame.bottomLowerText)
 
 	self.frame.bottomUpperText:SetWidth(80)
 	self.frame.bottomLowerText:SetWidth(120)
@@ -232,10 +222,10 @@ function IceBarElement.prototype:CreateTexts()
 	local parentPoint = self:Flip(self.moduleSettings.side)
 	
 	
-	local offx = 2
+	local offx = 0
 	-- adjust offset for bars where text is aligned to the outer side
 	if (self.moduleSettings.offset <= 1) then
-		offx = IceBarElement.BarProportion * self.width - offx
+		offx = self.settings.barProportion * self.settings.barWidth - offx
 	end
 
 
@@ -248,6 +238,18 @@ function IceBarElement.prototype:CreateTexts()
 
 	self.frame.bottomUpperText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, -1)
 	self.frame.bottomLowerText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, -15)
+	
+	if (self.settings.textVisible["upper"]) then
+		self.frame.bottomUpperText:Show()
+	else
+		self.frame.bottomUpperText:Hide()
+	end
+	
+	if (self.settings.textVisible["lower"]) then
+		self.frame.bottomLowerText:Show()
+	else
+		self.frame.bottomLowerText:Hide()
+	end
 end
 
 
@@ -273,7 +275,8 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	alpha = alpha or 1
 	self.frame:SetAlpha(alpha)
 	
-	self.frame:SetStatusBarColor(self:GetColor(color, self.alpha))
+	local c = self.settings.backgroundColor
+	self.frame:SetStatusBarColor(c.r, c.g, c.b, self.settings.alphabg)
 	
 	self.barFrame:SetStatusBarColor(self:GetColor(color))
 	
@@ -284,6 +287,10 @@ end
 
 -- Bottom line 1
 function IceBarElement.prototype:SetBottomText1(text, color)
+	if not (self.settings.textVisible["upper"]) and not (self.moduleSettings.alwaysShowText) then
+		return
+	end
+
 	if not (color) then
 		color = "text"
 	end
@@ -309,6 +316,10 @@ end
 
 -- Bottom line 2
 function IceBarElement.prototype:SetBottomText2(text, color, alpha)
+	if not (self.settings.textVisible["lower"]) and not (self.moduleSettings.alwaysShowText) then
+		return
+	end
+	
 	if not (color) then
 		color = "text"
 	end
@@ -341,10 +352,8 @@ end
 function IceBarElement.prototype:Update()
 	if (self.combat) then
 		self.alpha = self.settings.alphaic
-		self.backgroundAlpha = IceBarElement.BackgroundAlpha
 	else
 		self.alpha = self.settings.alphaooc
-		self.backgroundAlpha = IceBarElement.BackgroundAlpha
 	end
 end
 

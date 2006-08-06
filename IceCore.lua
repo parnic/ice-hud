@@ -14,7 +14,7 @@ IceCore.prototype.settings = nil
 IceCore.prototype.IceHUDFrame = nil
 IceCore.prototype.elements = {}
 IceCore.prototype.enabled = nil
-
+IceCore.prototype.presets = {}
 
 -- Constructor --
 function IceCore.prototype:init()
@@ -30,18 +30,29 @@ function IceCore.prototype:init()
 	self:RegisterEvent(IceCore.RegisterModule, "Register")
 	self:TriggerEvent(IceCore.Loaded)
 	
-	
+
 	-- DEFAULT SETTINGS
+	local defaultPreset = "RoundBar"
 	local defaults = {
 		gap = 150,
 		verticalPos = -150,
 		scale = 1,
 		alphaooc = 0.3,
 		alphaic = 0.6,
+		alphabg = 0.2,
+		backgroundColor = {r = 0.2, g = 0.2, b = 0.2},
 		lockTextAlpha = true,
 		barTexture = "Bar",
 		barFontSize = 13,
+		textVisible = {upper = true, lower = true},
+		barPreset = defaultPreset,
+		debug = false
 	}
+	
+	self:LoadPresets()
+	for k, v in pairs(self.presets[defaultPreset]) do
+		defaults[k] = v
+	end
 	
 	-- get default settings from the modules
 	defaults.modules = {}
@@ -158,6 +169,7 @@ end
 function IceCore.prototype:SetGap(value)
 	self.settings.gap = value
 	self.IceHUDFrame:SetWidth(self.settings.gap)
+	self:Redraw()
 end
 
 
@@ -189,6 +201,27 @@ function IceCore.prototype:SetAlphaIC(value)
 end
 
 
+function IceCore.prototype:GetAlphaBG()
+	return self.settings.alphabg
+end
+function IceCore.prototype:SetAlphaBG(value)
+	self.settings.alphabg = value
+	self:Redraw()
+end
+
+
+function IceCore.prototype:GetBackgroundColor()
+	local c = self.settings.backgroundColor
+	return c.r, c.g, c.b
+end
+function IceCore.prototype:SetBackgroundColor(r, g, b)
+	self.settings.backgroundColor.r = r
+	self.settings.backgroundColor.g = g
+	self.settings.backgroundColor.b = b
+	self:Redraw()
+end
+
+
 function IceCore.prototype:GetLockTextAlpha()
 	return self.settings.lockTextAlpha
 end
@@ -207,11 +240,124 @@ function IceCore.prototype:SetBarFontSize(value)
 end
 
 
+function IceCore.prototype:GetBarFontBold()
+	return self.settings.barFontBold
+end
+function IceCore.prototype:SetBarFontBold(value)
+	self.settings.barFontBold = value
+	self:Redraw()
+end
+
+
+function IceCore.prototype:GetTextVisibility(text)
+	return self.settings.textVisible[text]
+end
+function IceCore.prototype:SetTextVisibility(text, value)
+	self.settings.textVisible[text] = value
+	self:Redraw()
+end
+
+
 function IceCore.prototype:GetBarTexture()
 	return self.settings.barTexture
 end
 function IceCore.prototype:SetBarTexture(value)
 	self.settings.barTexture = value
 	self:Redraw()
+end
+
+
+function IceCore.prototype:GetBarWidth()
+	return self.settings.barWidth
+end
+function IceCore.prototype:SetBarWidth(value)
+	self.settings.barWidth = value
+	self:Redraw()
+end
+
+
+function IceCore.prototype:GetBarHeight()
+	return self.settings.barHeight
+end
+function IceCore.prototype:SetBarHeight(value)
+	self.settings.barHeight = value
+	self:Redraw()
+end
+
+
+function IceCore.prototype:GetBarProportion()
+	return self.settings.barProportion
+end
+function IceCore.prototype:SetBarProportion(value)
+	self.settings.barProportion = value
+	self:Redraw()
+end
+
+
+function IceCore.prototype:GetBarSpace()
+	return self.settings.barSpace
+end
+function IceCore.prototype:SetBarSpace(value)
+	self.settings.barSpace = value
+	self:Redraw()
+end
+
+
+function IceCore.prototype:GetBarPreset()
+	return self.settings.barPreset
+end
+function IceCore.prototype:SetBarPreset(value)
+	self.settings.barPreset = value
+	self:ChangePreset(value)
+	self:Redraw()
+end
+function IceCore.prototype:ChangePreset(value)
+	self:SetBarTexture(self.presets[value].barTexture)
+	self:SetBarHeight(self.presets[value].barHeight)
+	self:SetBarWidth(self.presets[value].barWidth)
+	self:SetBarSpace(self.presets[value].barSpace)
+	self:SetBarProportion(self.presets[value].barProportion)
+end
+
+
+function IceCore.prototype:GetDebug()
+	return self.settings.debug
+end
+function IceCore.prototype:SetDebug(value)
+	self.settings.debug = value
+	IceHUD:SetDebugging(value)
+end
+
+
+
+
+-------------------------------------------------------------------------------
+-- Presets                                                                   --
+-------------------------------------------------------------------------------
+
+function IceCore.prototype:LoadPresets()
+	self.presets["Bar"] = {
+		barTexture = "Bar",
+		barWidth = 63,
+		barHeight = 150,
+		barProportion = 0.34,
+		barSpace = 4,
+	}
+	
+	self.presets["HiBar"] = {
+		barTexture = "HiBar",
+		barWidth = 63,
+		barHeight = 150,
+		barProportion = 0.34,
+		barSpace = 4,
+	}
+	
+	self.presets["RoundBar"] = {
+		barTexture = "RoundBar",
+		barWidth = 155,
+		barHeight = 220,
+		barProportion = 0.14,
+		barSpace = 1,
+	}
 end
 

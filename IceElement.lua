@@ -174,8 +174,11 @@ end
 
 
 function IceElement.prototype:FontFactory(weight, size, frame, font)
-	weight = weight or ""
-	local fontFile = IceHUD.Location .. "\\fonts\\Calibri" .. weight ..".ttf"
+	local weightString = ""
+	if (weight) then
+		weightString = "Bold"
+	end
+	local fontFile = IceHUD.Location .. "\\fonts\\Calibri" .. weightString ..".ttf"
 	
 	if not (frame) then
 		frame = self.frame

@@ -30,6 +30,7 @@ function PetHealth.prototype:GetOptions()
 		min = 0.2,
 		max = 1,
 		step = 0.05,
+		isPercent = true,
 		get = function()
 			return self.moduleSettings.scale
 		end,

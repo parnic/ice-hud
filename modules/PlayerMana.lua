@@ -85,6 +85,14 @@ function PlayerMana.prototype:Enable()
 end
 
 
+-- OVERRIDE
+function PlayerMana.prototype:Redraw()
+	PlayerMana.super.prototype.Redraw(self)
+	
+	self:CreateTickerFrame()
+end
+
+
 function PlayerMana.prototype:ManaType(unit)
 	if (unit ~= self.unit) then
 		return
@@ -168,12 +176,13 @@ function PlayerMana.prototype:EnergyTick()
 		self.tickStart = now
 	end
 	
-	local thisTick = elapsed / 2
-	local x = (thisTick * (self.width - (self.width * IceBarElement.BarProportion))) + 4
-	local y = thisTick * (self.height - 5)
+	local pos = elapsed / 2
+	local y = pos * (self.settings.barHeight)
 	
-	self.tickerFrame:ClearAllPoints()
-	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", x, y)
+	
+	self.tickerFrame.spark:SetTexCoord(0, 1, 1-pos-0.01, 1-pos)
+	
+	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", 0, y)
 end
 
 
@@ -183,14 +192,15 @@ function PlayerMana.prototype:CreateTickerFrame()
 	end
 	
 	self.tickerFrame:SetFrameStrata("BACKGROUND")
-	self.tickerFrame:SetWidth(19)
-	self.tickerFrame:SetHeight(1)
+	self.tickerFrame:SetWidth(self.settings.barWidth)
+	self.tickerFrame:SetHeight(self.settings.barHeight)
 	
 	if not (self.tickerFrame.spark) then
 		self.tickerFrame.spark = self.tickerFrame:CreateTexture(nil, "BACKGROUND")
+		self.tickerFrame:Hide()
 	end
 	
-	self.tickerFrame.spark:SetTexture(self:GetColor("playerEnergy", 1))
+	self.tickerFrame.spark:SetTexture(IceBarElement.TexturePath .. self.settings.barTexture)
 	self.tickerFrame.spark:SetBlendMode("ADD")
 	self.tickerFrame.spark:ClearAllPoints()
 	self.tickerFrame.spark:SetAllPoints(self.tickerFrame)
@@ -198,7 +208,8 @@ function PlayerMana.prototype:CreateTickerFrame()
 	self.tickerFrame:SetStatusBarTexture(self.tickerFrame.spark)
 	self.tickerFrame:SetStatusBarColor(self:GetColor("playerEnergy", self.moduleSettings.tickerAlpha))
 	
-	self.tickerFrame:Hide()
+	self.tickerFrame:ClearAllPoints()
+	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", 0, 0)
 end
 
 

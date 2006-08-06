@@ -35,14 +35,34 @@ function CastBar.prototype:GetDefaultSettings()
 	local settings = CastBar.super.prototype.GetDefaultSettings(self)
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 0
+	settings["alwaysShowText"] = true
 	return settings
+end
+
+
+-- OVERRIDE
+function CastBar.prototype:GetOptions()
+	local opts = CastBar.super.prototype.GetOptions(self)
+	opts["alwaysShowText"] = 
+	{
+		type = 'toggle',
+		name = 'Always Show Text',
+		desc = 'Overrides possible text hiding option',
+		get = function()
+			return self.moduleSettings.alwaysShowText
+		end,
+		set = function(value)
+			self.moduleSettings.alwaysShowText = value
+			self:Redraw()
+		end,
+		order = 50
+	}
+	return opts
 end
 
 
 function CastBar.prototype:Enable()
 	CastBar.super.prototype.Enable(self)
-	
-	self.frame.bottomUpperText:SetWidth(180)
 	
 	self:RegisterEvent("SPELLCAST_START", "CastStart")
 	self:RegisterEvent("SPELLCAST_STOP", "CastStop")
@@ -80,12 +100,22 @@ end
 function CastBar.prototype:Redraw()
 	CastBar.super.prototype.Redraw(self)
 	
-	self.frame.bottomUpperText:SetWidth(180)
+	if (self.moduleSettings.alwaysShowText) then
+		self.frame.bottomUpperText:Show()
+	end
+	
+	
 end
 
 
-
 -- 'Protected' methods --------------------------------------------------------
+
+-- OVERRIDE
+function CastBar.prototype:CreateFrame()
+	CastBar.super.prototype.CreateFrame(self)
+	
+	self.frame.bottomUpperText:SetWidth(self.settings.gap + 30)
+end
 
 
 function CastBar.prototype:OnUpdate()
