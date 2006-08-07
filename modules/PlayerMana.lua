@@ -179,8 +179,11 @@ function PlayerMana.prototype:EnergyTick()
 	local pos = elapsed / 2
 	local y = pos * (self.settings.barHeight)
 	
-	
-	self.tickerFrame.spark:SetTexCoord(0, 1, 1-pos-0.01, 1-pos)
+	if (self.moduleSettings.side == IceCore.Side.Left) then
+		self.tickerFrame.spark:SetTexCoord(1, 0, 1-pos-0.01, 1-pos)
+	else
+		self.tickerFrame.spark:SetTexCoord(0, 1, 1-pos-0.01, 1-pos)
+	end
 	
 	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", 0, y)
 end
