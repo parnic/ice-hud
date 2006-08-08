@@ -2,8 +2,6 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 local TargetHealth = AceOO.Class(IceUnitBar, "AceHook-2.0")
 
-TargetHealth.prototype.mobHealth = nil
-TargetHealth.prototype.mobMaxHealth = nil
 TargetHealth.prototype.color = nil
 
 
@@ -32,18 +30,17 @@ function TargetHealth.prototype:GetOptions()
 	
 	opts["mobhealth"] = {
 		type = "toggle",
-		name = "MobHealth2 support",
-		desc = "Will NOT work with the original MobHealth addon",
+		name = "MobHealth3 support",
+		desc = "Enable/disable MobHealth3 target HP data. If this option is gray, you do not have MobHealth3.",
 		get = function()
 			return self.moduleSettings.mobhealth
 		end,
 		set = function(value)
 			self.moduleSettings.mobhealth = value
-			if (self.moduleSettings.mobhealth) then
-				self:EnableMobHealth()
-			else
-				self:DisableMobHealth()
-			end
+			self:Update(self.unit)
+		end,
+		disabled = function()
+			return (MobHealth3 == nil)
 		end,
 		order = 40
 	}
@@ -59,11 +56,7 @@ function TargetHealth.prototype:Enable()
 	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
 	
-	if (self.moduleSettings.mobhealth) then
-		self:EnableMobHealth()
-	end
-	
-	self:Update("target")
+	self:Update(self.unit)
 end
 
 
@@ -74,22 +67,8 @@ function TargetHealth.prototype:Disable()
 end
 
 
-function TargetHealth.prototype:EnableMobHealth()
-	if (IsAddOnLoaded("MobHealth")) then
-		self:Hook("MobHealth_OnEvent", "MobHealth")
-	end
-end
-
-
-function TargetHealth.prototype:DisableMobHealth()
-	if (self:IsHooked("MobHealth_OnEvent")) then
-		self:Unhook("MobHealth_OnEvent")
-	end
-end
-
-
 function TargetHealth.prototype:TargetChanged()
-	self:Update("target")
+	self:Update(self.unit)
 end
 
 
@@ -122,50 +101,18 @@ function TargetHealth.prototype:Update(unit)
 	self:UpdateBar(self.health/self.maxHealth, self.color)
 	self:SetBottomText1(self.healthPercentage)
 	
-	self:UpdateHealthText(false)
-end
-
-
-function TargetHealth.prototype:MobHealth(event)
-	self.hooks.MobHealth_OnEvent.orig(event)
 	
-	-- we are getting valid values from the server, no need for MobHealth2
-	if (self.maxHealth ~= 100) then
-		self.mobHealth = nil
-		self.mobMaxHealth = nil
-		self:UpdateHealthText(false)
-		return
+	if (self.moduleSettings.mobhealth and MobHealth3) then
+		self.health, self.maxHealth, _ = MobHealth3:GetUnitHealth(self.unit, self.health, self.maxHealth)
 	end
 	
-	self.mobHealth = MobHealth_GetTargetCurHP()
-	self.mobMaxHealth = MobHealth_GetTargetMaxHP()
+	-- assumption that if a unit's max health is 100, it's not actual amount
+	-- but rather a percentage - this obviously has one caveat though
 
-	self:UpdateHealthText(true)
-end
-
-
-function TargetHealth.prototype:UpdateHealthText(mobHealth)
-	local validData = (self.mobHealth and self.mobMaxHealth and self.health > 0 and self.mobMaxHealth > 0)
-
-	if (mobHealth) then
-		if (validData)  then
-			self:SetBottomText2(self:GetFormattedText(self.mobHealth, self.mobMaxHealth), self.color)
-		else
-			self:SetBottomText2()
-		end
+	if (self.maxHealth ~= 100) then
+		self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
 	else
-		if (validData and self.moduleSettings.mobhealth) then
-			return
-		end
-	
-		-- assumption that if a unit's max health is 100, it's not actual amount
-		-- but rather a percentage - this obviously has one caveat though
-	
-		if (self.maxHealth ~= 100) then
-			self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
-		else
-			self:SetBottomText2()
-		end
+		self:SetBottomText2()
 	end
 end
 

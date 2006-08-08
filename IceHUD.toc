@@ -3,11 +3,12 @@
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
 ## Notes: Another HUD mod
-## Version: 0.4 ($Revision$)
+## Version: 0.4.1 ($Revision$)
 ## SavedVariables: IceCoreDB
 ## OptionalDeps: FuBar_ToFu, DruidBar, SoleManax, MobHealth
 ## X-Category: UnitFrame
 ## X-Date: $Date$
+## X-eMail: iceroth@iceroth.net
 ## X-Website: http://www.wowace.com/forums/index.php/topic,1705.0.html
 
 # Libraries
