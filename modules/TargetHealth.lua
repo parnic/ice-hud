@@ -62,8 +62,6 @@ end
 
 function TargetHealth.prototype:Disable()
 	TargetHealth.super.prototype.Disable(self)
-	
-	self:DisableMobHealth()
 end
 
 
