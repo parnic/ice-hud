@@ -32,7 +32,7 @@ function PetMana.prototype:GetOptions()
 			self.moduleSettings.scale = value
 			self:Redraw()
 		end,
-		order = 31
+		order = 51
 	}
 	return opts
 end

@@ -54,8 +54,7 @@ function TargetHealth.prototype:Enable()
 	
 	self:RegisterEvent("UNIT_HEALTH", "Update")
 	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
-	
+		
 	self:Update(self.unit)
 end
 
@@ -64,10 +63,6 @@ function TargetHealth.prototype:Disable()
 	TargetHealth.super.prototype.Disable(self)
 end
 
-
-function TargetHealth.prototype:TargetChanged()
-	self:Update(self.unit)
-end
 
 
 function TargetHealth.prototype:Update(unit)

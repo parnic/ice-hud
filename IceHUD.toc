@@ -3,7 +3,7 @@
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
 ## Notes: Another HUD mod
-## Version: 0.4.1 ($Revision$)
+## Version: 0.4.2 ($Revision$)
 ## SavedVariables: IceCoreDB
 ## OptionalDeps: FuBar_ToFu, DruidBar, SoleManax, MobHealth
 ## X-Category: UnitFrame
@@ -21,8 +21,14 @@ libs\AceDebug-2.0\AceDebug-2.0.lua
 libs\AceLocale-2.0\AceLocale-2.0.lua
 libs\AceConsole-2.0\AceConsole-2.0.lua
 libs\AceAddon-2.0\AceAddon-2.0.lua
+libs\Compost-2.0\Compost-2.0.lua
 libs\Metrognome-2.0\Metrognome-2.0.lua
 libs\Dewdrop-2.0\Dewdrop-2.0.lua
+libs\Deformat-2.0\Deformat-2.0.lua
+libs\Gratuity-2.0\Gratuity-2.0.lua
+libs\SpellCache-1.0\SpellCache-1.0.lua
+libs\SpellStatus-1.0\SpellStatus-1.0.lua
+
 
 # IceHUD core functionality
 IceCore.lua

@@ -37,15 +37,20 @@ function IceCore.prototype:init()
 		gap = 150,
 		verticalPos = -150,
 		scale = 1,
+		
 		alphaooc = 0.3,
 		alphaic = 0.6,
-		alphabg = 0.2,
+		alphaTarget = 0.3,
+		
+		alphaoocbg = 0.2,
+		alphaicbg = 0.2,
+		alphaTargetbg = 0.2,
+		
+		backgroundToggle = false,
 		backgroundColor = {r = 0.2, g = 0.2, b = 0.2},
-		lockTextAlpha = true,
 		barTexture = "Bar",
-		barFontSize = 13,
-		textVisible = {upper = true, lower = true},
 		barPreset = defaultPreset,
+		fontFamily = "IceHUD",
 		debug = false
 	}
 	
@@ -183,29 +188,53 @@ function IceCore.prototype:SetScale(value)
 end
 
 
-function IceCore.prototype:GetAlphaOOC()
-	return self.settings.alphaooc
+function IceCore.prototype:GetAlpha(mode)
+	if (mode == "IC") then
+		return self.settings.alphaic
+	elseif (mode == "Target") then
+		return self.settings.alphaTarget
+	else
+		return self.settings.alphaooc
+	end
 end
-function IceCore.prototype:SetAlphaOOC(value)
-	self.settings.alphaooc = value
+function IceCore.prototype:SetAlpha(mode, value)
+	if (mode == "IC") then
+		self.settings.alphaic = value
+	elseif (mode == "Target") then
+		self.settings.alphaTarget = value
+	else
+		self.settings.alphaooc = value
+	end
 	self:Redraw()
 end
 
 
-function IceCore.prototype:GetAlphaIC()
-	return self.settings.alphaic
+function IceCore.prototype:GetAlphaBG(mode)
+	if (mode == "IC") then
+		return self.settings.alphaicbg
+	elseif (mode == "Target") then
+		return self.settings.alphaTargetbg
+	else
+		return self.settings.alphaoocbg
+	end
 end
-function IceCore.prototype:SetAlphaIC(value)
-	self.settings.alphaic = value
+function IceCore.prototype:SetAlphaBG(mode, value)
+	if (mode == "IC") then
+		self.settings.alphaicbg = value
+	elseif (mode == "Target") then
+		self.settings.alphaTargetbg = value
+	else
+		self.settings.alphaoocbg = value
+	end
 	self:Redraw()
 end
 
 
-function IceCore.prototype:GetAlphaBG()
-	return self.settings.alphabg
+function IceCore.prototype:GetBackgroundToggle()
+	return self.settings.backgroundToggle
 end
-function IceCore.prototype:SetAlphaBG(value)
-	self.settings.alphabg = value
+function IceCore.prototype:SetBackgroundToggle(value)
+	self.settings.backgroundToggle = value
 	self:Redraw()
 end
 
@@ -218,42 +247,6 @@ function IceCore.prototype:SetBackgroundColor(r, g, b)
 	self.settings.backgroundColor.r = r
 	self.settings.backgroundColor.g = g
 	self.settings.backgroundColor.b = b
-	self:Redraw()
-end
-
-
-function IceCore.prototype:GetLockTextAlpha()
-	return self.settings.lockTextAlpha
-end
-function IceCore.prototype:SetLockTextAlpha(value)
-	self.settings.lockTextAlpha = value
-	self:Redraw()
-end
-
-
-function IceCore.prototype:GetBarFontSize()
-	return self.settings.barFontSize
-end
-function IceCore.prototype:SetBarFontSize(value)
-	self.settings.barFontSize = value
-	self:Redraw()
-end
-
-
-function IceCore.prototype:GetBarFontBold()
-	return self.settings.barFontBold
-end
-function IceCore.prototype:SetBarFontBold(value)
-	self.settings.barFontBold = value
-	self:Redraw()
-end
-
-
-function IceCore.prototype:GetTextVisibility(text)
-	return self.settings.textVisible[text]
-end
-function IceCore.prototype:SetTextVisibility(text, value)
-	self.settings.textVisible[text] = value
 	self:Redraw()
 end
 
@@ -317,6 +310,15 @@ function IceCore.prototype:ChangePreset(value)
 	self:SetBarWidth(self.presets[value].barWidth)
 	self:SetBarSpace(self.presets[value].barSpace)
 	self:SetBarProportion(self.presets[value].barProportion)
+end
+
+
+function IceCore.prototype:GetFontFamily()
+	return self.settings.fontFamily 
+end
+function IceCore.prototype:SetFontFamily(value)
+	self.settings.fontFamily  = value
+	self:Redraw()
 end
 
 

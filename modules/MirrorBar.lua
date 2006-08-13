@@ -48,6 +48,16 @@ function MirrorBar.prototype:Enable()
 end
 
 
+-- OVERRIDE
+function MirrorBar.prototype:Create(parent)
+	MirrorBar.super.prototype.Create(self, parent)
+	
+	if (self.timer) then
+		self.frame:Show()
+	end
+end
+
+
 function MirrorBar.prototype:OnUpdate(elapsed)
 	if (self.paused) then
 		return
@@ -96,6 +106,7 @@ function MirrorBar.prototype:MirrorStart(timer, value, maxValue, scale, paused, 
 	
 	self.startTime = GetTime()
 
+	self:Update()
 	self.frame:Show()
 	self.frame:SetScript("OnUpdate", function() self:OnUpdate(arg1) end)
 end
@@ -160,6 +171,10 @@ function MirrorBarHandler.prototype:GetDefaultSettings()
 	local settings = MirrorBarHandler.super.prototype.GetDefaultSettings(self)
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 3
+	settings["barFontSize"] = 13
+	settings["barFontBold"] = true
+	settings["lockTextAlpha"] = true
+	settings["textVisible"] = {upper = true, lower = true}
 	return settings
 end
 
@@ -171,7 +186,7 @@ function MirrorBarHandler.prototype:GetOptions()
 	opts["side"] = 
 	{
 		type = 'text',
-		name = 'Side',
+		name = '|c' .. self.configColor .. 'Side|r',
 		desc = 'Side of the HUD where the bar appears',
 		get = function()
 			if (self.moduleSettings.side == IceCore.Side.Right) then
@@ -195,7 +210,7 @@ function MirrorBarHandler.prototype:GetOptions()
 	opts["offset"] = 
 	{
 		type = 'range',
-		name = 'Offset',
+		name = '|c' .. self.configColor .. 'Offset|r',
 		desc = 'Offset of the bar',
 		min = -1,
 		max = 10,
@@ -209,7 +224,89 @@ function MirrorBarHandler.prototype:GetOptions()
 		end,
 		order = 31
 	}
-		
+	
+	opts["textSettings"] =
+	{
+		type = 'group',
+		name = '|c' .. self.configColor .. 'Text Settings|r',
+		desc = 'Settings related to texts',
+		order = 32,
+		args = {
+			fontsize = {
+				type = 'range',
+				name = 'Bar Font Size',
+				desc = 'Bar Font Size',
+				get = function()
+					return self.moduleSettings.barFontSize
+				end,
+				set = function(v)
+					self.moduleSettings.barFontSize = v
+					self:Redraw()
+				end,
+				min = 8,
+				max = 20,
+				step = 1,
+				order = 11
+			},
+			
+			fontBold = {
+				type = 'toggle',
+				name = 'Bar Font Bold',
+				desc = 'If you have game default font selected, this option has no effect',
+				get = function()
+					return self.moduleSettings.barFontBold
+				end,
+				set = function(v)
+					self.moduleSettings.barFontBold = v
+					self:Redraw()
+				end,
+				order = 12
+			},
+			
+			lockFontAlpha = {
+				type = "toggle",
+				name = "Lock Bar Text Alpha",
+				desc = "Locks upper text alpha to 100%",
+				get = function()
+					return self.moduleSettings.lockTextAlpha
+				end,
+				set = function(v)
+					self.moduleSettings.lockTextAlpha = v
+					self:Redraw()
+				end,
+				order = 13
+			},
+			
+			upperTextVisible = {
+				type = 'toggle',
+				name = 'Upper text visible',
+				desc = 'Toggle upper text visibility',
+				get = function()
+					return self.moduleSettings.textVisible['upper']
+				end,
+				set = function(v)
+					self.moduleSettings.textVisible['upper'] = v
+					self:Redraw()
+				end,
+				order = 14
+			},
+			
+			lowerTextVisible = {
+				type = 'toggle',
+				name = 'Lower text visible',
+				desc = 'Toggle lower text visibility',
+				get = function()
+					return self.moduleSettings.textVisible['lower']
+				end,
+				set = function(v)
+					self.moduleSettings.textVisible['lower'] = v
+					self:Redraw()
+				end,
+				order = 15
+			},
+		}
+	}
+	
 	return opts
 end
 
@@ -236,6 +333,7 @@ function MirrorBarHandler.prototype:Redraw()
 	MirrorBarHandler.super.prototype.Redraw(self)
 	
 	for i = 1, table.getn(self.bars) do
+		self:SetSettings(self.bars[i])
 		self.bars[i]:UpdatePosition(self.moduleSettings.side, self.moduleSettings.offset + (i-1))
 		self.bars[i]:Create(self.parent)
 	end
@@ -267,6 +365,7 @@ function MirrorBarHandler.prototype:MirrorStart(timer, value, maxValue, scale, p
 	if not (done) then
 		local count = table.getn(self.bars)
 		self.bars[count + 1] = MirrorBar:new(self.moduleSettings.side, self.moduleSettings.offset + count, "MirrorBar" .. tostring(count+1), self.settings)
+		self:SetSettings(self.bars[count+1])
 		self.bars[count + 1]:Create(self.parent)
 		self.bars[count + 1]:Enable()
 		self.bars[count + 1]:MirrorStart(timer, value, maxValue, scale, paused, label)
@@ -290,6 +389,16 @@ function MirrorBarHandler.prototype:MirrorPause(paused)
 		end
 	end
 end
+
+
+
+function MirrorBarHandler.prototype:SetSettings(bar)
+	bar.moduleSettings.barFontSize = self.moduleSettings.barFontSize
+	bar.moduleSettings.barFontBold = self.moduleSettings.barFontBold
+	bar.moduleSettings.lockTextAlpha = self.moduleSettings.lockTextAlpha
+	bar.moduleSettings.textVisible = self.moduleSettings.textVisible
+end
+
 
 
 

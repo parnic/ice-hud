@@ -7,8 +7,10 @@ IceBarElement.TexturePath = IceHUD.Location .. "\\textures\\"
 IceBarElement.BarTextureWidth = 128
 
 IceBarElement.prototype.barFrame = nil
+IceBarElement.prototype.backroundAlpha = nil
 
 IceBarElement.prototype.combat = nil
+IceBarElement.prototype.target = nil
 
 
 
@@ -30,6 +32,22 @@ function IceBarElement.prototype:Enable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "InCombat")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OutCombat")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckCombat")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
+end
+
+
+-- OVERRIDE
+function IceBarElement.prototype:GetDefaultSettings()
+	local settings = IceBarElement.super.prototype.GetDefaultSettings(self)
+	
+	settings["side"] = IceCore.Side.Left
+	settings["offset"] = 1
+	settings["barFontSize"] = 13
+	settings["barFontBold"] = true
+	settings["lockTextAlpha"] = true
+	settings["textVisible"] = {upper = true, lower = true}
+	
+	return settings
 end
 
 
@@ -40,7 +58,7 @@ function IceBarElement.prototype:GetOptions()
 	opts["side"] = 
 	{
 		type = 'text',
-		name = 'Side',
+		name =  '|c' .. self.configColor .. 'Side|r',
 		desc = 'Side of the HUD where the bar appears',
 		get = function()
 			if (self.moduleSettings.side == IceCore.Side.Right) then
@@ -64,7 +82,7 @@ function IceBarElement.prototype:GetOptions()
 	opts["offset"] = 
 	{
 		type = 'range',
-		name = 'Offset',
+		name = '|c' .. self.configColor .. 'Offset|r',
 		desc = 'Offset of the bar',
 		min = -1,
 		max = 10,
@@ -77,6 +95,88 @@ function IceBarElement.prototype:GetOptions()
 			self:Redraw()
 		end,
 		order = 31
+	}
+	
+	opts["textSettings"] =
+	{
+		type = 'group',
+		name = '|c' .. self.configColor .. 'Text Settings|r',
+		desc = 'Settings related to texts',
+		order = 32,
+		args = {
+			fontsize = {
+				type = 'range',
+				name = 'Bar Font Size',
+				desc = 'Bar Font Size',
+				get = function()
+					return self.moduleSettings.barFontSize
+				end,
+				set = function(v)
+					self.moduleSettings.barFontSize = v
+					self:Redraw()
+				end,
+				min = 8,
+				max = 20,
+				step = 1,
+				order = 11
+			},
+			
+			fontBold = {
+				type = 'toggle',
+				name = 'Bar Font Bold',
+				desc = 'If you have game default font selected, this option has no effect',
+				get = function()
+					return self.moduleSettings.barFontBold
+				end,
+				set = function(v)
+					self.moduleSettings.barFontBold = v
+					self:Redraw()
+				end,
+				order = 12
+			},
+			
+			lockFontAlpha = {
+				type = "toggle",
+				name = "Lock Bar Text Alpha",
+				desc = "Locks upper text alpha to 100%",
+				get = function()
+					return self.moduleSettings.lockTextAlpha
+				end,
+				set = function(v)
+					self.moduleSettings.lockTextAlpha = v
+					self:Redraw()
+				end,
+				order = 13
+			},
+			
+			upperTextVisible = {
+				type = 'toggle',
+				name = 'Upper text visible',
+				desc = 'Toggle upper text visibility',
+				get = function()
+					return self.moduleSettings.textVisible['upper']
+				end,
+				set = function(v)
+					self.moduleSettings.textVisible['upper'] = v
+					self:Redraw()
+				end,
+				order = 14
+			},
+			
+			lowerTextVisible = {
+				type = 'toggle',
+				name = 'Lower text visible',
+				desc = 'Toggle lower text visibility',
+				get = function()
+					return self.moduleSettings.textVisible['lower']
+				end,
+				set = function(v)
+					self.moduleSettings.textVisible['lower'] = v
+					self:Redraw()
+				end,
+				order = 15
+			},
+		}
 	}
 	
 	return opts
@@ -193,8 +293,8 @@ end
 
 
 function IceBarElement.prototype:CreateTexts()
-	self.frame.bottomUpperText = self:FontFactory(self.settings.barFontBold, self.settings.barFontSize, nil, self.frame.bottomUpperText)
-	self.frame.bottomLowerText = self:FontFactory(self.settings.barFontBold, self.settings.barFontSize, nil, self.frame.bottomLowerText)
+	self.frame.bottomUpperText = self:FontFactory(self.moduleSettings.barFontBold, self.moduleSettings.barFontSize, nil, self.frame.bottomUpperText)
+	self.frame.bottomLowerText = self:FontFactory(self.moduleSettings.barFontBold, self.moduleSettings.barFontSize, nil, self.frame.bottomLowerText)
 
 	self.frame.bottomUpperText:SetWidth(80)
 	self.frame.bottomLowerText:SetWidth(120)
@@ -239,13 +339,13 @@ function IceBarElement.prototype:CreateTexts()
 	self.frame.bottomUpperText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, -1)
 	self.frame.bottomLowerText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, -15)
 	
-	if (self.settings.textVisible["upper"]) then
+	if (self.moduleSettings.textVisible["upper"]) then
 		self.frame.bottomUpperText:Show()
 	else
 		self.frame.bottomUpperText:Hide()
 	end
 	
-	if (self.settings.textVisible["lower"]) then
+	if (self.moduleSettings.textVisible["lower"]) then
 		self.frame.bottomLowerText:Show()
 	else
 		self.frame.bottomLowerText:Hide()
@@ -275,8 +375,12 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	alpha = alpha or 1
 	self.frame:SetAlpha(alpha)
 	
-	local c = self.settings.backgroundColor
-	self.frame:SetStatusBarColor(c.r, c.g, c.b, self.settings.alphabg)
+	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
+	if (self.settings.backgroundToggle) then
+		r, g, b = self:GetColor(color)
+	end
+	
+	self.frame:SetStatusBarColor(r, g, b, self.backgroundAlpha)
 	
 	self.barFrame:SetStatusBarColor(self:GetColor(color))
 	
@@ -287,7 +391,7 @@ end
 
 -- Bottom line 1
 function IceBarElement.prototype:SetBottomText1(text, color)
-	if not (self.settings.textVisible["upper"]) and not (self.moduleSettings.alwaysShowText) then
+	if not (self.moduleSettings.textVisible["upper"]) then
 		return
 	end
 
@@ -296,7 +400,7 @@ function IceBarElement.prototype:SetBottomText1(text, color)
 	end
 	
 	local alpha = 1
-	if not (self.settings.lockTextAlpha) then
+	if not (self.moduleSettings.lockTextAlpha) then
 		-- boost text alpha a bit to make it easier to see
 		if (self.alpha > 0) then
 			alpha = self.alpha + 0.1
@@ -316,7 +420,7 @@ end
 
 -- Bottom line 2
 function IceBarElement.prototype:SetBottomText2(text, color, alpha)
-	if not (self.settings.textVisible["lower"]) and not (self.moduleSettings.alwaysShowText) then
+	if not (self.moduleSettings.textVisible["lower"]) then
 		return
 	end
 	
@@ -352,8 +456,13 @@ end
 function IceBarElement.prototype:Update()
 	if (self.combat) then
 		self.alpha = self.settings.alphaic
+		self.backgroundAlpha = self.settings.alphaicbg
+	elseif (self.target) then
+		self.alpha = self.settings.alphaTarget
+		self.backgroundAlpha = self.settings.alphaTargetbg
 	else
 		self.alpha = self.settings.alphaooc
+		self.backgroundAlpha = self.settings.alphaoocbg
 	end
 end
 
@@ -376,5 +485,12 @@ end
 
 function IceBarElement.prototype:CheckCombat()
 	self.combat = UnitAffectingCombat("player")
+	self.target = UnitExists("target")
+	self:Update(self.unit)
+end
+
+
+function IceBarElement.prototype:TargetChanged()
+	self.target = UnitExists("target")
 	self:Update(self.unit)
 end

@@ -33,15 +33,9 @@ function TargetMana.prototype:Enable()
 	self:RegisterEvent("UNIT_MAXENERGY", "Update")
 	self:RegisterEvent("UNIT_AURA", "Update")
 	
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
-	
 	self:Update("target")
 end
 
-
-function TargetMana.prototype:TargetChanged()
-	self:Update("target")
-end
 
 
 function TargetMana.prototype:Update(unit)

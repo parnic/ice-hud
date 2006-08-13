@@ -15,8 +15,8 @@ end
 
 function TimerBar.prototype:GetDefaultSettings()
 	local settings = TimerBar.super.prototype.GetDefaultSettings(self)
-	settings["side"] = IceCore.Side.Left
-	settings["offset"] = 0
+	settings["side"] = IceCore.Side.Right
+	settings["offset"] = 3
 	return settings
 end
 

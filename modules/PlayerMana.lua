@@ -22,7 +22,7 @@ function PlayerMana.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 1
 	settings["tickerEnabled"] = true
-	settings["tickerAlpha"] = 0.8
+	settings["tickerAlpha"] = 0.5
 	return settings
 end
 
@@ -42,7 +42,7 @@ function PlayerMana.prototype:GetOptions()
 			self.moduleSettings.tickerEnabled = value
 			self:ManaType(self.unit)
 		end,
-		order = 31
+		order = 51
 	}
 	
 	opts["tickerAlpha"] = 
@@ -60,7 +60,7 @@ function PlayerMana.prototype:GetOptions()
 			self.moduleSettings.tickerAlpha = value
 			self.tickerFrame:SetStatusBarColor(self:GetColor("playerEnergy", self.moduleSettings.tickerAlpha))
 		end,
-		order = 32
+		order = 52
 	}
 	
 	return opts

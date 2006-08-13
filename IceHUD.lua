@@ -78,55 +78,142 @@ IceHUD.options =
 			desc = 'Settings for bar transparencies',
 			order = 12,
 			args = {
+				headerAlpha = {
+					type = 'header',
+					name = "Bar Alpha",
+					order = 10
+				},
+			
 				alphaic = {
 					type = 'range',
 					name = 'Alpha IC',
 					desc = 'Bar alpha In Combat',
 					get = function()
-						return IceHUD.IceCore:GetAlphaIC()
+						return IceHUD.IceCore:GetAlpha("IC")
 					end,
 					set = function(v)
-						IceHUD.IceCore:SetAlphaIC(v)
+						IceHUD.IceCore:SetAlpha("IC", v)
 					end,
 					min = 0,
 					max = 1,
 					step = 0.05,
 					isPercent = true,
-					order = 14,
+					order = 11,
 				},
 				
 				alphaooc = {
 					type = 'range',
 					name = 'Alpha OOC',
-					desc = 'Bar alpha Out Of Combat',
+					desc = 'Bar alpha Out Of Combat without target',
 					get = function()
-						return IceHUD.IceCore:GetAlphaOOC()
+						return IceHUD.IceCore:GetAlpha("OOC")
 					end,
 					set = function(v)
-						IceHUD.IceCore:SetAlphaOOC(v)
+						IceHUD.IceCore:SetAlpha("OOC", v)
 					end,
 					min = 0,
 					max = 1,
 					step = 0.05,
 					isPercent = true,
-					order = 15,
+					order = 12,
 				},
 				
-				alphabg = {
+				alphaTarget = {
 					type = 'range',
-					name = 'Background Alpha',
-					desc = 'Background alpha for bars',
+					name = 'Alpha OOC and Target',
+					desc = 'Bar alpha Out Of Combat with target accuired',
 					get = function()
-						return IceHUD.IceCore:GetAlphaBG()
+						return IceHUD.IceCore:GetAlpha("Target")
 					end,
 					set = function(v)
-						IceHUD.IceCore:SetAlphaBG(v)
+						IceHUD.IceCore:SetAlpha("Target", v)
 					end,
 					min = 0,
 					max = 1,
 					step = 0.05,
 					isPercent = true,
-					order = 16,
+					order = 13,
+				},
+				
+				
+				
+				headerAlphaBackgroundBlank = { type = 'header', name = " ", order = 20 },
+				headerAlphaBackground = {
+					type = 'header',
+					name = "Background Alpha",
+					order = 20
+				},
+				
+				alphaicbg = {
+					type = 'range',
+					name = 'BG Alpha IC',
+					desc = 'Background alpha for bars IC',
+					get = function()
+						return IceHUD.IceCore:GetAlphaBG("IC")
+					end,
+					set = function(v)
+						IceHUD.IceCore:SetAlphaBG("IC", v)
+					end,
+					min = 0,
+					max = 1,
+					step = 0.05,
+					isPercent = true,
+					order = 21,
+				},
+				
+				alphaoocbg = {
+					type = 'range',
+					name = 'BG Alpha OOC',
+					desc = 'Background alpha for bars OOC without target',
+					get = function()
+						return IceHUD.IceCore:GetAlphaBG("OOC")
+					end,
+					set = function(v)
+						IceHUD.IceCore:SetAlphaBG("OOC", v)
+					end,
+					min = 0,
+					max = 1,
+					step = 0.05,
+					isPercent = true,
+					order = 22,
+				},
+				
+				alphaTargetbg = {
+					type = 'range',
+					name = 'BG Alpha OOC and Target',
+					desc = 'Background alpha for bars OOC and target accuired',
+					get = function()
+						return IceHUD.IceCore:GetAlphaBG("Target")
+					end,
+					set = function(v)
+						IceHUD.IceCore:SetAlphaBG("Target", v)
+					end,
+					min = 0,
+					max = 1,
+					step = 0.05,
+					isPercent = true,
+					order = 23,
+				},
+				
+				
+				headerBarAdvancedBlank = { type = 'header', name = " ", order = 30 },
+				headerBarAdvanced = {
+					type = 'header',
+					name = "Other",
+					order = 30
+				},
+				
+				backgroundToggle = {
+					type = "toggle",
+					name = "Contextual Background",
+					desc = "Toggles contextual background coloring",
+					get = function()
+						return IceHUD.IceCore:GetBackgroundToggle()
+					end,
+					set = function(value)
+						IceHUD.IceCore:SetBackgroundToggle(value)
+					end,
+					order = 31
 				},
 				
 				backgroundColor = {
@@ -139,85 +226,25 @@ IceHUD.options =
 					set = function(r, g, b)
 						IceHUD.IceCore:SetBackgroundColor(r, g, b)
 					end,
+					order = 32,
 				},
 			}
 		},
 		
 		
 		textSettings = {
-			type = 'group',
-			name = 'Text Settings',
-			desc = 'Settings related to texts',
-			order = 15,
-			args = {
-				fontsize = {
-					type = 'range',
-					name = 'Bar Font Size',
-					desc = 'Bar Font Size',
-					get = function()
-						return IceHUD.IceCore:GetBarFontSize()
-					end,
-					set = function(v)
-						IceHUD.IceCore:SetBarFontSize(v)
-					end,
-					min = 8,
-					max = 20,
-					step = 1,
-					order = 11
-				},
-				
-				fontBold = {
-					type = 'toggle',
-					name = 'Bar Font Bold',
-					desc = 'Bar Font Bold',
-					get = function()
-						return IceHUD.IceCore:GetBarFontBold()
-					end,
-					set = function(v)
-						IceHUD.IceCore:SetBarFontBold(v)
-					end,
-					order = 12
-				},
-				
-				lockFontAlpha = {
-					type = "toggle",
-					name = "Lock Bar Text Alpha",
-					desc = "Lock Bar Text Alpha",
-					get = function()
-						return IceHUD.IceCore:GetLockTextAlpha()
-					end,
-					set = function(value)
-						IceHUD.IceCore:SetLockTextAlpha(value)
-					end,
-					order = 13
-				},
-				
-				upperTextVisible = {
-					type = 'toggle',
-					name = 'Upper text visible',
-					desc = 'Toggle upper text visibility',
-					get = function()
-						return IceHUD.IceCore:GetTextVisibility("upper")
-					end,
-					set = function(v)
-						IceHUD.IceCore:SetTextVisibility("upper", v)
-					end,
-					order = 14
-				},
-				
-				lowerTextVisible = {
-					type = 'toggle',
-					name = 'Lower text visible',
-					desc = 'Toggle lower text visibility',
-					get = function()
-						return IceHUD.IceCore:GetTextVisibility("lower")
-					end,
-					set = function(v)
-						IceHUD.IceCore:SetTextVisibility("lower", v)
-					end,
-					order = 15
-				},
-			}
+			type = 'text',
+			name =  'Font',
+			desc = 'IceHUD Font',
+			order = 19,
+			get = function()
+				return IceHUD.IceCore:GetFontFamily()
+			end,
+			set = function(value)
+				IceHUD.IceCore:SetFontFamily(value)
+				IceHUD.IceCore:Redraw()
+			end,
+			validate = { "IceHUD", "Default" },	
 		},
 				
 		barSettings = {
@@ -356,7 +383,7 @@ IceHUD.options =
 		
 		enabled = {
 			type = "toggle",
-			name = "|cff8888ffEnabled|r",
+			name = "|cff11aa11Enabled|r",
 			desc = "Enable/disable IceHUD",
 			get = function()
 				return IceHUD.IceCore:IsEnabled()

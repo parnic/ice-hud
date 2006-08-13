@@ -5,8 +5,8 @@ local DruidMana = AceOO.Class(IceUnitBar)
 
 DruidMana.prototype.inForms = nil
 DruidMana.prototype.mode = nil
-DruidMana.prototype.mana = nil
-DruidMana.prototype.maxMana = nil
+DruidMana.prototype.druidMana = nil
+DruidMana.prototype.druidMaxMana = nil
 
 
 -- Constructor --
@@ -71,20 +71,21 @@ end
 
 
 function DruidMana.prototype:UpdateSoleManax(mana, maxMana)
-	self.mana = mana
-	self.maxMana = maxMana
 	self:Update()
+	self.druidMana = mana
+	self.druidMaxMana = maxMana
 end
 
 
 function DruidMana.prototype:UpdateDruidBarMana()
-	self.mana = DruidBarKey.keepthemana
-	self.maxMana = DruidBarKey.maxmana
 	self:Update()
+	self.druidMana = DruidBarKey.keepthemana
+	self.druidMaxMana = DruidBarKey.maxmana
 end
 
 
 function DruidMana.prototype:Update()
+	DruidMana.super.prototype.Update(self)
 	if ((not self.alive) or (not self.inForms)) then
 		self.frame:Hide()
 		return
@@ -94,9 +95,9 @@ function DruidMana.prototype:Update()
 	
 	local color = "druidMana"
 
-	self:UpdateBar(self.mana / self.maxMana, color)
+	self:UpdateBar(self.druidMana / self.druidMaxMana, color)
 
-	local percentage = (self.mana / self.maxMana) * 100
+	local percentage = (self.druidMana / self.druidMaxMana) * 100
 	self:SetBottomText1(math.floor(percentage))
 end
 

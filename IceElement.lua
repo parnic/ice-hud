@@ -14,6 +14,7 @@ IceElement.prototype.alpha = nil
 IceElement.settings = nil
 IceElement.moduleSettings = nil
 
+IceElement.prototype.configColor = "ff8888ff"
 
 -- Constructor --
 -- IceElements are to be instantiated before IceCore is loaded.
@@ -90,7 +91,7 @@ function IceElement.prototype:GetOptions()
 	local opts = {}
 	opts["enabled"] = {
 		type = "toggle",
-		name = "|cff8888ffEnabled|r",
+		name = "|c" .. self.configColor .. "Enabled|r",
 		desc = "Enable/disable module",
 		get = function()
 			return self.moduleSettings.enabled
@@ -178,7 +179,11 @@ function IceElement.prototype:FontFactory(weight, size, frame, font)
 	if (weight) then
 		weightString = "Bold"
 	end
+	
 	local fontFile = IceHUD.Location .. "\\fonts\\Calibri" .. weightString ..".ttf"
+	if (self.settings.fontFamily == "Default") then
+		fontFile = STANDARD_TEXT_FONT
+	end
 	
 	if not (frame) then
 		frame = self.frame
