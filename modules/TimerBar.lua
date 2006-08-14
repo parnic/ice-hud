@@ -1,6 +1,7 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local TimerBar = AceOO.Class(IceBarElement, "AceHook-2.0", "Metrognome-2.0")
+local abacus = nil
 
 
 -- Constructor --
@@ -27,33 +28,33 @@ function TimerBar.prototype:Enable()
 	self.frame.bottomUpperText:SetWidth(180)
 	self.frame:Hide()
 	
-	self:Hook(ToFu, "OnUpdate")
+	self:Hook(ToFu, "OnTextUpdate")
+	
+	self:HookReport()
 end
 
 
 function TimerBar.prototype:Disable()
 	TimerBar.super.prototype.Disable(self)
 	
-	self:Unhook(ToFu, "OnUpdate")
+	self:Unhook(ToFu, "OnTextUpdate")
 end
 
 
 
 -- 'Protected' methods --------------------------------------------------------
 
-function TimerBar.prototype:OnUpdate(object, timeSinceLast)
-	self.hooks[object].OnUpdate.orig(object, timeSinceLast)
+function TimerBar.prototype:OnTextUpdate(object)
+	self.hooks[object].OnTextUpdate.orig(object)
 	
 	if (ToFu.inFlight) then
-		local flightTime = ToFu.fullData.paths[ace.char.faction][ToFu.start][ToFu.destination].time
-		
-		if (flightTime ~= 0) then
-			local timeRemaining = flightTime - ToFu.timeFlown
+		if (ToFu.timeAvg ~= 0) then
+			local timeRemaining = ToFu.timeAvg - ToFu.timeFlown
 			
 			self.frame:Show()
-			self:UpdateBar(timeRemaining / flightTime, "timerFlight")
-			--local text = string.format("%.1fs", timeRemaining)
-			local text = FuBarUtils.FormatDurationCondensed(timeRemaining)
+			self:UpdateBar(timeRemaining / ToFu.timeAvg, "timerFlight")
+
+			local text = abacus:FormatDurationCondensed(timeRemaining, true)
 			self:SetBottomText1(text)
 			
 			return
@@ -67,5 +68,6 @@ end
 
 -- Load us up
 if (IsAddOnLoaded("FuBar_ToFu")) then
+	abacus = AceLibrary("Abacus-2.0")
 	TimerBar:new()
 end
