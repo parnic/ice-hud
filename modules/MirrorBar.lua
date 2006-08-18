@@ -62,6 +62,8 @@ function MirrorBar.prototype:OnUpdate(elapsed)
 	if (self.paused) then
 		return
 	end
+	
+	self:Update()
 
 	self.value = self.value + (self.scale * elapsed * 1000)
 	

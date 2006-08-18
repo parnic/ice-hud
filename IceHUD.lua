@@ -120,8 +120,8 @@ IceHUD.options =
 				
 				alphaTarget = {
 					type = 'range',
-					name = 'Alpha OOC and Target',
-					desc = 'Bar alpha Out Of Combat with target accuired',
+					name = 'Alpha OOC and Target or not Full',
+					desc = 'Bar alpha Out Of Combat with target accuired or bar not full',
 					get = function()
 						return IceHUD.IceCore:GetAlpha("Target")
 					end,
@@ -180,8 +180,8 @@ IceHUD.options =
 				
 				alphaTargetbg = {
 					type = 'range',
-					name = 'BG Alpha OOC and Target',
-					desc = 'Background alpha for bars OOC and target accuired',
+					name = 'BG Alpha OOC and Target or not Full',
+					desc = 'Background alpha for bars OOC and target accuired or bar not full',
 					get = function()
 						return IceHUD.IceCore:GetAlphaBG("Target")
 					end,

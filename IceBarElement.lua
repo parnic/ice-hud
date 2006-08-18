@@ -13,7 +13,6 @@ IceBarElement.prototype.combat = nil
 IceBarElement.prototype.target = nil
 
 
-
 -- Constructor --
 function IceBarElement.prototype:init(name)
 	IceBarElement.super.prototype.init(self, name)
@@ -368,6 +367,8 @@ function IceBarElement.prototype:SetScale(texture, scale)
 	else
 		texture:SetTexCoord(0, 1, 1-scale, 1)
 	end
+	
+	self.full = (scale == 1)
 end
 
 
@@ -378,6 +379,17 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor(color)
+	end
+	
+	if (self.combat) then
+		self.alpha = self.settings.alphaic
+		self.backgroundAlpha = self.settings.alphaicbg
+	elseif (self.target or (scale < 1)) then
+		self.alpha = self.settings.alphaTarget
+		self.backgroundAlpha = self.settings.alphaTargetbg
+	else
+		self.alpha = self.settings.alphaooc
+		self.backgroundAlpha = self.settings.alphaoocbg
 	end
 	
 	self.frame:SetStatusBarColor(r, g, b, self.backgroundAlpha)
@@ -399,18 +411,20 @@ function IceBarElement.prototype:SetBottomText1(text, color)
 		color = "text"
 	end
 	
-	local alpha = 1
-	if not (self.moduleSettings.lockTextAlpha) then
+	
+	local alpha = self.alpha
+	
+	if (self.alpha > 0) then
 		-- boost text alpha a bit to make it easier to see
-		if (self.alpha > 0) then
-			alpha = self.alpha + 0.1
+		alpha = self.alpha + 0.1
 			
-			if (alpha > 1) then
-				alpha = 1
-			end
-		else
-			alpha = 0
+		if (alpha > 1) then
+			alpha = 1
 		end
+	end
+	
+	if (self.moduleSettings.lockTextAlpha and (self.alpha > 0)) then
+		alpha = 1
 	end
 	
 	self.frame.bottomUpperText:SetTextColor(self:GetColor(color, alpha))
@@ -454,16 +468,6 @@ end
 
 -- To be overridden
 function IceBarElement.prototype:Update()
-	if (self.combat) then
-		self.alpha = self.settings.alphaic
-		self.backgroundAlpha = self.settings.alphaicbg
-	elseif (self.target) then
-		self.alpha = self.settings.alphaTarget
-		self.backgroundAlpha = self.settings.alphaTargetbg
-	else
-		self.alpha = self.settings.alphaooc
-		self.backgroundAlpha = self.settings.alphaoocbg
-	end
 end
 
 

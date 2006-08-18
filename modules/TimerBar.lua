@@ -29,8 +29,6 @@ function TimerBar.prototype:Enable()
 	self.frame:Hide()
 	
 	self:Hook(ToFu, "OnTextUpdate")
-	
-	self:HookReport()
 end
 
 
@@ -53,6 +51,7 @@ function TimerBar.prototype:OnTextUpdate(object)
 			
 			self.frame:Show()
 			self:UpdateBar(timeRemaining / ToFu.timeAvg, "timerFlight")
+			self:Update()
 
 			local text = abacus:FormatDurationCondensed(timeRemaining, true)
 			self:SetBottomText1(text)
