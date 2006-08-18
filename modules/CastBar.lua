@@ -24,6 +24,8 @@ function CastBar.prototype:init()
 	self:SetColor("castChanneling", 117, 113, 161)
 	self:SetColor("castSuccess", 242, 242, 10)
 	self:SetColor("castFail", 1, 0, 0)
+	
+	self.delay = 0
 end
 
 
@@ -197,6 +199,7 @@ end
 
 
 function CastBar.prototype:CastDelayed(delay)
+	delay = delay or 0
 	self.delay = self.delay + (delay / 1000)
 end
 
