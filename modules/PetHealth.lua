@@ -7,55 +7,32 @@ function PetHealth.prototype:init()
 	PetHealth.super.prototype.init(self, "PetHealth", "pet")
 	
 	self:SetColor("petHealth", 37, 164, 30)
-end
-
-
-function PetHealth.prototype:GetDefaultSettings()
-	local settings = PetHealth.super.prototype.GetDefaultSettings(self)
-	settings["side"] = IceCore.Side.Left
-	settings["offset"] = -1
-	settings["scale"] = 0.7
-	return settings
+	
+	self.scalingEnabled = true
 end
 
 
 -- OVERRIDE
-function PetHealth.prototype:GetOptions()
-	local opts = PetHealth.super.prototype.GetOptions(self)
-	opts["scale"] = 
-	{
-		type = 'range',
-		name = 'Scale',
-		desc = 'Scale of the bar',
-		min = 0.2,
-		max = 1,
-		step = 0.05,
-		isPercent = true,
-		get = function()
-			return self.moduleSettings.scale
-		end,
-		set = function(value)
-			self.moduleSettings.scale = value
-			self:Redraw()
-		end,
-		order = 51
-	}
-	return opts
+function PetHealth.prototype:GetDefaultSettings()
+	local settings = PetHealth.super.prototype.GetDefaultSettings(self)
+	settings["side"] = IceCore.Side.Left
+	settings["offset"] = -1
+	settings.scale = 0.7
+	return settings
 end
 
 
 -- OVERRIDE
 function PetHealth.prototype:CreateFrame()
 	PetHealth.super.prototype.CreateFrame(self)
-	self.frame:SetScale(self.moduleSettings.scale)
-	
+
 	local point, relativeTo, relativePoint, xoff, yoff = self.frame.bottomUpperText:GetPoint()
 	if (point == "TOPLEFT") then
 		point = "BOTTOMLEFT"
 	else
 		point = "BOTTOMRIGHT"
 	end
-	
+
 	self.frame.bottomUpperText:ClearAllPoints()
 	self.frame.bottomUpperText:SetPoint(point, relativeTo, relativePoint, 0, 0)
 end

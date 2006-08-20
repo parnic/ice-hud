@@ -13,7 +13,7 @@ local MirrorBar = AceOO.Class(IceBarElement)
 MirrorBar.prototype.timer = nil
 MirrorBar.prototype.value = nil
 MirrorBar.prototype.maxValue = nil
-MirrorBar.prototype.scale = nil
+MirrorBar.prototype.timerScale = nil
 MirrorBar.prototype.paused = nil
 MirrorBar.prototype.label = nil
 
@@ -65,7 +65,7 @@ function MirrorBar.prototype:OnUpdate(elapsed)
 	
 	self:Update()
 
-	self.value = self.value + (self.scale * elapsed * 1000)
+	self.value = self.value + (self.timerScale * elapsed * 1000)
 	
 	scale = self.value / self.maxValue
 	
@@ -77,11 +77,14 @@ function MirrorBar.prototype:OnUpdate(elapsed)
 	end
 
 	
-	local timeRemaining = (self.maxValue - self.value) / 1000
+	local timeRemaining = (self.value) / 1000
 	local remaining = string.format("%.1f", timeRemaining)
 	
 	if (timeRemaining < 0) then -- lag compensation
 		remaining = 0
+	end
+	if (timeRemaining > self.maxValue/1000) then
+		remaining = self.maxValue/1000
 	end
 
 	self:UpdateBar(scale, self.timer)
@@ -102,7 +105,7 @@ function MirrorBar.prototype:MirrorStart(timer, value, maxValue, scale, paused, 
 	self.timer = timer
 	self.value = value
 	self.maxValue = maxValue
-	self.scale = scale
+	self.timerScale = scale
 	self.paused = (paused > 0)
 	self.label = label
 	
@@ -134,7 +137,7 @@ function MirrorBar.prototype:CleanUp()
 	self.timer = nil
 	self.value = nil
 	self.maxValue = nil
-	self.scale = nil
+	self.timerScale = nil
 	self.paused = nil
 	self.label = nil
 	self.startTime = nil
@@ -399,6 +402,7 @@ function MirrorBarHandler.prototype:SetSettings(bar)
 	bar.moduleSettings.barFontBold = self.moduleSettings.barFontBold
 	bar.moduleSettings.lockTextAlpha = self.moduleSettings.lockTextAlpha
 	bar.moduleSettings.textVisible = self.moduleSettings.textVisible
+	bar.moduleSettings.scale = self.moduleSettings.scale
 end
 
 

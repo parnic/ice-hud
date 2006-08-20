@@ -40,11 +40,11 @@ function IceCore.prototype:init()
 		
 		alphaooc = 0.3,
 		alphaic = 0.6,
-		alphaTarget = 0.3,
-		
+		alphaTarget = 0.4,
+
 		alphaoocbg = 0.2,
-		alphaicbg = 0.2,
-		alphaTargetbg = 0.2,
+		alphaicbg = 0.3,
+		alphaTargetbg = 0.25,
 		
 		backgroundToggle = false,
 		backgroundColor = {r = 0.2, g = 0.2, b = 0.2},

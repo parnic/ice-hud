@@ -3,6 +3,8 @@ local AceOO = AceLibrary("AceOO-2.0")
 IceElement = AceOO.Class("AceEvent-2.0")
 IceElement.virtual = true
 
+IceElement.TexturePath = IceHUD.Location .. "\\textures\\"
+
 -- Protected variables --
 IceElement.prototype.name = nil
 IceElement.prototype.parent = nil
@@ -15,6 +17,7 @@ IceElement.settings = nil
 IceElement.moduleSettings = nil
 
 IceElement.prototype.configColor = "ff8888ff"
+IceElement.prototype.scalingEnabled = nil
 
 -- Constructor --
 -- IceElements are to be instantiated before IceCore is loaded.
@@ -23,10 +26,11 @@ IceElement.prototype.configColor = "ff8888ff"
 function IceElement.prototype:init(name)
 	IceElement.super.prototype.init(self)
 	assert(name, "IceElement must have a name")
-	
+
 	self.name = name
 	self.alpha = 1
-	
+	self.scalingEnabled = false
+
 	-- Some common colors
 	self:SetColor("text", 1, 1, 1)
 	self:SetColor("undef", 0.7, 0.7, 0.7)
@@ -89,6 +93,7 @@ end
 -- AceOptions table for configuration
 function IceElement.prototype:GetOptions()
 	local opts = {}
+
 	opts["enabled"] = {
 		type = "toggle",
 		name = "|c" .. self.configColor .. "Enabled|r",
@@ -106,6 +111,27 @@ function IceElement.prototype:GetOptions()
 		end,
 		order = 20
 	}
+
+	opts["scale"] =
+	{
+		type = 'range',
+		name = "|c" .. self.configColor .. "Scale|r",
+		desc = 'Scale of the element',
+		min = 0.2,
+		max = 2,
+		step = 0.1,
+		isPercent = true,
+		hidden = not self.scalingEnabled,
+		get = function()
+			return self.moduleSettings.scale
+		end,
+		set = function(value)
+			self.moduleSettings.scale = value
+			self:Redraw()
+		end,
+		order = 21
+	}
+
 	return opts
 end
 
@@ -116,6 +142,7 @@ end
 function IceElement.prototype:GetDefaultSettings()
 	local defaults = {}
 	defaults["enabled"] = true
+	defaults["scale"] = 1
 	return defaults
 end
 
@@ -128,6 +155,8 @@ function IceElement.prototype:CreateFrame()
 	if not (self.frame) then
 		self.frame = CreateFrame("Frame", "IceHUD_"..self.name, self.parent)
 	end
+	
+	self.frame:SetScale(self.moduleSettings.scale)
 end
 
 

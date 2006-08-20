@@ -10,39 +10,17 @@ function PetMana.prototype:init()
 	self:SetColor("petRage", 171, 59, 59)
 	self:SetColor("petEnergy", 218, 231, 31)
 	self:SetColor("targetFocus", 242, 149, 98)
+	
+	self.scalingEnabled = true
 end
 
 
 -- OVERRIDE
-function PetMana.prototype:GetOptions()
-	local opts = PetMana.super.prototype.GetOptions(self)
-	opts["scale"] = 
-	{
-		type = 'range',
-		name = 'Scale',
-		desc = 'Scale of the bar',
-		min = 0.2,
-		max = 1,
-		step = 0.05,
-		isPercent = true,
-		get = function()
-			return self.moduleSettings.scale
-		end,
-		set = function(value)
-			self.moduleSettings.scale = value
-			self:Redraw()
-		end,
-		order = 51
-	}
-	return opts
-end
-
-
 function PetMana.prototype:GetDefaultSettings()
 	local settings = PetMana.super.prototype.GetDefaultSettings(self)
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = -1
-	settings["scale"] = 0.7
+	settings.scale = 0.7
 	return settings
 end
 
@@ -50,8 +28,7 @@ end
 -- OVERRIDE
 function PetMana.prototype:CreateFrame()
 	PetMana.super.prototype.CreateFrame(self)
-	self.frame:SetScale(self.moduleSettings.scale)
-	
+
 	local point, relativeTo, relativePoint, xoff, yoff = self.frame.bottomUpperText:GetPoint()
 	if (point == "TOPLEFT") then
 		point = "BOTTOMLEFT"

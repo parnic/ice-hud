@@ -135,6 +135,15 @@ function PlayerMana.prototype:Update(unit)
 	end
 	
 	self:UpdateBar(self.mana/self.maxMana, color)
+	
+	-- hide ticker if rest of the bar is not visible
+	if (self.alpha == 0) then
+ 		self.tickerFrame:SetStatusBarColor(self:GetColor("playerEnergy", 0))
+ 	else
+ 		self.tickerFrame:SetStatusBarColor(self:GetColor("playerEnergy", self.moduleSettings.tickerAlpha))
+ 	end
+
+
 	self:SetBottomText1(self.manaPercentage)
 	
 	local amount = self:GetFormattedText(self.mana, self.maxMana)
@@ -203,7 +212,7 @@ function PlayerMana.prototype:CreateTickerFrame()
 		self.tickerFrame:Hide()
 	end
 	
-	self.tickerFrame.spark:SetTexture(IceBarElement.TexturePath .. self.settings.barTexture)
+	self.tickerFrame.spark:SetTexture(IceElement.TexturePath .. self.settings.barTexture)
 	self.tickerFrame.spark:SetBlendMode("ADD")
 	self.tickerFrame.spark:ClearAllPoints()
 	self.tickerFrame.spark:SetAllPoints(self.tickerFrame)

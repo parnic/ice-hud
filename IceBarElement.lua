@@ -3,7 +3,6 @@ local AceOO = AceLibrary("AceOO-2.0")
 IceBarElement = AceOO.Class(IceElement)
 IceBarElement.virtual = true
 
-IceBarElement.TexturePath = IceHUD.Location .. "\\textures\\"
 IceBarElement.BarTextureWidth = 128
 
 IceBarElement.prototype.barFrame = nil
@@ -208,10 +207,12 @@ end
 function IceBarElement.prototype:CreateFrame()
 	-- don't call overridden method
 	self.alpha = self.settings.alphaooc
-	
+
 	self:CreateBackground()
 	self:CreateBar()
 	self:CreateTexts()
+	
+	self.frame:SetScale(self.moduleSettings.scale)
 end
 
 
@@ -229,7 +230,7 @@ function IceBarElement.prototype:CreateBackground()
 		self.frame.bg = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
 	
-	self.frame.bg:SetTexture(IceBarElement.TexturePath .. self.settings.barTexture.."BG")
+	self.frame.bg:SetTexture(IceElement.TexturePath .. self.settings.barTexture.."BG")
 	self.frame.bg:ClearAllPoints()
 	self.frame.bg:SetAllPoints(self.frame)
 	
@@ -274,7 +275,7 @@ function IceBarElement.prototype:CreateBar()
 		self.barFrame.bar = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
 	
-	self.barFrame.bar:SetTexture(IceBarElement.TexturePath .. self.settings.barTexture)
+	self.barFrame.bar:SetTexture(IceElement.TexturePath .. self.settings.barTexture)
 	self.barFrame.bar:SetAllPoints(self.frame)
 	
 	self.barFrame:SetStatusBarTexture(self.barFrame.bar)
@@ -391,9 +392,8 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 		self.alpha = self.settings.alphaooc
 		self.backgroundAlpha = self.settings.alphaoocbg
 	end
-	
+
 	self.frame:SetStatusBarColor(r, g, b, self.backgroundAlpha)
-	
 	self.barFrame:SetStatusBarColor(self:GetColor(color))
 	
 	self:SetScale(self.barFrame.bar, scale)
@@ -410,8 +410,7 @@ function IceBarElement.prototype:SetBottomText1(text, color)
 	if not (color) then
 		color = "text"
 	end
-	
-	
+
 	local alpha = self.alpha
 	
 	if (self.alpha > 0) then
@@ -450,8 +449,8 @@ function IceBarElement.prototype:SetBottomText2(text, color, alpha)
 				alpha = 1
 			end
 		end
-		
 	end
+
 	self.frame.bottomLowerText:SetTextColor(self:GetColor(color, alpha))
 	self.frame.bottomLowerText:SetText(text)
 end

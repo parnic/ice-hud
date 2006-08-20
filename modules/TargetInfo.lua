@@ -10,8 +10,9 @@ TargetInfo.prototype.buffSize = nil
 function TargetInfo.prototype:init()
 	TargetInfo.super.prototype.init(self, "TargetInfo")
 	
-	self:SetColor("combo", 1, 1, 0)
 	self.buffSize = math.floor((TargetInfo.Width - 15) / 16)
+	
+	self.scalingEnabled = true
 end
 
 
@@ -22,6 +23,23 @@ end
 -- OVERRIDE
 function TargetInfo.prototype:GetOptions()
 	local opts = TargetInfo.super.prototype.GetOptions(self)
+
+	opts["vpos"] = {
+		type = "range",
+		name = "Vertical Position",
+		desc = "Vertical Position",
+		get = function()
+			return self.moduleSettings.vpos
+		end,
+		set = function(v)
+			self.moduleSettings.vpos = v
+			self:Redraw()
+		end,
+		min = -300,
+		max = 300,
+		step = 10,
+		order = 31
+	}
 
 	opts["fontSize"] = {
 		type = 'range',
@@ -37,26 +55,9 @@ function TargetInfo.prototype:GetOptions()
 		min = 8,
 		max = 20,
 		step = 1,
-		order = 31
-	}
-	
-	opts["comboFontSize"] = {
-		type = 'range',
-		name = 'Combo Points Font Size',
-		desc = 'Combo Points Font Size',
-		get = function()
-			return self.moduleSettings.comboFontSize
-		end,
-		set = function(v)
-			self.moduleSettings.comboFontSize = v
-			self:Redraw()
-		end,
-		min = 10,
-		max = 40,
-		step = 1,
 		order = 32
 	}
-	
+
 	return opts
 end
 
@@ -65,7 +66,7 @@ end
 function TargetInfo.prototype:GetDefaultSettings()
 	local defaults =  TargetInfo.super.prototype.GetDefaultSettings(self)
 	defaults["fontSize"] = 13
-	defaults["comboFontSize"] = 20
+	defaults["vpos"] = -50
 	return defaults
 end
 
@@ -73,10 +74,8 @@ end
 -- OVERRIDE
 function TargetInfo.prototype:Redraw()
 	TargetInfo.super.prototype.Redraw(self)
-	
-	self:CreateTextFrame()
-	self:CreateInfoTextFrame()
-	self:CreateComboFrame()
+
+	self:CreateFrame()
 end
 
 
@@ -93,8 +92,6 @@ function TargetInfo.prototype:Enable()
 	self:RegisterEvent("UNIT_DYNAMIC_FLAGS", "InfoTextChanged")
 	
 	self:RegisterEvent("RAID_TARGET_UPDATE", "RaidIconChanged")
-	
-	self:RegisterEvent("PLAYER_COMBO_POINTS", "ComboPointsChanged")
 end
 
 
@@ -108,7 +105,8 @@ function TargetInfo.prototype:CreateFrame()
 	self.frame:SetWidth(TargetInfo.Width)
 	self.frame:SetHeight(42)
 	self.frame:ClearAllPoints()
-	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, -50)
+	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
+	self.frame:SetScale(self.moduleSettings.scale)
 	
 	self.frame:Show()
 	
@@ -117,7 +115,6 @@ function TargetInfo.prototype:CreateFrame()
 	self:CreateBuffFrame()
 	self:CreateDebuffFrame()
 	self:CreateRaidIconFrame()
-	self:CreateComboFrame()
 end
 
 
@@ -147,18 +144,11 @@ function TargetInfo.prototype:CreateInfoTextFrame()
 end
 
 
-function TargetInfo.prototype:CreateComboFrame()
-	self.frame.comboPoints = self:FontFactory("Bold", self.moduleSettings.comboFontSize, nil, self.frame.comboPoints)
-	
-	self.frame.comboPoints:SetWidth(TargetInfo.Width)
-	self.frame.comboPoints:SetJustifyH("CENTER")
-	
-	self.frame.comboPoints:SetPoint("BOTTOM", self.frame, "TOP", 0, 5)
-	self.frame.comboPoints:Show()
-end
-
-
 function TargetInfo.prototype:CreateRaidIconFrame()
+	if (self.frame.raidIcon) then
+		return
+	end
+
 	self.frame.raidIcon = self.frame:CreateTexture(nil, "BACKGROUND")
 	
 	self.frame.raidIcon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
@@ -171,6 +161,10 @@ end
 
 
 function TargetInfo.prototype:CreateBuffFrame()
+	if (self.frame.buffFrame) then
+		return
+	end
+
 	self.frame.buffFrame = CreateFrame("Frame", nil, self.frame)
 	
 	self.frame.buffFrame:SetFrameStrata("BACKGROUND")
@@ -185,6 +179,10 @@ end
 
 
 function TargetInfo.prototype:CreateDebuffFrame()
+	if (self.frame.debuffFrame) then
+		return
+	end
+	
 	self.frame.debuffFrame = CreateFrame("Frame", nil, self.frame)
 	
 	self.frame.debuffFrame:SetFrameStrata("BACKGROUND")
@@ -263,11 +261,6 @@ function TargetInfo.prototype:AuraChanged(unit)
 end
 
 
-function TargetInfo.prototype:ComboPointsChanged()
-	self:UpdateComboPoints()
-end
-
-
 function TargetInfo.prototype:RaidIconChanged(unit)
 	if (unit == "target") then
 		self:UpdateRaidTargetIcon()
@@ -291,18 +284,6 @@ function TargetInfo.prototype:UpdateRaidTargetIcon()
 end
 
 
-function TargetInfo.prototype:UpdateComboPoints()
-	local points = GetComboPoints("target")
-	self.frame.comboPoints:SetTextColor(self:GetColor("combo", 0.7))
-	
-	if (points == 0) then
-		points = nil
-	end
-	
-	self.frame.comboPoints:SetText(points)
-end
-
-
 function TargetInfo.prototype:TargetChanged()
 	local name = UnitName("target")
 	local _, unitClass = UnitClass("target")
@@ -312,14 +293,7 @@ function TargetInfo.prototype:TargetChanged()
 	self.frame.targetInfo:SetText(self:GetInfoString())
 	self:UpdateBuffs()
 	self:UpdateRaidTargetIcon()
-	self:UpdateComboPoints()
 end
-
-
-function TargetInfo.prototype:CombatCheck(arg1)
-	print(arg1)
-end
-
 
 
 function TargetInfo.prototype:GetInfoString()

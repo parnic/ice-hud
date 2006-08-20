@@ -403,7 +403,7 @@ IceHUD.options =
 			name = '|cffff0000Reset|r',
 			desc = "Resets all IceHUD options - WARNING: Reloads UI",
 			func = function()
-				IceHUD.IceCore:ResetSettings()
+				StaticPopup_Show("ICEHUD_RESET")
 			end,
 			order = 92
 		},
@@ -445,7 +445,7 @@ IceHUD.slashMenu =
 	type = 'execute',
 	func = function()
 		if not (IceHUD.dewdrop:IsRegistered(IceHUD.IceCore.IceHUDFrame)) then
-			IceHUD.dewdrop:Register(IceHUD.IceCore.IceHUDFrame, 
+			IceHUD.dewdrop:Register(IceHUD.IceCore.IceHUDFrame,
 				'children', IceHUD.options,
 				'point', "BOTTOMLEFT",
 				'relativePoint', "TOPLEFT",
@@ -453,6 +453,20 @@ IceHUD.slashMenu =
 			)
 		end
 		IceHUD.dewdrop:Open(IceHUD.IceCore.IceHUDFrame)
+	end
+}
+
+StaticPopupDialogs["ICEHUD_RESET"] = 
+{
+	text = "Are you sure you want to reset IceHUD settings?",
+	button1 = "Okay",
+	button2 = "Cancel",
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+	OnAccept = function()
+		print("hellooo")
+		IceHUD.IceCore:ResetSettings()
 	end
 }
 

@@ -16,6 +16,8 @@ function TargetOfTarget.prototype:init()
 	
 	self.buffSize = 15
 	self.stackedDebuffs = {}
+
+	self.scalingEnabled = true
 end
 
 
@@ -23,6 +25,23 @@ end
 function TargetOfTarget.prototype:GetOptions()
 	local opts = TargetOfTarget.super.prototype.GetOptions(self)
 	
+	opts["vpos"] = {
+		type = "range",
+		name = "Vertical Position",
+		desc = "Vertical Position",
+		get = function()
+			return self.moduleSettings.vpos
+		end,
+		set = function(v)
+			self.moduleSettings.vpos = v
+			self:Redraw()
+		end,
+		min = -300,
+		max = 300,
+		step = 10,
+		order = 31
+	}
+
 	opts["showDebuffs"] = {
 		type = "toggle",
 		name = "Show stacking debuffs",
@@ -34,7 +53,7 @@ function TargetOfTarget.prototype:GetOptions()
 			self.moduleSettings.showDebuffs = value
 			self:UpdateBuffs()
 		end,
-		order = 31
+		order = 32
 	}
 	
 	opts["fontSize"] = {
@@ -51,7 +70,7 @@ function TargetOfTarget.prototype:GetOptions()
 		min = 8,
 		max = 20,
 		step = 1,
-		order = 32
+		order = 33
 	}
 	
 	return opts
@@ -61,6 +80,7 @@ end
 -- OVERRIDE
 function TargetOfTarget.prototype:GetDefaultSettings()
 	local defaults =  TargetOfTarget.super.prototype.GetDefaultSettings(self)
+	defaults["vpos"] = -50
 	defaults["showDebuffs"] = true
 	defaults["fontSize"] = 13
 	return defaults
@@ -71,8 +91,7 @@ end
 function TargetOfTarget.prototype:Redraw()
 	TargetOfTarget.super.prototype.Redraw(self)
 	
-	self:CreateToTFrame()
-	self:CreateToTHPFrame()
+	self:CreateFrame()
 end
 
 
@@ -103,7 +122,8 @@ function TargetOfTarget.prototype:CreateFrame()
 	self.frame:SetFrameStrata("BACKGROUND")
 	self.frame:SetWidth(260)
 	self.frame:SetHeight(50)
-	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, -50)
+	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
+	self.frame:SetScale(self.moduleSettings.scale)
 	self.frame:Show()
 	
 	self:CreateToTFrame()
@@ -139,15 +159,18 @@ end
 
 
 function TargetOfTarget.prototype:CreateDebuffFrame()
+	if (self.frame.debuffFrame) then
+		return
+	end
 	self.frame.debuffFrame = CreateFrame("Frame", nil, self.frame)
-	
+
 	self.frame.debuffFrame:SetFrameStrata("BACKGROUND")
 	self.frame.debuffFrame:SetWidth(200)
 	self.frame.debuffFrame:SetHeight(20)
-	
+
 	self.frame.debuffFrame:SetPoint("TOPLEFT", self.frame, "TOPRIGHT", 4, 0)
 	self.frame.debuffFrame:Show()
-		
+
 	self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame)
 end
 
