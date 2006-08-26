@@ -100,8 +100,12 @@ function TargetHealth.prototype:Update(unit)
 	
 	if (self.moduleSettings.mobhealth and MobHealth3) then
 		self.health, self.maxHealth, _ = MobHealth3:GetUnitHealth(self.unit, self.health, self.maxHealth)
+
+		self.health = self:Round(self.health)
+		self.maxHealth = self:Round(self.maxHealth)
 	end
-	
+
+
 	-- assumption that if a unit's max health is 100, it's not actual amount
 	-- but rather a percentage - this obviously has one caveat though
 
@@ -112,6 +116,21 @@ function TargetHealth.prototype:Update(unit)
 	end
 end
 
+
+function TargetHealth.prototype:Round(health)
+	if (health > 1000000) then
+		return self:MathRound(health/100000, 1) .. "M"
+	end
+	if (health > 1000) then
+		return self:MathRound(health/1000, 1) .. "k"
+	end
+end
+
+
+function TargetHealth.prototype:MathRound(num, idp)
+	local mult = 10^(idp or 0)
+	return math.floor(num  * mult + 0.5) / mult
+end
 
 
 -- Load us up
