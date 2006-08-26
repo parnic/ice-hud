@@ -38,6 +38,9 @@ function TargetInfo.prototype:GetOptions()
 		min = -300,
 		max = 300,
 		step = 10,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		order = 31
 	}
 
@@ -55,6 +58,9 @@ function TargetInfo.prototype:GetOptions()
 		min = 8,
 		max = 20,
 		step = 1,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		order = 32
 	}
 
@@ -79,8 +85,8 @@ function TargetInfo.prototype:Redraw()
 end
 
 
-function TargetInfo.prototype:Enable()
-	TargetInfo.super.prototype.Enable(self)
+function TargetInfo.prototype:Enable(core)
+	TargetInfo.super.prototype.Enable(self, core)
 	
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
 	self:RegisterEvent("UNIT_AURA", "AuraChanged")

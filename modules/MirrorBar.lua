@@ -38,8 +38,8 @@ function MirrorBar.prototype:UpdatePosition(side, offset)
 end
 
 
-function MirrorBar.prototype:Enable()
-	MirrorBar.super.prototype.Enable(self)
+function MirrorBar.prototype:Enable(core)
+	MirrorBar.super.prototype.Enable(self, core)
 	
 	self.frame.bottomUpperText:SetWidth(200)
 	self.frame.bottomLowerText:SetWidth(200)
@@ -316,8 +316,8 @@ function MirrorBarHandler.prototype:GetOptions()
 end
 
 
-function MirrorBarHandler.prototype:Enable()
-	MirrorBarHandler.super.prototype.Enable(self)
+function MirrorBarHandler.prototype:Enable(core)
+	MirrorBarHandler.super.prototype.Enable(self, core)
 	self:RegisterEvent("MIRROR_TIMER_START", "MirrorStart")
 	self:RegisterEvent("MIRROR_TIMER_STOP", "MirrorStop")
 	self:RegisterEvent("MIRROR_TIMER_PAUSE", "MirrorPause")
@@ -327,8 +327,8 @@ function MirrorBarHandler.prototype:Enable()
 end
 
 
-function MirrorBarHandler.prototype:Disable()
-	MirrorBarHandler.super.prototype.Disable(self)
+function MirrorBarHandler.prototype:Disable(core)
+	MirrorBarHandler.super.prototype.Disable(self, core)
 	
 	UIParent:RegisterEvent("MIRROR_TIMER_START");
 end

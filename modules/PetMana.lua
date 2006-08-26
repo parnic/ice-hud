@@ -41,8 +41,8 @@ function PetMana.prototype:CreateFrame()
 end
 
 
-function PetMana.prototype:Enable()
-	PetMana.super.prototype.Enable(self)
+function PetMana.prototype:Enable(core)
+	PetMana.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("PET_UI_UPDATE",	 "CheckPet");
 	self:RegisterEvent("PLAYER_PET_CHANGED", "CheckPet");

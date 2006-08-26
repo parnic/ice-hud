@@ -22,18 +22,18 @@ function TimerBar.prototype:GetDefaultSettings()
 end
 
 
-function TimerBar.prototype:Enable()
-	TimerBar.super.prototype.Enable(self)
-	
+function TimerBar.prototype:Enable(core)
+	TimerBar.super.prototype.Enable(self, core)
+
 	self.frame.bottomUpperText:SetWidth(180)
 	self.frame:Hide()
-	
+
 	self:Hook(ToFu, "OnTextUpdate")
 end
 
 
-function TimerBar.prototype:Disable()
-	TimerBar.super.prototype.Disable(self)
+function TimerBar.prototype:Disable(core)
+	TimerBar.super.prototype.Disable(self, core)
 	
 	self:Unhook(ToFu, "OnTextUpdate")
 end

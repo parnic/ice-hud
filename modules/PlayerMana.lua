@@ -42,6 +42,9 @@ function PlayerMana.prototype:GetOptions()
 			self.moduleSettings.tickerEnabled = value
 			self:ManaType(self.unit)
 		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		order = 51
 	}
 	
@@ -60,6 +63,9 @@ function PlayerMana.prototype:GetOptions()
 			self.moduleSettings.tickerAlpha = value
 			self.tickerFrame:SetStatusBarColor(self:GetColor("playerEnergy", self.moduleSettings.tickerAlpha))
 		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		order = 52
 	}
 	
@@ -67,8 +73,8 @@ function PlayerMana.prototype:GetOptions()
 end
 
 
-function PlayerMana.prototype:Enable()
-	PlayerMana.super.prototype.Enable(self)
+function PlayerMana.prototype:Enable(core)
+	PlayerMana.super.prototype.Enable(self, core)
 	
 	self:CreateTickerFrame()
 
@@ -88,8 +94,18 @@ end
 -- OVERRIDE
 function PlayerMana.prototype:Redraw()
 	PlayerMana.super.prototype.Redraw(self)
-	
+
 	self:CreateTickerFrame()
+end
+
+
+-- OVERRIDE
+function PlayerMana.prototype:UseTargetAlpha(scale)
+	if (self.manaType == 1) then
+		return (scale and (scale > 0))
+	else
+		return PlayerMana.super.prototype.UseTargetAlpha(self, scale)
+	end
 end
 
 

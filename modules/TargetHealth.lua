@@ -42,6 +42,9 @@ function TargetHealth.prototype:GetOptions()
 		disabled = function()
 			return (MobHealth3 == nil)
 		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		order = 40
 	}
 	
@@ -49,8 +52,8 @@ function TargetHealth.prototype:GetOptions()
 end
 
 
-function TargetHealth.prototype:Enable()
-	TargetHealth.super.prototype.Enable(self)
+function TargetHealth.prototype:Enable(core)
+	TargetHealth.super.prototype.Enable(self, core)
 	
 	self:RegisterEvent("UNIT_HEALTH", "Update")
 	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
@@ -59,8 +62,8 @@ function TargetHealth.prototype:Enable()
 end
 
 
-function TargetHealth.prototype:Disable()
-	TargetHealth.super.prototype.Disable(self)
+function TargetHealth.prototype:Disable(core)
+	TargetHealth.super.prototype.Disable(self, core)
 end
 
 

@@ -73,7 +73,10 @@ function IceBarElement.prototype:GetOptions()
 			end
 			self:Redraw()
 		end,
-		validate = { "Left", "Right" },		
+		validate = { "Left", "Right" },
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		order = 30
 	}
 	
@@ -92,6 +95,9 @@ function IceBarElement.prototype:GetOptions()
 			self.moduleSettings.offset = value
 			self:Redraw()
 		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		order = 31
 	}
 	
@@ -101,6 +107,9 @@ function IceBarElement.prototype:GetOptions()
 		name = '|c' .. self.configColor .. 'Text Settings|r',
 		desc = 'Settings related to texts',
 		order = 32,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		args = {
 			fontsize = {
 				type = 'range',
@@ -368,8 +377,6 @@ function IceBarElement.prototype:SetScale(texture, scale)
 	else
 		texture:SetTexCoord(0, 1, 1-scale, 1)
 	end
-	
-	self.full = (scale == 1)
 end
 
 
@@ -385,7 +392,7 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	if (self.combat) then
 		self.alpha = self.settings.alphaic
 		self.backgroundAlpha = self.settings.alphaicbg
-	elseif (self.target or (scale < 1)) then
+	elseif (self.target or self:UseTargetAlpha(scale)) then
 		self.alpha = self.settings.alphaTarget
 		self.backgroundAlpha = self.settings.alphaTargetbg
 	else
@@ -399,6 +406,10 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	self:SetScale(self.barFrame.bar, scale)
 end
 
+
+function IceBarElement.prototype:UseTargetAlpha(scale)
+	return (scale and (scale < 1))
+end
 
 
 -- Bottom line 1

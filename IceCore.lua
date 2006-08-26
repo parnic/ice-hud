@@ -72,18 +72,17 @@ end
 
 function IceCore.prototype:Enable()
 	self.settings = self.db.account
-	
-	IceElement.Alpha = self.settings.bar
+
 	self:DrawFrame()
 	
 	for i = 1, table.getn(self.elements) do
 		self.elements[i]:SetDatabase(self.settings)
 		self.elements[i]:Create(self.IceHUDFrame)
 		if (self.elements[i]:IsEnabled()) then
-			self.elements[i]:Enable()
+			self.elements[i]:Enable(true)
 		end
 	end
-	
+
 	self.enabled = true
 end
 
@@ -91,7 +90,7 @@ end
 function IceCore.prototype:Disable()
 	for i = 1, table.getn(self.elements) do
 		if (self.elements[i]:IsEnabled()) then
-			self.elements[i]:Disable()
+			self.elements[i]:Disable(true)
 		end
 	end
 	

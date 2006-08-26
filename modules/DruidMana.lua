@@ -27,8 +27,8 @@ function DruidMana.prototype:GetDefaultSettings()
 end
 
 
-function DruidMana.prototype:Enable()
-	DruidMana.super.prototype.Enable(self)
+function DruidMana.prototype:Enable(core)
+	DruidMana.super.prototype.Enable(self, core)
 	
 	if (IsAddOnLoaded("SoleManax")) then
 		self.mode = "SoleManax"
@@ -47,8 +47,8 @@ function DruidMana.prototype:Enable()
 end
 
 
-function DruidMana.prototype:Disable()
-	DruidMana.super.prototype.Disable(self)
+function DruidMana.prototype:Disable(core)
+	DruidMana.super.prototype.Disable(self, core)
 	
 	if (IsAddOnLoaded("SoleManax")) then
         SoleManax.DelUser(self.UpdateSoleManax)

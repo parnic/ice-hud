@@ -22,8 +22,8 @@ function TargetMana.prototype:GetDefaultSettings()
 end
 
 
-function TargetMana.prototype:Enable()
-	TargetMana.super.prototype.Enable(self)
+function TargetMana.prototype:Enable(core)
+	TargetMana.super.prototype.Enable(self, core)
 	
 	self:RegisterEvent("UNIT_MANA", "Update")
 	self:RegisterEvent("UNIT_MAXMANA", "Update")

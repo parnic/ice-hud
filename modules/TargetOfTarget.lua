@@ -39,6 +39,9 @@ function TargetOfTarget.prototype:GetOptions()
 		min = -300,
 		max = 300,
 		step = 10,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		order = 31
 	}
 
@@ -52,6 +55,9 @@ function TargetOfTarget.prototype:GetOptions()
 		set = function(value)
 			self.moduleSettings.showDebuffs = value
 			self:UpdateBuffs()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
 		end,
 		order = 32
 	}
@@ -70,6 +76,9 @@ function TargetOfTarget.prototype:GetOptions()
 		min = 8,
 		max = 20,
 		step = 1,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		order = 33
 	}
 	
@@ -95,8 +104,8 @@ function TargetOfTarget.prototype:Redraw()
 end
 
 
-function TargetOfTarget.prototype:Enable()
-	TargetOfTarget.super.prototype.Enable(self)
+function TargetOfTarget.prototype:Enable(core)
+	TargetOfTarget.super.prototype.Enable(self, core)
 	
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "Update")
 	
@@ -107,8 +116,8 @@ function TargetOfTarget.prototype:Enable()
 end
 
 
-function TargetOfTarget.prototype:Disable()
-	TargetOfTarget.super.prototype.Disable(self)
+function TargetOfTarget.prototype:Disable(core)
+	TargetOfTarget.super.prototype.Disable(self, core)
 	self:UnregisterMetro(self.name)
 end
 

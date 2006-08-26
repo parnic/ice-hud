@@ -18,9 +18,9 @@ function PlayerHealth.prototype:GetDefaultSettings()
 end
 
 
-function PlayerHealth.prototype:Enable()
-	PlayerHealth.super.prototype.Enable(self)
-	
+function PlayerHealth.prototype:Enable(core)
+	PlayerHealth.super.prototype.Enable(self, core)
+
 	self:RegisterEvent("UNIT_HEALTH", "Update")
 	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
 

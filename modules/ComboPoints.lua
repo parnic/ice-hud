@@ -35,6 +35,9 @@ function ComboPoints.prototype:GetOptions()
 		min = -300,
 		max = 200,
 		step = 10,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		order = 31
 	}
 
@@ -52,6 +55,9 @@ function ComboPoints.prototype:GetOptions()
 		min = 10,
 		max = 40,
 		step = 1,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		order = 32
 	}
 
@@ -67,6 +73,9 @@ function ComboPoints.prototype:GetOptions()
 			self:Redraw()
 		end,
 		validate = { "Numeric", "Graphical" },
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		order = 33
 	}
 
@@ -94,8 +103,8 @@ end
 
 
 -- OVERRIDE
-function ComboPoints.prototype:Enable()
-	ComboPoints.super.prototype.Enable(self)
+function ComboPoints.prototype:Enable(core)
+	ComboPoints.super.prototype.Enable(self, core)
 	
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateComboPoints")
 	self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateComboPoints")
@@ -149,7 +158,7 @@ function ComboPoints.prototype:CreateComboFrame()
 		self.frame.graphicalBG[i]:SetWidth(self.comboSize)
 		self.frame.graphicalBG[i]:SetHeight(self.comboSize)
 		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.comboSize-5) + (i-1), 0)
-		self.frame.graphicalBG[i]:SetAlpha(0.3)
+		self.frame.graphicalBG[i]:SetAlpha(0.15)
 		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("combo"))
 
 		self.frame.graphicalBG[i]:Hide()
@@ -164,9 +173,7 @@ function ComboPoints.prototype:CreateComboFrame()
 		self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphical[i]:SetAllPoints(self.frame.graphicalBG[i])
 
-		local r, g, b = self:GetColor("combo")
-		g = g - (0.15*i)
-		self.frame.graphical[i]:SetStatusBarColor(r, g, b)
+		self.frame.graphical[i]:SetStatusBarColor(self:GetColor("combo"))
 
 		self.frame.graphical[i]:Hide()
 	end

@@ -38,8 +38,8 @@ function PetHealth.prototype:CreateFrame()
 end
 
 
-function PetHealth.prototype:Enable()
-	PetHealth.super.prototype.Enable(self)
+function PetHealth.prototype:Enable(core)
+	PetHealth.super.prototype.Enable(self, core)
 	
 	self:RegisterEvent("PET_UI_UPDATE",	 "CheckPet");
 	self:RegisterEvent("PLAYER_PET_CHANGED", "CheckPet");

@@ -42,8 +42,8 @@ end
 
 
 
-function CastBar.prototype:Enable()
-	CastBar.super.prototype.Enable(self)
+function CastBar.prototype:Enable(core)
+	CastBar.super.prototype.Enable(self, core)
 	
 	self:RegisterEvent("SPELLCAST_START", "CastStart")
 	self:RegisterEvent("SPELLCAST_STOP", "CastStop")
@@ -63,8 +63,8 @@ function CastBar.prototype:Enable()
 end
 
 
-function CastBar.prototype:Disable()
-	CastBar.super.prototype.Disable(self)
+function CastBar.prototype:Disable(core)
+	CastBar.super.prototype.Disable(self, core)
 	
 	CastingBarFrame:RegisterEvent("SPELLCAST_START");
 	CastingBarFrame:RegisterEvent("SPELLCAST_STOP");

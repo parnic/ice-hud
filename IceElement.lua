@@ -71,15 +71,22 @@ function IceElement.prototype:IsEnabled()
 end
 
 
-function IceElement.prototype:Enable()
+function IceElement.prototype:Enable(core)
+	if (not core) then
+		self.moduleSettings.enabled = true
+	end
 	self.frame:Show()
 end
 
 
-function IceElement.prototype:Disable()
+function IceElement.prototype:Disable(core)
+	if (not core) then
+		self.moduleSettings.enabled = false
+	end
 	self.frame:Hide()
 	self:UnregisterAllEvents()
 end
+
 
 
 -- inherting classes should override this and provide
@@ -104,7 +111,7 @@ function IceElement.prototype:GetOptions()
 		set = function(value)
 			self.moduleSettings.enabled = value
 			if (value) then
-				self:Enable()
+				self:Enable(true)
 			else
 				self:Disable()
 			end
@@ -128,6 +135,9 @@ function IceElement.prototype:GetOptions()
 		set = function(value)
 			self.moduleSettings.scale = value
 			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
 		end,
 		order = 21
 	}
@@ -155,7 +165,7 @@ function IceElement.prototype:CreateFrame()
 	if not (self.frame) then
 		self.frame = CreateFrame("Frame", "IceHUD_"..self.name, self.parent)
 	end
-	
+
 	self.frame:SetScale(self.moduleSettings.scale)
 end
 
