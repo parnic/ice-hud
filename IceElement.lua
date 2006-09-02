@@ -187,6 +187,7 @@ function IceElement.prototype:GetColor(color, alpha)
 	return self.colors[color].r, self.colors[color].g, self.colors[color].b, alpha
 end
 
+
 function IceElement.prototype:GetHexColor(color, alpha)
 	local r, g, b, a = self:GetColor(color)
 	return string.format("%02x%02x%02x%02x", a * 255, r * 255, g * 255, b * 255)
@@ -210,6 +211,11 @@ end
 function IceElement.prototype:GetClassColor(class)
 	class = string.upper(class)
 	return RAID_CLASS_COLORS[class].r, RAID_CLASS_COLORS[class].g, RAID_CLASS_COLORS[class].b
+end
+
+
+function IceElement.prototype:ConvertToHex(color)
+	return string.format("ff%02x%02x%02x", color.r*255, color.g*255, color.b*255)
 end
 
 

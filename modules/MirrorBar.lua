@@ -337,6 +337,10 @@ end
 function MirrorBarHandler.prototype:Redraw()
 	MirrorBarHandler.super.prototype.Redraw(self)
 	
+	if (not self.moduleSettings.enabled) then
+		return
+	end
+
 	for i = 1, table.getn(self.bars) do
 		self:SetSettings(self.bars[i])
 		self.bars[i]:UpdatePosition(self.moduleSettings.side, self.moduleSettings.offset + (i-1))

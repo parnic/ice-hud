@@ -32,6 +32,7 @@ function TargetMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_ENERGY", "Update")
 	self:RegisterEvent("UNIT_MAXENERGY", "Update")
 	self:RegisterEvent("UNIT_AURA", "Update")
+	self:RegisterEvent("UNIT_FLAGS", "Update")
 	
 	self:Update("target")
 end

@@ -95,7 +95,9 @@ end
 function PlayerMana.prototype:Redraw()
 	PlayerMana.super.prototype.Redraw(self)
 
-	self:CreateTickerFrame()
+	if (self.moduleSettings.enabled) then
+		self:CreateTickerFrame()
+	end
 end
 
 

@@ -4,6 +4,8 @@ local TargetOfTarget = AceOO.Class(IceElement, "Metrognome-2.0")
 
 TargetOfTarget.prototype.stackedDebuffs = nil
 TargetOfTarget.prototype.buffSize = nil
+TargetOfTarget.prototype.height = nil
+TargetOfTarget.prototype.unit = nil
 
 
 -- Constructor --
@@ -13,9 +15,11 @@ function TargetOfTarget.prototype:init()
 	self:SetColor("totHostile", 0.8, 0.1, 0.1)
 	self:SetColor("totFriendly", 0.2, 1, 0.2)
 	self:SetColor("totNeutral", 0.9, 0.9, 0)
-	
-	self.buffSize = 15
+
+	self.buffSize = 12
+	self.height = 12
 	self.stackedDebuffs = {}
+	self.unit = "targettarget"
 
 	self.scalingEnabled = true
 end
@@ -99,8 +103,10 @@ end
 -- OVERRIDE
 function TargetOfTarget.prototype:Redraw()
 	TargetOfTarget.super.prototype.Redraw(self)
-	
-	self:CreateFrame()
+
+	if (self.moduleSettings.enabled) then
+		self:CreateFrame()
+	end
 end
 
 
@@ -126,43 +132,80 @@ end
 
 -- OVERRIDE
 function TargetOfTarget.prototype:CreateFrame()
-	TargetOfTarget.super.prototype.CreateFrame(self)
-	
+	if not (self.frame) then
+		self.frame = CreateFrame("Button", "IceHUD_"..self.name, self.parent)
+	end
+
 	self.frame:SetFrameStrata("BACKGROUND")
-	self.frame:SetWidth(260)
-	self.frame:SetHeight(50)
-	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
+	self.frame:SetWidth(self.settings.gap)
+	self.frame:SetHeight(self.height)
+	self.frame:SetPoint("TOP", self.parent, "TOP", 0, self.moduleSettings.vpos)
 	self.frame:SetScale(self.moduleSettings.scale)
-	self.frame:Show()
+
+	if (not self.frame.texture) then
+		self.frame.texture = self.frame:CreateTexture()
+		self.frame.texture:SetTexture(IceElement.TexturePath .. "smooth")
+		self.frame.texture:SetVertexColor(0.2, 0.2, 0.2, 0.3)
+		self.frame.texture:SetAllPoints(self.frame)
+	end
 	
+	self.frame.unit = self.unit -- for blizz default tooltip handling
+	self.frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+	self.frame:SetScript("OnClick", function() self:OnClick(arg1) end)
+	self.frame:SetScript("OnEnter", function() UnitFrame_OnEnter() end)
+	self.frame:SetScript("OnLeave", function() UnitFrame_OnLeave() end)
+
+	self:CreateBarFrame()
 	self:CreateToTFrame()
 	self:CreateToTHPFrame()
 	self:CreateDebuffFrame()
 end
 
 
+function TargetOfTarget.prototype:CreateBarFrame()
+	if (not self.frame.bar) then
+		self.frame.bar = CreateFrame("StatusBar", nil, self.frame)
+	end
+
+	self.frame.bar:SetFrameStrata("BACKGROUND")
+	self.frame.bar:SetWidth(self.settings.gap)
+	self.frame.bar:SetHeight(self.height)
+
+	self.frame.bar:SetPoint("LEFT", self.frame, "LEFT", 0, 0)
+
+	if (not self.frame.bar.texture) then
+		self.frame.bar.texture = self.frame.bar:CreateTexture()
+		self.frame.bar.texture:SetTexture(IceElement.TexturePath .. "smooth")
+		self.frame.bar.texture:SetAllPoints(self.frame.bar)
+		self.frame.bar:SetStatusBarTexture(self.frame.bar.texture)
+	end
+
+	self.frame.bar:Show()
+end
+
+
 function TargetOfTarget.prototype:CreateToTFrame()
-	self.frame.totName = self:FontFactory("Bold", self.moduleSettings.fontSize+1, nil, self.frame.totName)
+	self.frame.totName = self:FontFactory("Bold", self.moduleSettings.fontSize, self.frame.bar, self.frame.totName)
 	
-	self.frame.totName:SetWidth(120)
-	self.frame.totName:SetHeight(14)
-	self.frame.totName:SetJustifyH("RIGHT")
-	self.frame.totName:SetJustifyV("BOTTOM")
-	
-	self.frame.totName:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, -2)
+	self.frame.totName:SetWidth(self.settings.gap-40)
+	self.frame.totName:SetHeight(self.height)
+	self.frame.totName:SetJustifyH("LEFT")
+	self.frame.totName:SetJustifyV("TOP")
+
+	self.frame.totName:SetPoint("LEFT", self.frame, "LEFT", 0, 0)
 	self.frame.totName:Show()
 end
 
 
 function TargetOfTarget.prototype:CreateToTHPFrame()
-	self.frame.totHealth = self:FontFactory(nil, self.moduleSettings.fontSize, nil, self.frame.totHealth)
-	
-	self.frame.totHealth:SetWidth(120)
-	self.frame.totHealth:SetHeight(14)
+	self.frame.totHealth = self:FontFactory("Bold", self.moduleSettings.fontSize, self.frame.bar, self.frame.totHealth)
+
+	self.frame.totHealth:SetWidth(40)
+	self.frame.totHealth:SetHeight(self.height)
 	self.frame.totHealth:SetJustifyH("RIGHT")
 	self.frame.totHealth:SetJustifyV("TOP")
-	
-	self.frame.totHealth:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, -16)
+
+	self.frame.totHealth:SetPoint("RIGHT", self.frame, "RIGHT", 0, 0)
 	self.frame.totHealth:Show()
 end
 
@@ -199,7 +242,7 @@ function TargetOfTarget.prototype:CreateIconFrames(parent)
 		buffs[i].texture:SetTexture(nil)
 		buffs[i].texture:SetAllPoints(buffs[i])
 		
-		buffs[i].stack = self:FontFactory("Bold", 15, buffs[i])
+		buffs[i].stack = self:FontFactory("Bold", 11, buffs[i])
 		buffs[i].stack:SetPoint("BOTTOMRIGHT" , buffs[i], "BOTTOMRIGHT", 0, -1)
 	end
 	return buffs
@@ -211,8 +254,8 @@ function TargetOfTarget.prototype:UpdateBuffs()
 	
 	if (self.moduleSettings.showDebuffs) then
 		for i = 1, 16 do
-			local buffTexture, buffApplications = UnitDebuff("targettarget", i)
-	
+			local buffTexture, buffApplications = UnitDebuff(self.unit, i)
+
 			if (buffApplications and (buffApplications > 1)) then
 				debuffs = debuffs + 1
 				
@@ -241,35 +284,55 @@ end
 function TargetOfTarget.prototype:Update()
 	self:UpdateBuffs()
 	
-	if not (UnitExists("targettarget")) then
+	if not (UnitExists(self.unit)) then
 		self.frame.totName:SetText()
 		self.frame.totHealth:SetText()
+		self.frame:Hide()
 		return
 	end
-	
-	local _, unitClass = UnitClass("targettarget")
-	local name = UnitName("targettarget")
-	
-	self.frame.totName:SetTextColor(self:GetColor(unitClass, 1))
-	self.frame.totName:SetText(name)
-	
-	
-	local color = "totFriendly" -- friendly > 4
-	local reaction = UnitReaction("targettarget", "player")
-	if (reaction and (reaction == 4)) then
-		color = "totNeutral"
-	elseif (reaction and (reaction < 4)) then
-		color = "totHostile"
-	end
-	
-	local health = UnitHealth("targettarget")
-	local maxHealth = UnitHealthMax("targettarget")
+
+	self.frame:Show()
+
+	local _, unitClass = UnitClass(self.unit)
+	local name = UnitName(self.unit)
+	local reaction = UnitReaction(self.unit, "player")
+
+	local health = UnitHealth(self.unit)
+	local maxHealth = UnitHealthMax(self.unit)
 	local healthPercentage = math.floor( (health/maxHealth)*100 )
 	
-	self.frame.totHealth:SetTextColor(self:GetColor(color, 1))
+	local rColor = UnitReactionColor[reaction or 5]
+
+	self.frame.totName:SetTextColor(rColor.r, rColor.g, rColor.b, 0.9)
+	self.frame.totName:SetText(name)
+
+	self.frame.totHealth:SetTextColor(rColor.r, rColor.g, rColor.b, 0.9)
 	self.frame.totHealth:SetText(healthPercentage .. "%")
+
+	self.frame.bar.texture:SetVertexColor(self:GetColor(unitClass, 0.7))
+	self.frame.bar:SetMinMaxValues(0, maxHealth)
+	self.frame.bar:SetValue(health)
 end
 
+
+
+function TargetOfTarget.prototype:OnClick(button)
+	-- copy&paste from blizz code, it better work ;)
+	if (SpellIsTargeting() and button == "RightButton") then
+		SpellStopTargeting()
+		return
+	end
+
+	if (button == "LeftButton") then
+		if (SpellIsTargeting()) then
+			SpellTargetUnit(self.unit)
+		elseif (CursorHasItem()) then
+			DropItemOnUnit(self.unit)
+		end
+	else
+		ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor")
+	end
+end
 
 
 -- load us up

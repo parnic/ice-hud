@@ -20,6 +20,8 @@ function TargetHealth.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 2
 	settings["mobhealth"] = false
+	settings["classColor"] = false
+	settings["hideBlizz"] = true
 	return settings
 end
 
@@ -40,12 +42,47 @@ function TargetHealth.prototype:GetOptions()
 			self:Update(self.unit)
 		end,
 		disabled = function()
-			return (MobHealth3 == nil)
+			return (not self.moduleSettings.enabled) and (MobHealth3 == nil)
+		end,
+		order = 40
+	}
+	
+	opts["classColor"] = {
+		type = "toggle",
+		name = "Class color bar",
+		desc = "Use class color as the bar color instead of reaction color",
+		get = function()
+			return self.moduleSettings.classColor
+		end,
+		set = function(value)
+			self.moduleSettings.classColor = value
+			self:Update(self.unit)
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 40
+		order = 41
+	}
+	
+	opts["hideBlizz"] = {
+		type = "toggle",
+		name = "Hide Blizzard Frame",
+		desc = "Hides Blizzard Target frame and disables all events related to it",
+		get = function()
+			return self.moduleSettings.hideBlizz
+		end,
+		set = function(value)
+			self.moduleSettings.hideBlizz = value
+			if (value) then
+				self:HideBlizz()
+			else
+				self:ShowBlizz()
+			end
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 42
 	}
 	
 	return opts
@@ -57,6 +94,7 @@ function TargetHealth.prototype:Enable(core)
 	
 	self:RegisterEvent("UNIT_HEALTH", "Update")
 	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
+	self:RegisterEvent("UNIT_FLAGS", "Update")
 		
 	self:Update(self.unit)
 end
@@ -80,9 +118,9 @@ function TargetHealth.prototype:Update(unit)
 	else	
 		self.frame:Show()
 	end
-	
+
 	self.color = "targetHealthFriendly" -- friendly > 4
-	
+
 	local reaction = UnitReaction("target", "player")
 	if (reaction and (reaction == 4)) then
 		self.color = "targetHealthNeutral"
@@ -90,6 +128,10 @@ function TargetHealth.prototype:Update(unit)
 		self.color = "targetHealthHostile"
 	end
 	
+	if (self.moduleSettings.classColor) then
+		self.color = self.unitClass
+	end
+
 	if (self.tapped) then
 		self.color = "tapped"
 	end
@@ -119,7 +161,7 @@ end
 
 function TargetHealth.prototype:Round(health)
 	if (health > 1000000) then
-		return self:MathRound(health/100000, 1) .. "M"
+		return self:MathRound(health/1000000, 1) .. "M"
 	end
 	if (health > 1000) then
 		return self:MathRound(health/1000, 1) .. "k"
@@ -132,6 +174,32 @@ function TargetHealth.prototype:MathRound(num, idp)
 	local mult = 10^(idp or 0)
 	return math.floor(num  * mult + 0.5) / mult
 end
+
+
+
+
+
+function TargetHealth.prototype:ShowBlizz()
+	TargetFrame:Show()
+
+	TargetFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
+	TargetFrame:RegisterEvent("UNIT_HEALTH")
+	TargetFrame:RegisterEvent("UNIT_LEVEL")
+	TargetFrame:RegisterEvent("UNIT_FACTION")
+	TargetFrame:RegisterEvent("UNIT_CLASSIFICATION_CHANGED")
+	TargetFrame:RegisterEvent("UNIT_AURA")
+	TargetFrame:RegisterEvent("PLAYER_FLAGS_CHANGED")
+	TargetFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	TargetFrame:RegisterEvent("RAID_TARGET_UPDATE")
+end
+
+
+function TargetHealth.prototype:HideBlizz()
+	TargetFrame:Hide()
+
+	TargetFrame:UnregisterAllEvents()
+end
+
 
 
 -- Load us up

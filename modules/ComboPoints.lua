@@ -86,7 +86,7 @@ end
 -- OVERRIDE
 function ComboPoints.prototype:GetDefaultSettings()
 	local defaults =  ComboPoints.super.prototype.GetDefaultSettings(self)
-	defaults["vpos"] = -30
+	defaults["vpos"] = 0
 	defaults["comboFontSize"] = 20
 	defaults["comboMode"] = "Graphical"
 	return defaults

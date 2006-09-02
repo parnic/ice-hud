@@ -52,7 +52,9 @@ end
 function IceUnitBar.prototype:Redraw()
 	IceUnitBar.super.prototype.Redraw(self)
 	
-	self:Update(self.unit)
+	if (self.moduleSettings.enabled) then
+		self:Update(self.unit)
+	end
 end
 
 -- 'Protected' methods --------------------------------------------------------
@@ -69,6 +71,8 @@ function IceUnitBar.prototype:Update()
 	self.mana = UnitMana(self.unit)
 	self.maxMana = UnitManaMax(self.unit)
 	self.manaPercentage = math.floor( (self.mana/self.maxMana)*100 )
+	
+	_, self.unitClass = UnitClass(self.unit)
 end
 
 

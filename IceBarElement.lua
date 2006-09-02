@@ -194,11 +194,13 @@ end
 -- OVERRIDE
 function IceBarElement.prototype:Redraw()
 	IceBarElement.super.prototype.Redraw(self)
-	
+
+	if (not self.moduleSettings.enabled) then
+		return
+	end
+
 	self.alpha = self.settings.alphaooc
-	
 	self:CreateFrame()
-	
 	self.frame:SetAlpha(self.alpha)
 end
 
