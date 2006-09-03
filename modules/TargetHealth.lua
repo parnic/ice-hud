@@ -95,6 +95,10 @@ function TargetHealth.prototype:Enable(core)
 	self:RegisterEvent("UNIT_HEALTH", "Update")
 	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
 	self:RegisterEvent("UNIT_FLAGS", "Update")
+	
+	if (self.moduleSettings.hideBlizz) then
+		self:HideBlizz()
+	end
 		
 	self:Update(self.unit)
 end
@@ -181,7 +185,6 @@ end
 
 function TargetHealth.prototype:ShowBlizz()
 	TargetFrame:Show()
-
 	TargetFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
 	TargetFrame:RegisterEvent("UNIT_HEALTH")
 	TargetFrame:RegisterEvent("UNIT_LEVEL")
@@ -191,13 +194,19 @@ function TargetHealth.prototype:ShowBlizz()
 	TargetFrame:RegisterEvent("PLAYER_FLAGS_CHANGED")
 	TargetFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
 	TargetFrame:RegisterEvent("RAID_TARGET_UPDATE")
+	
+	ComboFrame:Show()
+	ComboFrame:RegisterEvent("PLAYER_TARGET_CHANGED");
+	ComboFrame:RegisterEvent("PLAYER_COMBO_POINTS");
 end
 
 
 function TargetHealth.prototype:HideBlizz()
 	TargetFrame:Hide()
-
 	TargetFrame:UnregisterAllEvents()
+	
+	ComboFrame:Hide()
+	ComboFrame:UnregisterAllEvents()
 end
 
 
