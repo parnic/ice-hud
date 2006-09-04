@@ -235,6 +235,7 @@ end
 function TargetInfo.prototype:CreateGuildTextFrame()
 	self.frame.targetGuild = self:FontFactory(nil, self.moduleSettings.fontSize, nil, self.frame.targetGuild)
 
+	self.frame.targetInfo:SetWidth(self.width)
 	self.frame.targetGuild:SetHeight(14)
 	self.frame.targetGuild:SetJustifyH("CENTER")
 	self.frame.targetGuild:SetJustifyV("TOP")
@@ -323,7 +324,7 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 
 		local pos = (i > 8) and i-8 or i
 		local x = (((pos-1) * self.moduleSettings.buffSize) + (pos-0)) * direction
-		local y = (i > 8) and -self.moduleSettings.buffSize-0 or 0
+		local y = (i > 8) and -self.moduleSettings.buffSize-1 or 0
 
 		buffs[i]:ClearAllPoints()
 		buffs[i]:SetPoint("TOP", x, y)
@@ -374,7 +375,7 @@ function TargetInfo.prototype:UpdateBuffs()
 		self.frame.buffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
 		self.frame.buffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
 		
-		local alpha = buffTexture and 0.3 or 0
+		local alpha = buffTexture and 0.5 or 0
 		self.frame.buffFrame.buffs[i].texture:SetTexture(0, 0, 0, alpha)
 
 		self.frame.buffFrame.buffs[i].texture:SetVertexColor(color.r, color.g, color.b)

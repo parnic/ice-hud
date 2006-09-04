@@ -217,8 +217,8 @@ function TargetOfTarget.prototype:CreateDebuffFrame()
 	self.frame.debuffFrame = CreateFrame("Frame", nil, self.frame)
 
 	self.frame.debuffFrame:SetFrameStrata("BACKGROUND")
-	self.frame.debuffFrame:SetWidth(200)
-	self.frame.debuffFrame:SetHeight(20)
+	self.frame.debuffFrame:SetWidth(10)
+	self.frame.debuffFrame:SetHeight(self.height)
 
 	self.frame.debuffFrame:SetPoint("TOPLEFT", self.frame, "TOPRIGHT", 4, 0)
 	self.frame.debuffFrame:Show()
@@ -229,7 +229,7 @@ end
 
 function TargetOfTarget.prototype:CreateIconFrames(parent)
 	local buffs = {}
-	
+
 	for i = 1, 16 do
 		buffs[i] = CreateFrame("Frame", nil, parent)
 		buffs[i]:SetFrameStrata("BACKGROUND")

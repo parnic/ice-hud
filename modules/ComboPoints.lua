@@ -79,6 +79,23 @@ function ComboPoints.prototype:GetOptions()
 		order = 33
 	}
 
+	opts["gradient"] = {
+		type = "toggle",
+		name = "Change color",
+		desc = "1 compo point: yellow, 5 combo points: red",
+		get = function()
+			return self.moduleSettings.gradient
+		end,
+		set = function(v)
+			self.moduleSettings.gradient = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 34
+	}
+
 	return opts
 end
 
@@ -89,6 +106,7 @@ function ComboPoints.prototype:GetDefaultSettings()
 	defaults["vpos"] = 0
 	defaults["comboFontSize"] = 20
 	defaults["comboMode"] = "Graphical"
+	defaults["gradient"] = false
 	return defaults
 end
 
@@ -138,7 +156,6 @@ function ComboPoints.prototype:CreateComboFrame()
 
 	self.frame.numeric:SetWidth(50)
 	self.frame.numeric:SetJustifyH("CENTER")
-	self.frame.numeric:SetTextColor(self:GetColor("combo", 0.7))
 
 	self.frame.numeric:SetPoint("TOP", self.frame, "TOP", 0, 0)
 	self.frame.numeric:Show()
@@ -173,7 +190,11 @@ function ComboPoints.prototype:CreateComboFrame()
 		self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphical[i]:SetAllPoints(self.frame.graphicalBG[i])
 
-		self.frame.graphical[i]:SetStatusBarColor(self:GetColor("combo"))
+		local r, g, b = self:GetColor("combo")
+		if (self.moduleSettings.gradient) then
+			g = g - (0.15*i)
+		end
+		self.frame.graphical[i]:SetStatusBarColor(r, g, b)
 
 		self.frame.graphical[i]:Hide()
 	end
@@ -189,6 +210,12 @@ function ComboPoints.prototype:UpdateComboPoints()
 	end
 
 	if (self.moduleSettings.comboMode == "Numeric") then
+		local r, g, b = self:GetColor("combo")
+		if (self.moduleSettings.gradient and points) then
+			g = g - (0.15*points)
+		end
+		self.frame.numeric:SetTextColor(r, g, b, 0.7)
+
 		self.frame.numeric:SetText(points)
 	else
 		self.frame.numeric:SetText()
