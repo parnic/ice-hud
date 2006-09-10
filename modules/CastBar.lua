@@ -1,5 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 local SpellStatus = AceLibrary("SpellStatus-1.0")
+local SpellCache = AceLibrary("SpellCache-1.0")
 
 local CastBar = AceOO.Class(IceBarElement)
 
@@ -141,6 +142,10 @@ function CastBar.prototype:OnUpdate()
 
 	self:Update()
 
+	local spellRankShort = ""
+	if (spellRank) then
+		spellRankShort = " (" .. SpellCache:GetRankNumber(spellRank or '') .. ")"
+	end
 
 	-- handle casting and channeling
 	if (SpellStatus:IsCastingOrChanneling()) then
@@ -156,7 +161,7 @@ function CastBar.prototype:OnUpdate()
 		end
 
 		self:UpdateBar(scale, "castCasting")
-		self:SetBottomText1(string.format("%.1fs %s", remainingTime , spellName))
+		self:SetBottomText1(string.format("%.1fs %s%s", remainingTime , spellName, spellRankShort))
 
 		return
 	end
@@ -178,7 +183,7 @@ function CastBar.prototype:OnUpdate()
 			return
 		end
 
-		self:FlashBar("castSuccess", 1-instanting, spellName)
+		self:FlashBar("castSuccess", 1-instanting, spellName .. spellRankShort)
 		return
 	end
 
