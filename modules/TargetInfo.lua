@@ -467,7 +467,17 @@ function TargetInfo.prototype:TargetChanged()
 	self.name, self.realm = UnitName(target)
 	self.classLocale, self.classEnglish = UnitClass(target)
 	self.isPlayer = UnitIsPlayer(target)
-	
+
+	local classification = UnitClassification(target)
+	if (string.find(classification, "boss")) then
+		self.classification = " |cffcc1111Boss|r"
+	elseif(string.find(classification, "rare")) then
+		self.classification = " |cffcc11ccRare|r"
+	else
+		self.classification = ""
+	end
+
+
 	local guildName, guildRankName, guildRankIndex = GetGuildInfo(target);
 	self.guild = guildName and "<" .. guildName .. ">" or ""
 
@@ -479,7 +489,7 @@ function TargetInfo.prototype:TargetChanged()
 	end
 
 
-	self.leader = UnitIsPartyLeader(target) and " Leader" or ""
+	self.leader = UnitIsPartyLeader(target) and " |cffcccc11Leader|r" or ""
 
 
 	-- pass "internal" as a paramater so event handler code doesn't execute
@@ -575,8 +585,8 @@ function TargetInfo.prototype:Update(unit)
 	local line1 = string.format("|c%s%s|r", reactionColor, self.name or '')
 	self.frame.targetName:SetText(line1)
 
-	local line2 = string.format("%s %s%s%s%s",
-		self.level or '', self.classLocale or '', self.pvp or '', self.leader or '', self.combat or '')
+	local line2 = string.format("%s %s%s%s%s%s",
+		self.level or '', self.classLocale or '', self.pvp or '', self.leader or '', self.classification or '', self.combat or '')
 	self.frame.targetInfo:SetText(line2)
 
 	local realm = self.realm and " " .. self.realm or ""
