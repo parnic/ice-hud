@@ -489,5 +489,6 @@ function IceHUD:OnEnable()
 	
 	self.IceCore:Enable()
 	self:SetDebugging(self.IceCore:GetDebug())
+	self.debugFrame = ChatFrame2
 end
 

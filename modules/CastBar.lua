@@ -1,19 +1,15 @@
 local AceOO = AceLibrary("AceOO-2.0")
+local SpellStatus = AceLibrary("SpellStatus-1.0")
 
 local CastBar = AceOO.Class(IceBarElement)
 
-CastBar.prototype.casting = nil
-CastBar.prototype.channeling = nil
-CastBar.prototype.failing = nil
-CastBar.prototype.succeeding = nil
 
-CastBar.prototype.spellName = nil
+CastBar.Actions = { None = 0, Cast = 1, Channel = 2, Instant = 3, Success = 4, Failure = 5 }
 
-CastBar.prototype.startTime = nil
-CastBar.prototype.castTime = nil
-CastBar.prototype.delay = nil
+CastBar.prototype.action = nil
+CastBar.prototype.actionStartTime = nil
+CastBar.prototype.actionMessage = nil
 
-CastBar.prototype.debug = 0
 
 
 -- Constructor --
@@ -22,40 +18,81 @@ function CastBar.prototype:init()
 
 	self:SetColor("castCasting", 242, 242, 10)
 	self:SetColor("castChanneling", 117, 113, 161)
-	self:SetColor("castSuccess", 242, 242, 10)
+	self:SetColor("castSuccess", 242, 242, 70)
 	self:SetColor("castFail", 1, 0, 0)
-	
+
 	self.delay = 0
+	self.action = CastBar.Actions.None
 end
 
 
 
 -- 'Public' methods -----------------------------------------------------------
 
-
+-- OVERRIDE
 function CastBar.prototype:GetDefaultSettings()
 	local settings = CastBar.super.prototype.GetDefaultSettings(self)
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 0
+	settings["flashInstants"] = "Caster"
+	settings["flashFailures"] = true
 	return settings
 end
 
 
+-- OVERRIDE
+function CastBar.prototype:GetOptions()
+	local opts = CastBar.super.prototype.GetOptions(self)
+
+	opts["flashInstants"] =
+	{
+		type = 'text',
+		name =  "Flash Instant Spells",
+		desc = "Defines when cast bar should flash on instant spells",
+		get = function()
+			return self.moduleSettings.flashInstants
+		end,
+		set = function(value)
+			self.moduleSettings.flashInstants = value
+		end,
+		validate = { "Always", "Caster", "Never" },
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 40
+	}
+
+	opts["flashFailures"] =
+	{
+		type = "toggle",
+		name = "Flash on Spell Failures",
+		desc = "Toggles flashing of cast bar when a spell that was not being currently casts fails",
+		get = function()
+			return self.moduleSettings.flashFailures
+		end,
+		set = function(value)
+			self.moduleSettings.flashFailures = value
+		end,
+		order = 41
+	}
+
+	return opts
+end
+
 
 function CastBar.prototype:Enable(core)
 	CastBar.super.prototype.Enable(self, core)
-	
-	self:RegisterEvent("SPELLCAST_START", "CastStart")
-	self:RegisterEvent("SPELLCAST_STOP", "CastStop")
-	self:RegisterEvent("SPELLCAST_FAILED", "CastFailed")
-	self:RegisterEvent("SPELLCAST_INTERRUPTED", "CastInterrupted")
-	
-	self:RegisterEvent("SPELLCAST_DELAYED", "CastDelayed")
-	
-	self:RegisterEvent("SPELLCAST_CHANNEL_START", "ChannelingStart")
-	self:RegisterEvent("SPELLCAST_CHANNEL_STOP", "ChannelingStop")
-	self:RegisterEvent("SPELLCAST_CHANNEL_UPDATE", "ChannelingUpdate")
-	
+
+	self:RegisterEvent("SpellStatus_SpellCastInstant")
+	self:RegisterEvent("SpellStatus_SpellCastCastingStart")
+	self:RegisterEvent("SpellStatus_SpellCastCastingChange")
+	self:RegisterEvent("SpellStatus_SpellCastCastingFinish")
+	self:RegisterEvent("SpellStatus_SpellCastFailure")
+
+	self:RegisterEvent("SpellStatus_SpellCastChannelingStart")
+	self:RegisterEvent("SpellStatus_SpellCastChannelingChange")
+	self:RegisterEvent("SpellStatus_SpellCastChannelingFinish")
+
 	self.frame:Hide()
 	
 	-- remove blizz cast bar
@@ -66,6 +103,7 @@ end
 function CastBar.prototype:Disable(core)
 	CastBar.super.prototype.Disable(self, core)
 	
+	-- restore blizz cast bar
 	CastingBarFrame:RegisterEvent("SPELLCAST_START");
 	CastingBarFrame:RegisterEvent("SPELLCAST_STOP");
 	CastingBarFrame:RegisterEvent("SPELLCAST_FAILED");
@@ -88,161 +126,214 @@ function CastBar.prototype:CreateFrame()
 end
 
 
+
+-- OnUpdate handler
 function CastBar.prototype:OnUpdate()
-	local taken = GetTime() - self.startTime
-	local scale = taken / (self.castTime + self.delay)
-		
+	-- safety catch
+	if (self.action == CastBar.Actions.None) then
+		IceHUD:Debug("Stopping action ", self.action)
+		self:StopBar()
+		return
+	end
+
+	local spellId, spellName, spellRank, spellFullName, spellCastStartTime, spellCastStopTime, spellCastDuration, spellAction = SpellStatus:GetActiveSpellData()
+	local time = GetTime()
+
 	self:Update()
-	
-	if (self.casting or self.channeling) then
-		if (scale > 1) then -- lag compensation
-			scale = 1
+
+
+	-- handle casting and channeling
+	if (SpellStatus:IsCastingOrChanneling()) then
+		local remainingTime = spellCastStopTime - time
+		local scale = 1 - (remainingTime / (spellCastDuration/1000))
+
+		if (SpellStatus:IsChanneling()) then
+			scale = remainingTime / spellCastDuration
 		end
-		
-		local timeRemaining = self.castTime + self.delay - taken
-		local remaining = string.format("%.1f", timeRemaining)
-		if (timeRemaining < 0 and timeRemaining > -1.5) then -- lag compensation
-			remaining = 0
+
+		if (remainingTime < 0 and remainingTime > -1.5) then -- lag compensation
+			remainingTime = 0
 		end
-		
-		if (self.channeling) then
-			scale = 1 - scale
-		end
-		
+
 		self:UpdateBar(scale, "castCasting")
-		self:SetBottomText1(remaining .. "s  " .. self.spellName)
-	
-	elseif (self.failing) then
-		self.alpha = 0.7
-		self:UpdateBar(1, "castFail", 1-scale)
-		self:SetBottomText1(self.spellName, "castFail")
-		
-		if (scale >= 1) then
-			self:CleanUp()
-			self.frame:Hide()
-			self.frame:SetScript("OnUpdate", nil)
-		end
-	
-	elseif (self.succeeding) then
-		if (scale < 0.1) then -- "wait" for possible fail event before showing success animation
+		self:SetBottomText1(string.format("%.1fs %s", remainingTime , spellName))
+
+		return
+	end
+
+
+	-- stop bar if casting or channeling is done (in theory this should not be needed)
+	if (self.action == CastBar.Actions.Cast or self.action == CastBar.Actions.Channel) then
+		self:StopBar()
+		return
+	end
+
+
+	-- handle instant casts
+	if (self.action == CastBar.Actions.Instant) then
+		local instanting = time - self.actionStartTime
+
+		if (instanting > 1) then
+			self:StopBar()
 			return
 		end
-		self.alpha = 0.9
-		self:UpdateBar(1, "castSuccess", 1.1-scale)
-		
-		if (scale >= 1) then
-			self:CleanUp()
-			self.frame:Hide()
-			self.frame:SetScript("OnUpdate", nil)
+
+		self:FlashBar("castSuccess", 1-instanting, spellName)
+		return
+	end
+
+
+	-- show failure bar
+	if (self.action == CastBar.Actions.Fail) then
+		local failing = time - self.actionStartTime
+
+		if (failing > 1) then
+			self:StopBar()
+			return
 		end
-	
-	else -- shouldn't be needed
-		self:CleanUp()
-		self.frame:Hide()
-		self.frame:SetScript("OnUpdate", nil)
+
+		self:FlashBar("castFail", 1-failing, self.actionMessage, "castFail")
+		return
 	end
+
+
+	-- flash bar on succesful casts
+	if (self.action == CastBar.Actions.Success) then
+		local succeeding = time - self.actionStartTime
+
+		if (succeeding > 1) then
+			self:StopBar()
+			return
+		end
+		if (succeeding < 0.15) then -- lag compensation
+			return
+		end
+
+		self:FlashBar("castSuccess", 1-succeeding)
+		return
+	end
+	
+	IceHUD:Debug("OnUpdate error ", self.action, " -- ", spellId, spellName, spellRank, spellFullName, spellCastStartTime, spellCastStopTime, spellCastDuration, spellAction)
 end
 
 
+function CastBar.prototype:FlashBar(color, alpha, text, textColor)
+	self.frame:SetAlpha(alpha)
 
-function CastBar.prototype:CastStart(name, castTime)
-	self.spellName = name
-	self.castTime = castTime / 1000
-	self.startTime = GetTime()
-	self.delay = 0
-	self.casting = true	
+	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
+	if (self.settings.backgroundToggle) then
+		r, g, b = self:GetColor(color)
+	end
+
+
+	self.frame:SetStatusBarColor(r, g, b, 0.3)
+	self.barFrame:SetStatusBarColor(self:GetColor(color, 0.8))
+
+	self:SetScale(self.barFrame.bar, 1)
+	self:SetBottomText1(text, textColor or "text")
+end
+
+
+function CastBar.prototype:StartBar(action, message)
+	self.action = action
+	self.actionStartTime = GetTime()
+	self.actionMessage = message
 
 	self.frame:Show()
-	
 	self.frame:SetScript("OnUpdate", function() self:OnUpdate() end)
 end
 
 
-function CastBar.prototype:CastStop()
-	if not (self.casting) then
-		return
-	end
-	self:CleanUp()
-	
-	self.spellName = nil
-	self.castTime = 1
-	self.startTime = GetTime()
-	self.succeeding = true	
+function CastBar.prototype:StopBar()
+	self.action = CastBar.Actions.None
+	self.actionStartTime = nil
 
-	self.frame:Show()
-end
-
-
-function CastBar.prototype:CastFailed()
-	self:CastTerminated("Failed")
-end
-
-
-function CastBar.prototype:CastInterrupted()
-	self:CastTerminated("Interrupted")
-end
-
-
-function CastBar.prototype:CastTerminated(reason)
-	if not (self.casting or self.channeling or self.succeeding) then
-		return
-	end
-	self:CleanUp()
-	
-	self.spellName = reason
-	self.castTime = 1
-	self.startTime = GetTime()
-	self.failing = true	
-
-	self.frame:Show()
-end
-
-
-function CastBar.prototype:CastDelayed(delay)
-	delay = delay or 0
-	self.delay = self.delay + (delay / 1000)
-end
-
-
-
-
-function CastBar.prototype:ChannelingStart(duration, spell)
-	self.spellName = spell
-	self.castTime = duration / 1000
-	self.startTime = GetTime()
-	self.delay = 0
-	self.channeling = true	
-
-	self.frame:Show()
-	
-	self.frame:SetScript("OnUpdate", function() self:OnUpdate() end)
-end
-
-
-function CastBar.prototype:ChannelingStop()
-	self:CleanUp()
 	self.frame:Hide()
-end
-
-
-function CastBar.prototype:ChannelingUpdate(duration)
-	self.castTime = duration / 1000
+	self.frame:SetScript("OnUpdate", nil)
 end
 
 
 
-function CastBar.prototype:CleanUp()
-	self.spellName = nil
-	self.castTime = nil
-	self.startTime = nil
-	self.delay = 0
-	self.casting = false
-	self.channeling = false
-	self.failing = false
-	self.succeeding = false
-	self:SetBottomText1()
-	self.alpha = self.settings.alphaooc
+
+-------------------------------------------------------------------------------
+-- INSTANT SPELLS                                                            --
+-------------------------------------------------------------------------------
+
+function CastBar.prototype:SpellStatus_SpellCastInstant(sId, sName, sRank, sFullName, sCastTime)
+	IceHUD:Debug("SpellStatus_SpellCastInstant", sId, sName, sRank, sFullName, sCastTime)
+
+	-- determine if we want to show instant casts
+	if (self.moduleSettings.flashInstants == "Never") then
+		return
+	elseif (self.moduleSettings.flashInstants == "Caster") then
+		if (UnitPowerType("player") ~= 0) then -- 0 == mana user
+			return
+		end
+	end
+
+	self:StartBar(CastBar.Actions.Instant)
 end
+
+
+
+-------------------------------------------------------------------------------
+-- NORMAL SPELLS                                                             --
+-------------------------------------------------------------------------------
+
+function CastBar.prototype:SpellStatus_SpellCastCastingStart(sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration)
+	IceHUD:Debug("SpellStatus_SpellCastCastingStart", sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration)
+	self:StartBar(CastBar.Actions.Cast)
+end
+
+function CastBar.prototype:SpellStatus_SpellCastCastingFinish (sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sCastDelayTotal)
+	IceHUD:Debug("SpellStatus_SpellCastCastingFinish ", sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sCastDelayTotal)
+	self:StartBar(CastBar.Actions.Success)
+end
+
+function CastBar.prototype:SpellStatus_SpellCastFailure(sId, sName, sRank, sFullName, isActiveSpell, UIEM_Message, CMSFLP_SpellName, CMSFLP_Message)
+	IceHUD:Debug("SpellStatus_SpellCastFailure", sId, sName, sRank, sFullName, isActiveSpell, UIEM_Message, CMSFLP_SpellName, CMSFLP_Message)
+
+	-- do nothing if we are casting a spell but the error doesn't consern that spell
+	if (SpellStatus:IsCastingOrChanneling() and not SpellStatus:IsActiveSpell(sId, sName)) then
+		return
+	end
+
+	-- do not show failure if user has that option disabled
+	if (not isActiveSpell and not self.moduleSettings.flashFailures) then
+		return
+	end
+
+	self:StartBar(CastBar.Actions.Fail, UIEM_Message)
+end
+
+function CastBar.prototype:SpellStatus_SpellCastCastingChange(sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sCastDelay, sCastDelayTotal)
+	IceHUD:Debug("SpellStatus_SpellCastCastingChange", sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sCastDelay, sCastDelayTotal)
+end
+
+
+
+-------------------------------------------------------------------------------
+-- CHANNELING SPELLS                                                         --
+-------------------------------------------------------------------------------
+
+function CastBar.prototype:SpellStatus_SpellCastChannelingStart(sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sAction)
+	IceHUD:Debug("SpellStatus_SpellCastChannelingStart", sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sAction)
+	self:StartBar(CastBar.Actions.Channel)
+end
+
+function CastBar.prototype:SpellStatus_SpellCastChannelingFinish(sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sAction, sCastDisruptionTotal)
+	IceHUD:Debug("SpellStatus_SpellCastChannelingFinish", sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sAction, sCastDisruptionTotal)
+	self:StopBar()
+end
+
+function CastBar.prototype:SpellStatus_SpellCastChannelingChange(sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sAction, sCastDisruption, sCastDisruptionTotal)
+	IceHUD:Debug("SpellStatus_SpellCastChannelingChange", sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sAction, sCastDisruption, sCastDisruptionTotal)
+end
+
+
+
+
+-------------------------------------------------------------------------------
 
 
 -- Load us up

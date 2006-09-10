@@ -328,6 +328,8 @@ function TargetOfTarget.prototype:OnClick(button)
 			SpellTargetUnit(self.unit)
 		elseif (CursorHasItem()) then
 			DropItemOnUnit(self.unit)
+		else
+			TargetUnit(self.unit)
 		end
 	else
 		ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor")
