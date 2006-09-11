@@ -201,7 +201,7 @@ function TargetInfo.prototype:CreateTextFrame()
 
 	self.frame.target.unit = target -- for blizz default tooltip handling
 	self.frame.target:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-	self.frame.target:SetScript("OnClick", function() self:TargetOnClick(arg1) end)
+	self.frame.target:SetScript("OnClick", function() self:OnClick(arg1) end)
 	self.frame.target:SetScript("OnEnter", function() UnitFrame_OnEnter() end)
 	self.frame.target:SetScript("OnLeave", function() UnitFrame_OnLeave() end)
 
@@ -596,7 +596,7 @@ end
 
 
 
-function TargetInfo.prototype:TargetOnClick(button)
+function TargetInfo.prototype:OnClick(button)
 	-- copy&paste from blizz code, it better work ;)
 	if (SpellIsTargeting() and button == "RightButton") then
 		SpellStopTargeting()
@@ -628,5 +628,6 @@ function TargetInfo.prototype:BuffOnEnter(type)
 	end
 end
 
+
 -- Load us up
-TargetInfo:new()
+IceHUD_TargetInfo = TargetInfo:new()

@@ -332,10 +332,10 @@ function TargetOfTarget.prototype:OnClick(button)
 			TargetUnit(self.unit)
 		end
 	else
-		ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor")
+		TargetUnit(self.unit)
 	end
 end
 
 
 -- load us up
-TargetOfTarget:new()
+IceHUD_TargetOfTarget = TargetOfTarget:new()
