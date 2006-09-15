@@ -23,6 +23,7 @@ function DruidMana.prototype:GetDefaultSettings()
 	local settings = DruidMana.super.prototype.GetDefaultSettings(self)
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 0
+	settings["textVisible"] = {upper = true, lower = false}
 	return settings
 end
 
@@ -99,6 +100,7 @@ function DruidMana.prototype:Update()
 
 	local percentage = (self.druidMana / self.druidMaxMana) * 100
 	self:SetBottomText1(math.floor(percentage))
+	self:SetBottomText2(self:GetFormattedText(string.format("%.0f", self.druidMana), string.format("%.0f", self.druidMaxMana)), color)
 end
 
 

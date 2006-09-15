@@ -86,6 +86,23 @@ function TargetOfTarget.prototype:GetOptions()
 		order = 33
 	}
 	
+	opts["mouse"] = {
+		type = 'toggle',
+		name = 'Mouseover',
+		desc = 'Toggle mouseover on/off',
+		get = function()
+			return self.moduleSettings.mouse
+		end,
+		set = function(v)
+			self.moduleSettings.mouse = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 34
+	}
+	
 	return opts
 end
 
@@ -96,6 +113,7 @@ function TargetOfTarget.prototype:GetDefaultSettings()
 	defaults["vpos"] = -50
 	defaults["showDebuffs"] = true
 	defaults["fontSize"] = 13
+	defaults["mouse"] = true
 	return defaults
 end
 
@@ -115,7 +133,7 @@ function TargetOfTarget.prototype:Enable(core)
 	
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "Update")
 	
-	self:RegisterMetro(self.name, self.Update, 0.33, self)
+	self:RegisterMetro(self.name, self.Update, 0.2, self)
 	self:StartMetro(self.name)
 	
 	self:Update()
@@ -149,11 +167,22 @@ function TargetOfTarget.prototype:CreateFrame()
 		self.frame.texture:SetAllPoints(self.frame)
 	end
 	
+	
 	self.frame.unit = self.unit -- for blizz default tooltip handling
-	self.frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-	self.frame:SetScript("OnClick", function() self:OnClick(arg1) end)
-	self.frame:SetScript("OnEnter", function() UnitFrame_OnEnter() end)
-	self.frame:SetScript("OnLeave", function() UnitFrame_OnLeave() end)
+	
+	if (self.moduleSettings.mouse) then
+		self.frame:EnableMouse(true)
+		self.frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+		self.frame:SetScript("OnClick", function() self:OnClick(arg1) end)
+		self.frame:SetScript("OnEnter", function() UnitFrame_OnEnter() end)
+		self.frame:SetScript("OnLeave", function() UnitFrame_OnLeave() end)
+	else
+		self.frame:EnableMouse(false)
+		self.frame:RegisterForClicks()
+		self.frame:SetScript("OnClick", nil)
+		self.frame:SetScript("OnEnter", nil)
+		self.frame:SetScript("OnLeave", nil)
+	end
 
 	self:CreateBarFrame()
 	self:CreateToTFrame()

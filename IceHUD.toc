@@ -3,7 +3,7 @@
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
 ## Notes: Another HUD mod
-## Version: 0.6.4 ($Revision$)
+## Version: 0.6.5 ($Revision$)
 ## SavedVariables: IceCoreDB
 ## OptionalDeps: Ace2, DewdropLib, FuBar_ToFu, DruidBar, SoleManax, MobHealth, SpellStatusLib
 ## X-Category: UnitFrame
@@ -25,6 +25,7 @@ libs\Metrognome-2.0\Metrognome-2.0.lua
 libs\Dewdrop-2.0\Dewdrop-2.0.lua
 libs\Deformat-2.0\Deformat-2.0.lua
 libs\Gratuity-2.0\Gratuity-2.0.lua
+libs\Babble-Spell-2.0\Babble-Spell-2.0.lua
 libs\SpellCache-1.0\SpellCache-1.0.lua
 libs\SpellStatus-1.0\SpellStatus-1.0.lua
 libs\SpellStatus-AimedShot-1.0\SpellStatus-AimedShot-1.0.lua

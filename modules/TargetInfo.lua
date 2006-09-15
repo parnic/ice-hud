@@ -138,6 +138,23 @@ function TargetInfo.prototype:GetOptions()
 		end,
 		order = 34
 	}
+	
+	opts["mouse"] = {
+		type = 'toggle',
+		name = 'Mouseover',
+		desc = 'Toggle mouseover on/off',
+		get = function()
+			return self.moduleSettings.mouse
+		end,
+		set = function(v)
+			self.moduleSettings.mouse = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 35
+	}
 
 	return opts
 end
@@ -150,6 +167,7 @@ function TargetInfo.prototype:GetDefaultSettings()
 	defaults["vpos"] = -50
 	defaults["zoom"] = 0.2
 	defaults["buffSize"] = 13
+	defaults["mouse"] = true
 	return defaults
 end
 
@@ -200,10 +218,20 @@ function TargetInfo.prototype:CreateTextFrame()
 	end
 
 	self.frame.target.unit = target -- for blizz default tooltip handling
-	self.frame.target:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-	self.frame.target:SetScript("OnClick", function() self:OnClick(arg1) end)
-	self.frame.target:SetScript("OnEnter", function() UnitFrame_OnEnter() end)
-	self.frame.target:SetScript("OnLeave", function() UnitFrame_OnLeave() end)
+	
+	if (self.moduleSettings.mouse) then
+		self.frame.target:EnableMouse(true)
+		self.frame.target:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+		self.frame.target:SetScript("OnClick", function() self:OnClick(arg1) end)
+		self.frame.target:SetScript("OnEnter", function() UnitFrame_OnEnter() end)
+		self.frame.target:SetScript("OnLeave", function() UnitFrame_OnLeave() end)
+	else
+		self.frame.target:EnableMouse(false)
+		self.frame.target:RegisterForClicks()
+		self.frame.target:SetScript("OnClick", nil)
+		self.frame.target:SetScript("OnEnter", nil)
+		self.frame.target:SetScript("OnLeave", nil)
+	end
 
 
 	self.frame.target:SetWidth(self.width)
@@ -352,10 +380,16 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 			buffs[i].icon.stack:SetPoint("BOTTOMRIGHT" , buffs[i].icon, "BOTTOMRIGHT", 1, -1)
 		end
 		
-		buffs[i]:EnableMouse(true)
 		buffs[i].id = i
-		buffs[i]:SetScript("OnEnter", function() self:BuffOnEnter(type) end)
-		buffs[i]:SetScript("OnLeave", function() GameTooltip:Hide() end)
+		if (self.moduleSettings.mouse) then
+			buffs[i]:EnableMouse(true)
+			buffs[i]:SetScript("OnEnter", function() self:BuffOnEnter(type) end)
+			buffs[i]:SetScript("OnLeave", function() GameTooltip:Hide() end)
+		else
+			buffs[i]:EnableMouse(false)
+			buffs[i]:SetScript("OnEnter", nil)
+			buffs[i]:SetScript("OnLeave", nil)
+		end
 	end
 
 	return buffs

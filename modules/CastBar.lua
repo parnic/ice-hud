@@ -65,15 +65,16 @@ function CastBar.prototype:GetOptions()
 
 	opts["flashFailures"] =
 	{
-		type = "toggle",
+		type = "text",
 		name = "Flash on Spell Failures",
-		desc = "Toggles flashing of cast bar when a spell that was not being currently casts fails",
+		desc = "Defines when cast bar should flash on failed spells",
 		get = function()
 			return self.moduleSettings.flashFailures
 		end,
 		set = function(value)
 			self.moduleSettings.flashFailures = value
 		end,
+		validate = { "Always", "Caster", "Never" },
 		order = 41
 	}
 
@@ -159,6 +160,10 @@ function CastBar.prototype:OnUpdate()
 		if (remainingTime < 0 and remainingTime > -1.5) then -- lag compensation
 			remainingTime = 0
 		end
+		
+		-- sanity check to make sure the bar doesn't over/underfill
+		scale = scale > 1 and 1 or scale
+		scale = scale < 0 and 0 or scale
 
 		self:UpdateBar(scale, "castCasting")
 		self:SetBottomText1(string.format("%.1fs %s%s", remainingTime , spellName, spellRankShort))
@@ -303,10 +308,16 @@ function CastBar.prototype:SpellStatus_SpellCastFailure(sId, sName, sRank, sFull
 		return
 	end
 
-	-- do not show failure if user has that option disabled
-	if (not isActiveSpell and not self.moduleSettings.flashFailures) then
+
+	-- determine if we want to show failed casts
+	if (self.moduleSettings.flashFailures == "Never") then
 		return
+	elseif (isActiveSpell and self.moduleSettings.flashFailures == "Caster") then
+		if (UnitPowerType("player") ~= 0) then -- 0 == mana user
+			return
+		end
 	end
+	
 
 	self:StartBar(CastBar.Actions.Fail, UIEM_Message)
 end
