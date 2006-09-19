@@ -6,7 +6,7 @@ IceElement.virtual = true
 IceElement.TexturePath = IceHUD.Location .. "\\textures\\"
 
 -- Protected variables --
-IceElement.prototype.name = nil
+IceElement.prototype.elementName = nil
 IceElement.prototype.parent = nil
 IceElement.prototype.frame = nil
 
@@ -27,7 +27,7 @@ function IceElement.prototype:init(name)
 	IceElement.super.prototype.init(self)
 	assert(name, "IceElement must have a name")
 
-	self.name = name
+	self.elementName = name
 	self.alpha = 1
 	self.scalingEnabled = false
 
@@ -42,12 +42,12 @@ end
 -- 'Public' methods -----------------------------------------------------------
 
 function IceElement.prototype:ToString()
-	return "IceElement('" .. self.name .. "')"
+	return "IceElement('" .. self.elementName .. "')"
 end
 
 
-function IceElement.prototype:GetName()
-	return self.name
+function IceElement.prototype:GetElementName()
+	return self.elementName
 end
 
 
@@ -62,7 +62,7 @@ end
 
 function IceElement.prototype:SetDatabase(db)
 	self.settings = db
-	self.moduleSettings = db.modules[self.name]
+	self.moduleSettings = db.modules[self.elementName]
 end
 
 
@@ -163,7 +163,7 @@ end
 -- This should be overwritten by inheriting classes
 function IceElement.prototype:CreateFrame()
 	if not (self.frame) then
-		self.frame = CreateFrame("Frame", "IceHUD_"..self.name, self.parent)
+		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.parent)
 	end
 
 	self.frame:SetScale(self.moduleSettings.scale)

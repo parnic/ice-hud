@@ -214,7 +214,7 @@ end
 
 function TargetInfo.prototype:CreateTextFrame()
 	if (not self.frame.target) then
-		self.frame.target = CreateFrame("Button", nil, self.frame)
+		self.frame.target = CreateFrame("Button", "IceHUD_TargetInfo_Name", self.frame)
 	end
 
 	self.frame.target.unit = target -- for blizz default tooltip handling
@@ -223,8 +223,8 @@ function TargetInfo.prototype:CreateTextFrame()
 		self.frame.target:EnableMouse(true)
 		self.frame.target:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 		self.frame.target:SetScript("OnClick", function() self:OnClick(arg1) end)
-		self.frame.target:SetScript("OnEnter", function() UnitFrame_OnEnter() end)
-		self.frame.target:SetScript("OnLeave", function() UnitFrame_OnLeave() end)
+		self.frame.target:SetScript("OnEnter", function() self:OnEnter() end)
+		self.frame.target:SetScript("OnLeave", function() self:OnLeave() end)
 	else
 		self.frame.target:EnableMouse(false)
 		self.frame.target:RegisterForClicks()
@@ -242,6 +242,17 @@ function TargetInfo.prototype:CreateTextFrame()
 	self.frame.targetName:SetJustifyH("CENTER")
 	self.frame.targetName:SetJustifyV("TOP")
 	self.frame.targetName:SetAllPoints(self.frame.target)
+	
+	
+	if (not self.frame.target.highLight) then
+		self.frame.target.highLight = self.frame.target:CreateTexture(nil, "OVERLAY")
+		self.frame.target.highLight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
+		self.frame.target.highLight:SetBlendMode("ADD")
+		self.frame.target.highLight:SetAllPoints(self.frame.target)
+		self.frame.target.highLight:SetVertexColor(1, 1, 1, 0.25)
+		self.frame.target.highLight:Hide()
+	end
+
 
 	self.frame.target:Show()
 end
@@ -489,6 +500,8 @@ end
 
 function TargetInfo.prototype:TargetChanged()
 	if (not UnitExists(target)) then
+		self.frame:Hide()
+		
 		self.frame.targetName:SetText()
 		self.frame.targetInfo:SetText()
 		self.frame.targetGuild:SetText()
@@ -497,6 +510,8 @@ function TargetInfo.prototype:TargetChanged()
 		self:UpdateRaidTargetIcon()
 		return
 	end
+	
+	self.frame:Show()
 
 	self.name, self.realm = UnitName(target)
 	self.classLocale, self.classEnglish = UnitClass(target)
@@ -649,6 +664,18 @@ function TargetInfo.prototype:OnClick(button)
 end
 
 
+function TargetInfo.prototype:OnEnter()
+	UnitFrame_OnEnter()
+	self.frame.target.highLight:Show()
+end
+
+
+function TargetInfo.prototype:OnLeave()
+	UnitFrame_OnLeave()
+	self.frame.target.highLight:Hide()
+end
+
+
 function TargetInfo.prototype:BuffOnEnter(type)
 	if (not this:IsVisible()) then
 		return
@@ -664,4 +691,4 @@ end
 
 
 -- Load us up
-IceHUD_TargetInfo = TargetInfo:new()
+IceHUD_Module_TargetInfo = TargetInfo:new()

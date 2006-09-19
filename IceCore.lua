@@ -62,7 +62,7 @@ function IceCore.prototype:init()
 	-- get default settings from the modules
 	defaults.modules = {}
 	for i = 1, table.getn(self.elements) do
-		local name = self.elements[i]:GetName()
+		local name = self.elements[i]:GetElementName()
 		defaults.modules[name] = self.elements[i]:GetDefaultSettings()	
 	end
 	
@@ -125,7 +125,7 @@ end
 function IceCore.prototype:GetModuleOptions()
 	local options = {}
 	for i = 1, table.getn(self.elements) do
-		local modName = self.elements[i]:GetName()
+		local modName = self.elements[i]:GetElementName()
 		local opt = self.elements[i]:GetOptions()
 		options[modName] =  {
 			type = 'group',

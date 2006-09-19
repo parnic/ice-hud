@@ -133,8 +133,8 @@ function TargetOfTarget.prototype:Enable(core)
 	
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "Update")
 	
-	self:RegisterMetro(self.name, self.Update, 0.2, self)
-	self:StartMetro(self.name)
+	self:RegisterMetro(self.elementName, self.Update, 0.2, self)
+	self:StartMetro(self.elementName)
 	
 	self:Update()
 end
@@ -142,7 +142,7 @@ end
 
 function TargetOfTarget.prototype:Disable(core)
 	TargetOfTarget.super.prototype.Disable(self, core)
-	self:UnregisterMetro(self.name)
+	self:UnregisterMetro(self.elementName)
 end
 
 
@@ -151,7 +151,7 @@ end
 -- OVERRIDE
 function TargetOfTarget.prototype:CreateFrame()
 	if not (self.frame) then
-		self.frame = CreateFrame("Button", "IceHUD_"..self.name, self.parent)
+		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.parent)
 	end
 
 	self.frame:SetFrameStrata("BACKGROUND")
@@ -174,8 +174,8 @@ function TargetOfTarget.prototype:CreateFrame()
 		self.frame:EnableMouse(true)
 		self.frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 		self.frame:SetScript("OnClick", function() self:OnClick(arg1) end)
-		self.frame:SetScript("OnEnter", function() UnitFrame_OnEnter() end)
-		self.frame:SetScript("OnLeave", function() UnitFrame_OnLeave() end)
+		self.frame:SetScript("OnEnter", function() self:OnEnter() end)
+		self.frame:SetScript("OnLeave", function() self:OnLeave() end)
 	else
 		self.frame:EnableMouse(false)
 		self.frame:RegisterForClicks()
@@ -208,6 +208,17 @@ function TargetOfTarget.prototype:CreateBarFrame()
 		self.frame.bar.texture:SetAllPoints(self.frame.bar)
 		self.frame.bar:SetStatusBarTexture(self.frame.bar.texture)
 	end
+	
+	
+	if (not self.frame.bar.highLight) then
+		self.frame.bar.highLight = self.frame.bar:CreateTexture(nil, "OVERLAY")
+		self.frame.bar.highLight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
+		self.frame.bar.highLight:SetBlendMode("ADD")
+		self.frame.bar.highLight:SetAllPoints(self.frame.bar)
+		self.frame.bar.highLight:SetVertexColor(1, 1, 1, 0.3)
+		self.frame.bar.highLight:Hide()
+	end
+
 
 	self.frame.bar:Show()
 end
@@ -344,6 +355,17 @@ function TargetOfTarget.prototype:Update()
 end
 
 
+function TargetOfTarget.prototype:OnEnter()
+	UnitFrame_OnEnter()
+	self.frame.bar.highLight:Show()
+end
+
+
+function TargetOfTarget.prototype:OnLeave()
+	UnitFrame_OnLeave()
+	self.frame.bar.highLight:Hide()
+end
+
 
 function TargetOfTarget.prototype:OnClick(button)
 	-- copy&paste from blizz code, it better work ;)
@@ -367,4 +389,4 @@ end
 
 
 -- load us up
-IceHUD_TargetOfTarget = TargetOfTarget:new()
+IceHUD_Module_TargetOfTarget = TargetOfTarget:new()
