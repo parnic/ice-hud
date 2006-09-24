@@ -1,6 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-local TargetOfTarget = AceOO.Class(IceElement, "Metrognome-2.0")
+local TargetOfTarget = AceOO.Class(IceElement)
 
 TargetOfTarget.prototype.stackedDebuffs = nil
 TargetOfTarget.prototype.buffSize = nil
@@ -11,10 +11,6 @@ TargetOfTarget.prototype.unit = nil
 -- Constructor --
 function TargetOfTarget.prototype:init()
 	TargetOfTarget.super.prototype.init(self, "TargetOfTarget")
-	
-	self:SetColor("totHostile", 0.8, 0.1, 0.1)
-	self:SetColor("totFriendly", 0.2, 1, 0.2)
-	self:SetColor("totNeutral", 0.9, 0.9, 0)
 
 	self.buffSize = 12
 	self.height = 12
@@ -110,9 +106,9 @@ end
 -- OVERRIDE
 function TargetOfTarget.prototype:GetDefaultSettings()
 	local defaults =  TargetOfTarget.super.prototype.GetDefaultSettings(self)
-	defaults["vpos"] = -50
+	defaults["vpos"] = -130
 	defaults["showDebuffs"] = true
-	defaults["fontSize"] = 13
+	defaults["fontSize"] = 12
 	defaults["mouse"] = true
 	return defaults
 end
@@ -133,8 +129,7 @@ function TargetOfTarget.prototype:Enable(core)
 	
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "Update")
 	
-	self:RegisterMetro(self.elementName, self.Update, 0.2, self)
-	self:StartMetro(self.elementName)
+	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.2, self)
 	
 	self:Update()
 end
@@ -142,7 +137,7 @@ end
 
 function TargetOfTarget.prototype:Disable(core)
 	TargetOfTarget.super.prototype.Disable(self, core)
-	self:UnregisterMetro(self.elementName)
+	self:CancelScheduledEvent(self.elementName)
 end
 
 

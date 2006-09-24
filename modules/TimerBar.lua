@@ -1,6 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-local TimerBar = AceOO.Class(IceBarElement, "AceHook-2.0", "Metrognome-2.0")
+local TimerBar = AceOO.Class(IceBarElement, "AceHook-2.0")
 local abacus = nil
 
 
@@ -8,7 +8,7 @@ local abacus = nil
 function TimerBar.prototype:init()
 	TimerBar.super.prototype.init(self, "TimerBar")
 	
-	self:SetColor("timerFlight", 0.2, 0.7, 0.7)
+	self:SetDefaultColor("TimerFlight", 0.2, 0.7, 0.7)
 end
 
 
@@ -50,7 +50,7 @@ function TimerBar.prototype:OnTextUpdate(object)
 			local timeRemaining = ToFu.timeAvg - ToFu.timeFlown
 			
 			self.frame:Show()
-			self:UpdateBar(timeRemaining / ToFu.timeAvg, "timerFlight")
+			self:UpdateBar(timeRemaining / ToFu.timeAvg, "TimerFlight")
 			self:Update()
 
 			local text = abacus:FormatDurationCondensed(timeRemaining, true)

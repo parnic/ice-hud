@@ -6,7 +6,7 @@ local PetHealth = AceOO.Class(IceUnitBar)
 function PetHealth.prototype:init()
 	PetHealth.super.prototype.init(self, "PetHealth", "pet")
 	
-	self:SetColor("petHealth", 37, 164, 30)
+	self:SetDefaultColor("PetHealth", 37, 164, 30)
 	
 	self.scalingEnabled = true
 end
@@ -69,9 +69,9 @@ function PetHealth.prototype:Update(unit)
 		return
 	end
 	
-	local color = "petHealth"
+	local color = "PetHealth"
 	if not (self.alive) then
-		color = "dead"
+		color = "Dead"
 	end
 
 

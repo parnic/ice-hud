@@ -28,8 +28,8 @@ function IceUnitBar.prototype:init(name, unit)
 	
 	self.unit = unit
 	_, self.unitClass = UnitClass(self.unit)
-	self:SetColor("dead", 0.5, 0.5, 0.5)
-	self:SetColor("tapped", 0.8, 0.8, 0.8)
+	self:SetDefaultColor("Dead", 0.5, 0.5, 0.5)
+	self:SetDefaultColor("Tapped", 0.8, 0.8, 0.8)
 end
 
 

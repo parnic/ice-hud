@@ -6,10 +6,10 @@ local PetMana = AceOO.Class(IceUnitBar)
 function PetMana.prototype:init()
 	PetMana.super.prototype.init(self, "PetMana", "pet")
 	
-	self:SetColor("petMana", 62, 54, 152)
-	self:SetColor("petRage", 171, 59, 59)
-	self:SetColor("petEnergy", 218, 231, 31)
-	self:SetColor("targetFocus", 242, 149, 98)
+	self:SetDefaultColor("PetMana", 62, 54, 152)
+	self:SetDefaultColor("PetRage", 171, 59, 59)
+	self:SetDefaultColor("PetEnergy", 218, 231, 31)
+	self:SetDefaultColor("PetFocus", 242, 149, 98)
 	
 	self.scalingEnabled = true
 end
@@ -96,17 +96,17 @@ function PetMana.prototype:Update(unit)
 		self.frame:Show()
 	end
 	
-	local color = "petMana"
+	local color = "PetMana"
 	if not (self.alive) then
-		color = "dead"
+		color = "Dead"
 	else
-		local color = "petMana"
+		local color = "PetMana"
 		if (self.manaType == 1) then
-			color = "petRage"
+			color = "PetRage"
 		elseif (self.manaType == 2) then
-			color = "petFocus"
+			color = "PetFocus"
 		elseif (self.manaType == 3) then
-			color = "petEnergy"
+			color = "PetEnergy"
 		end
 	end
 	

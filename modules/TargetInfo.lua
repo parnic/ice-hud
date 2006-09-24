@@ -199,8 +199,6 @@ function TargetInfo.prototype:CreateFrame()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
 	self.frame:SetScale(self.moduleSettings.scale)
 
-	self.frame:Show()
-
 	self:CreateTextFrame()
 	self:CreateInfoTextFrame()
 	self:CreateGuildTextFrame()
@@ -209,6 +207,8 @@ function TargetInfo.prototype:CreateFrame()
 	self:CreateDebuffFrame()
 
 	self:CreateRaidIconFrame()
+	
+	self.frame:Hide()
 end
 
 
@@ -254,7 +254,7 @@ function TargetInfo.prototype:CreateTextFrame()
 	end
 
 
-	self.frame.target:Show()
+	self.frame.target:Hide()
 end
 
 
@@ -501,6 +501,7 @@ end
 function TargetInfo.prototype:TargetChanged()
 	if (not UnitExists(target)) then
 		self.frame:Hide()
+		self.frame.target:Hide()
 		
 		self.frame.targetName:SetText()
 		self.frame.targetInfo:SetText()
@@ -512,6 +513,7 @@ function TargetInfo.prototype:TargetChanged()
 	end
 	
 	self.frame:Show()
+	self.frame.target:Show()
 
 	self.name, self.realm = UnitName(target)
 	self.classLocale, self.classEnglish = UnitClass(target)
@@ -628,7 +630,7 @@ function TargetInfo.prototype:Update(unit)
 
 	local reactionColor = self:ConvertToHex(UnitReactionColor[self.reaction])
 	if (self.tapped) then
-		reactionColor = self:GetHexColor("tapped")
+		reactionColor = self:GetHexColor("Tapped")
 	end
 
 	local line1 = string.format("|c%s%s|r", reactionColor, self.name or '')

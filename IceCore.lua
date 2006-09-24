@@ -36,7 +36,7 @@ function IceCore.prototype:init()
 	local defaults = {
 		gap = 150,
 		verticalPos = -150,
-		scale = 1,
+		scale = 0.9,
 		
 		alphaooc = 0.3,
 		alphaic = 0.6,
@@ -47,7 +47,7 @@ function IceCore.prototype:init()
 		alphaTargetbg = 0.25,
 		
 		backgroundToggle = false,
-		backgroundColor = {r = 0.2, g = 0.2, b = 0.2},
+		backgroundColor = {r = 0.5, g = 0.5, b = 0.5},
 		barTexture = "Bar",
 		barPreset = defaultPreset,
 		fontFamily = "IceHUD",
@@ -65,6 +65,11 @@ function IceCore.prototype:init()
 		local name = self.elements[i]:GetElementName()
 		defaults.modules[name] = self.elements[i]:GetDefaultSettings()	
 	end
+	
+	if (table.getn(self.elements) > 0) then
+		defaults.colors = self.elements[1].defaultColors
+	end
+	
 	
 	self:RegisterDefaults('account', defaults)
 end
@@ -124,6 +129,7 @@ end
 
 function IceCore.prototype:GetModuleOptions()
 	local options = {}
+	
 	for i = 1, table.getn(self.elements) do
 		local modName = self.elements[i]:GetElementName()
 		local opt = self.elements[i]:GetOptions()
@@ -132,6 +138,31 @@ function IceCore.prototype:GetModuleOptions()
 			desc = 'Module options',
 			name = modName,
 			args = opt
+		}
+	end
+	
+	return options
+end
+
+
+function IceCore.prototype:GetColorOptions()
+	assert(table.getn(IceHUD.IceCore.elements) > 0, "Unable to get color options, no elements found!")
+	
+	local options = {}
+	
+	for k, v in pairs(self.elements[1]:GetColors()) do
+		local kk, vv = k, v
+		options[k] =  {
+			type = 'color',
+			desc = k,
+			name = k,
+			get = function()
+				return IceHUD.IceCore:GetColor(kk)
+			end,
+			set = function(r, g, b)
+				local color = k
+				IceHUD.IceCore:SetColor(kk, r, g, b)
+			end
 		}
 	end
 	
@@ -329,6 +360,19 @@ function IceCore.prototype:SetDebug(value)
 	IceHUD:SetDebugging(value)
 end
 
+
+function IceCore.prototype:GetColor(color)
+	return self.settings.colors[color].r,
+		   self.settings.colors[color].g,
+		   self.settings.colors[color].b
+end
+function IceCore.prototype:SetColor(color, r, g, b)
+	self.settings.colors[color].r = r
+	self.settings.colors[color].g = g
+	self.settings.colors[color].b = b
+	
+	self:Redraw()
+end
 
 
 

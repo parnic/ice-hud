@@ -10,9 +10,9 @@ PlayerMana.prototype.previousEnergy = nil
 function PlayerMana.prototype:init()
 	PlayerMana.super.prototype.init(self, "PlayerMana", "player")
 	
-	self:SetColor("playerMana", 62, 54, 152)
-	self:SetColor("playerRage", 171, 59, 59)
-	self:SetColor("playerEnergy", 218, 231, 31)
+	self:SetDefaultColor("PlayerMana", 62, 54, 152)
+	self:SetDefaultColor("PlayerRage", 171, 59, 59)
+	self:SetDefaultColor("PlayerEnergy", 218, 231, 31)
 end
 
 
@@ -61,7 +61,7 @@ function PlayerMana.prototype:GetOptions()
 		end,
 		set = function(value)
 			self.moduleSettings.tickerAlpha = value
-			self.tickerFrame:SetStatusBarColor(self:GetColor("playerEnergy", self.moduleSettings.tickerAlpha))
+			self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -141,14 +141,14 @@ function PlayerMana.prototype:Update(unit)
 		self.tickerFrame:Hide()
 	end
 	
-	local color = "playerMana"
+	local color = "PlayerMana"
 	if not (self.alive) then
-		color = "dead"
+		color = "Dead"
 	else
 		if (self.manaType == 1) then
-			color = "playerRage"
+			color = "PlayerRage"
 		elseif (self.manaType == 3) then
-			color = "playerEnergy"
+			color = "PlayerEnergy"
 		end
 	end
 	
@@ -156,9 +156,9 @@ function PlayerMana.prototype:Update(unit)
 	
 	-- hide ticker if rest of the bar is not visible
 	if (self.alpha == 0) then
- 		self.tickerFrame:SetStatusBarColor(self:GetColor("playerEnergy", 0))
+ 		self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", 0))
  	else
- 		self.tickerFrame:SetStatusBarColor(self:GetColor("playerEnergy", self.moduleSettings.tickerAlpha))
+ 		self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
  	end
 
 
@@ -204,7 +204,7 @@ function PlayerMana.prototype:EnergyTick()
 	end
 	
 	local pos = elapsed / 2
-	local y = pos * (self.settings.barHeight)
+	local y = pos * (self.settings.barHeight-2)
 	
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.tickerFrame.spark:SetTexCoord(1, 0, 1-pos-0.01, 1-pos)
@@ -236,7 +236,7 @@ function PlayerMana.prototype:CreateTickerFrame()
 	self.tickerFrame.spark:SetAllPoints(self.tickerFrame)
 	
 	self.tickerFrame:SetStatusBarTexture(self.tickerFrame.spark)
-	self.tickerFrame:SetStatusBarColor(self:GetColor("playerEnergy", self.moduleSettings.tickerAlpha))
+	self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
 	
 	self.tickerFrame:ClearAllPoints()
 	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", 0, 0)

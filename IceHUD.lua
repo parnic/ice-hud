@@ -373,6 +373,13 @@ IceHUD.options =
 			order = 41
 		},
 		
+		colors = {
+			type='group',
+			desc = 'Module color configuration options',
+			name = 'Colors',
+			args = {},
+			order = 42
+		},
 		
 		headerOtherBlank = { type = 'header', name = ' ', order = 90 },
 		headerOther = {
@@ -478,17 +485,22 @@ function IceHUD:OnInitialize()
 	
 	self.IceCore = IceCore:new()
 	
-	self.options.args.modules.args = self.IceCore:GetModuleOptions()
-	
-	self:RegisterChatCommand({ "/icehud" }, IceHUD.slashMenu)
+
 end
 
 
 function IceHUD:OnEnable()
 	self:Debug("IceHUD:OnEnable()")
 	
+
+	
 	self.IceCore:Enable()
 	self:SetDebugging(self.IceCore:GetDebug())
 	self.debugFrame = ChatFrame2
+	
+		self.options.args.modules.args = self.IceCore:GetModuleOptions()
+	self.options.args.colors.args = self.IceCore:GetColorOptions()
+	
+	self:RegisterChatCommand({ "/icehud" }, IceHUD.slashMenu)
 end
 

@@ -10,7 +10,7 @@ IceElement.prototype.elementName = nil
 IceElement.prototype.parent = nil
 IceElement.prototype.frame = nil
 
-IceElement.prototype.colors = {} -- Shared table for all child classes to save some memory
+IceElement.prototype.defaultColors = {} -- Shared table for all child classes to save some memory
 IceElement.prototype.alpha = nil
 
 IceElement.settings = nil
@@ -32,8 +32,8 @@ function IceElement.prototype:init(name)
 	self.scalingEnabled = false
 
 	-- Some common colors
-	self:SetColor("text", 1, 1, 1)
-	self:SetColor("undef", 0.7, 0.7, 0.7)
+	self:SetDefaultColor("Text", 1, 1, 1)
+	self:SetDefaultColor("undef", 0.7, 0.7, 0.7)
 	
 	self:RegisterEvent(IceCore.Loaded, "OnCoreLoad")
 end
@@ -170,6 +170,11 @@ function IceElement.prototype:CreateFrame()
 end
 
 
+function IceElement.prototype:GetColors()
+	return self.settings.colors
+end
+
+
 function IceElement.prototype:GetColor(color, alpha)
 	if not (color) then
 		return 1, 1, 1, 1
@@ -179,12 +184,12 @@ function IceElement.prototype:GetColor(color, alpha)
 		alpha = self.alpha
 	end
 	
-	if not (self.colors[color]) then
+	if not (self.settings.colors[color]) then
 		local r, g, b = self:GetClassColor(color)
 		return r, g, b, alpha
 	end
 
-	return self.colors[color].r, self.colors[color].g, self.colors[color].b, alpha
+	return self.settings.colors[color].r, self.settings.colors[color].g, self.settings.colors[color].b, alpha
 end
 
 
@@ -204,7 +209,22 @@ function IceElement.prototype:SetColor(color, red, green, blue)
 	if (blue > 1) then
 		blue = blue / 255
 	end
-	self.colors[color] = {r = red, g = green, b = blue}
+	self.settings.colors[color] = {r = red, g = green, b = blue}
+end
+
+
+function IceElement.prototype:SetDefaultColor(color, red, green, blue)
+	if (red > 1) then
+		red = red / 255
+	end
+	if (green > 1) then
+		green = green / 255
+	end
+	if (blue > 1) then
+		blue = blue / 255
+	end
+	
+	self.defaultColors[color] = {r = red, g = green, b = blue}
 end
 
 

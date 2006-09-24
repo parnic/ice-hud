@@ -9,9 +9,9 @@ TargetHealth.prototype.color = nil
 function TargetHealth.prototype:init()
 	TargetHealth.super.prototype.init(self, "TargetHealth", "target")
 	
-	self:SetColor("targetHealthHostile", 231, 31, 36)
-	self:SetColor("targetHealthFriendly", 46, 223, 37)
-	self:SetColor("targetHealthNeutral", 210, 219, 87)
+	self:SetDefaultColor("TargetHealthHostile", 231, 31, 36)
+	self:SetDefaultColor("TargetHealthFriendly", 46, 223, 37)
+	self:SetDefaultColor("TargetHealthNeutral", 210, 219, 87)
 end
 
 
@@ -123,13 +123,13 @@ function TargetHealth.prototype:Update(unit)
 		self.frame:Show()
 	end
 
-	self.color = "targetHealthFriendly" -- friendly > 4
+	self.color = "TargetHealthFriendly" -- friendly > 4
 
 	local reaction = UnitReaction("target", "player")
 	if (reaction and (reaction == 4)) then
-		self.color = "targetHealthNeutral"
+		self.color = "TargetHealthNeutral"
 	elseif (reaction and (reaction < 4)) then
-		self.color = "targetHealthHostile"
+		self.color = "TargetHealthHostile"
 	end
 	
 	if (self.moduleSettings.classColor) then
@@ -137,7 +137,7 @@ function TargetHealth.prototype:Update(unit)
 	end
 
 	if (self.tapped) then
-		self.color = "tapped"
+		self.color = "Tapped"
 	end
 
 	self:UpdateBar(self.health/self.maxHealth, self.color)

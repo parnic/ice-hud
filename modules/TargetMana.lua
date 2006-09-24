@@ -7,10 +7,10 @@ local TargetMana = AceOO.Class(IceUnitBar)
 function TargetMana.prototype:init()
 	TargetMana.super.prototype.init(self, "TargetMana", "target")
 	
-	self:SetColor("targetMana", 52, 64, 221)
-	self:SetColor("targetRage", 235, 44, 26)
-	self:SetColor("targetEnergy", 228, 242, 31)
-	self:SetColor("targetFocus", 242, 149, 98)
+	self:SetDefaultColor("TargetMana", 52, 64, 221)
+	self:SetDefaultColor("TargetRage", 235, 44, 26)
+	self:SetDefaultColor("TargetEnergy", 228, 242, 31)
+	self:SetDefaultColor("TargetFocus", 242, 149, 98)
 end
 
 
@@ -55,17 +55,17 @@ function TargetMana.prototype:Update(unit)
 	
 	local manaType = UnitPowerType(self.unit)
 	
-	local color = "targetMana"
+	local color = "TargetMana"
 	if (manaType == 1) then
-		color = "targetRage"
+		color = "TargetRage"
 	elseif (manaType == 2) then
-		color = "targetFocus"
+		color = "TargetFocus"
 	elseif (manaType == 3) then
-		color = "targetEnergy"
+		color = "TargetEnergy"
 	end
 	
 	if (self.tapped) then
-		color = "tapped"
+		color = "Tapped"
 	end
 	
 	self:UpdateBar(self.mana/self.maxMana, color)

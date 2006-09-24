@@ -1,5 +1,4 @@
 local AceOO = AceLibrary("AceOO-2.0")
-local Metrognome = AceLibrary("Metrognome-2.0")
 
 local DruidMana = AceOO.Class(IceUnitBar)
 
@@ -15,7 +14,7 @@ function DruidMana.prototype:init()
 	self.side = IceCore.Side.Right
 	self.offset = 0
 	
-	self:SetColor("druidMana", 87, 82, 141)
+	self:SetDefaultColor("DruidMana", 87, 82, 141)
 end
 
 
@@ -38,8 +37,7 @@ function DruidMana.prototype:Enable(core)
 		
 	elseif (IsAddOnLoaded("DruidBar")) then
 		self.mode = "DruidBar"
-		Metrognome:Register("DruidMana", self.UpdateDruidBarMana, 0.1, self)
-		Metrognome:Start("DruidMana")
+		self:ScheduleRepeatingEvent("DruidBar", self.UpdateDruidBarMana, 0.2, self)
 	end
 	
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "FormsChanged")
@@ -56,7 +54,7 @@ function DruidMana.prototype:Disable(core)
     end
 	
 	if (IsAddOnLoaded("DruidBar")) then
-		Metrognome:Unregister("DruidMana")
+		self:CancelScheduledEvent("DruidBar")
 	end
 end
 
@@ -94,13 +92,11 @@ function DruidMana.prototype:Update()
 		self.frame:Show()
 	end
 	
-	local color = "druidMana"
-
-	self:UpdateBar(self.druidMana / self.druidMaxMana, color)
+	self:UpdateBar(self.druidMana / self.druidMaxMana, "DruidMana")
 
 	local percentage = (self.druidMana / self.druidMaxMana) * 100
 	self:SetBottomText1(math.floor(percentage))
-	self:SetBottomText2(self:GetFormattedText(string.format("%.0f", self.druidMana), string.format("%.0f", self.druidMaxMana)), color)
+	self:SetBottomText2(self:GetFormattedText(string.format("%.0f", self.druidMana), string.format("%.0f", self.druidMaxMana)), "DruidMana")
 end
 
 

@@ -96,7 +96,7 @@ function MirrorBar.prototype:OnUpdate(elapsed)
 		self:SetBottomText2()
 	else
 		self:SetBottomText1()
-		self:SetBottomText2(text, "text", 1)
+		self:SetBottomText2(text, "Text", 1)
 	end
 end
 
@@ -165,10 +165,10 @@ function MirrorBarHandler.prototype:init()
 
 	self.bars = {}
 
-	self:SetColor("EXHAUSTION", 1, 0.9, 0)
-	self:SetColor("BREATH", 0, 0.5, 1)
-	self:SetColor("DEATH", 1, 0.7, 0)
-	self:SetColor("FEIGNDEATH", 1, 0.9, 0)
+	self:SetDefaultColor("EXHAUSTION", 1, 0.9, 0)
+	self:SetDefaultColor("BREATH", 0, 0.5, 1)
+	self:SetDefaultColor("DEATH", 1, 0.7, 0)
+	self:SetDefaultColor("FEIGNDEATH", 1, 0.9, 0)
 end
 
 

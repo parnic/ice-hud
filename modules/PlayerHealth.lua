@@ -6,7 +6,7 @@ local PlayerHealth = AceOO.Class(IceUnitBar)
 function PlayerHealth.prototype:init()
 	PlayerHealth.super.prototype.init(self, "PlayerHealth", "player")
 	
-	self:SetColor("playerHealth", 37, 164, 30)
+	self:SetDefaultColor("PlayerHealth", 37, 164, 30)
 end
 
 
@@ -85,14 +85,14 @@ function PlayerHealth.prototype:Update(unit)
 		return
 	end
 
-	local color = "playerHealth"
+	local color = "PlayerHealth"
 
 	if (self.moduleSettings.classColor) then
 		color = self.unitClass
 	end
 
 	if not (self.alive) then
-		color = "dead"
+		color = "Dead"
 	end
 
 

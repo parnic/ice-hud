@@ -15,8 +15,6 @@ IceBarElement.prototype.target = nil
 -- Constructor --
 function IceBarElement.prototype:init(name)
 	IceBarElement.super.prototype.init(self, name)
-	
-	self:SetColor("background", 50, 50, 50)
 end
 
 
@@ -40,7 +38,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 1
-	settings["barFontSize"] = 13
+	settings["barFontSize"] = 12
 	settings["barFontBold"] = true
 	settings["lockTextAlpha"] = true
 	settings["textVisible"] = {upper = true, lower = true}
@@ -421,7 +419,7 @@ function IceBarElement.prototype:SetBottomText1(text, color)
 	end
 
 	if not (color) then
-		color = "text"
+		color = "Text"
 	end
 
 	local alpha = self.alpha
@@ -451,7 +449,7 @@ function IceBarElement.prototype:SetBottomText2(text, color, alpha)
 	end
 	
 	if not (color) then
-		color = "text"
+		color = "Text"
 	end
 	if not (alpha) then
 		-- boost text alpha a bit to make it easier to see

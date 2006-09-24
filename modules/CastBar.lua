@@ -17,10 +17,10 @@ CastBar.prototype.actionMessage = nil
 function CastBar.prototype:init()
 	CastBar.super.prototype.init(self, "CastBar")
 
-	self:SetColor("castCasting", 242, 242, 10)
-	self:SetColor("castChanneling", 117, 113, 161)
-	self:SetColor("castSuccess", 242, 242, 70)
-	self:SetColor("castFail", 1, 0, 0)
+	self:SetDefaultColor("CastCasting", 242, 242, 10)
+	self:SetDefaultColor("CastChanneling", 117, 113, 161)
+	self:SetDefaultColor("CastSuccess", 242, 242, 70)
+	self:SetDefaultColor("CastFail", 1, 0, 0)
 
 	self.delay = 0
 	self.action = CastBar.Actions.None
@@ -36,7 +36,7 @@ function CastBar.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 0
 	settings["flashInstants"] = "Caster"
-	settings["flashFailures"] = true
+	settings["flashFailures"] = "Caster"
 	return settings
 end
 
@@ -165,7 +165,7 @@ function CastBar.prototype:OnUpdate()
 		scale = scale > 1 and 1 or scale
 		scale = scale < 0 and 0 or scale
 
-		self:UpdateBar(scale, "castCasting")
+		self:UpdateBar(scale, "CastCasting")
 		self:SetBottomText1(string.format("%.1fs %s%s", remainingTime , spellName, spellRankShort))
 
 		return
@@ -188,7 +188,7 @@ function CastBar.prototype:OnUpdate()
 			return
 		end
 
-		self:FlashBar("castSuccess", 1-instanting, spellName .. spellRankShort)
+		self:FlashBar("CastSuccess", 1-instanting, spellName .. spellRankShort)
 		return
 	end
 
@@ -202,7 +202,7 @@ function CastBar.prototype:OnUpdate()
 			return
 		end
 
-		self:FlashBar("castFail", 1-failing, self.actionMessage, "castFail")
+		self:FlashBar("CastFail", 1-failing, self.actionMessage, "CastFail")
 		return
 	end
 
@@ -219,7 +219,7 @@ function CastBar.prototype:OnUpdate()
 			return
 		end
 
-		self:FlashBar("castSuccess", 1-succeeding)
+		self:FlashBar("CastSuccess", 1-succeeding)
 		return
 	end
 	
@@ -240,7 +240,7 @@ function CastBar.prototype:FlashBar(color, alpha, text, textColor)
 	self.barFrame:SetStatusBarColor(self:GetColor(color, 0.8))
 
 	self:SetScale(self.barFrame.bar, 1)
-	self:SetBottomText1(text, textColor or "text")
+	self:SetBottomText1(text, textColor or "Text")
 end
 
 
@@ -302,7 +302,7 @@ end
 
 function CastBar.prototype:SpellStatus_SpellCastFailure(sId, sName, sRank, sFullName, isActiveSpell, UIEM_Message, CMSFLP_SpellName, CMSFLP_Message)
 	IceHUD:Debug("SpellStatus_SpellCastFailure", sId, sName, sRank, sFullName, isActiveSpell, UIEM_Message, CMSFLP_SpellName, CMSFLP_Message)
-
+	
 	-- do nothing if we are casting a spell but the error doesn't consern that spell
 	if (SpellStatus:IsCastingOrChanneling() and not SpellStatus:IsActiveSpell(sId, sName)) then
 		return
@@ -312,7 +312,7 @@ function CastBar.prototype:SpellStatus_SpellCastFailure(sId, sName, sRank, sFull
 	-- determine if we want to show failed casts
 	if (self.moduleSettings.flashFailures == "Never") then
 		return
-	elseif (isActiveSpell and self.moduleSettings.flashFailures == "Caster") then
+	elseif (self.moduleSettings.flashFailures == "Caster") then
 		if (UnitPowerType("player") ~= 0) then -- 0 == mana user
 			return
 		end

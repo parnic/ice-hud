@@ -8,7 +8,7 @@ ComboPoints.prototype.comboSize = 20
 function ComboPoints.prototype:init()
 	ComboPoints.super.prototype.init(self, "ComboPoints")
 	
-	self:SetColor("combo", 1, 1, 0)
+	self:SetDefaultColor("ComboPoints", 1, 1, 0)
 	self.scalingEnabled = true
 end
 
@@ -105,7 +105,7 @@ function ComboPoints.prototype:GetDefaultSettings()
 	local defaults =  ComboPoints.super.prototype.GetDefaultSettings(self)
 	defaults["vpos"] = 0
 	defaults["comboFontSize"] = 20
-	defaults["comboMode"] = "Graphical"
+	defaults["comboMode"] = "Numeric"
 	defaults["gradient"] = false
 	return defaults
 end
@@ -176,7 +176,7 @@ function ComboPoints.prototype:CreateComboFrame()
 		self.frame.graphicalBG[i]:SetHeight(self.comboSize)
 		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.comboSize-5) + (i-1), 0)
 		self.frame.graphicalBG[i]:SetAlpha(0.15)
-		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("combo"))
+		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("ComboPoints"))
 
 		self.frame.graphicalBG[i]:Hide()
 	end
@@ -190,7 +190,7 @@ function ComboPoints.prototype:CreateComboFrame()
 		self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphical[i]:SetAllPoints(self.frame.graphicalBG[i])
 
-		local r, g, b = self:GetColor("combo")
+		local r, g, b = self:GetColor("ComboPoints")
 		if (self.moduleSettings.gradient) then
 			g = g - (0.15*i)
 		end
@@ -210,7 +210,7 @@ function ComboPoints.prototype:UpdateComboPoints()
 	end
 
 	if (self.moduleSettings.comboMode == "Numeric") then
-		local r, g, b = self:GetColor("combo")
+		local r, g, b = self:GetColor("ComboPoints")
 		if (self.moduleSettings.gradient and points) then
 			g = g - (0.15*points)
 		end
