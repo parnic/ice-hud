@@ -188,7 +188,7 @@ function CastBar.prototype:OnUpdate()
 			return
 		end
 
-		self:FlashBar("CastSuccess", 1-instanting, spellName .. spellRankShort)
+		self:FlashBar("CastSuccess", 1-instanting, (spellName or '') .. spellRankShort)
 		return
 	end
 
