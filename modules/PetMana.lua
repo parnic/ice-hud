@@ -55,6 +55,8 @@ function PetMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_MAXRAGE", "Update")
 	self:RegisterEvent("UNIT_ENERGY", "Update")
 	self:RegisterEvent("UNIT_MAXENERGY", "Update")
+	self:RegisterEvent("UNIT_FOCUS", "Update")
+	self:RegisterEvent("UNIT_MAXFOCUS", "Update")
 
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
