@@ -3,7 +3,7 @@
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
 ## Notes: Another HUD mod
-## Version: 0.7.2 ($Revision$)
+## Version: 0.7.3 ($Revision$)
 ## SavedVariables: IceCoreDB
 ## OptionalDeps: Ace2, DewdropLib, FuBar_ToFu, DruidBar, SoleManax, MobHealth, SpellStatusLib
 ## X-Category: UnitFrame
@@ -51,3 +51,4 @@ modules\ComboPoints.lua
 modules\CastBar.lua
 modules\MirrorBar.lua
 modules\TimerBar.lua
+

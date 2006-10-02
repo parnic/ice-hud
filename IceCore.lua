@@ -35,7 +35,7 @@ function IceCore.prototype:init()
 	local defaultPreset = "RoundBar"
 	local defaults = {
 		gap = 150,
-		verticalPos = -150,
+		verticalPos = -50,
 		scale = 0.9,
 		
 		alphaooc = 0.3,

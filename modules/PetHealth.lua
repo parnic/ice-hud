@@ -2,11 +2,16 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 local PetHealth = AceOO.Class(IceUnitBar)
 
+PetHealth.prototype.happiness = nil
+
+
 -- Constructor --
 function PetHealth.prototype:init()
 	PetHealth.super.prototype.init(self, "PetHealth", "pet")
 	
-	self:SetDefaultColor("PetHealth", 37, 164, 30)
+	self:SetDefaultColor("PetHealthHappy", 37, 164, 30)
+	self:SetDefaultColor("PetHealthContent", 164, 164, 30)
+	self:SetDefaultColor("PetHealthUnhappy", 164, 30, 30)
 	
 	self.scalingEnabled = true
 end
@@ -48,14 +53,26 @@ function PetHealth.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_HEALTH", "Update")
 	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
+	
+	self:RegisterEvent("UNIT_HAPPINESS", "PetHappiness")
 
 	self:CheckPet()
+end
+
+function PetHealth.prototype:PetHappiness(unit)
+	if (unit and (unit ~= self.unit)) then
+		return
+	end
+	
+	self.happiness = GetPetHappiness()
+	self.happiness = self.happiness or 3 -- '3' means happy
 end
 
 
 function PetHealth.prototype:CheckPet()
 	if (UnitExists(self.unit)) then
 		self.frame:Show()
+		self:PetHappiness(self.unit)
 		self:Update(self.unit)
 	else
 		self.frame:Hide()
@@ -69,7 +86,13 @@ function PetHealth.prototype:Update(unit)
 		return
 	end
 	
-	local color = "PetHealth"
+	local color = "PetHealthHappy"
+	if (self.happiness == 2) then
+		color = "PetHealthContent"
+	elseif(self.happiness == 1) then
+		color = "PetHealthUnhappy"
+	end
+	
 	if not (self.alive) then
 		color = "Dead"
 	end

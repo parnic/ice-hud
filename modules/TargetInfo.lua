@@ -22,6 +22,7 @@ TargetInfo.prototype.level = nil
 TargetInfo.prototype.classification = nil
 TargetInfo.prototype.reaction = nil
 TargetInfo.prototype.tapped = nil
+TargetInfo.prototype.pvpRank = nil
 
 TargetInfo.prototype.isPlayer = nil
 
@@ -87,6 +88,26 @@ function TargetInfo.prototype:GetOptions()
 		end,
 		set = function(v)
 			self.moduleSettings.fontSize = v
+			self:Redraw()
+		end,
+		min = 8,
+		max = 20,
+		step = 1,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 32
+	}
+	
+	opts["stackFontSize"] = {
+		type = 'range',
+		name = 'Stack Font Size',
+		desc = 'Stack Font Size',
+		get = function()
+			return self.moduleSettings.stackFontSize
+		end,
+		set = function(v)
+			self.moduleSettings.stackFontSize = v
 			self:Redraw()
 		end,
 		min = 8,
@@ -164,9 +185,10 @@ end
 function TargetInfo.prototype:GetDefaultSettings()
 	local defaults =  TargetInfo.super.prototype.GetDefaultSettings(self)
 	defaults["fontSize"] = 13
+	defaults["stackFontSize"] = 11
 	defaults["vpos"] = -50
-	defaults["zoom"] = 0.2
-	defaults["buffSize"] = 13
+	defaults["zoom"] = 0.08
+	defaults["buffSize"] = 14
 	defaults["mouse"] = true
 	return defaults
 end
@@ -180,6 +202,7 @@ function TargetInfo.prototype:Redraw()
 		self:CreateFrame(true)
 		self:TargetChanged()
 	end
+
 end
 
 
@@ -384,12 +407,13 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 
 			buffs[i].icon.texture:ClearAllPoints()
 			buffs[i].icon.texture:SetAllPoints(buffs[i].icon)
-
-			buffs[i].icon.stack = self:FontFactory("Bold", 11, buffs[i].icon)
-
-			buffs[i].icon.stack:ClearAllPoints()
-			buffs[i].icon.stack:SetPoint("BOTTOMRIGHT" , buffs[i].icon, "BOTTOMRIGHT", 1, -1)
 		end
+		
+		buffs[i].icon.stack = self:FontFactory("Bold", self.moduleSettings.stackFontSize, buffs[i].icon)
+
+		buffs[i].icon.stack:ClearAllPoints()
+		buffs[i].icon.stack:SetPoint("BOTTOMRIGHT" , buffs[i].icon, "BOTTOMRIGHT", 1, -1)
+		
 		
 		buffs[i].id = i
 		if (self.moduleSettings.mouse) then
@@ -422,8 +446,6 @@ function TargetInfo.prototype:UpdateBuffs()
 		
 		local alpha = buffTexture and 0.5 or 0
 		self.frame.buffFrame.buffs[i].texture:SetTexture(0, 0, 0, alpha)
-
-		self.frame.buffFrame.buffs[i].texture:SetVertexColor(color.r, color.g, color.b)
 
 
 		--buffApplications = 2
@@ -518,6 +540,9 @@ function TargetInfo.prototype:TargetChanged()
 	self.name, self.realm = UnitName(target)
 	self.classLocale, self.classEnglish = UnitClass(target)
 	self.isPlayer = UnitIsPlayer(target)
+	
+	local rank = UnitPVPRank(target)
+	self.pvpRank = (rank >= 5) and rank-4 or nil
 
 	local classification = UnitClassification(target)
 	if (string.find(classification, "boss")) then
@@ -601,10 +626,14 @@ function TargetInfo.prototype:TargetFaction(unit)
 				if (UnitFactionGroup(target) ~= UnitFactionGroup("player")) then
 					color = "ffff1010" -- hostile
 				end
-				self.pvp = " |c" .. color .. "PvP|r"
+				self.pvp = " |c" .. color .. "PvP"
 			else
-				self.pvp = " |cff1010ffPvE|r"
+				self.pvp = " |cff1010ffPvE"
 			end
+			
+			-- add rank
+			self.pvp = self.pvpRank and (self.pvp .. "/" .. self.pvpRank .. "|r") or (self.pvp .. "|r")
+			
 		else
 			self.pvp = ""
 		end
