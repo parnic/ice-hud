@@ -6,6 +6,8 @@ TargetOfTarget.prototype.stackedDebuffs = nil
 TargetOfTarget.prototype.buffSize = nil
 TargetOfTarget.prototype.height = nil
 TargetOfTarget.prototype.unit = nil
+TargetOfTarget.prototype.soundPlayed = nil
+TargetOfTarget.prototype.lastTarget = nil
 
 
 -- Constructor --
@@ -99,6 +101,40 @@ function TargetOfTarget.prototype:GetOptions()
 		order = 34
 	}
 	
+	opts["aggroGainSound"] = {
+		order = 35,
+		type = 'toggle',
+		name = 'Aggro Sound',
+		desc = 'Play a sound when you get aggro',
+		get = function()
+			return self.moduleSettings.aggro
+		end,
+		set = function(v)
+			self.moduleSettings.aggro = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end		
+	}	
+	
+	opts["optionalSound"] = {
+		order = 35,
+		type = 'toggle',
+		name = 'Other Sound',
+		desc = 'Play a different sound on aggro gain',
+		get = function()
+			return self.moduleSettings.otherSound
+		end,
+		set = function(v)
+			self.moduleSettings.otherSound = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end		
+	}		
+	
 	return opts
 end
 
@@ -110,6 +146,8 @@ function TargetOfTarget.prototype:GetDefaultSettings()
 	defaults["showDebuffs"] = true
 	defaults["fontSize"] = 12
 	defaults["mouse"] = true
+	defaults["aggro"] = true
+	defaults["otherSound"] = false	
 	return defaults
 end
 
@@ -323,6 +361,7 @@ function TargetOfTarget.prototype:Update()
 		self.frame.totName:SetText()
 		self.frame.totHealth:SetText()
 		self.frame:Hide()
+		self.lastTarget = nil;
 		return
 	end
 
@@ -347,6 +386,17 @@ function TargetOfTarget.prototype:Update()
 	self.frame.bar.texture:SetVertexColor(self:GetColor(unitClass, 0.7))
 	self.frame.bar:SetMinMaxValues(0, maxHealth)
 	self.frame.bar:SetValue(health)
+
+	if (self.moduleSettings.aggro) and ((not self.lastTarget) or (self.lastTarget ~= UnitName("target"))) then
+		if (name == UnitName("player")) then
+			if (self.moduleSettings.otherSound) then
+				PlaySoundFile("Sound\\Doodad\\BellTollAlliance.wav");
+			else
+				PlaySoundFile("Sound\\Doodad\\BellTollHorde.wav");
+			end			
+			self.lastTarget = UnitName("target");
+		end			
+	end
 end
 
 
