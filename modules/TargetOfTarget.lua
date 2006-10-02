@@ -386,7 +386,9 @@ function TargetOfTarget.prototype:Update()
 	self.frame:Show()
 
 	local lUnitClass, unitClass = UnitClass(self.unit)
+	local friendly = UnitIsFriend("player", "target");
 	--DEFAULT_CHAT_FRAME:AddMessage(unitClass.." - "..lUnitClass);
+	
 	local name = UnitName(self.unit)
 	local reaction = UnitReaction(self.unit, "player")
 
@@ -409,7 +411,7 @@ function TargetOfTarget.prototype:Update()
 	self.frame.bar:SetMinMaxValues(0, maxHealth)
 	self.frame.bar:SetValue(health)
 
-	if (self.moduleSettings.aggro) and ((not self.lastTarget) or (self.lastTarget ~= UnitName("target"))) then
+	if (self.moduleSettings.aggro) and (not friendly) and ((not self.lastTarget) or (self.lastTarget ~= UnitName("target"))) then
 		if (name == UnitName("player")) then
 			if (self.moduleSettings.otherSound) then
 				PlaySoundFile("Sound\\Doodad\\BellTollAlliance.wav");
