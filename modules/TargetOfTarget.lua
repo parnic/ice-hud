@@ -101,8 +101,25 @@ function TargetOfTarget.prototype:GetOptions()
 		order = 34
 	}
 	
-	opts["aggroGainSound"] = {
+	opts["showClass"] = {
 		order = 35,
+		type = 'toggle',
+		name = 'Show Class',
+		desc = 'Show the class of the targets target in brackets',
+		get = function()
+			return self.moduleSettings.showClass
+		end,
+		set = function(v)
+			self.moduleSettings.showClass = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end		
+	}		
+	
+	opts["aggroGainSound"] = {
+		order = 36,
 		type = 'toggle',
 		name = 'Aggro Sound',
 		desc = 'Play a sound when you get aggro',
@@ -119,7 +136,7 @@ function TargetOfTarget.prototype:GetOptions()
 	}	
 	
 	opts["optionalSound"] = {
-		order = 35,
+		order = 37,
 		type = 'toggle',
 		name = 'Other Sound',
 		desc = 'Play a different sound on aggro gain',
@@ -148,6 +165,7 @@ function TargetOfTarget.prototype:GetDefaultSettings()
 	defaults["mouse"] = true
 	defaults["aggro"] = true
 	defaults["otherSound"] = false	
+	defaults["showClass"] = false		
 	return defaults
 end
 
@@ -367,7 +385,8 @@ function TargetOfTarget.prototype:Update()
 
 	self.frame:Show()
 
-	local _, unitClass = UnitClass(self.unit)
+	local lUnitClass, unitClass = UnitClass(self.unit)
+	--DEFAULT_CHAT_FRAME:AddMessage(unitClass.." - "..lUnitClass);
 	local name = UnitName(self.unit)
 	local reaction = UnitReaction(self.unit, "player")
 
@@ -378,6 +397,9 @@ function TargetOfTarget.prototype:Update()
 	local rColor = UnitReactionColor[reaction or 5]
 
 	self.frame.totName:SetTextColor(rColor.r, rColor.g, rColor.b, 0.9)
+	if (self.moduleSettings.showClass) then
+		name = name.." ("..lUnitClass..")";
+	end
 	self.frame.totName:SetText(name)
 
 	self.frame.totHealth:SetTextColor(rColor.r, rColor.g, rColor.b, 0.9)
