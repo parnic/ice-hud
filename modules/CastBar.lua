@@ -5,13 +5,13 @@ local SpellCache = AceLibrary("SpellCache-1.0")
 local CastBar = AceOO.Class(IceBarElement)
 
 
-CastBar.Actions = { None = 0, Cast = 1, Channel = 2, Instant = 3, Success = 4, Failure = 5, AutoShot =6 }
+CastBar.Actions = { None = 0, Cast = 1, Channel = 2, Instant = 3, Success = 4, Failure = 5 }
 
 CastBar.prototype.action = nil
 CastBar.prototype.actionStartTime = nil
 CastBar.prototype.actionMessage = nil
 
-IceHUDAutoCastLastStart = nil;
+
 
 -- Constructor --
 function CastBar.prototype:init()
@@ -21,7 +21,6 @@ function CastBar.prototype:init()
 	self:SetDefaultColor("CastChanneling", 117, 113, 161)
 	self:SetDefaultColor("CastSuccess", 242, 242, 70)
 	self:SetDefaultColor("CastFail", 1, 0, 0)
-	self:SetDefaultColor("CastAutoshot", 0, 0, 1)
 
 	self.delay = 0
 	self.action = CastBar.Actions.None
@@ -38,10 +37,6 @@ function CastBar.prototype:GetDefaultSettings()
 	settings["offset"] = 0
 	settings["flashInstants"] = "Caster"
 	settings["flashFailures"] = "Caster"
-	settings["lastInstant"] = nil;
-	settings["lastStart"] = nil;
-	settings["useLast"] = nil;
-	settings["showAutoCast"] = 1;
 	return settings
 end
 
@@ -82,23 +77,6 @@ function CastBar.prototype:GetOptions()
 		validate = { "Always", "Caster", "Never" },
 		order = 41
 	}
-	
-	opts["showAutoCast"] = {
-		type = "toggle",
-		name = "Show Autocasts",
-		desc = "Show the your autoshots in cast bar",
-		get = function()
-			return self.moduleSettings.showAutoCast
-		end,
-		set = function(value)
-			self.moduleSettings.showAutoCast = value
-			self:Update(self.unit)
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 42
-	}		
 
 	return opts
 end
@@ -153,44 +131,12 @@ end
 
 -- OnUpdate handler
 function CastBar.prototype:OnUpdate()
-
 	-- safety catch
 	if (self.action == CastBar.Actions.None) then
 		IceHUD:Debug("Stopping action ", self.action)
-		self:StopBar()		
+		self:StopBar()
 		return
 	end
-		
-	if (self.action == CastBar.Actions.AutoShot) then				
-		if (SpellStatus:IsAutoRepeating() == false) then
-			self:StopBar()
-			return
-		end
-		
-		local spellCastDuration = UnitRangedDamage("player");		
-		if (not self.moduleSettings.useLast) then
-			self.moduleSettings.lastStart = self.actionStartTime;			
-		end
-		
-		local remainingTime = self.moduleSettings.lastStart + spellCastDuration - GetTime();
-		local scale = 1 - (remainingTime / (spellCastDuration))
-		
-		IceHUDAutoCastLastStart = self.moduleSettings.lastStart;
-		
-		--DEFAULT_CHAT_FRAME:AddMessage("autoshot  "..spellCastDuration.." - "..remainingTime);
-
-		if (remainingTime < 0 and remainingTime > -1.5) then -- lag compensation
-			remainingTime = 0
-		end
-		
-		-- sanity check to make sure the bar doesn't over/underfill
-		scale = scale > 1 and 1 or scale
-		scale = scale < 0 and 0 or scale
-
-		self:UpdateBar(scale, "CastCasting")
-		self:SetBottomText1(string.format("%.1fs AutoShot", remainingTime))
-		return
-	end	
 
 	local spellId, spellName, spellRank, spellFullName, spellCastStartTime, spellCastStopTime, spellCastDuration, spellAction = SpellStatus:GetActiveSpellData()
 	local time = GetTime()
@@ -242,9 +188,7 @@ function CastBar.prototype:OnUpdate()
 			return
 		end
 
-		if (spellName) then
-			self:FlashBar("CastSuccess", 1-instanting, spellName .. spellRankShort)
-		end
+		self:FlashBar("CastSuccess", 1-instanting, (spellName or '') .. spellRankShort)
 		return
 	end
 
@@ -285,8 +229,6 @@ end
 
 function CastBar.prototype:FlashBar(color, alpha, text, textColor)
 	self.frame:SetAlpha(alpha)
-	
-	--DEFAULT_CHAT_FRAME:AddMessage("flash");
 
 	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
 	if (self.settings.backgroundToggle) then
@@ -306,30 +248,22 @@ function CastBar.prototype:StartBar(action, message)
 	self.action = action
 	self.actionStartTime = GetTime()
 	self.actionMessage = message
-	
+
 	self.frame:Show()
 	self.frame:SetScript("OnUpdate", function() self:OnUpdate() end)
 end
 
-function CastBar.prototype:CastAuto()
-	self.action = CastBar.Actions.AutoShot
-	self.actionStartTime = GetTime()
-	
-	self.frame:Show()
-	self.frame:SetScript("OnUpdate", function() self:OnUpdate() end)
-	--DEFAULT_CHAT_FRAME:AddMessage("autocast now");
-end
 
 function CastBar.prototype:StopBar()
 	self.action = CastBar.Actions.None
-	self.actionStartTime = nil	
-	
+	self.actionStartTime = nil
+
 	self.frame:Hide()
 	self.frame:SetScript("OnUpdate", nil)
-	
-	self.moduleSettings.lastInstant = nil;
-	IceHUDAutoCastLastStart = nil;
 end
+
+
+
 
 -------------------------------------------------------------------------------
 -- INSTANT SPELLS                                                            --
@@ -346,22 +280,8 @@ function CastBar.prototype:SpellStatus_SpellCastInstant(sId, sName, sRank, sFull
 			return
 		end
 	end
-	
-	if (self.moduleSettings.showAutoCast) and (SpellStatus:IsAutoRepeating() == true) and (sName) then
-		if (self.moduleSettings.lastInstant) and (self.moduleSettings.lastInstant ~= sName) then --instant spell in between autshots
-			self.moduleSettings.useLast = 1;			
-		else
-			self.moduleSettings.useLast = nil;
-		end
-		self.moduleSettings.lastInstant = sName;
-		--DEFAULT_CHAT_FRAME:AddMessage("start inst "..sName);
-		self:CastAuto();
-	else
-		--if (sName) then
-			--DEFAULT_CHAT_FRAME:AddMessage("start inst "..sName);
-		--end
-		self:StartBar(CastBar.Actions.Instant)
-	end
+
+	self:StartBar(CastBar.Actions.Instant)
 end
 
 
@@ -373,13 +293,11 @@ end
 function CastBar.prototype:SpellStatus_SpellCastCastingStart(sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration)
 	IceHUD:Debug("SpellStatus_SpellCastCastingStart", sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration)
 	self:StartBar(CastBar.Actions.Cast)
-	--DEFAULT_CHAT_FRAME:AddMessage("start cast");
 end
 
 function CastBar.prototype:SpellStatus_SpellCastCastingFinish (sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sCastDelayTotal)
 	IceHUD:Debug("SpellStatus_SpellCastCastingFinish ", sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sCastDelayTotal)
 	self:StartBar(CastBar.Actions.Success)
-	--DEFAULT_CHAT_FRAME:AddMessage("start finish");
 end
 
 function CastBar.prototype:SpellStatus_SpellCastFailure(sId, sName, sRank, sFullName, isActiveSpell, UIEM_Message, CMSFLP_SpellName, CMSFLP_Message)
@@ -402,8 +320,6 @@ function CastBar.prototype:SpellStatus_SpellCastFailure(sId, sName, sRank, sFull
 	
 
 	self:StartBar(CastBar.Actions.Fail, UIEM_Message)
-	
-	--DEFAULT_CHAT_FRAME:AddMessage("start fail");
 end
 
 function CastBar.prototype:SpellStatus_SpellCastCastingChange(sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sCastDelay, sCastDelayTotal)
@@ -419,7 +335,6 @@ end
 function CastBar.prototype:SpellStatus_SpellCastChannelingStart(sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sAction)
 	IceHUD:Debug("SpellStatus_SpellCastChannelingStart", sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sAction)
 	self:StartBar(CastBar.Actions.Channel)
-	--DEFAULT_CHAT_FRAME:AddMessage("start channel");
 end
 
 function CastBar.prototype:SpellStatus_SpellCastChannelingFinish(sId, sName, sRank, sFullName, sCastStartTime, sCastStopTime, sCastDuration, sAction, sCastDisruptionTotal)

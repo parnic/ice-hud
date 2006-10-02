@@ -6,8 +6,6 @@ TargetOfTarget.prototype.stackedDebuffs = nil
 TargetOfTarget.prototype.buffSize = nil
 TargetOfTarget.prototype.height = nil
 TargetOfTarget.prototype.unit = nil
-TargetOfTarget.prototype.soundPlayed = nil
-TargetOfTarget.prototype.lastTarget = nil
 
 
 -- Constructor --
@@ -101,57 +99,6 @@ function TargetOfTarget.prototype:GetOptions()
 		order = 34
 	}
 	
-	opts["showClass"] = {
-		order = 35,
-		type = 'toggle',
-		name = 'Show Class',
-		desc = 'Show the class of the targets target in brackets',
-		get = function()
-			return self.moduleSettings.showClass
-		end,
-		set = function(v)
-			self.moduleSettings.showClass = v
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end		
-	}		
-	
-	opts["aggroGainSound"] = {
-		order = 36,
-		type = 'toggle',
-		name = 'Aggro Sound',
-		desc = 'Play a sound when you get aggro',
-		get = function()
-			return self.moduleSettings.aggro
-		end,
-		set = function(v)
-			self.moduleSettings.aggro = v
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end		
-	}	
-	
-	opts["optionalSound"] = {
-		order = 37,
-		type = 'toggle',
-		name = 'Other Sound',
-		desc = 'Play a different sound on aggro gain',
-		get = function()
-			return self.moduleSettings.otherSound
-		end,
-		set = function(v)
-			self.moduleSettings.otherSound = v
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end		
-	}		
-	
 	return opts
 end
 
@@ -163,9 +110,6 @@ function TargetOfTarget.prototype:GetDefaultSettings()
 	defaults["showDebuffs"] = true
 	defaults["fontSize"] = 12
 	defaults["mouse"] = true
-	defaults["aggro"] = true
-	defaults["otherSound"] = false	
-	defaults["showClass"] = false		
 	return defaults
 end
 
@@ -379,16 +323,12 @@ function TargetOfTarget.prototype:Update()
 		self.frame.totName:SetText()
 		self.frame.totHealth:SetText()
 		self.frame:Hide()
-		self.lastTarget = nil;
 		return
 	end
 
 	self.frame:Show()
 
-	local lUnitClass, unitClass = UnitClass(self.unit)
-	local friendly = UnitIsFriend("player", "target");
-	--DEFAULT_CHAT_FRAME:AddMessage(unitClass.." - "..lUnitClass);
-	
+	local _, unitClass = UnitClass(self.unit)
 	local name = UnitName(self.unit)
 	local reaction = UnitReaction(self.unit, "player")
 
@@ -399,9 +339,6 @@ function TargetOfTarget.prototype:Update()
 	local rColor = UnitReactionColor[reaction or 5]
 
 	self.frame.totName:SetTextColor(rColor.r, rColor.g, rColor.b, 0.9)
-	if (self.moduleSettings.showClass) then
-		name = name.." ("..lUnitClass..")";
-	end
 	self.frame.totName:SetText(name)
 
 	self.frame.totHealth:SetTextColor(rColor.r, rColor.g, rColor.b, 0.9)
@@ -410,17 +347,6 @@ function TargetOfTarget.prototype:Update()
 	self.frame.bar.texture:SetVertexColor(self:GetColor(unitClass, 0.7))
 	self.frame.bar:SetMinMaxValues(0, maxHealth)
 	self.frame.bar:SetValue(health)
-
-	if (self.moduleSettings.aggro) and (not friendly) and ((not self.lastTarget) or (self.lastTarget ~= UnitName("target"))) then
-		if (name == UnitName("player")) then
-			if (self.moduleSettings.otherSound) then
-				PlaySoundFile("Sound\\Doodad\\BellTollAlliance.wav");
-			else
-				PlaySoundFile("Sound\\Doodad\\BellTollHorde.wav");
-			end			
-			self.lastTarget = UnitName("target");
-		end			
-	end
 end
 
 
