@@ -275,13 +275,13 @@ function IceBarElement.prototype:CreateBar()
 		self.barFrame = CreateFrame("StatusBar", nil, self.frame)
 	end
 	
-	self.barFrame:SetFrameStrata("HIGH")
+	self.barFrame:SetFrameStrata("LOW")
 	self.barFrame:SetWidth(self.settings.barWidth)
 	self.barFrame:SetHeight(self.settings.barHeight)
 	
 	
 	if not (self.barFrame.bar) then
-		self.barFrame.bar = self.frame:CreateTexture(nil, "MEDIUM")
+		self.barFrame.bar = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
 	
 	self.barFrame.bar:SetTexture(IceElement.TexturePath .. self.settings.barTexture)

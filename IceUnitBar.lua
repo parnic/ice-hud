@@ -114,7 +114,7 @@ function IceUnitBar.prototype:CreateFlashFrame()
 		self.flashFrame = CreateFrame("StatusBar", nil, self.frame)
 	end
 	
-	self.flashFrame:SetFrameStrata("LOW")
+	self.flashFrame:SetFrameStrata("BACKGROUND")
 	self.flashFrame:SetWidth(self.settings.barWidth)
 	self.flashFrame:SetHeight(self.settings.barHeight)
 	
