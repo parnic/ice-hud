@@ -66,6 +66,7 @@ function PetHealth.prototype:PetHappiness(unit)
 	
 	self.happiness = GetPetHappiness()
 	self.happiness = self.happiness or 3 -- '3' means happy
+	self:Update(unit)
 end
 
 
