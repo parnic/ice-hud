@@ -19,7 +19,7 @@ function TargetHealth.prototype:GetDefaultSettings()
 	local settings = TargetHealth.super.prototype.GetDefaultSettings(self)
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 2
-	settings["mobhealth"] = false
+	settings["mobhealth"] = (MobHealth3 ~= nil)
 	settings["classColor"] = false
 	settings["hideBlizz"] = true
 	return settings

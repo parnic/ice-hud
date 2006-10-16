@@ -174,6 +174,15 @@ function PlayerMana.prototype:Update(unit)
 end
 
 
+-- OVERRIDE
+function PlayerMana.prototype:UpdateBar(scale, color, alpha)
+	self.noFlash = (self.manaType ~= 0)
+	
+	PlayerMana.super.prototype.UpdateBar(self, scale, color, alpha)
+end
+
+
+
 function PlayerMana.prototype:UpdateEnergy(unit)
 	if (unit and (unit ~= "player")) then
 		return

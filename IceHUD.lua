@@ -242,7 +242,6 @@ IceHUD.options =
 			end,
 			set = function(value)
 				IceHUD.IceCore:SetFontFamily(value)
-				IceHUD.IceCore:Redraw()
 			end,
 			validate = { "IceHUD", "Default" },	
 		},

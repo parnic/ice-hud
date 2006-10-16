@@ -17,7 +17,7 @@ IceUnitBar.prototype.manaPercentage = nil
 IceUnitBar.prototype.unitClass = nil
 IceUnitBar.prototype.hasPet = nil
 
-
+IceUnitBar.prototype.noFlash = nil
 
 -- Constructor --
 function IceUnitBar.prototype:init(name, unit)
@@ -26,6 +26,7 @@ function IceUnitBar.prototype:init(name, unit)
 	
 	self.unit = unit
 	_, self.unitClass = UnitClass(self.unit)
+	self.noFlash = false
 	
 	self:SetDefaultColor("Dead", 0.5, 0.5, 0.5)
 	self:SetDefaultColor("Tapped", 0.8, 0.8, 0.8)
@@ -50,7 +51,7 @@ function IceUnitBar.prototype:GetOptions()
 	{
 		type = 'range',
 		name =  '|cff22bb22Low Threshold|r',
-		desc = 'Threshold of pulsing the bar (0 means never)',
+		desc = 'Threshold of pulsing the bar (0 means never) (for player applies only to mana, not rage/energy)',
 		get = function()
 			return self.moduleSettings.lowThreshold
 		end,
@@ -180,8 +181,10 @@ function IceUnitBar.prototype:UpdateBar(scale, color, alpha)
 	
 	self.flashFrame:SetStatusBarColor(self:GetColor(color))
 	
-	if (self.moduleSettings.lowThreshold > 0 and self.moduleSettings.lowThreshold >= scale and self.alive) then
-		self.flashFrame:SetScript("OnUpdate", function() self:OnFlashUpdate() end)
+	if (self.moduleSettings.lowThreshold > 0 and 
+		self.moduleSettings.lowThreshold >= scale and self.alive and
+		not self.noFlash) then
+			self.flashFrame:SetScript("OnUpdate", function() self:OnFlashUpdate() end)
 	else
 		self.flashFrame:SetScript("OnUpdate", nil)
 		self.flashFrame:SetAlpha(0)

@@ -108,7 +108,7 @@ function TargetInfo.prototype:GetOptions()
 		end,
 		set = function(v)
 			self.moduleSettings.stackFontSize = v
-			self:Redraw()
+			self:RedrawBuffs()
 		end,
 		min = 8,
 		max = 20,
@@ -128,7 +128,7 @@ function TargetInfo.prototype:GetOptions()
 		end,
 		set = function(v)
 			self.moduleSettings.zoom = v
-			self:Redraw()
+			self:RedrawBuffs()
 		end,
 		min = 0,
 		max = 0.2,
@@ -149,7 +149,7 @@ function TargetInfo.prototype:GetOptions()
 		end,
 		set = function(v)
 			self.moduleSettings.buffSize = v
-			self:Redraw()
+			self:RedrawBuffs()
 		end,
 		min = 8,
 		max = 20,
@@ -170,6 +170,7 @@ function TargetInfo.prototype:GetOptions()
 		set = function(v)
 			self.moduleSettings.mouse = v
 			self:Redraw()
+			self:RedrawBuffs()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -202,7 +203,16 @@ function TargetInfo.prototype:Redraw()
 		self:CreateFrame(true)
 		self:TargetChanged()
 	end
+end
 
+
+function TargetInfo.prototype:RedrawBuffs()
+	if (self.moduleSettings.enabled) then
+		self:CreateBuffFrame(false)
+		self:CreateDebuffFrame(false)
+		
+		self:TargetChanged()
+	end
 end
 
 
@@ -210,7 +220,7 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 -- OVERRIDE
-function TargetInfo.prototype:CreateFrame()
+function TargetInfo.prototype:CreateFrame(redraw)
 	TargetInfo.super.prototype.CreateFrame(self)
 
 	self.width = self.settings.gap + 50
@@ -226,8 +236,8 @@ function TargetInfo.prototype:CreateFrame()
 	self:CreateInfoTextFrame()
 	self:CreateGuildTextFrame()
 
-	self:CreateBuffFrame()
-	self:CreateDebuffFrame()
+	self:CreateBuffFrame(redraw)
+	self:CreateDebuffFrame(redraw)
 
 	self:CreateRaidIconFrame()
 	
@@ -329,43 +339,45 @@ function TargetInfo.prototype:CreateRaidIconFrame()
 end
 
 
-function TargetInfo.prototype:CreateBuffFrame()
+function TargetInfo.prototype:CreateBuffFrame(redraw)
 	if (not self.frame.buffFrame) then
 		self.frame.buffFrame = CreateFrame("Frame", nil, self.frame)
-	end
 
-	self.frame.buffFrame:SetFrameStrata("BACKGROUND")
-	self.frame.buffFrame:SetWidth(1)
-	self.frame.buffFrame:SetHeight(1)
+		self.frame.buffFrame:SetFrameStrata("BACKGROUND")
+		self.frame.buffFrame:SetWidth(1)
+		self.frame.buffFrame:SetHeight(1)
+	
+		self.frame.buffFrame:ClearAllPoints()
+		self.frame.buffFrame:SetPoint("TOPRIGHT", self.frame, "TOPLEFT", -5, 0)
+		self.frame.buffFrame:Show()
 
-	self.frame.buffFrame:ClearAllPoints()
-	self.frame.buffFrame:SetPoint("TOPRIGHT", self.frame, "TOPLEFT", -5, 0)
-	self.frame.buffFrame:Show()
-
-	if (not self.frame.buffFrame.buffs) then
 		self.frame.buffFrame.buffs = {}
 	end
-	self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, -1, self.frame.buffFrame.buffs, "buff")
+	
+	if (not redraw) then
+		self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, -1, self.frame.buffFrame.buffs, "buff")
+	end
 end
 
 
-function TargetInfo.prototype:CreateDebuffFrame()
+function TargetInfo.prototype:CreateDebuffFrame(redraw)
 	if (not self.frame.debuffFrame) then
 		self.frame.debuffFrame = CreateFrame("Frame", nil, self.frame)
-	end
 
-	self.frame.debuffFrame:SetFrameStrata("BACKGROUND")
-	self.frame.debuffFrame:SetWidth(1)
-	self.frame.debuffFrame:SetHeight(1)
+		self.frame.debuffFrame:SetFrameStrata("BACKGROUND")
+		self.frame.debuffFrame:SetWidth(1)
+		self.frame.debuffFrame:SetHeight(1)
+	
+		self.frame.debuffFrame:ClearAllPoints()
+		self.frame.debuffFrame:SetPoint("TOPLEFT", self.frame, "TOPRIGHT", 5, 0)
+		self.frame.debuffFrame:Show()
 
-	self.frame.debuffFrame:ClearAllPoints()
-	self.frame.debuffFrame:SetPoint("TOPLEFT", self.frame, "TOPRIGHT", 5, 0)
-	self.frame.debuffFrame:Show()
-
-	if (not self.frame.debuffFrame.buffs) then
 		self.frame.debuffFrame.buffs = {}
 	end
-	self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame, 1, self.frame.debuffFrame.buffs, "debuff")
+	
+	if (not redraw) then
+		self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame, 1, self.frame.debuffFrame.buffs, "debuff")
+	end
 end
 
 

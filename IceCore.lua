@@ -15,6 +15,7 @@ IceCore.prototype.IceHUDFrame = nil
 IceCore.prototype.elements = {}
 IceCore.prototype.enabled = nil
 IceCore.prototype.presets = {}
+IceCore.prototype.settingsHash = nil
 
 -- Constructor --
 function IceCore.prototype:init()
@@ -24,7 +25,6 @@ function IceCore.prototype:init()
 	self:RegisterDB("IceCoreDB")
 	
 	self.IceHUDFrame = CreateFrame("Frame","IceHUDFrame", UIParent)
-	
 	
 	-- We are ready to load modules
 	self:RegisterEvent(IceCore.RegisterModule, "Register")
@@ -399,6 +399,14 @@ function IceCore.prototype:LoadPresets()
 	
 	self.presets["RoundBar"] = {
 		barTexture = "RoundBar",
+		barWidth = 155,
+		barHeight = 220,
+		barProportion = 0.14,
+		barSpace = 1,
+	}
+	
+	self.presets["UBar"] = {
+		barTexture = "UBar",
 		barWidth = 155,
 		barHeight = 220,
 		barProportion = 0.14,
