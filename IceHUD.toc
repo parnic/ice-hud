@@ -1,11 +1,12 @@
-## Interface: 11200
+## Interface: 20000
 ## Author: Iceroth
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
-## Notes: Another HUD mod
-## Version: 0.7.7 ($Revision$)
+## Notes: Another HUD addon
+## Version: 0.8 ($Revision$)
 ## SavedVariables: IceCoreDB
-## OptionalDeps: Ace2, DewdropLib, FuBar_ToFu, DruidBar, SoleManax, MobHealth, SpellStatusLib
+## OptionalDeps: Ace2, DewdropLib, DruidBar, SoleManax, MobHealth
+## X-Embeds: Ace2, DewdropLib
 ## X-Category: UnitFrame
 ## X-Date: $Date$
 ## X-eMail: iceroth@iceroth.net
@@ -16,18 +17,10 @@ libs\AceLibrary\AceLibrary.lua
 libs\AceOO-2.0\AceOO-2.0.lua
 libs\AceDB-2.0\AceDB-2.0.lua
 libs\AceEvent-2.0\AceEvent-2.0.lua
-libs\AceHook-2.0\AceHook-2.0.lua
 libs\AceDebug-2.0\AceDebug-2.0.lua
-libs\AceLocale-2.0\AceLocale-2.0.lua
 libs\AceConsole-2.0\AceConsole-2.0.lua
 libs\AceAddon-2.0\AceAddon-2.0.lua
 libs\Dewdrop-2.0\Dewdrop-2.0.lua
-libs\Deformat-2.0\Deformat-2.0.lua
-libs\Gratuity-2.0\Gratuity-2.0.lua
-libs\Babble-Spell-2.0\Babble-Spell-2.0.lua
-libs\SpellCache-1.0\SpellCache-1.0.lua
-libs\SpellStatus-1.0\SpellStatus-1.0.lua
-libs\SpellStatus-AimedShot-1.0\SpellStatus-AimedShot-1.0.lua
 
 
 # IceHUD core functionality
@@ -36,6 +29,7 @@ IceHUD.lua
 IceElement.lua
 IceBarElement.lua
 IceUnitBar.lua
+IceCastBar.lua
 
 # IceHUD modules
 modules\PlayerHealth.lua
@@ -49,6 +43,6 @@ modules\TargetInfo.lua
 modules\TargetOfTarget.lua
 modules\ComboPoints.lua
 modules\CastBar.lua
+modules\TargetCast.lua
 modules\MirrorBar.lua
-modules\TimerBar.lua
 

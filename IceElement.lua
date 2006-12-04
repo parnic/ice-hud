@@ -239,7 +239,7 @@ function IceElement.prototype:ConvertToHex(color)
 end
 
 
-function IceElement.prototype:FontFactory(weight, size, frame, font)
+function IceElement.prototype:FontFactory(weight, size, frame, font, flags)
 	local weightString = ""
 	if (weight) then
 		weightString = "Bold"
@@ -260,9 +260,11 @@ function IceElement.prototype:FontFactory(weight, size, frame, font)
 	else
 		fontString = font
 	end
-	fontString:SetFont(fontFile, size)
-	fontString:SetShadowColor(0, 0, 0, 1)
-	fontString:SetShadowOffset(1, -1)
+	fontString:SetFont(fontFile, size, flags)
+	if not (flags) then
+		fontString:SetShadowColor(0, 0, 0, 1)
+		fontString:SetShadowOffset(1, -1)
+	end
 	
 	return fontString
 end

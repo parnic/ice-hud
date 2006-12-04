@@ -1,6 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-local TargetHealth = AceOO.Class(IceUnitBar, "AceHook-2.0")
+local TargetHealth = AceOO.Class(IceUnitBar)
 
 TargetHealth.prototype.color = nil
 
@@ -95,6 +95,7 @@ function TargetHealth.prototype:Enable(core)
 	self:RegisterEvent("UNIT_HEALTH", "Update")
 	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
 	self:RegisterEvent("UNIT_FLAGS", "Update")
+	self:RegisterEvent("UNIT_FACTION", "Update")
 	
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()

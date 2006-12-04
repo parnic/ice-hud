@@ -458,7 +458,13 @@ IceHUD.slashMenu =
 				'dontHook', true
 			)
 		end
-		IceHUD.dewdrop:Open(IceHUD.IceCore.IceHUDFrame)
+		
+		if not (UnitAffectingCombat("player")) then
+			IceHUD.dewdrop:Open(IceHUD.IceCore.IceHUDFrame)
+		else
+			DEFAULT_CHAT_FRAME:AddMessage("|cff8888ffIceHUD|r: Combat lockdown restriction." ..
+										  " Leave combat and try again.")
+		end
 	end
 }
 
@@ -492,12 +498,11 @@ function IceHUD:OnEnable()
 	self:Debug("IceHUD:OnEnable()")
 	
 
-	
 	self.IceCore:Enable()
 	self:SetDebugging(self.IceCore:GetDebug())
 	self.debugFrame = ChatFrame2
 	
-		self.options.args.modules.args = self.IceCore:GetModuleOptions()
+	self.options.args.modules.args = self.IceCore:GetModuleOptions()
 	self.options.args.colors.args = self.IceCore:GetColorOptions()
 	
 	self:RegisterChatCommand({ "/icehud" }, IceHUD.slashMenu)

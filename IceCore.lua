@@ -4,6 +4,8 @@ IceCore = AceOO.Class("AceEvent-2.0", "AceDB-2.0")
 
 IceCore.Side = { Left = "LEFT", Right = "RIGHT" }
 
+IceCore.BuffLimit = 40
+
 -- Events modules should register/trigger during load
 IceCore.Loaded = "IceCore_Loaded"
 IceCore.RegisterModule = "IceCore_RegisterModule"
@@ -87,6 +89,10 @@ function IceCore.prototype:Enable()
 			self.elements[i]:Enable(true)
 		end
 	end
+	
+	-- try to catch what's causing the cockblock message
+	self:RegisterEvent("ADDON_ACTION_FORBIDDEN", "ActionForbidden")
+	self:RegisterEvent("ADDON_ACTION_BLOCKED", "ActionBlocked")
 
 	self.enabled = true
 end
@@ -178,6 +184,12 @@ function IceCore.prototype:Register(element)
 end
 
 
+function IceCore.prototype:ActionForbidden(addon, msg)
+	IceHUD:Debug("Action Forbidden. ", addon, " : ", msg)
+end
+function IceCore.prototype:ActionBlocked(addon, msg)
+	IceHUD:Debug("Action Blocked. ", addon, " : ", msg)
+end
 
 -------------------------------------------------------------------------------
 -- Configuration methods                                                     --

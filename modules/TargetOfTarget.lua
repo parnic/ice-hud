@@ -6,6 +6,7 @@ TargetOfTarget.prototype.stackedDebuffs = nil
 TargetOfTarget.prototype.buffSize = nil
 TargetOfTarget.prototype.height = nil
 TargetOfTarget.prototype.unit = nil
+TargetOfTarget.prototype.hadTarget = nil
 
 
 -- Constructor --
@@ -16,6 +17,7 @@ function TargetOfTarget.prototype:init()
 	self.height = 12
 	self.stackedDebuffs = {}
 	self.unit = "targettarget"
+	self.hadTarget = false
 
 	self.scalingEnabled = true
 end
@@ -129,7 +131,7 @@ function TargetOfTarget.prototype:Enable(core)
 	
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "Update")
 	
-	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.2, self)
+	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.3, self)
 	
 	self:Update()
 end
@@ -146,7 +148,9 @@ end
 -- OVERRIDE
 function TargetOfTarget.prototype:CreateFrame()
 	if not (self.frame) then
-		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.parent)
+		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.parent, "SecureUnitButtonTemplate")
+		self.frame:SetAttribute("unit", self.unit)
+		RegisterUnitWatch(self.frame)
 	end
 
 	self.frame:SetFrameStrata("BACKGROUND")
@@ -162,27 +166,35 @@ function TargetOfTarget.prototype:CreateFrame()
 		self.frame.texture:SetAllPoints(self.frame)
 	end
 	
-	
 	self.frame.unit = self.unit -- for blizz default tooltip handling
 	
 	if (self.moduleSettings.mouse) then
 		self.frame:EnableMouse(true)
-		self.frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-		self.frame:SetScript("OnClick", function() self:OnClick(arg1) end)
+		self.frame:RegisterForClicks("AnyUp")
+		
 		self.frame:SetScript("OnEnter", function() self:OnEnter() end)
 		self.frame:SetScript("OnLeave", function() self:OnLeave() end)
 	else
 		self.frame:EnableMouse(false)
 		self.frame:RegisterForClicks()
-		self.frame:SetScript("OnClick", nil)
 		self.frame:SetScript("OnEnter", nil)
 		self.frame:SetScript("OnLeave", nil)
 	end
+
+	
+	self.frame:SetAttribute("type1", "target")
+	self.frame:SetAttribute("unit", self.unit)
+
 
 	self:CreateBarFrame()
 	self:CreateToTFrame()
 	self:CreateToTHPFrame()
 	self:CreateDebuffFrame()
+	
+	-- click casting support
+	ClickCastFrames = ClickCastFrames or {}
+	ClickCastFrames[self.frame] = true
+
 end
 
 
@@ -255,7 +267,7 @@ function TargetOfTarget.prototype:CreateDebuffFrame()
 	self.frame.debuffFrame:SetWidth(10)
 	self.frame.debuffFrame:SetHeight(self.height)
 
-	self.frame.debuffFrame:SetPoint("TOPLEFT", self.frame, "TOPRIGHT", 4, 0)
+	self.frame.debuffFrame:SetPoint("TOPLEFT", self.frame, "BOTTOMLEFT", 0, -2)
 	self.frame.debuffFrame:Show()
 
 	self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame)
@@ -265,7 +277,7 @@ end
 function TargetOfTarget.prototype:CreateIconFrames(parent)
 	local buffs = {}
 
-	for i = 1, 16 do
+	for i = 1, IceCore.BuffLimit do
 		buffs[i] = CreateFrame("Frame", nil, parent)
 		buffs[i]:SetFrameStrata("BACKGROUND")
 		buffs[i]:SetWidth(self.buffSize)
@@ -277,8 +289,20 @@ function TargetOfTarget.prototype:CreateIconFrames(parent)
 		buffs[i].texture:SetTexture(nil)
 		buffs[i].texture:SetAllPoints(buffs[i])
 		
-		buffs[i].stack = self:FontFactory("Bold", 11, buffs[i])
-		buffs[i].stack:SetPoint("BOTTOMRIGHT" , buffs[i], "BOTTOMRIGHT", 0, -1)
+		buffs[i].stack = self:FontFactory("Bold", 11, buffs[i], buffs[i].stack, "OUTLINE")
+		buffs[i].stack:SetPoint("BOTTOMRIGHT" , buffs[i], "BOTTOMRIGHT", 2, -1)
+		
+		if (self.moduleSettings.mouse) then
+			buffs[i]:EnableMouse(true)
+			buffs[i]:SetScript("OnEnter", function() self:BuffOnEnter() end)
+			buffs[i]:SetScript("OnLeave", function() GameTooltip:Hide() end)
+		else
+			buffs[i]:EnableMouse(false)
+			buffs[i]:SetScript("OnEnter", nil)
+			buffs[i]:SetScript("OnLeave", nil)
+		end
+		
+		buffs[i].unit = self.unit
 	end
 	return buffs
 end
@@ -288,45 +312,55 @@ function TargetOfTarget.prototype:UpdateBuffs()
 	local debuffs = 0
 	
 	if (self.moduleSettings.showDebuffs) then
-		for i = 1, 16 do
-			local buffTexture, buffApplications = UnitDebuff(self.unit, i)
+		for i = 1, IceCore.BuffLimit do
+			local buffName, buffRank, buffTexture, buffApplications = UnitDebuff(self.unit, i)
 
 			if (buffApplications and (buffApplications > 1)) then
 				debuffs = debuffs + 1
-				
+
 				if not (self.stackedDebuffs[debuffs]) then
 					self.stackedDebuffs[debuffs] = {}
 				end
 				
 				self.stackedDebuffs[debuffs].texture = buffTexture
 				self.stackedDebuffs[debuffs].count = buffApplications
+				self.stackedDebuffs[debuffs].id = i
 			end
 		end
 	end
 	
-	for i = 1, 16 do
+	for i = 1, IceCore.BuffLimit do
 		if (self.moduleSettings.showDebuffs and (i <= debuffs)) then
+			self.frame.debuffFrame.buffs[i]:Show()
 			self.frame.debuffFrame.buffs[i].texture:SetTexture(self.stackedDebuffs[i].texture)
 			self.frame.debuffFrame.buffs[i].stack:SetText(self.stackedDebuffs[i].count)
+			self.frame.debuffFrame.buffs[i].id = self.stackedDebuffs[debuffs].id
 		else
+			self.frame.debuffFrame.buffs[i]:Hide()
 			self.frame.debuffFrame.buffs[i].texture:SetTexture(nil)
 			self.frame.debuffFrame.buffs[i].stack:SetText(nil)
+			self.frame.debuffFrame.buffs[i].id = nil
 		end
 	end
 end
 
 
 function TargetOfTarget.prototype:Update()
-	self:UpdateBuffs()
-	
 	if not (UnitExists(self.unit)) then
+		if not (self.hadTarget) then
+			return
+		end
+		self.hadTarget = false
+		
 		self.frame.totName:SetText()
 		self.frame.totHealth:SetText()
-		self.frame:Hide()
+		self:UpdateBuffs()
 		return
 	end
-
-	self.frame:Show()
+	
+	self.hadTarget = true
+	
+	self:UpdateBuffs()
 
 	local _, unitClass = UnitClass(self.unit)
 	local name = UnitName(self.unit)
@@ -362,26 +396,14 @@ function TargetOfTarget.prototype:OnLeave()
 end
 
 
-function TargetOfTarget.prototype:OnClick(button)
-	-- copy&paste from blizz code, it better work ;)
-	if (SpellIsTargeting() and button == "RightButton") then
-		SpellStopTargeting()
+function TargetOfTarget.prototype:BuffOnEnter(type)
+	if (not this:IsVisible()) then
 		return
 	end
 
-	if (button == "LeftButton") then
-		if (SpellIsTargeting()) then
-			SpellTargetUnit(self.unit)
-		elseif (CursorHasItem()) then
-			DropItemOnUnit(self.unit)
-		else
-			TargetUnit(self.unit)
-		end
-	else
-		TargetUnit(self.unit)
-	end
+	GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT")
+	GameTooltip:SetUnitDebuff(this.unit, this.id)
 end
-
 
 -- load us up
 IceHUD_Module_TargetOfTarget = TargetOfTarget:new()

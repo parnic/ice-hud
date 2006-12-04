@@ -91,7 +91,7 @@ function MirrorBar.prototype:OnUpdate(elapsed)
 	
 	local text = self.label .. " " .. remaining .. "s"
 	
-	if (math.mod(self.moduleSettings.offset, 2) == 1) then
+	if (math.fmod(self.moduleSettings.offset, 2) == 1) then
 		self:SetBottomText1(text)
 		self:SetBottomText2()
 	else

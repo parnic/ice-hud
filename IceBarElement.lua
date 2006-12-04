@@ -42,6 +42,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["barFontBold"] = true
 	settings["lockTextAlpha"] = true
 	settings["textVisible"] = {upper = true, lower = true}
+	settings["brackets"] = true
 	
 	return settings
 end
@@ -180,6 +181,19 @@ function IceBarElement.prototype:GetOptions()
 					self:Redraw()
 				end,
 				order = 15
+			},
+			brackets = {
+				type = 'toggle',
+				name = 'Brackets around lower text',
+				desc = 'Toggle brackets visibility',
+				get = function()
+					return self.moduleSettings.brackets
+				end,
+				set = function(v)
+					self.moduleSettings.brackets = v
+					self:Redraw()
+				end,
+				order = 16
 			},
 		}
 	}
@@ -469,10 +483,20 @@ end
 
 function IceBarElement.prototype:GetFormattedText(value1, value2)
 	local color = "ffcccccc"
-	if not (value2) then
-		return string.format("|c%s[|r%s|c%s]|r", color, value1, color)
+	
+	local bLeft = ""
+	local bRight = ""
+	
+	if (self.moduleSettings.brackets) then
+		bLeft = "["
+		bRight = "]"
 	end
-	return string.format("|c%s[|r%s|c%s/|r%s|c%s]|r", color, value1, color, value2, color)
+	
+	
+	if not (value2) then
+		return string.format("|c%s%s|r%s|c%s%s|r", color, bLeft, value1, color, bRight)
+	end
+	return string.format("|c%s%s|r%s|c%s/|r%s|c%s%s|r", color, bLeft, value1, color, value2, color, bRight)
 end
 
 

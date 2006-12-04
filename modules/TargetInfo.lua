@@ -11,7 +11,6 @@ TargetInfo.prototype.width = nil
 TargetInfo.prototype.name = nil
 TargetInfo.prototype.guild = nil
 TargetInfo.prototype.realm = nil
-TargetInfo.prototype.rank = nil
 TargetInfo.prototype.classLocale = nil
 TargetInfo.prototype.classEnglish = nil
 TargetInfo.prototype.leader = nil
@@ -22,7 +21,6 @@ TargetInfo.prototype.level = nil
 TargetInfo.prototype.classification = nil
 TargetInfo.prototype.reaction = nil
 TargetInfo.prototype.tapped = nil
-TargetInfo.prototype.pvpRank = nil
 
 TargetInfo.prototype.isPlayer = nil
 
@@ -152,7 +150,7 @@ function TargetInfo.prototype:GetOptions()
 			self:RedrawBuffs()
 		end,
 		min = 8,
-		max = 20,
+		max = 30,
 		step = 1,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -160,22 +158,76 @@ function TargetInfo.prototype:GetOptions()
 		order = 34
 	}
 	
-	opts["mouse"] = {
-		type = 'toggle',
-		name = 'Mouseover',
-		desc = 'Toggle mouseover on/off',
+	opts["filter"] = {
+		type = 'text',
+		name = 'Filter buffs/debuffs',
+		desc = 'Toggles filtering buffs and debuffs (uses Blizzard default filter code)',
 		get = function()
-			return self.moduleSettings.mouse
+			return self.moduleSettings.filter
 		end,
 		set = function(v)
-			self.moduleSettings.mouse = v
-			self:Redraw()
+			self.moduleSettings.filter = v
 			self:RedrawBuffs()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
+		validate = { "Never", "In Combat", "Always" },
 		order = 35
+	}
+	
+	opts["perRow"] = {
+		type = 'range',
+		name = 'Buffs / row',
+		desc = 'How many buffs/debuffs is shown on each row',
+		get = function()
+			return self.moduleSettings.perRow
+		end,
+		set = function(v)
+			self.moduleSettings.perRow = v
+			self:RedrawBuffs()
+		end,
+		min = 5,
+		max = 20,
+		step = 1,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 36
+	}
+	
+	opts["mouseTarget"] = {
+		type = 'toggle',
+		name = 'Mouseover for target',
+		desc = 'Toggle mouseover on/off for target',
+		get = function()
+			return self.moduleSettings.mouseTarget
+		end,
+		set = function(v)
+			self.moduleSettings.mouseTarget = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 37
+	}
+	
+	opts["mouseBuff"] = {
+		type = 'toggle',
+		name = 'Mouseover for buffs',
+		desc = 'Toggle mouseover on/off for buffs/debuffs',
+		get = function()
+			return self.moduleSettings.mouseBuff
+		end,
+		set = function(v)
+			self.moduleSettings.mouseBuff = v
+			self:RedrawBuffs()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 38
 	}
 
 	return opts
@@ -190,7 +242,10 @@ function TargetInfo.prototype:GetDefaultSettings()
 	defaults["vpos"] = -50
 	defaults["zoom"] = 0.08
 	defaults["buffSize"] = 14
-	defaults["mouse"] = true
+	defaults["mouseTarget"] = true
+	defaults["mouseBuff"] = true
+	defaults["filter"] = "Never"
+	defaults["perRow"] = 10
 	return defaults
 end
 
@@ -221,17 +276,61 @@ end
 
 -- OVERRIDE
 function TargetInfo.prototype:CreateFrame(redraw)
-	TargetInfo.super.prototype.CreateFrame(self)
-
+	if not (self.frame) then
+		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.parent, "SecureUnitButtonTemplate")
+	end
+	
 	self.width = self.settings.gap + 50
+
+	self.frame:SetScale(self.moduleSettings.scale)
+	
+	-- register showing/hiding the frame depending on current target
+	self.frame:SetAttribute("unit", target)
+	RegisterUnitWatch(self.frame)
 
 	self.frame:SetFrameStrata("BACKGROUND")
 	self.frame:SetWidth(self.width)
-	self.frame:SetHeight(42)
+	self.frame:SetHeight(32)
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
 	self.frame:SetScale(self.moduleSettings.scale)
+	
+	if (self.moduleSettings.mouseTarget) then
+		self.frame:EnableMouse(true)
+		self.frame:RegisterForClicks("AnyUp")
+		self.frame:SetScript("OnEnter", function() self:OnEnter() end)
+		self.frame:SetScript("OnLeave", function() self:OnLeave() end)
+	else
+		self.frame:EnableMouse(false)
+		self.frame:RegisterForClicks()
+		self.frame:SetScript("OnEnter", nil)
+		self.frame:SetScript("OnLeave", nil)
+	end
+	self.frame.unit = target
+	
+	
+	-- set up stuff for clicking
+	self.frame:SetAttribute("type1", "target")
+	self.frame:SetAttribute("type2", "menu")
+	self.frame:SetAttribute("unit", target)
 
+	self.frame.menu = function()
+		ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor")
+	end
+
+	
+	-- create a fancy highlight frame for mouse over
+	if (not self.frame.highLight) then
+		self.frame.highLight = self.frame:CreateTexture(nil, "OVERLAY")
+		self.frame.highLight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
+		self.frame.highLight:SetBlendMode("ADD")
+		self.frame.highLight:SetAllPoints(self.frame)
+		self.frame.highLight:SetVertexColor(1, 1, 1, 0.25)
+		self.frame.highLight:Hide()
+	end
+
+
+	-- create rest of the frames
 	self:CreateTextFrame()
 	self:CreateInfoTextFrame()
 	self:CreateGuildTextFrame()
@@ -241,53 +340,18 @@ function TargetInfo.prototype:CreateFrame(redraw)
 
 	self:CreateRaidIconFrame()
 	
-	self.frame:Hide()
+	
+	-- set up click casting
+	ClickCastFrames = ClickCastFrames or {}
+	ClickCastFrames[self.frame] = true
 end
 
 
 function TargetInfo.prototype:CreateTextFrame()
-	if (not self.frame.target) then
-		self.frame.target = CreateFrame("Button", "IceHUD_TargetInfo_Name", self.frame)
-	end
-
-	self.frame.target.unit = target -- for blizz default tooltip handling
-	
-	if (self.moduleSettings.mouse) then
-		self.frame.target:EnableMouse(true)
-		self.frame.target:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-		self.frame.target:SetScript("OnClick", function() self:OnClick(arg1) end)
-		self.frame.target:SetScript("OnEnter", function() self:OnEnter() end)
-		self.frame.target:SetScript("OnLeave", function() self:OnLeave() end)
-	else
-		self.frame.target:EnableMouse(false)
-		self.frame.target:RegisterForClicks()
-		self.frame.target:SetScript("OnClick", nil)
-		self.frame.target:SetScript("OnEnter", nil)
-		self.frame.target:SetScript("OnLeave", nil)
-	end
-
-
-	self.frame.target:SetWidth(self.width)
-	self.frame.target:SetHeight(14)
-	self.frame.target:SetPoint("TOP", self.frame, "TOP", 0, -2)
-
 	self.frame.targetName = self:FontFactory("Bold", self.moduleSettings.fontSize+1, nil, self.frame.targetName)
 	self.frame.targetName:SetJustifyH("CENTER")
 	self.frame.targetName:SetJustifyV("TOP")
-	self.frame.targetName:SetAllPoints(self.frame.target)
-	
-	
-	if (not self.frame.target.highLight) then
-		self.frame.target.highLight = self.frame.target:CreateTexture(nil, "OVERLAY")
-		self.frame.target.highLight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
-		self.frame.target.highLight:SetBlendMode("ADD")
-		self.frame.target.highLight:SetAllPoints(self.frame.target)
-		self.frame.target.highLight:SetVertexColor(1, 1, 1, 0.25)
-		self.frame.target.highLight:Hide()
-	end
-
-
-	self.frame.target:Hide()
+	self.frame.targetName:SetAllPoints(self.frame)
 end
 
 
@@ -314,7 +378,7 @@ function TargetInfo.prototype:CreateGuildTextFrame()
 
 	self.frame.targetGuild:SetAlpha(0.6)
 
-	self.frame.targetGuild:SetPoint("TOP", self.frame, "TOP", 0, -30)
+	self.frame.targetGuild:SetPoint("TOP", self.frame, "BOTTOM", 0, 0)
 	self.frame.targetGuild:Show()
 end
 
@@ -382,7 +446,7 @@ end
 
 
 function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
-	for i = 1, 16 do
+	for i = 1, IceCore.BuffLimit do
 		if (not buffs[i]) then
 			buffs[i] = CreateFrame("Frame", nil, parent)
 			buffs[i].icon = CreateFrame("Frame", nil, buffs[i])
@@ -396,12 +460,17 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 		buffs[i].icon:SetWidth(self.moduleSettings.buffSize-2)
 		buffs[i].icon:SetHeight(self.moduleSettings.buffSize-2)
 
-		local pos = (i > 8) and i-8 or i
-		local x = (((pos-1) * self.moduleSettings.buffSize) + (pos-0)) * direction
-		local y = (i > 8) and -self.moduleSettings.buffSize-1 or 0
+		local pos = math.fmod(i, self.moduleSettings.perRow)
+		if (pos == 0) then
+			pos = self.moduleSettings.perRow
+		end
+		
+		local x = (((pos-1) * self.moduleSettings.buffSize) + pos) * direction
+		local y = math.floor((i-1) / self.moduleSettings.perRow) * self.moduleSettings.buffSize * -1
 
 		buffs[i]:ClearAllPoints()
 		buffs[i]:SetPoint("TOP", x, y)
+		
 		
 		buffs[i].icon:ClearAllPoints()
 		buffs[i].icon:SetPoint("CENTER", 0, 0)
@@ -421,14 +490,16 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 			buffs[i].icon.texture:SetAllPoints(buffs[i].icon)
 		end
 		
-		buffs[i].icon.stack = self:FontFactory("Bold", self.moduleSettings.stackFontSize, buffs[i].icon)
+		buffs[i].icon.stack =
+			self:FontFactory("Bold", self.moduleSettings.stackFontSize,buffs[i].icon,
+							 buffs[i].icon.stack, "OUTLINE")
 
 		buffs[i].icon.stack:ClearAllPoints()
-		buffs[i].icon.stack:SetPoint("BOTTOMRIGHT" , buffs[i].icon, "BOTTOMRIGHT", 1, -1)
+		buffs[i].icon.stack:SetPoint("BOTTOMRIGHT" , buffs[i].icon, "BOTTOMRIGHT", 3, -1)
 		
 		
 		buffs[i].id = i
-		if (self.moduleSettings.mouse) then
+		if (self.moduleSettings.mouseBuff) then
 			buffs[i]:EnableMouse(true)
 			buffs[i]:SetScript("OnEnter", function() self:BuffOnEnter(type) end)
 			buffs[i]:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -447,11 +518,21 @@ end
 
 function TargetInfo.prototype:UpdateBuffs()
 	local zoom = self.moduleSettings.zoom
+	local filter = false
+	
+	if (self.moduleSettings.filter == "Always") then
+		filter = true
+	elseif (self.moduleSettings.filter == "In Combat") then
+		if (UnitAffectingCombat("player")) then
+			filter = true
+		end
+	end
+	
 
-	for i = 1, 16 do
-		local buffTexture, buffApplications = UnitBuff("target", i)
+	for i = 1, IceCore.BuffLimit do
+		local buffName, buffRank, buffTexture, buffApplications = UnitBuff("target", i, filter)
 
-		--buffTexture = buffTexture or "Interface\\Icons\\Spell_Nature_Regeneration"
+		--buffTexture = buffTexture or "Interface\\Icons\\Ability_Racial_BloodRage"
 
 		self.frame.buffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
 		self.frame.buffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
@@ -460,7 +541,7 @@ function TargetInfo.prototype:UpdateBuffs()
 		self.frame.buffFrame.buffs[i].texture:SetTexture(0, 0, 0, alpha)
 
 
-		--buffApplications = 2
+		--buffApplications = i
 
 		if (buffApplications and (buffApplications > 1)) then
 			self.frame.buffFrame.buffs[i].icon.stack:SetText(buffApplications)
@@ -476,8 +557,8 @@ function TargetInfo.prototype:UpdateBuffs()
 
 	end
 
-	for i = 1, 16 do
-		local buffTexture, buffApplications, debuffDispelType = UnitDebuff("target", i)
+	for i = 1, IceCore.BuffLimit do
+		local buffName, buffRank, buffTexture, buffApplications, debuffDispelType = UnitDebuff("target", i, filter)
 
 		--buffTexture = buffTexture or "Interface\\Icons\\Ability_Creature_Disease_04"
 
@@ -487,6 +568,7 @@ function TargetInfo.prototype:UpdateBuffs()
 
 		self.frame.debuffFrame.buffs[i].texture:SetVertexColor(color.r, color.g, color.b)
 
+		--buffApplications = i
 
 		self.frame.debuffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
 		self.frame.debuffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
@@ -534,8 +616,8 @@ end
 
 function TargetInfo.prototype:TargetChanged()
 	if (not UnitExists(target)) then
-		self.frame:Hide()
-		self.frame.target:Hide()
+		--self.frame:Hide()
+		--self.frame.target:Hide()
 		
 		self.frame.targetName:SetText()
 		self.frame.targetInfo:SetText()
@@ -546,15 +628,13 @@ function TargetInfo.prototype:TargetChanged()
 		return
 	end
 	
-	self.frame:Show()
-	self.frame.target:Show()
+	--self.frame:Show()
+	--self.frame.target:Show()
 
 	self.name, self.realm = UnitName(target)
 	self.classLocale, self.classEnglish = UnitClass(target)
 	self.isPlayer = UnitIsPlayer(target)
 	
-	local rank = UnitPVPRank(target)
-	self.pvpRank = (rank >= 5) and rank-4 or nil
 
 	local classification = UnitClassification(target)
 	if (string.find(classification, "boss")) then
@@ -638,18 +718,15 @@ function TargetInfo.prototype:TargetFaction(unit)
 				if (UnitFactionGroup(target) ~= UnitFactionGroup("player")) then
 					color = "ffff1010" -- hostile
 				end
-				self.pvp = " |c" .. color .. "PvP"
+				self.pvp = " |c" .. color .. "PvP|r"
 			else
-				self.pvp = " |cff1010ffPvE"
+				self.pvp = " |cff1010ffPvE|r"
 			end
-			
-			-- add rank
-			self.pvp = self.pvpRank and (self.pvp .. "/" .. self.pvpRank .. "|r") or (self.pvp .. "|r")
-			
 		else
 			self.pvp = ""
 		end
 
+		self:TargetReaction(unit)
 		self:Update(unit)
 	end
 end
@@ -659,6 +736,7 @@ function TargetInfo.prototype:TargetFlags(unit)
 	if (unit == target or unit == internal) then
 		self.tapped = UnitIsTapped(target) and (not UnitIsTappedByPlayer(target))
 		self.combat = UnitAffectingCombat(target) and " |cffee4030Combat|r" or ""
+		self:UpdateBuffs()
 		self:Update(unit)
 	end
 end
@@ -687,35 +765,15 @@ function TargetInfo.prototype:Update(unit)
 end
 
 
-
-function TargetInfo.prototype:OnClick(button)
-	-- copy&paste from blizz code, it better work ;)
-	if (SpellIsTargeting() and button == "RightButton") then
-		SpellStopTargeting()
-		return
-	end
-
-	if (button == "LeftButton") then
-		if (SpellIsTargeting()) then
-			SpellTargetUnit(target)
-		elseif (CursorHasItem()) then
-			DropItemOnUnit(target)
-		end
-	else
-		ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor")
-	end
-end
-
-
 function TargetInfo.prototype:OnEnter()
 	UnitFrame_OnEnter()
-	self.frame.target.highLight:Show()
+	self.frame.highLight:Show()
 end
 
 
 function TargetInfo.prototype:OnLeave()
 	UnitFrame_OnLeave()
-	self.frame.target.highLight:Hide()
+	self.frame.highLight:Hide()
 end
 
 
