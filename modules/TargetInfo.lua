@@ -412,7 +412,7 @@ function TargetInfo.prototype:CreateBuffFrame(redraw)
 		self.frame.buffFrame:SetHeight(1)
 	
 		self.frame.buffFrame:ClearAllPoints()
-		self.frame.buffFrame:SetPoint("TOPRIGHT", self.frame, "TOPLEFT", -5, 0)
+		self.frame.buffFrame:SetPoint("TOPRIGHT", self.frame, "TOPLEFT", -10, 0)
 		self.frame.buffFrame:Show()
 
 		self.frame.buffFrame.buffs = {}
@@ -433,7 +433,7 @@ function TargetInfo.prototype:CreateDebuffFrame(redraw)
 		self.frame.debuffFrame:SetHeight(1)
 	
 		self.frame.debuffFrame:ClearAllPoints()
-		self.frame.debuffFrame:SetPoint("TOPLEFT", self.frame, "TOPRIGHT", 5, 0)
+		self.frame.debuffFrame:SetPoint("TOPLEFT", self.frame, "TOPRIGHT", 10, 0)
 		self.frame.debuffFrame:Show()
 
 		self.frame.debuffFrame.buffs = {}

@@ -401,9 +401,12 @@ function TargetOfTarget.prototype:BuffOnEnter(type)
 		return
 	end
 
-	GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT")
-	GameTooltip:SetUnitDebuff(this.unit, this.id)
+	if (this.unit and this.id) then
+		GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT")
+		GameTooltip:SetUnitDebuff(this.unit, this.id)
+	end
 end
+
 
 -- load us up
 IceHUD_Module_TargetOfTarget = TargetOfTarget:new()

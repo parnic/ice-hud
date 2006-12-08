@@ -46,26 +46,7 @@ function IceCastBar.prototype:Enable(core)
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "SpellCastChannelStop") -- unit
 
 	self.frame:Hide()
-	
-	-- remove blizz cast bar
-	CastingBarFrame:UnregisterAllEvents()
 end
-
-
-function IceCastBar.prototype:Disable(core)
-	IceCastBar.super.prototype.Disable(self, core)
-	
-	-- restore blizz cast bar
-	CastingBarFrame:RegisterEvent("SPELLCAST_START");
-	CastingBarFrame:RegisterEvent("SPELLCAST_STOP");
-	CastingBarFrame:RegisterEvent("SPELLCAST_FAILED");
-	CastingBarFrame:RegisterEvent("SPELLCAST_INTERRUPTED");
-	CastingBarFrame:RegisterEvent("SPELLCAST_DELAYED");
-	CastingBarFrame:RegisterEvent("SPELLCAST_CHANNEL_START");
-	CastingBarFrame:RegisterEvent("SPELLCAST_CHANNEL_UPDATE");
-	CastingBarFrame:RegisterEvent("SPELLCAST_CHANNEL_STOP");
-end
-
 
 
 -- 'Protected' methods --------------------------------------------------------
@@ -275,7 +256,11 @@ function IceCastBar.prototype:SpellCastDelayed(unit, delay)
 	--IceHUD:Debug("SpellCastDelayed", unit, UnitCastingInfo(unit))
 	
 	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill = UnitCastingInfo(self.unit)
-	self.actionDuration = endTime/1000 - self.actionStartTime
+	
+	if (endTime and self.actionStartTime) then
+		-- apparently this check is needed, got nils during a horrible lag spike
+		self.actionDuration = endTime/1000 - self.actionStartTime
+	end
 end
 
 

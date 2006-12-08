@@ -3,7 +3,7 @@
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
 ## Notes: Another HUD addon
-## Version: 0.8 ($Revision$)
+## Version: 0.8.1 ($Revision$)
 ## SavedVariables: IceCoreDB
 ## OptionalDeps: Ace2, DewdropLib, DruidBar, SoleManax, MobHealth
 ## X-Embeds: Ace2, DewdropLib
@@ -22,7 +22,6 @@ libs\AceConsole-2.0\AceConsole-2.0.lua
 libs\AceAddon-2.0\AceAddon-2.0.lua
 libs\Dewdrop-2.0\Dewdrop-2.0.lua
 
-
 # IceHUD core functionality
 IceCore.lua
 IceHUD.lua
@@ -31,7 +30,9 @@ IceBarElement.lua
 IceUnitBar.lua
 IceCastBar.lua
 
+
 # IceHUD modules
+# - Feel free to comment these out if you like
 modules\PlayerHealth.lua
 modules\PlayerMana.lua
 modules\TargetHealth.lua

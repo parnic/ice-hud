@@ -63,6 +63,34 @@ function CastBar.prototype:GetOptions()
 	return opts
 end
 
+
+function CastBar.prototype:Enable(core)
+	CastBar.super.prototype.Enable(self, core)
+	
+	-- remove blizz cast bar
+	CastingBarFrame:UnregisterAllEvents()
+end
+
+
+function CastBar.prototype:Disable(core)
+	CastBar.super.prototype.Disable(self, core)
+	
+	-- restore blizz cast bar
+	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
+	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_START");
+	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
+	
+	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_FAILED");
+	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED");
+	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_DELAYED");
+	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
+	
+	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START");
+	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
+	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
+end
+
+
 -------------------------------------------------------------------------------
 
 

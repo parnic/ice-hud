@@ -48,6 +48,8 @@ function TargetCast.prototype:TargetChanged(unit)
 		self:StartBar(IceCastBar.Actions.Channel)
 		return
 	end
+	
+	self:StopBar()
 end
 
 -------------------------------------------------------------------------------

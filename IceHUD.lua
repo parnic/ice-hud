@@ -477,7 +477,6 @@ StaticPopupDialogs["ICEHUD_RESET"] =
 	whileDead = 1,
 	hideOnEscape = 1,
 	OnAccept = function()
-		print("hellooo")
 		IceHUD.IceCore:ResetSettings()
 	end
 }
@@ -489,8 +488,6 @@ function IceHUD:OnInitialize()
 	self:Debug("IceHUD:OnInitialize()")
 	
 	self.IceCore = IceCore:new()
-	
-
 end
 
 
