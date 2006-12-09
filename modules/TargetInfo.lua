@@ -50,6 +50,16 @@ function TargetInfo.prototype:Enable(core)
 	self:RegisterEvent("UNIT_DYNAMIC_FLAGS", "TargetFlags")
 
 	self:RegisterEvent("RAID_TARGET_UPDATE", "UpdateRaidTargetIcon")
+	
+	RegisterUnitWatch(self.frame)
+end
+
+
+-- OVERRIDE
+function TargetInfo.prototype:Disable(core)
+	TargetInfo.super.prototype.Disable(self, core)
+	
+	UnregisterUnitWatch(self.frame)
 end
 
 
@@ -284,9 +294,8 @@ function TargetInfo.prototype:CreateFrame(redraw)
 
 	self.frame:SetScale(self.moduleSettings.scale)
 	
-	-- register showing/hiding the frame depending on current target
+	-- set showing/hiding the frame depending on current target
 	self.frame:SetAttribute("unit", target)
-	RegisterUnitWatch(self.frame)
 
 	self.frame:SetFrameStrata("BACKGROUND")
 	self.frame:SetWidth(self.width)

@@ -133,13 +133,18 @@ function TargetOfTarget.prototype:Enable(core)
 	
 	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.3, self)
 	
+	RegisterUnitWatch(self.frame)
+	
 	self:Update()
 end
 
 
 function TargetOfTarget.prototype:Disable(core)
 	TargetOfTarget.super.prototype.Disable(self, core)
+	
 	self:CancelScheduledEvent(self.elementName)
+	
+	UnregisterUnitWatch(self.frame)
 end
 
 
@@ -150,7 +155,6 @@ function TargetOfTarget.prototype:CreateFrame()
 	if not (self.frame) then
 		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.parent, "SecureUnitButtonTemplate")
 		self.frame:SetAttribute("unit", self.unit)
-		RegisterUnitWatch(self.frame)
 	end
 
 	self.frame:SetFrameStrata("BACKGROUND")
