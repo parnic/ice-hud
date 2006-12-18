@@ -305,13 +305,8 @@ function IceBarElement.prototype:CreateBar()
 	
 	self:UpdateBar(1, "undef")
 	
-	local point = "LEFT"
-	if (self.moduleSettings.side == point) then
-		point = "RIGHT"
-	end
-	
 	self.barFrame:ClearAllPoints()
-	self.barFrame:SetPoint("BOTTOM"..point, self.frame, "BOTTOM"..self.moduleSettings.side, 0, 0)
+	self.barFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
 end
 
 

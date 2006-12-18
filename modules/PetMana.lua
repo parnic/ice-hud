@@ -102,7 +102,6 @@ function PetMana.prototype:Update(unit)
 	if not (self.alive) then
 		color = "Dead"
 	else
-		local color = "PetMana"
 		if (self.manaType == 1) then
 			color = "PetRage"
 		elseif (self.manaType == 2) then

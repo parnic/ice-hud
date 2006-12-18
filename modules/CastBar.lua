@@ -2,6 +2,10 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 local CastBar = AceOO.Class(IceCastBar)
 
+CastBar.prototype.lagBar = nil
+CastBar.prototype.spellCastSent = nil
+
+
 -- Constructor --
 function CastBar.prototype:init()
 	CastBar.super.prototype.init(self, "CastBar")
@@ -19,6 +23,7 @@ function CastBar.prototype:GetDefaultSettings()
 	settings["offset"] = 0
 	settings["flashInstants"] = "Caster"
 	settings["flashFailures"] = "Caster"
+	settings["lagAlpha"] = 0.7
 	return settings
 end
 
@@ -59,6 +64,27 @@ function CastBar.prototype:GetOptions()
 		validate = { "Always", "Caster", "Never" },
 		order = 41
 	}
+	
+	opts["lagAlpha"] = 
+	{
+		type = 'range',
+		name = 'Lag Indicator',
+		desc = 'Lag indicator alpha (0 is disabled)',
+		min = 0,
+		max = 1,
+		step = 0.1,
+		get = function()
+			return self.moduleSettings.lagAlpha
+		end,
+		set = function(value)
+			self.moduleSettings.lagAlpha = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 42
+	}
 
 	return opts
 end
@@ -91,8 +117,83 @@ function CastBar.prototype:Disable(core)
 end
 
 
--------------------------------------------------------------------------------
+-- OVERRIDE
+function CastBar.prototype:CreateFrame()
+	CastBar.super.prototype.CreateFrame(self)
+	
+	self:CreateLagBar()
+end
 
+
+function CastBar.prototype:CreateLagBar()
+	if not (self.lagBar) then
+		self.lagBar = CreateFrame("StatusBar", nil, self.frame)
+	end
+	
+	self.lagBar:SetFrameStrata("BACKGROUND")
+	self.lagBar:SetWidth(self.settings.barWidth)
+	self.lagBar:SetHeight(self.settings.barHeight)
+	
+	
+	if not (self.lagBar.bar) then
+		self.lagBar.bar = self.lagBar:CreateTexture(nil, "BACKGROUND")
+	end
+	
+	self.lagBar.bar:SetTexture(IceElement.TexturePath .. self.settings.barTexture .. "BG")
+	self.lagBar.bar:SetAllPoints(self.lagBar)
+	
+	self.lagBar:SetStatusBarTexture(self.lagBar.bar)
+	
+	local r, g, b = self:GetColor("CastFail")
+	self.lagBar:SetStatusBarColor(
+		self.settings.backgroundColor.r,
+		self.settings.backgroundColor.g,
+		self.settings.backgroundColor.b,
+		self.moduleSettings.lagAlpha)
+	
+
+	if (self.moduleSettings.side == IceCore.Side.Left) then
+		self.lagBar.bar:SetTexCoord(1, 0, 1, 1)
+	else
+		self.lagBar.bar:SetTexCoord(0, 1, 1, 1)
+	end
+	
+	self.lagBar:ClearAllPoints()
+	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
+end
+
+
+-- OVERRIDE
+function CastBar.prototype:SpellCastSent(unit, spell, rank, target)
+	CastBar.super.prototype.SpellCastSent(self, unit, spell, rank, target)
+	if (unit ~= self.unit) then return end
+
+	self.spellCastSent = GetTime()
+end
+
+
+-- OVERRIDE
+function CastBar.prototype:SpellCastStart(unit)
+	CastBar.super.prototype.SpellCastStart(self, unit)
+	if (unit ~= self.unit) then return end
+
+	local lag = GetTime() - self.spellCastSent
+	
+	local pos = lag / self.actionDuration
+	local y = self.settings.barHeight - (pos * self.settings.barHeight)
+	
+	if (self.moduleSettings.side == IceCore.Side.Left) then
+		self.lagBar.bar:SetTexCoord(1, 0, 1, 1-pos)
+	else
+		self.lagBar.bar:SetTexCoord(0, 1, 1, 1-pos)
+	end
+	
+	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, y)
+end
+
+
+
+-------------------------------------------------------------------------------
 
 -- Load us up
 CastBar:new()

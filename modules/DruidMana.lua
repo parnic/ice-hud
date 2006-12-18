@@ -92,6 +92,10 @@ function DruidMana.prototype:Update()
 		self.frame:Show()
 	end
 	
+	if (not self.druidMana or not self.druidMaxMana) then
+		return
+	end
+	
 	self:UpdateBar(self.druidMana / self.druidMaxMana, "DruidMana")
 
 	local percentage = (self.druidMana / self.druidMaxMana) * 100
