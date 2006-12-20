@@ -690,7 +690,7 @@ function TargetInfo.prototype:TargetLevel(unit)
 		local color = GetDifficultyColor((self.level > 0) and self.level or 100)
 
 		if (self.level > 0) then
-			if (UnitIsPlusMob(target)) then
+			if (UnitClassification(target) == "elite") then
 				self.level = self.level .. "+"
 			end
 		else

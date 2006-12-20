@@ -162,7 +162,13 @@ function PlayerMana.prototype:Update(unit)
  	end
 
 
-	self:SetBottomText1(self.manaPercentage)
+	-- extra hack for whiny rogues (are there other kind?)
+	local displayPercentage = self.manaPercentage
+	if (self.manaType == 3) then
+		displayPercentage = self.mana
+	end
+	self:SetBottomText1(displayPercentage)
+	
 	
 	local amount = self:GetFormattedText(self.mana, self.maxMana)
 	
