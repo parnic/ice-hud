@@ -2,6 +2,8 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 local PlayerHealth = AceOO.Class(IceUnitBar)
 
+PlayerHealth.prototype.resting = nil
+
 -- Constructor --
 function PlayerHealth.prototype:init()
 	PlayerHealth.super.prototype.init(self, "PlayerHealth", "player")
@@ -24,12 +26,14 @@ function PlayerHealth.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_HEALTH", "Update")
 	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
+	self:RegisterEvent("PLAYER_UPDATE_RESTING", "Resting")
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
 	end
-
-	self:Update(self.unit)
+	
+	self:Resting()
+	--self:Update(self.unit)
 end
 
 
@@ -79,6 +83,12 @@ function PlayerHealth.prototype:GetOptions()
 end
 
 
+function PlayerHealth.prototype:Resting()
+	self.resting = IsResting()
+	self:Update(self.unit)
+end
+
+
 function PlayerHealth.prototype:Update(unit)
 	PlayerHealth.super.prototype.Update(self)
 	if (unit and (unit ~= self.unit)) then
@@ -95,10 +105,14 @@ function PlayerHealth.prototype:Update(unit)
 		color = "Dead"
 	end
 
+	local textColor = color
+	if (self.resting) then
+		textColor = "Text"
+	end
 
 	self:UpdateBar(self.health/self.maxHealth, color)
 	self:SetBottomText1(self.healthPercentage)
-	self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), color)
+	self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), textColor)
 end
 
 
