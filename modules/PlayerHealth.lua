@@ -26,7 +26,9 @@ function PlayerHealth.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_HEALTH", "Update")
 	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
+	
 	self:RegisterEvent("PLAYER_UPDATE_RESTING", "Resting")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "Resting")
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()

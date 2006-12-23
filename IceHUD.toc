@@ -3,7 +3,7 @@
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
 ## Notes: Another HUD addon
-## Version: 0.8.5 ($Revision$)
+## Version: 0.8.6 ($Revision$)
 ## SavedVariables: IceCoreDB
 ## OptionalDeps: Ace2, DewdropLib, DruidBar, MobHealth
 ## X-Embeds: Ace2, DewdropLib

@@ -153,9 +153,9 @@ function CastBar.prototype:CreateLagBar()
 	
 
 	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.lagBar.bar:SetTexCoord(1, 0, 1, 1)
+		self.lagBar.bar:SetTexCoord(1, 0, 0, 0)
 	else
-		self.lagBar.bar:SetTexCoord(0, 1, 1, 1)
+		self.lagBar.bar:SetTexCoord(0, 1, 0, 0)
 	end
 	
 	self.lagBar:ClearAllPoints()
@@ -183,9 +183,9 @@ function CastBar.prototype:SpellCastStart(unit)
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
 	
 	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.lagBar.bar:SetTexCoord(1, 0, 1, 1-pos)
+		self.lagBar.bar:SetTexCoord(1, 0, 0, pos)
 	else
-		self.lagBar.bar:SetTexCoord(0, 1, 1, 1-pos)
+		self.lagBar.bar:SetTexCoord(0, 1, 0, pos)
 	end
 	
 	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, y)
@@ -196,4 +196,4 @@ end
 -------------------------------------------------------------------------------
 
 -- Load us up
-CastBar:new()
+PRKL = CastBar:new()
