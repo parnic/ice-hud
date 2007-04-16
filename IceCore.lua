@@ -395,10 +395,10 @@ end
 function IceCore.prototype:LoadPresets()
 	self.presets["Bar"] = {
 		barTexture = "Bar",
-		barWidth = 63,
-		barHeight = 150,
-		barProportion = 0.34,
-		barSpace = 4,
+		barWidth = 120,
+		barHeight = 220,
+		barProportion = 0.15,
+		barSpace = 3,
 	}
 	
 	self.presets["HiBar"] = {
