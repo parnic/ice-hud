@@ -241,4 +241,4 @@ end
 
 
 -- Load us up
-ComboPoints:new()
+IceHUD.ComboPoints = ComboPoints:new()

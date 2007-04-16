@@ -801,4 +801,4 @@ end
 
 
 -- Load us up
-IceHUD_Module_TargetInfo = TargetInfo:new()
+IceHUD.TargetInfo = TargetInfo:new()

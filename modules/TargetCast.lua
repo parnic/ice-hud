@@ -56,4 +56,4 @@ end
 
 
 -- Load us up
-TargetCast:new()
+IceHUD.TargetCast = TargetCast:new()

@@ -150,4 +150,4 @@ end
 
 
 -- Load us up
-PlayerHealth:new()
+IceHUD.PlayerHealth = PlayerHealth:new()

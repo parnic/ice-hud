@@ -1,6 +1,6 @@
 IceHUD = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDebug-2.0")
 
-IceHUD.dewdrop = AceLibrary("Dewdrop-2.0")
+local waterfall = AceLibrary("Waterfall-1.0")
 
 IceHUD.Location = "Interface\\AddOns\\IceHUD"
 IceHUD.options =
@@ -356,18 +356,10 @@ IceHUD.options =
 		},
 		
 		
-		
-		headerModulesBlank = { type = 'header', name = ' ', order = 40 },
-		headerModules = {
-			type = 'header',
-			name = 'Module Settings',
-			order = 40
-		},
-		
 		modules = {
 			type='group',
 			desc = 'Module configuration options',
-			name = 'Modules',
+			name = 'Module settings',
 			args = {},
 			order = 41
 		},
@@ -403,17 +395,7 @@ IceHUD.options =
 			end,
 			order = 91
 		},
-		
-		reset = {
-			type = 'execute',
-			name = '|cffff0000Reset|r',
-			desc = "Resets all IceHUD options - WARNING: Reloads UI",
-			func = function()
-				StaticPopup_Show("ICEHUD_RESET")
-			end,
-			order = 92
-		},
-		
+
 		debug = {
 			type = "toggle",
 			name = "Debugging",
@@ -423,6 +405,16 @@ IceHUD.options =
 			end,
 			set = function(value)
 				IceHUD.IceCore:SetDebug(value)
+			end,
+			order = 92
+		},
+		
+		reset = {
+			type = 'execute',
+			name = '|cffff0000Reset|r',
+			desc = "Resets all IceHUD options - WARNING: Reloads UI",
+			func = function()
+				StaticPopup_Show("ICEHUD_RESET")
 			end,
 			order = 93
 		},
@@ -436,37 +428,24 @@ IceHUD.options =
 			end,
 			order = 94
 		},
-		
-		endSpace = {
-			type = 'header',
-			name = ' ',
-			order = 1000
-		},
 
 	}
 }
+
 
 IceHUD.slashMenu =
 {
 	type = 'execute',
 	func = function()
-		if not (IceHUD.dewdrop:IsRegistered(IceHUD.IceCore.IceHUDFrame)) then
-			IceHUD.dewdrop:Register(IceHUD.IceCore.IceHUDFrame,
-				'children', IceHUD.options,
-				'point', "BOTTOMLEFT",
-				'relativePoint', "TOPLEFT",
-				'dontHook', true
-			)
-		end
-		
 		if not (UnitAffectingCombat("player")) then
-			IceHUD.dewdrop:Open(IceHUD.IceCore.IceHUDFrame)
+			waterfall:Open("IceHUD")
 		else
 			DEFAULT_CHAT_FRAME:AddMessage("|cff8888ffIceHUD|r: Combat lockdown restriction." ..
 										  " Leave combat and try again.")
 		end
 	end
 }
+
 
 StaticPopupDialogs["ICEHUD_RESET"] = 
 {
@@ -482,7 +461,6 @@ StaticPopupDialogs["ICEHUD_RESET"] =
 }
 
 
-
 function IceHUD:OnInitialize()
 	self:SetDebugging(false)
 	self:Debug("IceHUD:OnInitialize()")
@@ -494,13 +472,14 @@ end
 function IceHUD:OnEnable()
 	self:Debug("IceHUD:OnEnable()")
 	
-
 	self.IceCore:Enable()
 	self:SetDebugging(self.IceCore:GetDebug())
 	self.debugFrame = ChatFrame2
 	
 	self.options.args.modules.args = self.IceCore:GetModuleOptions()
 	self.options.args.colors.args = self.IceCore:GetColorOptions()
+	
+	waterfall:Register("IceHUD", 'aceOptions', IceHUD.options)
 	
 	self:RegisterChatCommand({ "/icehud" }, IceHUD.slashMenu)
 end

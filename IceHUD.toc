@@ -1,12 +1,12 @@
-## Interface: 20000
+## Interface: 20003
 ## Author: Iceroth
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
 ## Notes: Another HUD addon
-## Version: 0.8.6 ($Revision$)
+## Version: 0.9 ($Revision$)
 ## SavedVariables: IceCoreDB
-## OptionalDeps: Ace2, DewdropLib, DruidBar, MobHealth
-## X-Embeds: Ace2, DewdropLib
+## OptionalDeps: Ace2, GratuityLib, WaterfallLib, MobHealth
+## X-Embeds: Ace2, GratuityLib, WaterfallLib
 ## X-Category: UnitFrame
 ## X-Date: $Date$
 ## X-eMail: iceroth@iceroth.net
@@ -20,7 +20,8 @@ libs\AceEvent-2.0\AceEvent-2.0.lua
 libs\AceDebug-2.0\AceDebug-2.0.lua
 libs\AceConsole-2.0\AceConsole-2.0.lua
 libs\AceAddon-2.0\AceAddon-2.0.lua
-libs\Dewdrop-2.0\Dewdrop-2.0.lua
+libs\Gratuity-2.0\Gratuity-2.0.lua
+libs\Waterfall-1.0\Waterfall-1.0.lua
 
 # IceHUD core functionality
 IceCore.lua

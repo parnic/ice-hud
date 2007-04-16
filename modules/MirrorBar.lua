@@ -413,6 +413,4 @@ end
 
 
 -- Load us up
-MirrorBarHandler:new()
-
-
+IceHUD.MirrorBarHandler = MirrorBarHandler:new()

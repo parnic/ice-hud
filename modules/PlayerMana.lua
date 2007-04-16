@@ -195,9 +195,10 @@ function PlayerMana.prototype:UpdateEnergy(unit)
 	end
 	
 	
-	if (not (self.previousEnergy) or (self.previousEnergy <= UnitMana(self.unit))) then
-		self.tickStart = GetTime()
-		self.tickerFrame:Show()
+	if ((not (self.previousEnergy) or (self.previousEnergy <= UnitMana(self.unit))) and
+		(self.moduleSettings.tickerEnabled)) then
+			self.tickStart = GetTime()
+			self.tickerFrame:Show()
 	end
 	
 	self.previousEnergy = UnitMana(self.unit)
@@ -259,4 +260,4 @@ end
 
 
 -- Load us up
-PlayerMana:new()
+IceHUD.PlayerMana = PlayerMana:new()

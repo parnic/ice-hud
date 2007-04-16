@@ -213,4 +213,4 @@ end
 
 
 -- Load us up
-TargetHealth:new()
+IceHUD.TargetHealth = TargetHealth:new()

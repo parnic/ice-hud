@@ -78,4 +78,4 @@ end
 
 
 -- Load us up
-TargetMana:new()
+IceHUD.TargetMana = TargetMana:new()

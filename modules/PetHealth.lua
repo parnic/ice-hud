@@ -106,4 +106,4 @@ end
 
 
 -- Load us up
-PetHealth:new()
+IceHUD.PetHealth = PetHealth:new()

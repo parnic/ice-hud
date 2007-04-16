@@ -118,4 +118,4 @@ end
 
 
 -- Load us up
-PetMana:new()
+IceHUD.PetMana = PetMana:new()

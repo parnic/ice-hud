@@ -14,7 +14,7 @@ function TargetOfTarget.prototype:init()
 	TargetOfTarget.super.prototype.init(self, "TargetOfTarget")
 
 	self.buffSize = 12
-	self.height = 12
+	self.height = 15
 	self.stackedDebuffs = {}
 	self.unit = "targettarget"
 	self.hadTarget = false
@@ -110,7 +110,7 @@ function TargetOfTarget.prototype:GetDefaultSettings()
 	local defaults =  TargetOfTarget.super.prototype.GetDefaultSettings(self)
 	defaults["vpos"] = -130
 	defaults["showDebuffs"] = true
-	defaults["fontSize"] = 12
+	defaults["fontSize"] = 15
 	defaults["mouse"] = true
 	return defaults
 end
@@ -243,7 +243,7 @@ function TargetOfTarget.prototype:CreateToTFrame()
 	self.frame.totName:SetJustifyH("LEFT")
 	self.frame.totName:SetJustifyV("TOP")
 
-	self.frame.totName:SetPoint("LEFT", self.frame, "LEFT", 0, 0)
+	self.frame.totName:SetPoint("LEFT", self.frame, "LEFT", 0, -1)
 	self.frame.totName:Show()
 end
 
@@ -413,4 +413,4 @@ end
 
 
 -- load us up
-IceHUD_Module_TargetOfTarget = TargetOfTarget:new()
+IceHUD.TargetOfTarget = TargetOfTarget:new()

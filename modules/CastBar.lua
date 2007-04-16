@@ -144,12 +144,11 @@ function CastBar.prototype:CreateLagBar()
 	
 	self.lagBar:SetStatusBarTexture(self.lagBar.bar)
 	
-	local r, g, b = self:GetColor("CastFail")
-	self.lagBar:SetStatusBarColor(
-		self.settings.backgroundColor.r,
-		self.settings.backgroundColor.g,
-		self.settings.backgroundColor.b,
-		self.moduleSettings.lagAlpha)
+	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
+	if (self.settings.backgroundToggle) then
+		r, g, b = self:GetColor("CastCasting")
+	end
+	self.lagBar:SetStatusBarColor(r, g, b, self.moduleSettings.lagAlpha)
 	
 
 	if (self.moduleSettings.side == IceCore.Side.Left) then
@@ -196,4 +195,4 @@ end
 -------------------------------------------------------------------------------
 
 -- Load us up
-PRKL = CastBar:new()
+CastBar:new()
