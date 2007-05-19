@@ -191,6 +191,24 @@ function CastBar.prototype:SpellCastStart(unit)
 end
 
 
+-- OVERRIDE
+function CastBar.prototype:SpellCastChannelStart(unit)
+	CastBar.super.prototype.SpellCastChannelStart(self, unit)
+	if (unit ~= self.unit) then return end
+	
+	local lag = GetTime() - self.spellCastSent
+	
+	local pos = lag / self.actionDuration
+	local y = self.settings.barHeight - (pos * self.settings.barHeight)
+	
+	if (self.moduleSettings.side == IceCore.Side.Left) then
+		self.lagBar.bar:SetTexCoord(1, 0, pos, 0)
+	else
+		self.lagBar.bar:SetTexCoord(0, 1, pos, 0)
+	end
+	
+	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
+end
 
 -------------------------------------------------------------------------------
 
