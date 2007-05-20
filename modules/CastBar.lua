@@ -202,9 +202,9 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
 	
 	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.lagBar.bar:SetTexCoord(1, 0, pos, 0)
+		self.lagBar.bar:SetTexCoord(1, 0, 1-pos, 1)
 	else
-		self.lagBar.bar:SetTexCoord(0, 1, pos, 0)
+		self.lagBar.bar:SetTexCoord(0, 1, 1-pos, 1)
 	end
 	
 	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
