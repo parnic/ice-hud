@@ -251,7 +251,7 @@ function TargetInfo.prototype:GetDefaultSettings()
 	defaults["stackFontSize"] = 11
 	defaults["vpos"] = -50
 	defaults["zoom"] = 0.08
-	defaults["buffSize"] = 14
+	defaults["buffSize"] = 20
 	defaults["mouseTarget"] = true
 	defaults["mouseBuff"] = true
 	defaults["filter"] = "Never"
@@ -459,6 +459,7 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 		if (not buffs[i]) then
 			buffs[i] = CreateFrame("Frame", nil, parent)
 			buffs[i].icon = CreateFrame("Frame", nil, buffs[i])
+			buffs[i].cd = CreateFrame("Cooldown", nil, buffs[i], "CooldownFrameTemplate")
 		end
 
 		buffs[i]:SetFrameStrata("BACKGROUND")
@@ -468,6 +469,12 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 		buffs[i].icon:SetFrameStrata("BACKGROUND")
 		buffs[i].icon:SetWidth(self.moduleSettings.buffSize-2)
 		buffs[i].icon:SetHeight(self.moduleSettings.buffSize-2)
+		
+		buffs[i].cd:SetFrameStrata("BACKGROUND")
+		buffs[i].cd:SetReverse(true)
+		buffs[i].cd:ClearAllPoints()
+		buffs[i].cd:SetAllPoints(buffs[i])
+
 
 		local pos = math.fmod(i, self.moduleSettings.perRow)
 		if (pos == 0) then
@@ -537,28 +544,43 @@ function TargetInfo.prototype:UpdateBuffs()
 		end
 	end
 	
+	local hostile = UnitCanAttack("player", "target")
+	
 
 	for i = 1, IceCore.BuffLimit do
-		local buffName, buffRank, buffTexture, buffApplications = UnitBuff("target", i, filter)
+		local buffName, buffRank, buffTexture, buffApplications,
+			buffDuration, buffTimeLeft = UnitBuff("target", i, filter and not hostile)
 
-		--buffTexture = buffTexture or "Interface\\Icons\\Ability_Racial_BloodRage"
-
-		self.frame.buffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
-		self.frame.buffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
-		
-		local alpha = buffTexture and 0.5 or 0
-		self.frame.buffFrame.buffs[i].texture:SetTexture(0, 0, 0, alpha)
-
-
-		--buffApplications = i
-
-		if (buffApplications and (buffApplications > 1)) then
-			self.frame.buffFrame.buffs[i].icon.stack:SetText(buffApplications)
-		else
-			self.frame.buffFrame.buffs[i].icon.stack:SetText(nil)
-		end
-		
 		if (buffTexture) then
+
+			--buffTexture = buffTexture or "Interface\\Icons\\Ability_Racial_BloodRage"
+
+			self.frame.buffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
+			self.frame.buffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
+			
+			local alpha = buffTexture and 0.5 or 0
+			self.frame.buffFrame.buffs[i].texture:SetTexture(0, 0, 0, alpha)
+			
+			
+			-- cooldown frame
+			if (buffDuration and buffTimeLeft) then
+				local start = GetTime() - buffDuration + buffTimeLeft
+				self.frame.buffFrame.buffs[i].cd:SetCooldown(start, buffDuration)
+				self.frame.buffFrame.buffs[i].cd:Show()
+			else
+				self.frame.buffFrame.buffs[i].cd:Hide()
+			end
+
+
+			--buffApplications = i
+
+			if (buffApplications and (buffApplications > 1)) then
+				self.frame.buffFrame.buffs[i].icon.stack:SetText(buffApplications)
+			else
+				self.frame.buffFrame.buffs[i].icon.stack:SetText(nil)
+			end
+		
+		
 			self.frame.buffFrame.buffs[i]:Show()
 		else
 			self.frame.buffFrame.buffs[i]:Hide()
@@ -567,29 +589,39 @@ function TargetInfo.prototype:UpdateBuffs()
 	end
 
 	for i = 1, IceCore.BuffLimit do
-		local buffName, buffRank, buffTexture, buffApplications, debuffDispelType = UnitDebuff("target", i, filter)
+		local buffName, buffRank, buffTexture, buffApplications, debuffDispelType,
+			debuffDuration, debuffTimeLeft = UnitDebuff("target", i, filter and not hostile)
 
-		--buffTexture = buffTexture or "Interface\\Icons\\Ability_Creature_Disease_04"
+		if (buffTexture and (not hostile or (filter and debuffDuration))) then
 
-		local color = debuffDispelType and DebuffTypeColor[debuffDispelType] or DebuffTypeColor["none"]
-		local alpha = buffTexture and 1 or 0
-		self.frame.debuffFrame.buffs[i].texture:SetTexture(1, 1, 1, alpha)
+			--buffTexture = buffTexture or "Interface\\Icons\\Ability_Creature_Disease_04"
 
-		self.frame.debuffFrame.buffs[i].texture:SetVertexColor(color.r, color.g, color.b)
+			local color = debuffDispelType and DebuffTypeColor[debuffDispelType] or DebuffTypeColor["none"]
+			local alpha = buffTexture and 1 or 0
+			self.frame.debuffFrame.buffs[i].texture:SetTexture(1, 1, 1, alpha)
 
-		--buffApplications = i
+			self.frame.debuffFrame.buffs[i].texture:SetVertexColor(color.r, color.g, color.b)
 
-		self.frame.debuffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
-		self.frame.debuffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
+			--buffApplications = i
+			
+			if (debuffDuration and debuffTimeLeft) then
+				local start = GetTime() - debuffDuration + debuffTimeLeft
+				self.frame.debuffFrame.buffs[i].cd:SetCooldown(start, debuffDuration)
+				self.frame.debuffFrame.buffs[i].cd:Show()
+			else
+				self.frame.debuffFrame.buffs[i].cd:Hide()
+			end
 
-		if (buffApplications and (buffApplications > 1)) then
-			self.frame.debuffFrame.buffs[i].icon.stack:SetText(buffApplications)
-		else
-			self.frame.debuffFrame.buffs[i].icon.stack:SetText(nil)
-		end
+			self.frame.debuffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
+			self.frame.debuffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
+
+			if (buffApplications and (buffApplications > 1)) then
+				self.frame.debuffFrame.buffs[i].icon.stack:SetText(buffApplications)
+			else
+				self.frame.debuffFrame.buffs[i].icon.stack:SetText(nil)
+			end
 
 
-		if (buffTexture) then
 			self.frame.debuffFrame.buffs[i]:Show()
 		else
 			self.frame.debuffFrame.buffs[i]:Hide()

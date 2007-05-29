@@ -1,9 +1,9 @@
-## Interface: 20003
+## Interface: 20100
 ## Author: Iceroth
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
 ## Notes: Another HUD addon
-## Version: 0.9.1 ($Revision$)
+## Version: 0.9.2 ($Revision$)
 ## SavedVariables: IceCoreDB
 ## OptionalDeps: Ace2, GratuityLib, WaterfallLib, MobHealth
 ## X-Embeds: Ace2, GratuityLib, WaterfallLib
