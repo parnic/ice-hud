@@ -592,7 +592,7 @@ function TargetInfo.prototype:UpdateBuffs()
 		local buffName, buffRank, buffTexture, buffApplications, debuffDispelType,
 			debuffDuration, debuffTimeLeft = UnitDebuff("target", i, filter and not hostile)
 
-		if (buffTexture and (not hostile or (filter and debuffDuration))) then
+		if (buffTexture and (not hostile or not filter or (filter and debuffDuration))) then
 
 			--buffTexture = buffTexture or "Interface\\Icons\\Ability_Creature_Disease_04"
 
