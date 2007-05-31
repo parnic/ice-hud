@@ -506,9 +506,8 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 			buffs[i].icon.texture:SetAllPoints(buffs[i].icon)
 		end
 		
-		buffs[i].icon.stack =
-			self:FontFactory("Bold", self.moduleSettings.stackFontSize,buffs[i].icon,
-							 buffs[i].icon.stack, "OUTLINE")
+		buffs[i].icon.stack = self:FontFactory("Bold",
+			self.moduleSettings.stackFontSize, buffs[i].icon, buffs[i].icon.stack, "OUTLINE")
 
 		buffs[i].icon.stack:ClearAllPoints()
 		buffs[i].icon.stack:SetPoint("BOTTOMRIGHT" , buffs[i].icon, "BOTTOMRIGHT", 3, -1)
@@ -552,27 +551,20 @@ function TargetInfo.prototype:UpdateBuffs()
 			buffDuration, buffTimeLeft = UnitBuff("target", i, filter and not hostile)
 
 		if (buffTexture) then
-
-			--buffTexture = buffTexture or "Interface\\Icons\\Ability_Racial_BloodRage"
-
 			self.frame.buffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
 			self.frame.buffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
 			
 			local alpha = buffTexture and 0.5 or 0
 			self.frame.buffFrame.buffs[i].texture:SetTexture(0, 0, 0, alpha)
 			
-			
 			-- cooldown frame
-			if (buffDuration and buffTimeLeft) then
+			if (buffDuration > 0 and buffTimeLeft > 0) then
 				local start = GetTime() - buffDuration + buffTimeLeft
 				self.frame.buffFrame.buffs[i].cd:SetCooldown(start, buffDuration)
 				self.frame.buffFrame.buffs[i].cd:Show()
 			else
 				self.frame.buffFrame.buffs[i].cd:Hide()
 			end
-
-
-			--buffApplications = i
 
 			if (buffApplications and (buffApplications > 1)) then
 				self.frame.buffFrame.buffs[i].icon.stack:SetText(buffApplications)
@@ -592,19 +584,15 @@ function TargetInfo.prototype:UpdateBuffs()
 		local buffName, buffRank, buffTexture, buffApplications, debuffDispelType,
 			debuffDuration, debuffTimeLeft = UnitDebuff("target", i, filter and not hostile)
 
-		if (buffTexture and (not hostile or not filter or (filter and debuffDuration))) then
-
-			--buffTexture = buffTexture or "Interface\\Icons\\Ability_Creature_Disease_04"
+		if (buffTexture and (not hostile or not filter or (filter and debuffDuration > 0))) then
 
 			local color = debuffDispelType and DebuffTypeColor[debuffDispelType] or DebuffTypeColor["none"]
 			local alpha = buffTexture and 1 or 0
 			self.frame.debuffFrame.buffs[i].texture:SetTexture(1, 1, 1, alpha)
-
 			self.frame.debuffFrame.buffs[i].texture:SetVertexColor(color.r, color.g, color.b)
 
-			--buffApplications = i
-			
-			if (debuffDuration and debuffTimeLeft) then
+			-- cooldown frame
+			if (debuffDuration > 0 and debuffTimeLeft > 0) then
 				local start = GetTime() - debuffDuration + debuffTimeLeft
 				self.frame.debuffFrame.buffs[i].cd:SetCooldown(start, debuffDuration)
 				self.frame.debuffFrame.buffs[i].cd:Show()
