@@ -558,7 +558,8 @@ function TargetInfo.prototype:UpdateBuffs()
 			self.frame.buffFrame.buffs[i].texture:SetTexture(0, 0, 0, alpha)
 			
 			-- cooldown frame
-			if (buffDuration > 0 and buffTimeLeft > 0) then
+			if (buffDuration and buffDuration > 0 and
+				buffTimeLeft and buffTimeLeft > 0) then
 				local start = GetTime() - buffDuration + buffTimeLeft
 				self.frame.buffFrame.buffs[i].cd:SetCooldown(start, buffDuration)
 				self.frame.buffFrame.buffs[i].cd:Show()
@@ -584,7 +585,8 @@ function TargetInfo.prototype:UpdateBuffs()
 		local buffName, buffRank, buffTexture, buffApplications, debuffDispelType,
 			debuffDuration, debuffTimeLeft = UnitDebuff("target", i, filter and not hostile)
 
-		if (buffTexture and (not hostile or not filter or (filter and debuffDuration > 0))) then
+		if (buffTexture and (not hostile or not filter or 
+			(filter and debuffDuration and debuffDuration > 0))) then
 
 			local color = debuffDispelType and DebuffTypeColor[debuffDispelType] or DebuffTypeColor["none"]
 			local alpha = buffTexture and 1 or 0
@@ -592,7 +594,8 @@ function TargetInfo.prototype:UpdateBuffs()
 			self.frame.debuffFrame.buffs[i].texture:SetVertexColor(color.r, color.g, color.b)
 
 			-- cooldown frame
-			if (debuffDuration > 0 and debuffTimeLeft > 0) then
+			if (debuffDuration and debuffDuration > 0 and
+				debuffTimeLeft and debuffTimeLeft > 0) then
 				local start = GetTime() - debuffDuration + debuffTimeLeft
 				self.frame.debuffFrame.buffs[i].cd:SetCooldown(start, debuffDuration)
 				self.frame.debuffFrame.buffs[i].cd:Show()
