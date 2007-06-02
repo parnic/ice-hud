@@ -471,6 +471,7 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 		buffs[i].icon:SetHeight(self.moduleSettings.buffSize-2)
 		
 		buffs[i].cd:SetFrameStrata("BACKGROUND")
+		buffs[i].cd:SetFrameLevel(buffs[i].icon:GetFrameLevel()+1)
 		buffs[i].cd:SetReverse(true)
 		buffs[i].cd:ClearAllPoints()
 		buffs[i].cd:SetAllPoints(buffs[i])
@@ -585,8 +586,7 @@ function TargetInfo.prototype:UpdateBuffs()
 		local buffName, buffRank, buffTexture, buffApplications, debuffDispelType,
 			debuffDuration, debuffTimeLeft = UnitDebuff("target", i, filter and not hostile)
 
-		if (buffTexture and (not hostile or not filter or 
-			(filter and debuffDuration and debuffDuration > 0))) then
+		if (buffTexture and (not hostile or not filter or (filter and debuffDuration))) then
 
 			local color = debuffDispelType and DebuffTypeColor[debuffDispelType] or DebuffTypeColor["none"]
 			local alpha = buffTexture and 1 or 0
