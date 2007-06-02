@@ -357,7 +357,7 @@ end
 
 
 function TargetInfo.prototype:CreateTextFrame()
-	self.frame.targetName = self:FontFactory("Bold", self.moduleSettings.fontSize+1, nil, self.frame.targetName)
+	self.frame.targetName = self:FontFactory(self.moduleSettings.fontSize+1, nil, self.frame.targetName)
 	self.frame.targetName:SetJustifyH("CENTER")
 	self.frame.targetName:SetJustifyV("TOP")
 	self.frame.targetName:SetAllPoints(self.frame)
@@ -365,7 +365,7 @@ end
 
 
 function TargetInfo.prototype:CreateInfoTextFrame()
-	self.frame.targetInfo = self:FontFactory(nil, self.moduleSettings.fontSize, nil, self.frame.targetInfo)
+	self.frame.targetInfo = self:FontFactory(self.moduleSettings.fontSize, nil, self.frame.targetInfo)
 
 	self.frame.targetInfo:SetWidth(self.width)
 	self.frame.targetInfo:SetHeight(14)
@@ -378,7 +378,7 @@ end
 
 
 function TargetInfo.prototype:CreateGuildTextFrame()
-	self.frame.targetGuild = self:FontFactory(nil, self.moduleSettings.fontSize, nil, self.frame.targetGuild)
+	self.frame.targetGuild = self:FontFactory(self.moduleSettings.fontSize, nil, self.frame.targetGuild)
 
 	self.frame.targetInfo:SetWidth(self.width)
 	self.frame.targetGuild:SetHeight(14)
@@ -507,8 +507,8 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 			buffs[i].icon.texture:SetAllPoints(buffs[i].icon)
 		end
 		
-		buffs[i].icon.stack = self:FontFactory("Bold",
-			self.moduleSettings.stackFontSize, buffs[i].icon, buffs[i].icon.stack, "OUTLINE")
+		buffs[i].icon.stack = self:FontFactory(self.moduleSettings.stackFontSize, buffs[i].icon, buffs[i].icon.stack,
+			"OUTLINE")
 
 		buffs[i].icon.stack:ClearAllPoints()
 		buffs[i].icon.stack:SetPoint("BOTTOMRIGHT" , buffs[i].icon, "BOTTOMRIGHT", 3, -1)

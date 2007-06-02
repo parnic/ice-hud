@@ -1,4 +1,5 @@
 local AceOO = AceLibrary("AceOO-2.0")
+local SML = AceLibrary("SharedMedia-1.0")
 
 local TargetOfTarget = AceOO.Class(IceElement)
 
@@ -101,6 +102,24 @@ function TargetOfTarget.prototype:GetOptions()
 		order = 34
 	}
 	
+	opts["texture"] = {
+		type = 'text',
+		name = 'Texture',
+		desc = 'ToT frame texture',
+		get = function()
+			return self.moduleSettings.texture
+		end,
+		set = function(v)
+			self.moduleSettings.texture = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		validate = SML:List(SML.MediaType.STATUSBAR),
+		order = 35
+	}
+	
 	return opts
 end
 
@@ -112,6 +131,7 @@ function TargetOfTarget.prototype:GetDefaultSettings()
 	defaults["showDebuffs"] = true
 	defaults["fontSize"] = 15
 	defaults["mouse"] = true
+	defaults["texture"] = "Blizzard"
 	return defaults
 end
 
@@ -130,9 +150,7 @@ function TargetOfTarget.prototype:Enable(core)
 	TargetOfTarget.super.prototype.Enable(self, core)
 	
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "Update")
-	
-	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.3, self)
-	
+	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.2, self)
 	RegisterUnitWatch(self.frame)
 	
 	self:Update()
@@ -162,13 +180,7 @@ function TargetOfTarget.prototype:CreateFrame()
 	self.frame:SetHeight(self.height)
 	self.frame:SetPoint("TOP", self.parent, "TOP", 0, self.moduleSettings.vpos)
 	self.frame:SetScale(self.moduleSettings.scale)
-
-	if (not self.frame.texture) then
-		self.frame.texture = self.frame:CreateTexture()
-		self.frame.texture:SetTexture(IceElement.TexturePath .. "smooth")
-		self.frame.texture:SetVertexColor(0.2, 0.2, 0.2, 0.3)
-		self.frame.texture:SetAllPoints(self.frame)
-	end
+	
 	
 	self.frame.unit = self.unit -- for blizz default tooltip handling
 	
@@ -198,7 +210,6 @@ function TargetOfTarget.prototype:CreateFrame()
 	-- click casting support
 	ClickCastFrames = ClickCastFrames or {}
 	ClickCastFrames[self.frame] = true
-
 end
 
 
@@ -215,20 +226,20 @@ function TargetOfTarget.prototype:CreateBarFrame()
 
 	if (not self.frame.bar.texture) then
 		self.frame.bar.texture = self.frame.bar:CreateTexture()
-		self.frame.bar.texture:SetTexture(IceElement.TexturePath .. "smooth")
-		self.frame.bar.texture:SetAllPoints(self.frame.bar)
-		self.frame.bar:SetStatusBarTexture(self.frame.bar.texture)
 	end
+	self.frame.bar.texture:SetTexture(SML:Fetch(SML.MediaType.STATUSBAR, self.moduleSettings.texture))
+	self.frame.bar.texture:SetAllPoints(self.frame.bar)
+	self.frame.bar:SetStatusBarTexture(self.frame.bar.texture)
 	
 	
 	if (not self.frame.bar.highLight) then
 		self.frame.bar.highLight = self.frame.bar:CreateTexture(nil, "OVERLAY")
-		self.frame.bar.highLight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
-		self.frame.bar.highLight:SetBlendMode("ADD")
-		self.frame.bar.highLight:SetAllPoints(self.frame.bar)
-		self.frame.bar.highLight:SetVertexColor(1, 1, 1, 0.3)
-		self.frame.bar.highLight:Hide()
 	end
+	self.frame.bar.highLight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
+	self.frame.bar.highLight:SetBlendMode("ADD")
+	self.frame.bar.highLight:SetAllPoints(self.frame.bar)
+	self.frame.bar.highLight:SetVertexColor(1, 1, 1, 0.3)
+	self.frame.bar.highLight:Hide()
 
 
 	self.frame.bar:Show()
@@ -236,7 +247,7 @@ end
 
 
 function TargetOfTarget.prototype:CreateToTFrame()
-	self.frame.totName = self:FontFactory("Bold", self.moduleSettings.fontSize, self.frame.bar, self.frame.totName)
+	self.frame.totName = self:FontFactory(self.moduleSettings.fontSize, self.frame.bar, self.frame.totName)
 	
 	self.frame.totName:SetWidth(self.settings.gap-40)
 	self.frame.totName:SetHeight(self.height)
@@ -249,7 +260,7 @@ end
 
 
 function TargetOfTarget.prototype:CreateToTHPFrame()
-	self.frame.totHealth = self:FontFactory("Bold", self.moduleSettings.fontSize, self.frame.bar, self.frame.totHealth)
+	self.frame.totHealth = self:FontFactory(self.moduleSettings.fontSize, self.frame.bar, self.frame.totHealth)
 
 	self.frame.totHealth:SetWidth(40)
 	self.frame.totHealth:SetHeight(self.height)
@@ -293,7 +304,7 @@ function TargetOfTarget.prototype:CreateIconFrames(parent)
 		buffs[i].texture:SetTexture(nil)
 		buffs[i].texture:SetAllPoints(buffs[i])
 		
-		buffs[i].stack = self:FontFactory("Bold", 11, buffs[i], buffs[i].stack, "OUTLINE")
+		buffs[i].stack = self:FontFactory(11, buffs[i], buffs[i].stack, "OUTLINE")
 		buffs[i].stack:SetPoint("BOTTOMRIGHT" , buffs[i], "BOTTOMRIGHT", 2, -1)
 		
 		if (self.moduleSettings.mouse) then

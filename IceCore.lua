@@ -52,7 +52,7 @@ function IceCore.prototype:init()
 		backgroundColor = {r = 0.5, g = 0.5, b = 0.5},
 		barTexture = "Bar",
 		barPreset = defaultPreset,
-		fontFamily = "IceHUD",
+		fontFamily = "Arial Narrow",
 		debug = false
 	}
 	
@@ -90,10 +90,6 @@ function IceCore.prototype:Enable()
 		end
 	end
 	
-	-- try to catch what's causing the cockblock message
-	self:RegisterEvent("ADDON_ACTION_FORBIDDEN", "ActionForbidden")
-	self:RegisterEvent("ADDON_ACTION_BLOCKED", "ActionBlocked")
-
 	self.enabled = true
 end
 
@@ -184,12 +180,6 @@ function IceCore.prototype:Register(element)
 end
 
 
-function IceCore.prototype:ActionForbidden(addon, msg)
-	IceHUD:Debug("Action Forbidden. ", addon, " : ", msg)
-end
-function IceCore.prototype:ActionBlocked(addon, msg)
-	IceHUD:Debug("Action Blocked. ", addon, " : ", msg)
-end
 
 -------------------------------------------------------------------------------
 -- Configuration methods                                                     --

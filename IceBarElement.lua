@@ -39,7 +39,6 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 1
 	settings["barFontSize"] = 12
-	settings["barFontBold"] = true
 	settings["lockTextAlpha"] = true
 	settings["textVisible"] = {upper = true, lower = true}
 	settings["brackets"] = true
@@ -125,20 +124,6 @@ function IceBarElement.prototype:GetOptions()
 				max = 20,
 				step = 1,
 				order = 11
-			},
-			
-			fontBold = {
-				type = 'toggle',
-				name = 'Bar Font Bold',
-				desc = 'If you have game default font selected, this option has no effect',
-				get = function()
-					return self.moduleSettings.barFontBold
-				end,
-				set = function(v)
-					self.moduleSettings.barFontBold = v
-					self:Redraw()
-				end,
-				order = 12
 			},
 			
 			lockFontAlpha = {
@@ -311,8 +296,8 @@ end
 
 
 function IceBarElement.prototype:CreateTexts()
-	self.frame.bottomUpperText = self:FontFactory(self.moduleSettings.barFontBold, self.moduleSettings.barFontSize, nil, self.frame.bottomUpperText)
-	self.frame.bottomLowerText = self:FontFactory(self.moduleSettings.barFontBold, self.moduleSettings.barFontSize, nil, self.frame.bottomLowerText)
+	self.frame.bottomUpperText = self:FontFactory(self.moduleSettings.barFontSize, nil, self.frame.bottomUpperText)
+	self.frame.bottomLowerText = self:FontFactory(self.moduleSettings.barFontSize, nil, self.frame.bottomLowerText)
 
 	self.frame.bottomUpperText:SetWidth(80)
 	self.frame.bottomLowerText:SetWidth(120)

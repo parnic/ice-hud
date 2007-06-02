@@ -1,4 +1,5 @@
 local AceOO = AceLibrary("AceOO-2.0")
+local SML = AceLibrary("SharedMedia-1.0")
 
 IceElement = AceOO.Class("AceEvent-2.0")
 IceElement.virtual = true
@@ -239,17 +240,7 @@ function IceElement.prototype:ConvertToHex(color)
 end
 
 
-function IceElement.prototype:FontFactory(weight, size, frame, font, flags)
-	local weightString = ""
-	if (weight) then
-		weightString = "Bold"
-	end
-	
-	local fontFile = IceHUD.Location .. "\\fonts\\Calibri" .. weightString ..".ttf"
-	if (self.settings.fontFamily == "Default") then
-		fontFile = STANDARD_TEXT_FONT
-	end
-	
+function IceElement.prototype:FontFactory(size, frame, font, flags)
 	if not (frame) then
 		frame = self.frame
 	end
@@ -260,7 +251,8 @@ function IceElement.prototype:FontFactory(weight, size, frame, font, flags)
 	else
 		fontString = font
 	end
-	fontString:SetFont(fontFile, size, flags)
+	
+	fontString:SetFont(SML:Fetch(SML.MediaType.FONT, self.settings.fontFamily), size, flags)
 	if not (flags) then
 		fontString:SetShadowColor(0, 0, 0, 1)
 		fontString:SetShadowOffset(1, -1)

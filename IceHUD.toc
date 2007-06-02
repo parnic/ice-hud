@@ -3,10 +3,10 @@
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
 ## Notes: Another HUD addon
-## Version: 0.9.2 ($Revision$)
+## Version: 0.9.3 ($Revision$)
 ## SavedVariables: IceCoreDB
-## OptionalDeps: Ace2, GratuityLib, WaterfallLib, MobHealth
-## X-Embeds: Ace2, GratuityLib, WaterfallLib
+## OptionalDeps: Ace2, GratuityLib, SharedMediaLib, WaterfallLib, MobHealth
+## X-Embeds: Ace2, GratuityLib, SharedMediaLib, WaterfallLib
 ## X-Category: UnitFrame
 ## X-Date: $Date$
 ## X-eMail: iceroth@iceroth.net
@@ -21,6 +21,7 @@ libs\AceDebug-2.0\AceDebug-2.0.lua
 libs\AceConsole-2.0\AceConsole-2.0.lua
 libs\AceAddon-2.0\AceAddon-2.0.lua
 libs\Gratuity-2.0\Gratuity-2.0.lua
+libs\SharedMedia-1.0\SharedMedia-1.0.lua
 libs\Waterfall-1.0\Waterfall-1.0.lua
 
 # IceHUD core functionality
