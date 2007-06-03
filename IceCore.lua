@@ -38,6 +38,7 @@ function IceCore.prototype:init()
 	local defaults = {
 		gap = 150,
 		verticalPos = -110,
+		horizontalPos = 0,
 		scale = 0.9,
 		
 		alphaooc = 0.3,
@@ -117,7 +118,7 @@ function IceCore.prototype:DrawFrame()
 	
 	self:SetScale(self.settings.scale)
 	
-	self.IceHUDFrame:SetPoint("CENTER", 0, self.settings.verticalPos)
+	self.IceHUDFrame:SetPoint("CENTER", self.settings.horizontalPos, self.settings.verticalPos)
 	self.IceHUDFrame:Show()
 end
 
@@ -196,7 +197,16 @@ end
 function IceCore.prototype:SetVerticalPos(value)
 	self.settings.verticalPos = value
 	self.IceHUDFrame:ClearAllPoints()
-	self.IceHUDFrame:SetPoint("CENTER", 0, self.settings.verticalPos)
+	self.IceHUDFrame:SetPoint("CENTER", self.settings.horizontalPos, self.settings.verticalPos)
+end
+
+function IceCore.prototype:GetHorizontalPos()
+	return self.settings.horizontalPos
+end
+function IceCore.prototype:SetHorizontalPos(value)
+	self.settings.horizontalPos = value
+	self.IceHUDFrame:ClearAllPoints()
+	self.IceHUDFrame:SetPoint("CENTER", self.settings.horizontalPos, self.settings.verticalPos)
 end
 
 

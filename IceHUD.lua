@@ -31,10 +31,26 @@ IceHUD.options =
 					set = function(v)
 						IceHUD.IceCore:SetVerticalPos(v)
 					end,
-					min = -200,
-					max = 200,
+					min = -400,
+					max = 400,
 					step = 10,
 					order = 11
+				},
+				
+				hpos = {
+					type = 'range',
+					name = 'Horizontal position',
+					desc = 'Horizontal position (for you dual screen freaks)',
+					get = function()
+						return IceHUD.IceCore:GetHorizontalPos()
+					end,
+					set = function(v)
+						IceHUD.IceCore:SetHorizontalPos(v)
+					end,
+					min = -2000,
+					max = 2000,
+					step = 10,
+					order = 12
 				},
 				
 				gap = {
@@ -50,7 +66,7 @@ IceHUD.options =
 					min = 50,
 					max = 300,
 					step = 5,
-					order = 12,
+					order = 13,
 				},
 				
 				scale = {
@@ -67,7 +83,7 @@ IceHUD.options =
 					max = 1.5,
 					step = 0.05,
 					isPercent = true,
-					order = 13,
+					order = 14,
 				},
 			}
 		},

@@ -184,7 +184,7 @@ function ComboPoints.prototype:CreateComboFrame()
 	-- create combo points
 	for i = 1, 5 do
 		if (not self.frame.graphical[i]) then
-			self.frame.graphical[i] = CreateFrame("StatusBar", nil, self.frame.graphicalBG[i])
+			self.frame.graphical[i] = CreateFrame("StatusBar", nil, self.frame)
 			self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "Combo")
 		end
 		self.frame.graphical[i]:SetFrameStrata("BACKGROUND")

@@ -38,6 +38,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 1
+	settings["scale"] = 1
 	settings["barFontSize"] = 12
 	settings["lockTextAlpha"] = true
 	settings["textVisible"] = {upper = true, lower = true}
@@ -97,6 +98,28 @@ function IceBarElement.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 31
+	}
+	
+	opts["scale"] = 
+	{
+		type = 'range',
+		name = '|c' .. self.configColor .. 'Scale|r',
+		desc = 'Scale of the bar',
+		min = 0.1,
+		max = 2,
+		step = 0.05,
+		isPercent = true,
+		get = function()
+			return self.moduleSettings.scale
+		end,
+		set = function(value)
+			self.moduleSettings.scale = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 32
 	}
 	
 	opts["textSettings"] =
