@@ -43,6 +43,7 @@ function TargetInfo.prototype:Enable(core)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
 	self:RegisterEvent("UNIT_AURA", "AuraChanged")
 
+	self:RegisterEvent("UNIT_NAME_UPDATE", "TargetName")
 	self:RegisterEvent("UNIT_FACTION", "TargetFaction")
 	self:RegisterEvent("UNIT_LEVEL", "TargetLevel")
 
@@ -660,40 +661,12 @@ function TargetInfo.prototype:TargetChanged()
 		return
 	end
 	
-	--self.frame:Show()
-	--self.frame.target:Show()
-
-	self.name, self.realm = UnitName(target)
-	self.classLocale, self.classEnglish = UnitClass(target)
-	self.isPlayer = UnitIsPlayer(target)
-	
-
-	local classification = UnitClassification(target)
-	if (string.find(classification, "boss")) then
-		self.classification = " |cffcc1111Boss|r"
-	elseif(string.find(classification, "rare")) then
-		self.classification = " |cffcc11ccRare|r"
-	else
-		self.classification = ""
-	end
-
-
-	local guildName, guildRankName, guildRankIndex = GetGuildInfo(target);
-	self.guild = guildName and "<" .. guildName .. ">" or ""
-
-
-	if (self.classLocale and self.isPlayer) then
-		self.classLocale = "|c" .. self:GetHexColor(self.classEnglish) ..  self.classLocale .. "|r"
-	else
-		self.classLocale = UnitCreatureType(target)
-	end
-
-
-	self.leader = UnitIsPartyLeader(target) and " |cffcccc11Leader|r" or ""
-
 
 	-- pass "internal" as a paramater so event handler code doesn't execute
-	-- self:Update() unnecassarily
+	-- Update() unnecassarily
+
+	self:TargetName(internal)
+
 	self:TargetLevel(internal)
 	self:TargetReaction(internal)
 	self:TargetFaction(internal)
@@ -703,6 +676,40 @@ function TargetInfo.prototype:TargetChanged()
 	self:UpdateRaidTargetIcon()
 
 	self:Update(target)
+end
+
+
+function TargetInfo.prototype:TargetName(unit)
+	if (unit == target or unit == internal) then
+		self.name, self.realm = UnitName(target)
+		self.classLocale, self.classEnglish = UnitClass(target)
+		self.isPlayer = UnitIsPlayer(target)
+
+
+		local classification = UnitClassification(target)
+		if (string.find(classification, "boss")) then
+			self.classification = " |cffcc1111Boss|r"
+		elseif(string.find(classification, "rare")) then
+			self.classification = " |cffcc11ccRare|r"
+		else
+			self.classification = ""
+		end
+
+
+		local guildName, guildRankName, guildRankIndex = GetGuildInfo(target);
+		self.guild = guildName and "<" .. guildName .. ">" or ""
+
+
+		if (self.classLocale and self.isPlayer) then
+			self.classLocale = "|c" .. self:GetHexColor(self.classEnglish) ..  self.classLocale .. "|r"
+		else
+			self.classLocale = UnitCreatureType(target)
+		end
+
+
+		self.leader = UnitIsPartyLeader(target) and " |cffcccc11Leader|r" or ""
+		self:Update(unit)
+	end
 end
 
 
