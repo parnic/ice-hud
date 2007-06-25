@@ -3,13 +3,12 @@
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
 ## Notes: Another HUD addon
-## Version: 0.9.4 ($Revision$)
+## Version: 1.0 ($Revision$)
 ## SavedVariables: IceCoreDB
 ## OptionalDeps: Ace2, GratuityLib, SharedMediaLib, WaterfallLib, MobHealth
 ## X-Embeds: Ace2, GratuityLib, SharedMediaLib, WaterfallLib
 ## X-Category: UnitFrame
 ## X-Date: $Date$
-## X-eMail: iceroth@iceroth.net
 ## X-Website: http://www.wowace.com/forums/index.php/topic,1705.0.html
 
 # Libraries
