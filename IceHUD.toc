@@ -1,4 +1,4 @@
-## Interface: 20100
+## Interface: 20200
 ## Author: Iceroth
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
@@ -12,16 +12,7 @@
 ## X-Website: http://www.wowace.com/forums/index.php/topic,1705.0.html
 
 # Libraries
-libs\AceLibrary\AceLibrary.lua
-libs\AceOO-2.0\AceOO-2.0.lua
-libs\AceDB-2.0\AceDB-2.0.lua
-libs\AceEvent-2.0\AceEvent-2.0.lua
-libs\AceDebug-2.0\AceDebug-2.0.lua
-libs\AceConsole-2.0\AceConsole-2.0.lua
-libs\AceAddon-2.0\AceAddon-2.0.lua
-libs\Gratuity-2.0\Gratuity-2.0.lua
-libs\SharedMedia-1.0\SharedMedia-1.0.lua
-libs\Waterfall-1.0\Waterfall-1.0.lua
+embeds.xml
 
 # IceHUD core functionality
 IceCore.lua
