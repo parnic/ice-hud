@@ -188,8 +188,8 @@ function TargetOfTarget.prototype:CreateFrame()
 		self.frame:EnableMouse(true)
 		self.frame:RegisterForClicks("AnyUp")
 		
-		self.frame:SetScript("OnEnter", function() self:OnEnter() end)
-		self.frame:SetScript("OnLeave", function() self:OnLeave() end)
+		self.frame:SetScript("OnEnter", function(frame) self:OnEnter(frame) end)
+		self.frame:SetScript("OnLeave", function(frame) self:OnLeave(frame) end)
 	else
 		self.frame:EnableMouse(false)
 		self.frame:RegisterForClicks()
@@ -399,14 +399,14 @@ function TargetOfTarget.prototype:Update()
 end
 
 
-function TargetOfTarget.prototype:OnEnter()
-	UnitFrame_OnEnter()
+function TargetOfTarget.prototype:OnEnter(frame)
+	UnitFrame_OnEnter(frame)
 	self.frame.bar.highLight:Show()
 end
 
 
-function TargetOfTarget.prototype:OnLeave()
-	UnitFrame_OnLeave()
+function TargetOfTarget.prototype:OnLeave(frame)
+	UnitFrame_OnLeave(frame)
 	self.frame.bar.highLight:Hide()
 end
 

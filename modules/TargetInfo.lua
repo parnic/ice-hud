@@ -308,8 +308,8 @@ function TargetInfo.prototype:CreateFrame(redraw)
 	if (self.moduleSettings.mouseTarget) then
 		self.frame:EnableMouse(true)
 		self.frame:RegisterForClicks("AnyUp")
-		self.frame:SetScript("OnEnter", function() self:OnEnter() end)
-		self.frame:SetScript("OnLeave", function() self:OnLeave() end)
+		self.frame:SetScript("OnEnter", function(frame) self:OnEnter(frame) end)
+		self.frame:SetScript("OnLeave", function(frame) self:OnLeave(frame) end)
 	else
 		self.frame:EnableMouse(false)
 		self.frame:RegisterForClicks()
@@ -804,14 +804,14 @@ function TargetInfo.prototype:Update(unit)
 end
 
 
-function TargetInfo.prototype:OnEnter()
-	UnitFrame_OnEnter()
+function TargetInfo.prototype:OnEnter(frame)
+	UnitFrame_OnEnter(frame)
 	self.frame.highLight:Show()
 end
 
 
-function TargetInfo.prototype:OnLeave()
-	UnitFrame_OnLeave()
+function TargetInfo.prototype:OnLeave(frame)
+	UnitFrame_OnLeave(frame)
 	self.frame.highLight:Hide()
 end
 
