@@ -686,7 +686,7 @@ function TargetInfo.prototype:TargetName(unit)
 		self.isPlayer = UnitIsPlayer(target)
 
 
-		local classification = UnitClassification(target)
+		local classification = UnitClassification(target) or ""
 		if (string.find(classification, "boss")) then
 			self.classification = " |cffcc1111Boss|r"
 		elseif(string.find(classification, "rare")) then
