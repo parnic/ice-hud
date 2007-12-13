@@ -172,8 +172,8 @@ end
 
 
 -- OVERRIDE
-function CastBar.prototype:SpellCastStart(unit)
-	CastBar.super.prototype.SpellCastStart(self, unit)
+function CastBar.prototype:SpellCastStart(unit, spell, rank)
+	CastBar.super.prototype.SpellCastStart(self, unit, spell, rank)
 	if (unit ~= self.unit) then return end
 
 	local lag = GetTime() - self.spellCastSent

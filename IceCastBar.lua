@@ -10,6 +10,7 @@ IceCastBar.prototype.actionStartTime = nil
 IceCastBar.prototype.actionDuration = nil
 IceCastBar.prototype.actionMessage = nil
 IceCastBar.prototype.unit = nil
+IceCastBar.prototype.current = nil
 
 
 -- Constructor --
@@ -207,22 +208,30 @@ function IceCastBar.prototype:SpellCastSent(unit, spell, rank, target)
 end
 
 
-function IceCastBar.prototype:SpellCastStart(unit)
+function IceCastBar.prototype:SpellCastStart(unit, spell, rank)
 	if (unit ~= self.unit) then return end
-	--IceHUD:Debug("SpellCastStart", unit, UnitCastingInfo(unit))
+	IceHUD:Debug("SpellCastStart", unit, spell, rank)
+	--UnitCastingInfo(unit)
 	
 	self:StartBar(IceCastBar.Actions.Cast)
+	self.current = spell
 end
 
-function IceCastBar.prototype:SpellCastStop(unit)
+function IceCastBar.prototype:SpellCastStop(unit, spell, rank)
 	if (unit ~= self.unit) then return end
-	--IceHUD:Debug("SpellCastStop", unit)
+	--IceHUD:Debug("SpellCastStop", unit, spell, self.current)
+	
+	-- ignore if not coming from current spell
+	if (self.current and self.current ~= spell) then
+		return
+	end
 	
 	if (self.action ~= IceCastBar.Actions.Success and
 		self.action ~= IceCastBar.Actions.Failure and
 		self.action ~= IceCastBar.Actions.Channel)
 	then
 		self:StopBar()
+		self.current = nil
 	end
 end
 
@@ -230,6 +239,8 @@ end
 function IceCastBar.prototype:SpellCastFailed(unit)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastFailed", unit)
+	
+	self.current = nil
 	
 	-- determine if we want to show failed casts
 	if (self.moduleSettings.flashFailures == "Never") then
@@ -246,6 +257,8 @@ end
 function IceCastBar.prototype:SpellCastInterrupted(unit)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastInterrupted", unit)
+	
+	self.current = nil
 	
 	self:StartBar(IceCastBar.Actions.Failure, "Interrupted")
 end
@@ -270,6 +283,11 @@ function IceCastBar.prototype:SpellCastSucceeded(unit, spell, rank)
 	
 	-- never show on channeled (why on earth does this event even fire when channeling starts?)
 	if (self.action == IceCastBar.Actions.Channel) then
+		return
+	end
+	
+	-- ignore if not coming from current spell
+	if (self.current and self.current ~= spell) then
 		return
 	end
 
