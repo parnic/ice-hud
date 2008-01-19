@@ -93,6 +93,10 @@ function PetHealth.prototype:Update(unit)
 	elseif(self.happiness == 1) then
 		color = "PetHealthUnhappy"
 	end
+
+	if (self.moduleSettings.scaleColor) then
+		color = "ScaledHealthColor"
+	end
 	
 	if not (self.alive) then
 		color = "Dead"
@@ -101,6 +105,31 @@ function PetHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.health/self.maxHealth, color)
 	self:SetBottomText1(self.healthPercentage)
+end
+
+
+-- OVERRIDE
+function PetHealth.prototype:GetOptions()
+	local opts = PetHealth.super.prototype.GetOptions(self)
+
+	opts["scaleHealthColor"] = {
+		type = "toggle",
+		name = "Color bar by health %",
+		desc = "Colors the health bar from MaxHealthColor to MinHealthColor based on current health %",
+		get = function()
+			return self.moduleSettings.scaleHealthColor
+		end,
+		set = function(value)
+			self.moduleSettings.scaleHealthColor = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 41
+	}
+
+	return opts
 end
 
 

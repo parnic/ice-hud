@@ -68,6 +68,23 @@ function PlayerMana.prototype:GetOptions()
 		end,
 		order = 52
 	}
+
+	opts["scaleManaColor"] = {
+		type = "toggle",
+		name = "Color bar by mana %",
+		desc = "Colors the mana bar from MaxManaColor to MinManaColor based on current mana %",
+		get = function()
+			return self.moduleSettings.scaleManaColor
+		end,
+		set = function(value)
+			self.moduleSettings.scaleManaColor = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 53
+	}
 	
 	return opts
 end
@@ -142,6 +159,9 @@ function PlayerMana.prototype:Update(unit)
 	end
 	
 	local color = "PlayerMana"
+	if (self.moduleSettings.scaleManaColor) then
+		color = "ScaledManaColor"
+	end
 	if not (self.alive) then
 		color = "Dead"
 	else
@@ -183,7 +203,7 @@ end
 -- OVERRIDE
 function PlayerMana.prototype:UpdateBar(scale, color, alpha)
 	self.noFlash = (self.manaType ~= 0)
-	
+
 	PlayerMana.super.prototype.UpdateBar(self, scale, color, alpha)
 end
 

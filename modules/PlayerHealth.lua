@@ -80,6 +80,23 @@ function PlayerHealth.prototype:GetOptions()
 		end,
 		order = 41
 	}
+
+	opts["scaleHealthColor"] = {
+		type = "toggle",
+		name = "Color bar by health %",
+		desc = "Colors the health bar from MaxHealthColor to MinHealthColor based on current health %",
+		get = function()
+			return self.moduleSettings.scaleHealthColor
+		end,
+		set = function(value)
+			self.moduleSettings.scaleHealthColor = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 42
+	}
 	
 	return opts
 end
@@ -101,6 +118,10 @@ function PlayerHealth.prototype:Update(unit)
 
 	if (self.moduleSettings.classColor) then
 		color = self.unitClass
+	end
+
+	if (self.moduleSettings.scaleHealthColor) then
+		color = "ScaledHealthColor"
 	end
 
 	if not (self.alive) then

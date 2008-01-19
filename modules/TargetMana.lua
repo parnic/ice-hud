@@ -58,6 +58,9 @@ function TargetMana.prototype:Update(unit)
 	local manaType = UnitPowerType(self.unit)
 	
 	local color = "TargetMana"
+	if (self.moduleSettings.scaleManaColor) then
+		color = "ScaledManaColor"
+	end
 	if (manaType == 1) then
 		color = "TargetRage"
 	elseif (manaType == 2) then
@@ -75,6 +78,30 @@ function TargetMana.prototype:Update(unit)
 	self:SetBottomText2(self:GetFormattedText(self.mana, self.maxMana), color)
 end
 
+
+-- OVERRIDE
+function TargetMana.prototype:GetOptions()
+	local opts = TargetMana.super.prototype.GetOptions(self)
+
+	opts["scaleManaColor"] = {
+		type = "toggle",
+		name = "Color bar by mana %",
+		desc = "Colors the mana bar from MaxManaColor to MinManaColor based on current mana %",
+		get = function()
+			return self.moduleSettings.scaleManaColor
+		end,
+		set = function(value)
+			self.moduleSettings.scaleManaColor = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 51
+	}
+
+	return opts
+end
 
 
 -- Load us up

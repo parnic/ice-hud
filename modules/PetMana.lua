@@ -99,6 +99,9 @@ function PetMana.prototype:Update(unit)
 	end
 	
 	local color = "PetMana"
+	if (self.moduleSettings.scaleManaColor) then
+		color = "ScaledManaColor"
+	end
 	if not (self.alive) then
 		color = "Dead"
 	else
@@ -113,6 +116,31 @@ function PetMana.prototype:Update(unit)
 	
 	self:UpdateBar(self.mana/self.maxMana, color)
 	self:SetBottomText1(self.manaPercentage)
+end
+
+
+-- OVERRIDE
+function PetMana.prototype:GetOptions()
+	local opts = PetMana.super.prototype.GetOptions(self)
+
+	opts["scaleManaColor"] = {
+		type = "toggle",
+		name = "Color bar by mana %",
+		desc = "Colors the mana bar from MaxManaColor to MinManaColor based on current mana %",
+		get = function()
+			return self.moduleSettings.scaleManaColor
+		end,
+		set = function(value)
+			self.moduleSettings.scaleManaColor = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 51
+	}
+
+	return opts
 end
 
 

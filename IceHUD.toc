@@ -1,12 +1,12 @@
-## Interface: 20200
+## Interface: 20300
 ## Author: Iceroth
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
 ## Notes: Another HUD addon
 ## Version: 1.0 ($Revision$)
 ## SavedVariables: IceCoreDB
-## OptionalDeps: Ace2, GratuityLib, SharedMediaLib, WaterfallLib, MobHealth
-## X-Embeds: Ace2, GratuityLib, SharedMediaLib, WaterfallLib
+## OptionalDeps: Ace2, GratuityLib, LibSharedMedia, WaterfallLib, MobHealth
+## X-Embeds: Ace2, GratuityLib, LibSharedMedia, WaterfallLib
 ## X-Category: UnitFrame
 ## X-Date: $Date$
 ## X-Website: http://www.wowace.com/forums/index.php/topic,1705.0.html
@@ -38,4 +38,3 @@ modules\ComboPoints.lua
 modules\CastBar.lua
 modules\TargetCast.lua
 modules\MirrorBar.lua
-

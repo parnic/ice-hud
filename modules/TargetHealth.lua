@@ -84,6 +84,23 @@ function TargetHealth.prototype:GetOptions()
 		end,
 		order = 42
 	}
+
+	opts["scaleHealthColor"] = {
+		type = "toggle",
+		name = "Color bar by health %",
+		desc = "Colors the health bar from MaxHealthColor to MinHealthColor based on current health %",
+		get = function()
+			return self.moduleSettings.scaleHealthColor
+		end,
+		set = function(value)
+			self.moduleSettings.scaleHealthColor = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 43
+	}
 	
 	return opts
 end
@@ -135,6 +152,10 @@ function TargetHealth.prototype:Update(unit)
 	
 	if (self.moduleSettings.classColor) then
 		self.color = self.unitClass
+	end
+
+	if (self.moduleSettings.scaleHealthColor) then
+		self.color = "ScaledHealthColor"
 	end
 
 	if (self.tapped) then
