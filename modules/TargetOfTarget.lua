@@ -1,5 +1,5 @@
 local AceOO = AceLibrary("AceOO-2.0")
-local SML = AceLibrary("SharedMedia-1.0")
+local SML = AceLibrary("LibSharedMedia-2.0")
 
 local TargetOfTarget = AceOO.Class(IceElement)
 

@@ -1,7 +1,7 @@
 IceHUD = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDebug-2.0")
 
 local waterfall = AceLibrary("Waterfall-1.0")
-local SML = AceLibrary("SharedMedia-1.0")
+local SML = AceLibrary("LibSharedMedia-2.0")
 
 IceHUD.Location = "Interface\\AddOns\\IceHUD"
 IceHUD.options =
