@@ -45,7 +45,9 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["textVisible"] = {upper = true, lower = true}
 	settings["upperText"] = ''
 	settings["lowerText"] = ''
-	
+	settings["textVerticalOffset"] = -1
+	settings["textHorizontalOffset"] = 0
+
 	return settings
 end
 
@@ -122,6 +124,46 @@ function IceBarElement.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 32
+	}
+
+	opts["textVerticalOffset"] =
+	{
+		type = 'range',
+		name = '|c' .. self.configColor .. 'Text Vertical Offset|r',
+		desc = 'Offset of the text from the bar vertically (negative is farther below)',
+		min = -250,
+		max = 350,
+		step = 1,
+		get = function()
+			return self.moduleSettings.textVerticalOffset
+		end,
+		set = function(v)
+			self.moduleSettings.textVerticalOffset = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end
+	}
+
+	opts["textHorizontalOffset"] =
+	{
+		type = 'range',
+		name = '|c' .. self.configColor .. 'Text Horizontal Offset|r',
+		desc = 'Offset of the text from the bar horizontally',
+		min = -50,
+		max = 50,
+		step = 1,
+		get = function()
+			return self.moduleSettings.textHorizontalOffset
+		end,
+		set = function(v)
+			self.moduleSettings.textHorizontalOffset = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end
 	}
 	
 	opts["textSettings"] =
@@ -385,8 +427,10 @@ function IceBarElement.prototype:CreateTexts()
 	self.frame.bottomUpperText:ClearAllPoints()
 	self.frame.bottomLowerText:ClearAllPoints()
 
-	self.frame.bottomUpperText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, -1)
-	self.frame.bottomLowerText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, -15)
+	offx = offx + self.moduleSettings.textHorizontalOffset
+
+	self.frame.bottomUpperText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, self.moduleSettings.textVerticalOffset)
+	self.frame.bottomLowerText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, self.moduleSettings.textVerticalOffset - 14)
 	
 	if (self.moduleSettings.textVisible["upper"]) then
 		self.frame.bottomUpperText:Show()
