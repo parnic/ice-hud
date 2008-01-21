@@ -1,4 +1,5 @@
 local AceOO = AceLibrary("AceOO-2.0")
+local DogTag = AceLibrary("LibDogTag-2.0")
 
 local PlayerHealth = AceOO.Class(IceUnitBar)
 
@@ -14,9 +15,13 @@ end
 
 function PlayerHealth.prototype:GetDefaultSettings()
 	local settings = PlayerHealth.super.prototype.GetDefaultSettings(self)
+
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 1
 	settings["hideBlizz"] = true
+	settings["upperText"] = "[PercentHP:Round]"
+	settings["lowerText"] = "[FractionalHP:Color(00ff00):Bracket]"
+
 	return settings
 end
 
@@ -134,8 +139,13 @@ function PlayerHealth.prototype:Update(unit)
 	end
 
 	self:UpdateBar(self.health/self.maxHealth, color)
-	self:SetBottomText1(self.healthPercentage)
-	self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), textColor)
+
+	if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
+		self:SetBottomText1(DogTag:Evaluate("player", self.moduleSettings.upperText))
+	end
+	if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
+		self:SetBottomText2(DogTag:Evaluate("player", self.moduleSettings.lowerText))
+	end
 end
 
 

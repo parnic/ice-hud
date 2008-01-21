@@ -1,4 +1,5 @@
 local AceOO = AceLibrary("AceOO-2.0")
+local DogTag = AceLibrary("LibDogTag-2.0")
 
 local PetHealth = AceOO.Class(IceUnitBar)
 
@@ -20,9 +21,13 @@ end
 -- OVERRIDE
 function PetHealth.prototype:GetDefaultSettings()
 	local settings = PetHealth.super.prototype.GetDefaultSettings(self)
+
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = -1
 	settings.scale = 0.7
+	settings["upperText"] = ""
+	settings["lowerText"] = "[PercentHP:Round]"
+
 	return settings
 end
 
@@ -104,7 +109,13 @@ function PetHealth.prototype:Update(unit)
 
 
 	self:UpdateBar(self.health/self.maxHealth, color)
-	self:SetBottomText1(self.healthPercentage)
+
+	if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
+		self:SetBottomText1(DogTag:Evaluate("pet", self.moduleSettings.upperText))
+	end
+	if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
+		self:SetBottomText2(DogTag:Evaluate("pet", self.moduleSettings.lowerText))
+	end
 end
 
 

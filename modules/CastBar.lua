@@ -86,6 +86,63 @@ function CastBar.prototype:GetOptions()
 		order = 42
 	}
 
+	opts["textSettings"] =
+	{
+		type = 'group',
+		name = '|c' .. self.configColor .. 'Text Settings|r',
+		desc = 'Settings related to texts',
+		order = 32,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		args = {
+			fontsize = {
+				type = 'range',
+				name = 'Bar Font Size',
+				desc = 'Bar Font Size',
+				get = function()
+					return self.moduleSettings.barFontSize
+				end,
+				set = function(v)
+					self.moduleSettings.barFontSize = v
+					self:Redraw()
+				end,
+				min = 8,
+				max = 20,
+				step = 1,
+				order = 11
+			},
+			
+			lockFontAlpha = {
+				type = "toggle",
+				name = "Lock Bar Text Alpha",
+				desc = "Locks text alpha to 100%",
+				get = function()
+					return self.moduleSettings.lockTextAlpha
+				end,
+				set = function(v)
+					self.moduleSettings.lockTextAlpha = v
+					self:Redraw()
+				end,
+				order = 13
+			},
+
+			upperTextVisible = {
+				type = 'toggle',
+				name = 'Spell cast text visible',
+				desc = 'Toggle spell cast text visibility',
+				get = function()
+					return self.moduleSettings.textVisible['upper']
+				end,
+				set = function(v)
+					self.moduleSettings.textVisible['upper'] = v
+					self:Redraw()
+				end,
+				order = 14
+			}
+		}
+	}
+
 	return opts
 end
 

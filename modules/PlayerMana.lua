@@ -1,4 +1,5 @@
 local AceOO = AceLibrary("AceOO-2.0")
+local DogTag = AceLibrary("LibDogTag-2.0")
 
 local PlayerMana = AceOO.Class(IceUnitBar)
 
@@ -19,10 +20,14 @@ end
 -- OVERRIDE
 function PlayerMana.prototype:GetDefaultSettings()
 	local settings = PlayerMana.super.prototype.GetDefaultSettings(self)
+
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 1
 	settings["tickerEnabled"] = true
 	settings["tickerAlpha"] = 0.5
+	settings["upperText"] = "[PercentMP:Round]"
+	settings["lowerText"] = "[FractionalMP:Color(0000ff)]"
+
 	return settings
 end
 
@@ -181,7 +186,7 @@ function PlayerMana.prototype:Update(unit)
  		self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
  	end
 
-
+--[[
 	-- extra hack for whiny rogues (are there other kind?)
 	local displayPercentage = self.manaPercentage
 	if (self.manaType == 3) then
@@ -197,6 +202,14 @@ function PlayerMana.prototype:Update(unit)
 		amount = self:GetFormattedText(self.mana)
 	end
 	self:SetBottomText2(amount, color)
+]]
+
+	if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
+		self:SetBottomText1(DogTag:Evaluate("player", self.moduleSettings.upperText))
+	end
+	if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
+		self:SetBottomText2(DogTag:Evaluate("player", self.moduleSettings.lowerText))
+	end
 end
 
 

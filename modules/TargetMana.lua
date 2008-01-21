@@ -1,4 +1,5 @@
 local AceOO = AceLibrary("AceOO-2.0")
+local DogTag = AceLibrary("LibDogTag-2.0")
 
 local TargetMana = AceOO.Class(IceUnitBar)
 
@@ -16,8 +17,12 @@ end
 
 function TargetMana.prototype:GetDefaultSettings()
 	local settings = TargetMana.super.prototype.GetDefaultSettings(self)
+
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 2
+	settings["upperText"] = "[PercentMP:Round]"
+	settings["lowerText"] = "[FractionalMP:Color(0000ff)]"
+
 	return settings
 end
 
@@ -74,8 +79,16 @@ function TargetMana.prototype:Update(unit)
 	end
 	
 	self:UpdateBar(self.mana/self.maxMana, color)
-	self:SetBottomText1(self.manaPercentage)
-	self:SetBottomText2(self:GetFormattedText(self.mana, self.maxMana), color)
+
+--	self:SetBottomText1(self.manaPercentage)
+--	self:SetBottomText2(self:GetFormattedText(self.mana, self.maxMana), color)
+
+	if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
+		self:SetBottomText1(DogTag:Evaluate("target", self.moduleSettings.upperText))
+	end
+	if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
+		self:SetBottomText2(DogTag:Evaluate("target", self.moduleSettings.lowerText))
+	end
 end
 
 

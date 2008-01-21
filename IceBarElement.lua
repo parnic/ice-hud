@@ -1,4 +1,5 @@
 local AceOO = AceLibrary("AceOO-2.0")
+local DogTag = AceLibrary("LibDogTag-2.0")
 
 IceBarElement = AceOO.Class(IceElement)
 IceBarElement.virtual = true
@@ -42,7 +43,8 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["barFontSize"] = 12
 	settings["lockTextAlpha"] = true
 	settings["textVisible"] = {upper = true, lower = true}
-	settings["brackets"] = true
+	settings["upperText"] = ''
+	settings["lowerText"] = ''
 	
 	return settings
 end
@@ -190,19 +192,40 @@ function IceBarElement.prototype:GetOptions()
 				end,
 				order = 15
 			},
-			brackets = {
-				type = 'toggle',
-				name = 'Brackets around lower text',
-				desc = 'Toggle brackets visibility',
+
+			upperTextString = {
+				type = 'text',
+				name = 'Upper Text',
+				desc = 'The upper text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ for tag info',
 				get = function()
-					return self.moduleSettings.brackets
+					return self.moduleSettings.upperText
 				end,
 				set = function(v)
-					self.moduleSettings.brackets = v
+					if v ~= '' and v ~= nil then
+						v = DogTag:FixCasing(v)
+					end
+
+					self.moduleSettings.upperText = v
 					self:Redraw()
 				end,
-				order = 16
 			},
+
+			lowerTextString = {
+				type = 'text',
+				name = 'Lower Text',
+				desc = 'The lower text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ for tag info',
+				get = function()
+					return self.moduleSettings.lowerText
+				end,
+				set = function(v)
+					if v ~= '' and v ~= nil then
+						v = DogTag:FixCasing(v)
+					end
+
+					self.moduleSettings.lowerText = v
+					self:Redraw()
+				end,
+			}
 		}
 	}
 	
