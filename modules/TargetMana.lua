@@ -21,7 +21,7 @@ function TargetMana.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 2
 	settings["upperText"] = "[PercentMP:Round]"
-	settings["lowerText"] = "[FractionalMP:Color(0000ff)]"
+	settings["lowerText"] = "[FractionalMP:PowerColor]"
 
 	return settings
 end

@@ -25,7 +25,7 @@ function TargetHealth.prototype:GetDefaultSettings()
 	settings["classColor"] = false
 	settings["hideBlizz"] = true
 	settings["upperText"] = "[PercentHP:Round]"
-	settings["lowerText"] = "[FractionalHP:Color(00ff00):Bracket]"
+	settings["lowerText"] = "[FractionalHP:HPColor:Bracket]"
 
 	return settings
 end

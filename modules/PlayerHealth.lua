@@ -20,7 +20,7 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["offset"] = 1
 	settings["hideBlizz"] = true
 	settings["upperText"] = "[PercentHP:Round]"
-	settings["lowerText"] = "[FractionalHP:Color(00ff00):Bracket]"
+	settings["lowerText"] = "[FractionalHP:HPColor:Bracket]"
 
 	return settings
 end
