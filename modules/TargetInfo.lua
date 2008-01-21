@@ -198,7 +198,7 @@ function TargetInfo.prototype:GetOptions()
 			self.moduleSettings.perRow = v
 			self:RedrawBuffs()
 		end,
-		min = 5,
+		min = 0,
 		max = 20,
 		step = 1,
 		disabled = function()
