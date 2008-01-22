@@ -13,7 +13,8 @@ IceUnitBar.prototype.healthPercentage = nil
 IceUnitBar.prototype.mana = nil
 IceUnitBar.prototype.maxMana = nil
 IceUnitBar.prototype.manaPercentage = nil
-IceUnitBar.prototype.scaleColorInst = nil
+IceUnitBar.prototype.scaleHPColorInst = nil
+IceUnitBar.prototype.scaleMPColorInst = nil
 
 IceUnitBar.prototype.unitClass = nil
 IceUnitBar.prototype.hasPet = nil
@@ -37,6 +38,9 @@ function IceUnitBar.prototype:init(name, unit)
 	self:SetDefaultColor("MinHealthColor", 200, 37, 30)
 	self:SetDefaultColor("MaxManaColor", 0, 0, 255)
 	self:SetDefaultColor("MinManaColor", 255, 0, 255)
+
+	self.scaleHPColorInst = { r = 0, g = 255, b = 0 }
+	self.scaleMPColorInst = { r = 0, g = 0, b = 255 }
 end
 
 
@@ -150,10 +154,8 @@ end
 
 -- OVERRIDE
 function IceUnitBar.prototype:Update()
-	local maxColor = {r = 0, g = 0, b = 0}
-	local minColor = {r = 0, g = 0, b = 0}
-
 	IceUnitBar.super.prototype.Update(self)
+
 	self.tapped = UnitIsTapped(self.unit) and (not UnitIsTappedByPlayer(self.unit))
 	
 	self.health = UnitHealth(self.unit)
@@ -167,28 +169,20 @@ function IceUnitBar.prototype:Update()
 	_, self.unitClass = UnitClass(self.unit)
 
 	if( self.moduleSettings.scaleHealthColor ) then
-		minColor.r,minColor.g,minColor.b = self:GetColor("MinHealthColor")
-		maxColor.r,maxColor.g,maxColor.b = self:GetColor("MaxHealthColor")
-		self:SetScaledColor(self.healthPercentage/100, maxColor, minColor)
-		self:SetColor("ScaledHealthColor", self.scaleColorInst.r, self.scaleColorInst.g, self.scaleColorInst.b)
+		self:SetScaledColor(self.scaleHPColorInst, self.healthPercentage/100, self.settings.colors["MaxHealthColor"], self.settings.colors["MinHealthColor"])
+		self.settings.colors["ScaledHealthColor"] = self.scaleHPColorInst
 	end
 	if( self.moduleSettings.scaleManaColor ) then
-		minColor.r,minColor.g,minColor.b = self:GetColor("MinManaColor")
-		maxColor.r,maxColor.g,maxColor.b = self:GetColor("MaxManaColor")
-		self:SetScaledColor(self.manaPercentage/100, maxColor, minColor)
-		self:SetColor("ScaledManaColor", self.scaleColorInst.r, self.scaleColorInst.g, self.scaleColorInst.b)
+		self:SetScaledColor(self.scaleMPColorInst, self.manaPercentage/100, self.settings.colors["MaxManaColor"], self.settings.colors["MinManaColor"])
+		self.settings.colors["ScaledManaColor"] = self.scaleMPColorInst
 	end
 end
 
 
-function IceUnitBar.prototype:SetScaledColor(percent, maxColor, minColor)
-	if( not self.scaleColorInst ) then
-		self.scaleColorInst = { r = 0, g = 0, b = 0 }
-	end
-
-	self.scaleColorInst.r = ((maxColor.r - minColor.r) * percent) + minColor.r
-	self.scaleColorInst.g = ((maxColor.g - minColor.g) * percent) + minColor.g
-	self.scaleColorInst.b = ((maxColor.b - minColor.b) * percent) + minColor.b
+function IceUnitBar.prototype:SetScaledColor(colorVar, percent, maxColor, minColor)
+	colorVar.r = ((maxColor.r - minColor.r) * percent) + minColor.r
+	colorVar.g = ((maxColor.g - minColor.g) * percent) + minColor.g
+	colorVar.b = ((maxColor.b - minColor.b) * percent) + minColor.b
 end
 
 
