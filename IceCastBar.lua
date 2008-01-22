@@ -46,7 +46,6 @@ function IceCastBar.prototype:Enable(core)
 
 	self:RegisterEvent("CHAT_MSG_SPELL_HOSTILEPLAYER_DAMAGE", "CheckChatInterrupt")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "CheckChatInterrupt")
-	self:RegisterEvent("CHAT_MSG_SPELL_FAILED_LOCALPLAYER", "CheckChatInterrupt")
 
 	self:RegisterEvent("UNIT_SPELLCAST_DELAYED", "SpellCastDelayed") -- unit
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "SpellCastSucceeded") -- "player", spell, rank
@@ -228,7 +227,7 @@ end
 
 function IceCastBar.prototype:SpellCastStop(unit, spell, rank)
 	if (unit ~= self.unit) then return end
-	--IceHUD:Debug("SpellCastStop", unit, spell, self.current)
+	IceHUD:Debug("SpellCastStop", unit, spell, self.current)
 	
 	-- ignore if not coming from current spell
 	if (self.current and self.current ~= spell) then
@@ -247,7 +246,7 @@ end
 
 function IceCastBar.prototype:SpellCastFailed(unit)
 	if (unit ~= self.unit) then return end
-	--IceHUD:Debug("SpellCastFailed", unit)
+	IceHUD:Debug("SpellCastFailed", unit, self.current)
 	
 	self.current = nil
 	
@@ -265,7 +264,7 @@ end
 
 function IceCastBar.prototype:CheckChatInterrupt(msg)
 	local player, spell = deformat(msg, SPELLINTERRUPTOTHERSELF)
-	--IceHUD:Debug("CheckChatInterrupt", msg)
+	IceHUD:Debug("CheckChatInterrupt", msg, self.current)
 
 	if not player then
 		player, spell = deformat(msg, SPELLFAILCASTSELF)
@@ -279,7 +278,7 @@ end
 
 function IceCastBar.prototype:SpellCastInterrupted(unit)
 	if (unit ~= self.unit) then return end
-	--IceHUD:Debug("SpellCastInterrupted", unit)
+	IceHUD:Debug("SpellCastInterrupted", unit, self.current)
 	
 	self.current = nil
 	
