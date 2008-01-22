@@ -1,5 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
-local DogTag = AceLibrary("LibDogTag-2.0")
+
+local DogTag = nil
 
 local PetMana = AceOO.Class(IceUnitBar)
 
@@ -13,6 +14,10 @@ function PetMana.prototype:init()
 	self:SetDefaultColor("PetFocus", 242, 149, 98)
 	
 	self.scalingEnabled = true
+
+	if AceLibrary:HasInstance("LibDogTag-2.0") then
+		DogTag = AceLibrary("LibDogTag-2.0")
+	end
 end
 
 
@@ -121,11 +126,15 @@ function PetMana.prototype:Update(unit)
 	
 	self:UpdateBar(self.mana/self.maxMana, color)
 
-	if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
-		self:SetBottomText1(DogTag:Evaluate("player", self.moduleSettings.upperText))
-	end
-	if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
-		self:SetBottomText2(DogTag:Evaluate("player", self.moduleSettings.lowerText))
+	if DogTag ~= nil then
+		if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
+			self:SetBottomText1(DogTag:Evaluate("player", self.moduleSettings.upperText))
+		end
+		if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
+			self:SetBottomText2(DogTag:Evaluate("player", self.moduleSettings.lowerText))
+		end
+	else
+		self:SetBottomText1(self.manaPercentage)
 	end
 end
 

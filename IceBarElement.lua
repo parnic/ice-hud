@@ -1,5 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
-local DogTag = AceLibrary("LibDogTag-2.0")
+
+local DogTag = nil
 
 IceBarElement = AceOO.Class(IceElement)
 IceBarElement.virtual = true
@@ -16,6 +17,10 @@ IceBarElement.prototype.target = nil
 -- Constructor --
 function IceBarElement.prototype:init(name)
 	IceBarElement.super.prototype.init(self, name)
+
+	if AceLibrary:HasInstance("LibDogTag-2.0") then
+		DogTag = AceLibrary("LibDogTag-2.0")
+	end
 end
 
 
@@ -239,11 +244,14 @@ function IceBarElement.prototype:GetOptions()
 				type = 'text',
 				name = 'Upper Text',
 				desc = 'The upper text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ for tag info',
+				disabled = function()
+					return DogTag == nil
+				end,
 				get = function()
 					return self.moduleSettings.upperText
 				end,
 				set = function(v)
-					if v ~= '' and v ~= nil then
+					if DogTag ~= nil and v ~= '' and v ~= nil then
 						v = DogTag:FixCasing(v)
 					end
 
@@ -256,11 +264,14 @@ function IceBarElement.prototype:GetOptions()
 				type = 'text',
 				name = 'Lower Text',
 				desc = 'The lower text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ for tag info',
+				disabled = function()
+					return DogTag == nil
+				end,
 				get = function()
 					return self.moduleSettings.lowerText
 				end,
 				set = function(v)
-					if v ~= '' and v ~= nil then
+					if DogTag ~= nil and v ~= '' and v ~= nil then
 						v = DogTag:FixCasing(v)
 					end
 

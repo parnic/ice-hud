@@ -1,5 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
-local DogTag = AceLibrary("LibDogTag-2.0")
+
+local DogTag = nil
 
 local PlayerMana = AceOO.Class(IceUnitBar)
 
@@ -14,6 +15,10 @@ function PlayerMana.prototype:init()
 	self:SetDefaultColor("PlayerMana", 62, 54, 152)
 	self:SetDefaultColor("PlayerRage", 171, 59, 59)
 	self:SetDefaultColor("PlayerEnergy", 218, 231, 31)
+
+	if AceLibrary:HasInstance("LibDogTag-2.0") then
+		DogTag = AceLibrary("LibDogTag-2.0")
+	end
 end
 
 
@@ -186,29 +191,29 @@ function PlayerMana.prototype:Update(unit)
  		self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
  	end
 
---[[
-	-- extra hack for whiny rogues (are there other kind?)
-	local displayPercentage = self.manaPercentage
-	if (self.manaType == 3) then
-		displayPercentage = self.mana
-	end
-	self:SetBottomText1(displayPercentage)
-	
-	
-	local amount = self:GetFormattedText(self.mana, self.maxMana)
-	
-	-- druids get a little shorted string to make room for druid mana in forms
-	if (self.unitClass == "DRUID" and self.manaType ~= 0) then
-		amount = self:GetFormattedText(self.mana)
-	end
-	self:SetBottomText2(amount, color)
-]]
+	if DogTag ~= nil then
+		if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
+			self:SetBottomText1(DogTag:Evaluate("player", self.moduleSettings.upperText))
+		end
+		if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
+			self:SetBottomText2(DogTag:Evaluate("player", self.moduleSettings.lowerText))
+		end
+	else
+		-- extra hack for whiny rogues (are there other kind?)
+		local displayPercentage = self.manaPercentage
+		if (self.manaType == 3) then
+			displayPercentage = self.mana
+		end
+		self:SetBottomText1(displayPercentage)
 
-	if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
-		self:SetBottomText1(DogTag:Evaluate("player", self.moduleSettings.upperText))
-	end
-	if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
-		self:SetBottomText2(DogTag:Evaluate("player", self.moduleSettings.lowerText))
+
+		local amount = self:GetFormattedText(self.mana, self.maxMana)
+
+		-- druids get a little shorted string to make room for druid mana in forms
+		if (self.unitClass == "DRUID" and self.manaType ~= 0) then
+			amount = self:GetFormattedText(self.mana)
+		end
+		self:SetBottomText2(amount, color)
 	end
 end
 

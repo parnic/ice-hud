@@ -1,5 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
-local DogTag = AceLibrary("LibDogTag-2.0")
+
+local DogTag = nil
 
 local TargetMana = AceOO.Class(IceUnitBar)
 
@@ -12,6 +13,10 @@ function TargetMana.prototype:init()
 	self:SetDefaultColor("TargetRage", 235, 44, 26)
 	self:SetDefaultColor("TargetEnergy", 228, 242, 31)
 	self:SetDefaultColor("TargetFocus", 242, 149, 98)
+
+	if AceLibrary:HasInstance("LibDogTag-2.0") then
+		DogTag = AceLibrary("LibDogTag-2.0")
+	end
 end
 
 
@@ -80,14 +85,16 @@ function TargetMana.prototype:Update(unit)
 	
 	self:UpdateBar(self.mana/self.maxMana, color)
 
---	self:SetBottomText1(self.manaPercentage)
---	self:SetBottomText2(self:GetFormattedText(self.mana, self.maxMana), color)
-
-	if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
-		self:SetBottomText1(DogTag:Evaluate("target", self.moduleSettings.upperText))
-	end
-	if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
-		self:SetBottomText2(DogTag:Evaluate("target", self.moduleSettings.lowerText))
+	if DogTag ~= nil then
+		if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
+			self:SetBottomText1(DogTag:Evaluate("target", self.moduleSettings.upperText))
+		end
+		if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
+			self:SetBottomText2(DogTag:Evaluate("target", self.moduleSettings.lowerText))
+		end
+	else
+		self:SetBottomText1(self.manaPercentage)
+		self:SetBottomText2(self:GetFormattedText(self.mana, self.maxMana), color)
 	end
 end
 

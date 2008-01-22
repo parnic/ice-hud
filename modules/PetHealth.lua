@@ -1,5 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
-local DogTag = AceLibrary("LibDogTag-2.0")
+
+local DogTag = nil
 
 local PetHealth = AceOO.Class(IceUnitBar)
 
@@ -15,6 +16,10 @@ function PetHealth.prototype:init()
 	self:SetDefaultColor("PetHealthUnhappy", 164, 30, 30)
 	
 	self.scalingEnabled = true
+
+	if AceLibrary:HasInstance("LibDogTag-2.0") then
+		DogTag = AceLibrary("LibDogTag-2.0")
+	end
 end
 
 
@@ -110,11 +115,15 @@ function PetHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.health/self.maxHealth, color)
 
-	if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
-		self:SetBottomText1(DogTag:Evaluate("pet", self.moduleSettings.upperText))
-	end
-	if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
-		self:SetBottomText2(DogTag:Evaluate("pet", self.moduleSettings.lowerText))
+	if DogTag ~= nil then
+		if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
+			self:SetBottomText1(DogTag:Evaluate("pet", self.moduleSettings.upperText))
+		end
+		if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
+			self:SetBottomText2(DogTag:Evaluate("pet", self.moduleSettings.lowerText))
+		end
+	else
+		self:SetBottomText1(self.healthPercentage)
 	end
 end
 

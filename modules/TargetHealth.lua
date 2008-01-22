@@ -1,5 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
-local DogTag = AceLibrary("LibDogTag-2.0")
+
+local DogTag = nil
 
 local TargetHealth = AceOO.Class(IceUnitBar)
 
@@ -13,6 +14,10 @@ function TargetHealth.prototype:init()
 	self:SetDefaultColor("TargetHealthHostile", 231, 31, 36)
 	self:SetDefaultColor("TargetHealthFriendly", 46, 223, 37)
 	self:SetDefaultColor("TargetHealthNeutral", 210, 219, 87)
+
+	if AceLibrary:HasInstance("LibDogTag-2.0") then
+		DogTag = AceLibrary("LibDogTag-2.0")
+	end
 end
 
 
@@ -168,33 +173,32 @@ function TargetHealth.prototype:Update(unit)
 	end
 
 	self:UpdateBar(self.health/self.maxHealth, self.color)
---[[
-	self:SetBottomText1(self.healthPercentage)
-	
-	
-	-- assumption that if a unit's max health is 100, it's not actual amount
-	-- but rather a percentage - this obviously has one caveat though
 
-	if (self.maxHealth == 100 and self.moduleSettings.mobhealth and MobHealth3) then
-		self.health, self.maxHealth, _ = MobHealth3:GetUnitHealth(self.unit, self.health, self.maxHealth)
-
-		self.health = self:Round(self.health)
-		self.maxHealth = self:Round(self.maxHealth)
-	end
-
-
-	if (self.maxHealth ~= 100) then
-		self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
+	if DogTag ~= nil then
+		if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
+			self:SetBottomText1(DogTag:Evaluate("target", self.moduleSettings.upperText))
+		end
+		if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
+			self:SetBottomText2(DogTag:Evaluate("target", self.moduleSettings.lowerText))
+		end
 	else
-		self:SetBottomText2()
-	end
-]]
+		self:SetBottomText1(self.healthPercentage)
 
-	if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
-		self:SetBottomText1(DogTag:Evaluate("target", self.moduleSettings.upperText))
-	end
-	if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
-		self:SetBottomText2(DogTag:Evaluate("target", self.moduleSettings.lowerText))
+		-- assumption that if a unit's max health is 100, it's not actual amount
+		-- but rather a percentage - this obviously has one caveat though
+
+		if (self.maxHealth == 100 and self.moduleSettings.mobhealth and MobHealth3) then
+			self.health, self.maxHealth, _ = MobHealth3:GetUnitHealth(self.unit, self.health, self.maxHealth)
+
+			self.health = self:Round(self.health)
+			self.maxHealth = self:Round(self.maxHealth)
+		end
+
+		if (self.maxHealth ~= 100) then
+			self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
+		else
+			self:SetBottomText2()
+		end
 	end
 end
 

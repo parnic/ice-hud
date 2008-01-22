@@ -1,5 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
-local DogTag = AceLibrary("LibDogTag-2.0")
+
+local DogTag = nil
 
 local PlayerHealth = AceOO.Class(IceUnitBar)
 
@@ -10,6 +11,10 @@ function PlayerHealth.prototype:init()
 	PlayerHealth.super.prototype.init(self, "PlayerHealth", "player")
 	
 	self:SetDefaultColor("PlayerHealth", 37, 164, 30)
+
+	if AceLibrary:HasInstance("LibDogTag-2.0") then
+		DogTag = AceLibrary("LibDogTag-2.0")
+	end
 end
 
 
@@ -140,11 +145,16 @@ function PlayerHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.health/self.maxHealth, color)
 
-	if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
-		self:SetBottomText1(DogTag:Evaluate("player", self.moduleSettings.upperText))
-	end
-	if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
-		self:SetBottomText2(DogTag:Evaluate("player", self.moduleSettings.lowerText))
+	if DogTag ~= nil then
+		if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
+			self:SetBottomText1(DogTag:Evaluate("player", self.moduleSettings.upperText))
+		end
+		if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
+			self:SetBottomText2(DogTag:Evaluate("player", self.moduleSettings.lowerText))
+		end
+	else
+		self:SetBottomText1(self.healthPercentage)
+		self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), textColor)
 	end
 end
 
