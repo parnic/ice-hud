@@ -2,6 +2,7 @@ local AceOO = AceLibrary("AceOO-2.0")
 local deformat = AceLibrary("Deformat-2.0")
 
 local SPELLINTERRUPTOTHERSELF = SPELLINTERRUPTOTHERSELF
+local SPELLFAILCASTSELF = SPELLFAILCASTSELF
 
 IceCastBar = AceOO.Class(IceBarElement)
 
@@ -45,6 +46,7 @@ function IceCastBar.prototype:Enable(core)
 
 	self:RegisterEvent("CHAT_MSG_SPELL_HOSTILEPLAYER_DAMAGE", "CheckChatInterrupt")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "CheckChatInterrupt")
+	self:RegisterEvent("CHAT_MSG_SPELL_FAILED_LOCALPLAYER", "CheckChatInterrupt")
 
 	self:RegisterEvent("UNIT_SPELLCAST_DELAYED", "SpellCastDelayed") -- unit
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "SpellCastSucceeded") -- "player", spell, rank
@@ -265,6 +267,10 @@ function IceCastBar.prototype:CheckChatInterrupt(msg)
 	local player, spell = deformat(msg, SPELLINTERRUPTOTHERSELF)
 	--IceHUD:Debug("CheckChatInterrupt", msg)
 
+	if not player then
+		player, spell = deformat(msg, SPELLFAILCASTSELF)
+	end
+
 	if player then
 		self.current = nil
 		self:StartBar(IceCastBar.Actions.Failure, "Interrupted")
@@ -279,7 +285,6 @@ function IceCastBar.prototype:SpellCastInterrupted(unit)
 	
 	self:StartBar(IceCastBar.Actions.Failure, "Interrupted")
 end
-
 
 function IceCastBar.prototype:SpellCastDelayed(unit, delay)
 	if (unit ~= self.unit) then return end
