@@ -438,10 +438,17 @@ function IceBarElement.prototype:CreateTexts()
 	self.frame.bottomUpperText:ClearAllPoints()
 	self.frame.bottomLowerText:ClearAllPoints()
 
-	offx = offx + self.moduleSettings.textHorizontalOffset
+	if self.moduleSettings.textHorizontalOffset ~= nil then
+		offx = offx + self.moduleSettings.textHorizontalOffset
+	end
 
-	self.frame.bottomUpperText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, self.moduleSettings.textVerticalOffset)
-	self.frame.bottomLowerText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, self.moduleSettings.textVerticalOffset - 14)
+	local offy = 0
+	if self.moduleSettings.textVerticalOffset ~= nil then
+		offy = self.moduleSettings.textVerticalOffset
+	end
+
+	self.frame.bottomUpperText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, offy)
+	self.frame.bottomLowerText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, offy - 14)
 	
 	if (self.moduleSettings.textVisible["upper"]) then
 		self.frame.bottomUpperText:Show()
