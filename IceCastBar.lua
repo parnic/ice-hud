@@ -230,7 +230,7 @@ function IceCastBar.prototype:SpellCastStop(unit, spell, rank)
 	IceHUD:Debug("SpellCastStop", unit, spell, self.current)
 	
 	-- ignore if not coming from current spell
-	if (self.current and self.current ~= spell) then
+	if (self.current and spell and self.current ~= spell) then
 		return
 	end
 	
