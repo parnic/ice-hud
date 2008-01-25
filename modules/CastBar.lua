@@ -61,6 +61,9 @@ function CastBar.prototype:GetOptions()
 		set = function(value)
 			self.moduleSettings.flashFailures = value
 		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		validate = { "Always", "Caster", "Never" },
 		order = 41
 	}
