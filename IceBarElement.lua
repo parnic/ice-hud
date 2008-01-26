@@ -131,46 +131,6 @@ function IceBarElement.prototype:GetOptions()
 		order = 32
 	}
 
-	opts["textVerticalOffset"] =
-	{
-		type = 'range',
-		name = '|c' .. self.configColor .. 'Text Vertical Offset|r',
-		desc = 'Offset of the text from the bar vertically (negative is farther below)',
-		min = -250,
-		max = 350,
-		step = 1,
-		get = function()
-			return self.moduleSettings.textVerticalOffset
-		end,
-		set = function(v)
-			self.moduleSettings.textVerticalOffset = v
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end
-	}
-
-	opts["textHorizontalOffset"] =
-	{
-		type = 'range',
-		name = '|c' .. self.configColor .. 'Text Horizontal Offset|r',
-		desc = 'Offset of the text from the bar horizontally',
-		min = -50,
-		max = 50,
-		step = 1,
-		get = function()
-			return self.moduleSettings.textHorizontalOffset
-		end,
-		set = function(v)
-			self.moduleSettings.textHorizontalOffset = v
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end
-	}
-	
 	opts["textSettings"] =
 	{
 		type = 'group',
@@ -278,6 +238,44 @@ function IceBarElement.prototype:GetOptions()
 					self.moduleSettings.lowerText = v
 					self:Redraw()
 				end,
+			},
+
+			textVerticalOffset = {
+				type = 'range',
+				name = '|c' .. self.configColor .. 'Text Vertical Offset|r',
+				desc = 'Offset of the text from the bar vertically (negative is farther below)',
+				min = -250,
+				max = 350,
+				step = 1,
+				get = function()
+					return self.moduleSettings.textVerticalOffset
+				end,
+				set = function(v)
+					self.moduleSettings.textVerticalOffset = v
+					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end
+			},
+
+			textHorizontalOffset = {
+				type = 'range',
+				name = '|c' .. self.configColor .. 'Text Horizontal Offset|r',
+				desc = 'Offset of the text from the bar horizontally',
+				min = -50,
+				max = 50,
+				step = 1,
+				get = function()
+					return self.moduleSettings.textHorizontalOffset
+				end,
+				set = function(v)
+					self.moduleSettings.textHorizontalOffset = v
+					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end
 			}
 		}
 	}
