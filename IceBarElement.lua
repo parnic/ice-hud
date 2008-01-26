@@ -205,7 +205,7 @@ function IceBarElement.prototype:GetOptions()
 				name = 'Upper Text',
 				desc = 'The upper text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ for tag info',
 				disabled = function()
-					return DogTag == nil
+					return DogTag == nil or self.elementName == "DruidMana"
 				end,
 				get = function()
 					return self.moduleSettings.upperText
@@ -225,7 +225,7 @@ function IceBarElement.prototype:GetOptions()
 				name = 'Lower Text',
 				desc = 'The lower text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ for tag info',
 				disabled = function()
-					return DogTag == nil
+					return DogTag == nil or self.elementName == "DruidMana"
 				end,
 				get = function()
 					return self.moduleSettings.lowerText
