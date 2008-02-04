@@ -19,11 +19,14 @@ end
 -- OVERRIDE
 function CastBar.prototype:GetDefaultSettings()
 	local settings = CastBar.super.prototype.GetDefaultSettings(self)
+
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 0
 	settings["flashInstants"] = "Caster"
 	settings["flashFailures"] = "Caster"
 	settings["lagAlpha"] = 0.7
+	settings["showBlizzCast"] = false
+
 	return settings
 end
 
@@ -89,6 +92,24 @@ function CastBar.prototype:GetOptions()
 		order = 42
 	}
 
+	opts["showBlizzCast"] =
+	{
+		type = 'toggle',
+		name = 'Show default cast bar',
+		desc = 'Whether or not to show the default cast bar.',
+		get = function()
+			return self.moduleSettings.showBlizzCast
+		end,
+		set = function(value)
+			self.moduleSettings.showBlizzCast = value
+			self:ToggleBlizzCast(self.moduleSettings.showBlizzCast)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 43
+	}
+
 	opts["textSettings"] =
 	{
 		type = 'group',
@@ -152,28 +173,40 @@ end
 
 function CastBar.prototype:Enable(core)
 	CastBar.super.prototype.Enable(self, core)
-	
-	-- remove blizz cast bar
-	CastingBarFrame:UnregisterAllEvents()
+
+	if self.moduleSettings.enabled and not self.moduleSettings.showBlizzCast then
+		self:ToggleBlizzCast(false)
+	end
 end
 
 
 function CastBar.prototype:Disable(core)
 	CastBar.super.prototype.Disable(self, core)
-	
-	-- restore blizz cast bar
-	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
-	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_START");
-	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
-	
-	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_FAILED");
-	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED");
-	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_DELAYED");
-	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
-	
-	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START");
-	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
-	CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
+
+	if self.moduleSettings.showBlizzCast then
+		self:ToggleBlizzCast(true)
+	end
+end
+
+function CastBar.prototype:ToggleBlizzCast(on)
+	if on then
+		-- restore blizz cast bar
+		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
+		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_START");
+		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
+
+		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_FAILED");
+		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED");
+		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_DELAYED");
+		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
+
+		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START");
+		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
+		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
+	else
+		-- remove blizz cast bar
+		CastingBarFrame:UnregisterAllEvents()
+	end
 end
 
 
