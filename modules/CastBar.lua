@@ -110,6 +110,14 @@ function CastBar.prototype:GetOptions()
 		order = 43
 	}
 
+	opts["shouldAnimate"] =
+	{
+	}
+
+	opts["desiredLerpTime"] =
+	{
+	}
+
 	opts["textSettings"] =
 	{
 		type = 'group',

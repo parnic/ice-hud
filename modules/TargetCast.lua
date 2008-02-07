@@ -52,6 +52,21 @@ function TargetCast.prototype:TargetChanged(unit)
 	self:StopBar()
 end
 
+
+function TargetCast.prototype:GetOptions()
+	local opts = TargetCast.super.prototype.GetOptions(self)
+
+	opts["shouldAnimate"] =
+	{
+	}
+
+	opts["desiredLerpTime"] =
+	{
+	}
+
+	return opts
+end
+
 -------------------------------------------------------------------------------
 
 

@@ -13,6 +13,11 @@ IceBarElement.prototype.backroundAlpha = nil
 IceBarElement.prototype.combat = nil
 IceBarElement.prototype.target = nil
 
+IceBarElement.prototype.CurrLerpTime = 0
+IceBarElement.prototype.LastScale = 1
+IceBarElement.prototype.DesiredScale = 1
+IceBarElement.prototype.CurrScale = 1
+
 
 -- Constructor --
 function IceBarElement.prototype:init(name)
@@ -52,6 +57,8 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["lowerText"] = ''
 	settings["textVerticalOffset"] = -1
 	settings["textHorizontalOffset"] = 0
+	settings["shouldAnimate"] = false
+	settings["desiredLerpTime"] = 0.2
 
 	return settings
 end
@@ -129,6 +136,41 @@ function IceBarElement.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 32
+	}
+
+	opts["shouldAnimate"] =
+	{
+		type = 'toggle',
+		name = '|c' .. self.configColor .. 'Animate amount changes|r',
+		desc = 'Whether or not to animate the bar falloffs/gains',
+		get = function()
+			return self.moduleSettings.shouldAnimate
+		end,
+		set = function(value)
+			self.moduleSettings.shouldAnimate = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end
+	}
+
+	opts["desiredLerpTime"] =
+	{
+		type = 'range',
+		name = '|c' .. self.configColor .. 'Animation Duration|r',
+		min = 0,
+		max = 2,
+		step = 0.05,
+		get = function()
+			return self.moduleSettings.desiredLerpTime
+		end,
+		set = function(value)
+			self.moduleSettings.desiredLerpTime = value
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not self.moduleSettings.shouldAnimate
+		end
 	}
 
 	opts["textSettings"] =
@@ -318,6 +360,7 @@ function IceBarElement.prototype:CreateFrame()
 	self:CreateTexts()
 	
 	self.frame:SetScale(self.moduleSettings.scale)
+	self.frame:SetScript("OnUpdate", function() self:MyOnUpdate() end)
 end
 
 
@@ -472,10 +515,33 @@ end
 
 
 function IceBarElement.prototype:SetScale(texture, scale)
+	self.CurrScale = self:LerpScale(scale)
+
 	if (self.moduleSettings.side == IceCore.Side.Left) then
-		texture:SetTexCoord(1, 0, 1-scale, 1)
+		texture:SetTexCoord(1, 0, 1-self.CurrScale, 1)
 	else
-		texture:SetTexCoord(0, 1, 1-scale, 1)
+		texture:SetTexCoord(0, 1, 1-self.CurrScale, 1)
+	end
+end
+
+
+function IceBarElement.prototype:LerpScale(scale)
+	if not self.moduleSettings.shouldAnimate then
+		return scale
+	end
+
+	if self.CurrLerpTime < self.moduleSettings.desiredLerpTime then
+		self.CurrLerpTime = self.CurrLerpTime + (1 / GetFramerate());
+	end
+
+	if self.CurrLerpTime > self.moduleSettings.desiredLerpTime then
+		self.CurrLerpTime = self.moduleSettings.desiredLerpTime
+	end
+
+	if self.CurrLerpTime < self.moduleSettings.desiredLerpTime then
+		return self.LastScale + ((self.DesiredScale - self.LastScale) * (self.CurrLerpTime / self.moduleSettings.desiredLerpTime))
+	else
+		return scale
 	end
 end
 
@@ -483,12 +549,12 @@ end
 function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	alpha = alpha or 1
 	self.frame:SetAlpha(alpha)
-	
+
 	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor(color)
 	end
-	
+
 	if (self.combat) then
 		self.alpha = self.settings.alphaic
 		self.backgroundAlpha = self.settings.alphaicbg
@@ -502,8 +568,14 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 
 	self.frame:SetStatusBarColor(r, g, b, self.backgroundAlpha)
 	self.barFrame:SetStatusBarColor(self:GetColor(color))
-	
-	self:SetScale(self.barFrame.bar, scale)
+
+	if self.DesiredScale ~= scale then
+		self.DesiredScale = scale
+		self.CurrLerpTime = 0
+		self.LastScale = self.CurrScale
+	end
+
+	self:SetScale(self.barFrame.bar, self.DesiredScale)
 end
 
 
@@ -590,7 +662,9 @@ end
 function IceBarElement.prototype:Update()
 end
 
-
+function IceBarElement.prototype:MyOnUpdate()
+	self:SetScale(self.barFrame.bar, self.DesiredScale)
+end
 
 
 -- Combat event handlers ------------------------------------------------------
