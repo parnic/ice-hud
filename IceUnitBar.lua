@@ -32,11 +32,15 @@ function IceUnitBar.prototype:init(name, unit)
 	
 	self:SetDefaultColor("Dead", 0.5, 0.5, 0.5)
 	self:SetDefaultColor("Tapped", 0.8, 0.8, 0.8)
+
 	self:SetDefaultColor("ScaledHealthColor", 0, 1, 0)
+	self:SetDefaultColor("MaxHealthColor", 0, 255, 0)
+	self:SetDefaultColor("MidHealthColor", 255, 255, 0)
+	self:SetDefaultColor("MinHealthColor", 255, 0, 0)
+
 	self:SetDefaultColor("ScaledManaColor", 0, 0, 1)
-	self:SetDefaultColor("MaxHealthColor", 37, 200, 30)
-	self:SetDefaultColor("MinHealthColor", 200, 37, 30)
 	self:SetDefaultColor("MaxManaColor", 0, 0, 255)
+	self:SetDefaultColor("MidManaColor", 125, 0, 255)
 	self:SetDefaultColor("MinManaColor", 255, 0, 255)
 
 	self.scaleHPColorInst = { r = 0, g = 255, b = 0 }
@@ -118,7 +122,7 @@ end
 -- OVERRIDE
 function IceUnitBar.prototype:CreateFrame()
 	IceUnitBar.super.prototype.CreateFrame(self)
-	
+
 	self:CreateFlashFrame()
 end
 
@@ -127,23 +131,23 @@ function IceUnitBar.prototype:CreateFlashFrame()
 	if not (self.flashFrame) then
 		self.flashFrame = CreateFrame("StatusBar", nil, self.frame)
 	end
-	
+
 	self.flashFrame:SetFrameStrata("BACKGROUND")
 	self.flashFrame:SetWidth(self.settings.barWidth)
 	self.flashFrame:SetHeight(self.settings.barHeight)
-	
-	
+
+
 	if not (self.flashFrame.flash) then
 		self.flashFrame.flash = self.flashFrame:CreateTexture(nil, "BACKGROUND")
 	end
-	
+
 	self.flashFrame.flash:SetTexture(IceElement.TexturePath .. self.settings.barTexture)
 	self.flashFrame.flash:SetBlendMode("ADD")
 	self.flashFrame.flash:SetAllPoints(self.flashFrame)
-	
+
 	self.flashFrame:SetStatusBarTexture(self.flashFrame.flash)
 
-	
+
 	self:SetScale(self.flashFrame.flash, 1)
 	self.flashFrame:SetAlpha(0)
 
@@ -157,23 +161,34 @@ function IceUnitBar.prototype:Update()
 	IceUnitBar.super.prototype.Update(self)
 
 	self.tapped = UnitIsTapped(self.unit) and (not UnitIsTappedByPlayer(self.unit))
-	
+
 	self.health = UnitHealth(self.unit)
 	self.maxHealth = UnitHealthMax(self.unit)
-	self.healthPercentage = math.floor( (self.health/self.maxHealth)*100 )
-	
+	self.healthPercentage = self.health/self.maxHealth
+
 	self.mana = UnitMana(self.unit)
 	self.maxMana = UnitManaMax(self.unit)
-	self.manaPercentage = math.floor( (self.mana/self.maxMana)*100 )
-	
+	self.manaPercentage = self.mana/self.maxMana
+
 	_, self.unitClass = UnitClass(self.unit)
 
 	if( self.moduleSettings.scaleHealthColor ) then
-		self:SetScaledColor(self.scaleHPColorInst, self.healthPercentage/100, self.settings.colors["MaxHealthColor"], self.settings.colors["MinHealthColor"])
+		if self.healthPercentage > 0.5 then
+			self:SetScaledColor(self.scaleHPColorInst, self.healthPercentage * 2 - 1, self.settings.colors["MaxHealthColor"], self.settings.colors["MidHealthColor"])
+		else
+			self:SetScaledColor(self.scaleHPColorInst, self.healthPercentage * 2, self.settings.colors["MidHealthColor"], self.settings.colors["MinHealthColor"])
+		end
+
 		self.settings.colors["ScaledHealthColor"] = self.scaleHPColorInst
 	end
+
 	if( self.moduleSettings.scaleManaColor ) then
-		self:SetScaledColor(self.scaleMPColorInst, self.manaPercentage/100, self.settings.colors["MaxManaColor"], self.settings.colors["MinManaColor"])
+		if self.manaPercentage > 0.5 then
+			self:SetScaledColor(self.scaleMPColorInst, self.manaPercentage * 2 - 1, self.settings.colors["MaxManaColor"], self.settings.colors["MidManaColor"])
+		else
+			self:SetScaledColor(self.scaleMPColorInst, self.manaPercentage * 2, self.settings.colors["MidManaColor"], self.settings.colors["MinManaColor"])
+		end
+
 		self.settings.colors["ScaledManaColor"] = self.scaleMPColorInst
 	end
 end
@@ -239,4 +254,5 @@ end
 function IceUnitBar.prototype:SetScaleColorEnabled(enabled)
 	self.moduleSettings.scaleColor = enabled
 end
+
 
