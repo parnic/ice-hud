@@ -159,6 +159,7 @@ function IceBarElement.prototype:GetOptions()
 	{
 		type = 'range',
 		name = '|c' .. self.configColor .. 'Animation Duration|r',
+		desc = 'How long the animation should take to play',
 		min = 0,
 		max = 2,
 		step = 0.05,
@@ -260,6 +261,7 @@ function IceBarElement.prototype:GetOptions()
 					self.moduleSettings.upperText = v
 					self:Redraw()
 				end,
+				usage = "<upper text to display>"
 			},
 
 			lowerTextString = {
@@ -280,6 +282,7 @@ function IceBarElement.prototype:GetOptions()
 					self.moduleSettings.lowerText = v
 					self:Redraw()
 				end,
+				usage = "<lower text to display>"
 			},
 
 			textVerticalOffset = {

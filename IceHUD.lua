@@ -7,6 +7,8 @@ IceHUD.Location = "Interface\\AddOns\\IceHUD"
 IceHUD.options =
 {
 	type = 'group',
+	name = "IceHUD",
+	desc = "IceHUD",
 	args = 
 	{
 		headerGeneral = {
@@ -497,7 +499,10 @@ function IceHUD:OnEnable()
 	self.options.args.colors.args = self.IceCore:GetColorOptions()
 	
 	waterfall:Register("IceHUD", 'aceOptions', IceHUD.options)
-	
+
+	-- Parnic - added /icehudcl to make rock config pick this up
+	self:RegisterChatCommand({"/icehudcl"}, IceHUD.options)
 	self:RegisterChatCommand({ "/icehud" }, IceHUD.slashMenu)
 end
+
 

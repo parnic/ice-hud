@@ -110,12 +110,22 @@ function CastBar.prototype:GetOptions()
 		order = 43
 	}
 
+	-- Parnic - this exists solely for the console/rock config to work...animating cast bars doesn't make sense
 	opts["shouldAnimate"] =
 	{
-	}
-
-	opts["desiredLerpTime"] =
-	{
+		type = 'toggle',
+		name = '|c' .. self.configColor .. 'Animate amount changes|r',
+		desc = 'Whether or not to animate the bar falloffs/gains',
+		get = function()
+			return self.moduleSettings.shouldAnimate
+		end,
+		set = function(value)
+			self.moduleSettings.shouldAnimate = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return true
+		end
 	}
 
 	opts["textSettings"] =
