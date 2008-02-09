@@ -72,6 +72,11 @@ function PetMana.prototype:Enable(core)
 
 	self:CheckPet()
 	self:ManaType(self.unit)
+
+	if DogTag ~= nil then
+--		DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.unit, self.moduleSettings.upperText)
+--		DogTag:AddFontString(self.frame.bottomLowerText, self.frame, self.unit, self.moduleSettings.lowerText)
+	end
 end
 
 
@@ -126,15 +131,10 @@ function PetMana.prototype:Update(unit)
 	
 	self:UpdateBar(self.mana/self.maxMana, color)
 
-	if DogTag ~= nil then
-		if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
-			self:SetBottomText1(DogTag:Evaluate("player", self.moduleSettings.upperText))
-		end
-		if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
-			self:SetBottomText2(DogTag:Evaluate("player", self.moduleSettings.lowerText))
-		end
+	if DogTag ~= nil and false then
+		DogTag:UpdateAllForFrame(self.frame)
 	else
-		self:SetBottomText1(self.manaPercentage)
+		self:SetBottomText1(math.floor(self.manaPercentage * 100))
 	end
 end
 

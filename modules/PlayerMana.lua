@@ -115,6 +115,11 @@ function PlayerMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
 	self:ManaType(self.unit)
+
+	if DogTag ~= nil then
+--		DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.unit, self.moduleSettings.upperText)
+--		DogTag:AddFontString(self.frame.bottomLowerText, self.frame, self.unit, self.moduleSettings.lowerText)
+	end
 end
 
 
@@ -191,18 +196,15 @@ function PlayerMana.prototype:Update(unit)
  		self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
  	end
 
-	if DogTag ~= nil then
-		if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
-			self:SetBottomText1(DogTag:Evaluate("player", self.moduleSettings.upperText))
-		end
-		if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
-			self:SetBottomText2(DogTag:Evaluate("player", self.moduleSettings.lowerText))
-		end
+	if DogTag ~= nil and false then
+		DogTag:UpdateAllForFrame(self.frame)
 	else
 		-- extra hack for whiny rogues (are there other kind?)
 		local displayPercentage = self.manaPercentage
 		if (self.manaType == 3) then
 			displayPercentage = self.mana
+		else
+			displayPercentage = math.floor(displayPercentage * 100)
 		end
 		self:SetBottomText1(displayPercentage)
 

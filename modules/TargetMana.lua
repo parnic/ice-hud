@@ -45,6 +45,11 @@ function TargetMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_MAXFOCUS", "Update")
 	self:RegisterEvent("UNIT_AURA", "Update")
 	self:RegisterEvent("UNIT_FLAGS", "Update")
+
+	if DogTag ~= nil then
+--		DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.unit, self.moduleSettings.upperText)
+--		DogTag:AddFontString(self.frame.bottomLowerText, self.frame, self.unit, self.moduleSettings.lowerText)
+	end
 	
 	self:Update("target")
 end
@@ -85,15 +90,10 @@ function TargetMana.prototype:Update(unit)
 	
 	self:UpdateBar(self.mana/self.maxMana, color)
 
-	if DogTag ~= nil then
-		if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
-			self:SetBottomText1(DogTag:Evaluate("target", self.moduleSettings.upperText))
-		end
-		if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
-			self:SetBottomText2(DogTag:Evaluate("target", self.moduleSettings.lowerText))
-		end
+	if DogTag ~= nil and false then
+		DogTag:UpdateAllForFrame(self.frame)
 	else
-		self:SetBottomText1(self.manaPercentage)
+		self:SetBottomText1(math.floor(self.manaPercentage * 100))
 		self:SetBottomText2(self:GetFormattedText(self.mana, self.maxMana), color)
 	end
 end

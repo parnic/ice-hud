@@ -211,6 +211,11 @@ function TargetHealth.prototype:Enable(core)
 
 	self:CreateRaidIconFrame()
 
+	if DogTag ~= nil then
+--		DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.unit, self.moduleSettings.upperText)
+--		DogTag:AddFontString(self.frame.bottomLowerText, self.frame, self.unit, self.moduleSettings.lowerText)
+	end
+
 	self:Update(self.unit)
 end
 
@@ -259,15 +264,10 @@ function TargetHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.health/self.maxHealth, self.color)
 
-	if DogTag ~= nil then
-		if self.moduleSettings.upperText ~= nil and self.moduleSettings.upperText ~= '' then
-			self:SetBottomText1(DogTag:Evaluate("target", self.moduleSettings.upperText))
-		end
-		if self.moduleSettings.lowerText ~= nil and self.moduleSettings.lowerText ~= '' then
-			self:SetBottomText2(DogTag:Evaluate("target", self.moduleSettings.lowerText))
-		end
+	if DogTag ~= nil and false then
+		DogTag:UpdateAllForFrame(self.frame)
 	else
-		self:SetBottomText1(self.healthPercentage)
+		self:SetBottomText1(math.floor(self.healthPercentage * 100))
 
 		-- assumption that if a unit's max health is 100, it's not actual amount
 		-- but rather a percentage - this obviously has one caveat though
