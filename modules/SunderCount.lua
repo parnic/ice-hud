@@ -1,14 +1,15 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-local ComboPoints = AceOO.Class(IceElement)
+local SunderCount = AceOO.Class(IceElement)
+local MAX_DEBUFF_COUNT = 40
 
-ComboPoints.prototype.comboSize = 20
+SunderCount.prototype.sunderSize = 20
 
 -- Constructor --
-function ComboPoints.prototype:init()
-	ComboPoints.super.prototype.init(self, "ComboPoints")
+function SunderCount.prototype:init()
+	SunderCount.super.prototype.init(self, "SunderCount")
 	
-	self:SetDefaultColor("ComboPoints", 1, 1, 0)
+	self:SetDefaultColor("SunderCount", 1, 1, 0)
 	self.scalingEnabled = true
 end
 
@@ -18,8 +19,8 @@ end
 
 
 -- OVERRIDE
-function ComboPoints.prototype:GetOptions()
-	local opts = ComboPoints.super.prototype.GetOptions(self)
+function SunderCount.prototype:GetOptions()
+	local opts = SunderCount.super.prototype.GetOptions(self)
 
 	opts["vpos"] = {
 		type = "range",
@@ -41,15 +42,15 @@ function ComboPoints.prototype:GetOptions()
 		order = 31
 	}
 
-	opts["comboFontSize"] = {
+	opts["sunderFontSize"] = {
 		type = "range",
-		name = "Combo Points Font Size",
-		desc = "Combo Points Font Size",
+		name = "Sunder Count Font Size",
+		desc = "Sunder Count Font Size",
 		get = function()
-			return self.moduleSettings.comboFontSize
+			return self.moduleSettings.sunderFontSize
 		end,
 		set = function(v)
-			self.moduleSettings.comboFontSize = v
+			self.moduleSettings.sunderFontSize = v
 			self:Redraw()
 		end,
 		min = 10,
@@ -61,15 +62,15 @@ function ComboPoints.prototype:GetOptions()
 		order = 32
 	}
 
-	opts["comboMode"] = {
+	opts["sunderMode"] = {
 		type = "text",
 		name = "Display Mode",
-		desc = "Show graphical or numeric combo points",
+		desc = "Show graphical or numeric sunders",
 		get = function()
-			return self.moduleSettings.comboMode
+			return self.moduleSettings.sunderMode
 		end,
 		set = function(v)
-			self.moduleSettings.comboMode = v
+			self.moduleSettings.sunderMode = v
 			self:Redraw()
 		end,
 		validate = { "Numeric", "Graphical" },
@@ -82,7 +83,7 @@ function ComboPoints.prototype:GetOptions()
 	opts["gradient"] = {
 		type = "toggle",
 		name = "Change color",
-		desc = "1 compo point: yellow, 5 combo points: red",
+		desc = "1 compo point: yellow, 5 sunders: red",
 		get = function()
 			return self.moduleSettings.gradient
 		end,
@@ -101,31 +102,31 @@ end
 
 
 -- OVERRIDE
-function ComboPoints.prototype:GetDefaultSettings()
-	local defaults =  ComboPoints.super.prototype.GetDefaultSettings(self)
+function SunderCount.prototype:GetDefaultSettings()
+	local defaults =  SunderCount.super.prototype.GetDefaultSettings(self)
 	defaults["vpos"] = 0
-	defaults["comboFontSize"] = 20
-	defaults["comboMode"] = "Numeric"
+	defaults["sunderFontSize"] = 20
+	defaults["sunderMode"] = "Numeric"
 	defaults["gradient"] = false
 	return defaults
 end
 
 
 -- OVERRIDE
-function ComboPoints.prototype:Redraw()
-	ComboPoints.super.prototype.Redraw(self)
+function SunderCount.prototype:Redraw()
+	SunderCount.super.prototype.Redraw(self)
 	
 	self:CreateFrame()
-	self:UpdateComboPoints()
+	self:UpdateSunderCount()
 end
 
 
 -- OVERRIDE
-function ComboPoints.prototype:Enable(core)
-	ComboPoints.super.prototype.Enable(self, core)
+function SunderCount.prototype:Enable(core)
+	SunderCount.super.prototype.Enable(self, core)
 	
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateComboPoints")
-	self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateComboPoints")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateSunderCount")
+	self:RegisterEvent("UNIT_AURA", "UpdateSunderCount")
 end
 
 
@@ -133,26 +134,26 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 -- OVERRIDE
-function ComboPoints.prototype:CreateFrame()
-	ComboPoints.super.prototype.CreateFrame(self)
+function SunderCount.prototype:CreateFrame()
+	SunderCount.super.prototype.CreateFrame(self)
 
 	self.frame:SetFrameStrata("BACKGROUND")
-	self.frame:SetWidth(self.comboSize*5)
+	self.frame:SetWidth(self.sunderSize*5)
 	self.frame:SetHeight(1)
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
 	
 	self.frame:Show()
 
-	self:CreateComboFrame()
+	self:CreateSunderFrame()
 end
 
 
 
-function ComboPoints.prototype:CreateComboFrame()
+function SunderCount.prototype:CreateSunderFrame()
 
-	-- create numeric combo points
-	self.frame.numeric = self:FontFactory(self.moduleSettings.comboFontSize, nil, self.frame.numeric)
+	-- create numeric sunders
+	self.frame.numeric = self:FontFactory(self.moduleSettings.sunderFontSize, nil, self.frame.numeric)
 
 	self.frame.numeric:SetWidth(50)
 	self.frame.numeric:SetJustifyH("CENTER")
@@ -172,16 +173,16 @@ function ComboPoints.prototype:CreateComboFrame()
 			self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboBG")
 		end
 		self.frame.graphicalBG[i]:SetFrameStrata("BACKGROUND")
-		self.frame.graphicalBG[i]:SetWidth(self.comboSize)
-		self.frame.graphicalBG[i]:SetHeight(self.comboSize)
-		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.comboSize-5) + (i-1), 0)
+		self.frame.graphicalBG[i]:SetWidth(self.sunderSize)
+		self.frame.graphicalBG[i]:SetHeight(self.sunderSize)
+		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.sunderSize-5) + (i-1), 0)
 		self.frame.graphicalBG[i]:SetAlpha(0.15)
-		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("ComboPoints"))
+		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("SunderCount"))
 
 		self.frame.graphicalBG[i]:Hide()
 	end
 
-	-- create combo points
+	-- create sunders
 	for i = 1, 5 do
 		if (not self.frame.graphical[i]) then
 			self.frame.graphical[i] = CreateFrame("StatusBar", nil, self.frame)
@@ -190,7 +191,7 @@ function ComboPoints.prototype:CreateComboFrame()
 		self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphical[i]:SetAllPoints(self.frame.graphicalBG[i])
 
-		local r, g, b = self:GetColor("ComboPoints")
+		local r, g, b = self:GetColor("SunderCount")
 		if (self.moduleSettings.gradient) then
 			g = g - (0.15*i)
 		end
@@ -201,16 +202,32 @@ function ComboPoints.prototype:CreateComboFrame()
 end
 
 
+function SunderCount.prototype:GetDebuffCount(unit, ability)
+	for i = 1, MAX_DEBUFF_COUNT do
+		local name, _, texture, applications = UnitDebuff(unit, i)
 
-function ComboPoints.prototype:UpdateComboPoints()
-	local points = GetComboPoints("target")
+		if not texture then
+			break
+		end
+
+		if string.match(texture, ability) then
+			return applications
+		end
+	end
+
+	return 0
+end
+
+
+function SunderCount.prototype:UpdateSunderCount()
+	local points = self:GetDebuffCount("target", "Ability_Warrior_Sunder")
 
 	if (points == 0) then
 		points = nil
 	end
 
-	if (self.moduleSettings.comboMode == "Numeric") then
-		local r, g, b = self:GetColor("ComboPoints")
+	if (self.moduleSettings.sunderMode == "Numeric") then
+		local r, g, b = self:GetColor("SunderCount")
 		if (self.moduleSettings.gradient and points) then
 			g = g - (0.15*points)
 		end
@@ -237,11 +254,8 @@ function ComboPoints.prototype:UpdateComboPoints()
 end
 
 
-
-
-
 -- Load us up
 local _, unitClass = UnitClass("player")
-if (unitClass == "DRUID" or unitClass == "ROGUE") then
-	IceHUD.ComboPoints = ComboPoints:new()
+if (unitClass == "WARRIOR") then
+	IceHUD.SunderCount = SunderCount:new()
 end

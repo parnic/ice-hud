@@ -38,3 +38,4 @@ modules\ComboPoints.lua
 modules\CastBar.lua
 modules\TargetCast.lua
 modules\MirrorBar.lua
+modules\SunderCount.lua
