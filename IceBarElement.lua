@@ -64,6 +64,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["textHorizontalOffset"] = 0
 	settings["shouldAnimate"] = false
 	settings["desiredLerpTime"] = 0.2
+	settings["barVisible"] = {bg = true, bar = true}
 
 	return settings
 end
@@ -141,6 +142,42 @@ function IceBarElement.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 32
+	}
+
+	opts["barVisible"] = {
+		type = 'toggle',
+		name = 'Bar visible',
+		desc = 'Toggle bar visibility',
+		get = function()
+			return self.moduleSettings.barVisible['bar']
+		end,
+		set = function(v)
+			self.moduleSettings.barVisible['bar'] = v
+			if v then
+				self.barFrame:Show()
+			else
+				self.barFrame:Hide()
+			end
+		end,
+		order = 13.1
+	}
+			
+	opts["bgVisible"] = {
+		type = 'toggle',
+		name = 'Bar background visible',
+		desc = 'Toggle bar background visibility',
+		get = function()
+			return self.moduleSettings.barVisible['bg']
+		end,
+		set = function(v)
+			self.moduleSettings.barVisible['bg'] = v
+			if v then
+				self.frame.bg:Show()
+			else
+				self.frame.bg:Hide()
+			end
+		end,
+		order = 13.2
 	}
 
 	opts["shouldAnimate"] =
@@ -252,7 +289,7 @@ function IceBarElement.prototype:GetOptions()
 				type = 'text',
 				name = 'Upper Text',
 				desc = 'The upper text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info',
-				disabled = function()
+				hidden = function()
 					return DogTag == nil or self.elementName == "DruidMana"
 				end,
 				get = function()
@@ -273,7 +310,7 @@ function IceBarElement.prototype:GetOptions()
 				type = 'text',
 				name = 'Lower Text',
 				desc = 'The lower text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info',
-				disabled = function()
+				hidden = function()
 					return DogTag == nil or self.elementName == "DruidMana"
 				end,
 				get = function()
@@ -584,6 +621,18 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	end
 
 	self:SetScale(self.barFrame.bar, self.DesiredScale)
+
+	if not self.moduleSettings.barVisible['bg'] then
+		self.frame.bg:Hide()
+	else
+		self.frame.bg:Show()
+	end
+
+	if not self.moduleSettings.barVisible['bar'] then
+		self.barFrame:Hide()
+	else
+		self.barFrame:Show()
+	end
 
 	DogTag:UpdateAllForFrame(self.frame)
 end
