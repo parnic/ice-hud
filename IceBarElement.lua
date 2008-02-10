@@ -60,7 +60,8 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["offset"] = 1
 	settings["scale"] = 1
 	settings["barFontSize"] = 12
-	settings["lockTextAlpha"] = true
+	settings["lockUpperTextAlpha"] = true
+	settings["lockLowerTextAlpha"] = false
 	settings["textVisible"] = {upper = true, lower = true}
 	settings["upperText"] = ''
 	settings["lowerText"] = ''
@@ -252,21 +253,35 @@ function IceBarElement.prototype:GetOptions()
 				step = 1,
 				order = 11
 			},
-			
-			lockFontAlpha = {
+
+			lockUpperFontAlpha = {
 				type = "toggle",
-				name = "Lock Bar Text Alpha",
+				name = "Lock Upper Text Alpha",
 				desc = "Locks upper text alpha to 100%",
 				get = function()
-					return self.moduleSettings.lockTextAlpha
+					return self.moduleSettings.lockUpperTextAlpha
 				end,
 				set = function(v)
-					self.moduleSettings.lockTextAlpha = v
+					self.moduleSettings.lockUpperTextAlpha = v
 					self:Redraw()
 				end,
 				order = 13
 			},
-			
+
+			lockLowerFontAlpha = {
+				type = "toggle",
+				name = "Lock Lower Text Alpha",
+				desc = "Locks lower text alpha to 100%",
+				get = function()
+					return self.moduleSettings.lockLowerTextAlpha
+				end,
+				set = function(v)
+					self.moduleSettings.lockLowerTextAlpha = v
+					self:Redraw()
+				end,
+				order = 13.1
+			},
+
 			upperTextVisible = {
 				type = 'toggle',
 				name = 'Upper text visible',
@@ -646,7 +661,10 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 		self.barFrame:Show()
 	end
 
-	DogTag:UpdateAllForFrame(self.frame)
+	if DogTag ~= nil then
+		DogTag:UpdateAllForFrame(self.frame)
+		self:SetTextAlpha()
+	end
 end
 
 
@@ -676,11 +694,10 @@ function IceBarElement.prototype:SetBottomText1(text, color)
 		end
 	end
 	
-	if (self.moduleSettings.lockTextAlpha and (self.alpha > 0)) then
+	if (self.moduleSettings.lockUpperTextAlpha and (self.alpha > 0)) then
 		alpha = 1
 	end
 	
-	self.frame.bottomUpperText:SetTextColor(self:GetColor(color, alpha))
 	self.frame.bottomUpperText:SetText(text)
 end
 
@@ -705,8 +722,22 @@ function IceBarElement.prototype:SetBottomText2(text, color, alpha)
 		end
 	end
 
+	if (self.moduleSettings.lockLowerTextAlpha and (self.alpha > 0)) then
+		alpha = 1
+	end
+
 	self.frame.bottomLowerText:SetTextColor(self:GetColor(color, alpha))
 	self.frame.bottomLowerText:SetText(text)
+end
+
+
+function IceBarElement.prototype:SetTextAlpha()
+	if self.frame.bottomUpperText then
+		self.frame.bottomUpperText:SetAlpha(self.moduleSettings.lockUpperTextAlpha and 1 or math.min(self.alpha + 0.1, 1))
+	end
+	if self.frame.bottomLowerText then
+		self.frame.bottomLowerText:SetAlpha(self.moduleSettings.lockLowerTextAlpha and 1 or math.min(self.alpha + 0.1, 1))
+	end
 end
 
 
