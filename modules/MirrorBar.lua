@@ -25,6 +25,7 @@ function MirrorBar.prototype:init(side, offset, name, db)
 	self.moduleSettings = {}
 	self.moduleSettings.side = side
 	self.moduleSettings.offset = offset
+	self.moduleSettings.barVisible = {bar = true, bg = true}
 
 	-- unregister the event superclass registered, we don't want to register
 	-- this to the core
@@ -62,7 +63,7 @@ function MirrorBar.prototype:OnUpdate(elapsed)
 	if (self.paused) then
 		return
 	end
-	
+
 	self:Update()
 
 	self.value = self.value + (self.timerScale * elapsed * 1000)
@@ -180,6 +181,7 @@ function MirrorBarHandler.prototype:GetDefaultSettings()
 	settings["barFontBold"] = true
 	settings["lockTextAlpha"] = true
 	settings["textVisible"] = {upper = true, lower = true}
+	settings["barVisible"] = {bg = true, bar = true}
 	return settings
 end
 
@@ -228,6 +230,40 @@ function MirrorBarHandler.prototype:GetOptions()
 			self:Redraw()
 		end,
 		order = 31
+	}
+
+	opts["barVisible"] = {
+		type = 'toggle',
+		name = 'Bar visible',
+		desc = 'Toggle bar visibility',
+		get = function()
+			return self.moduleSettings.barVisible['bar']
+		end,
+		set = function(v)
+			self.moduleSettings.barVisible['bar'] = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 28
+	}
+			
+	opts["bgVisible"] = {
+		type = 'toggle',
+		name = 'Bar background visible',
+		desc = 'Toggle bar background visibility',
+		get = function()
+			return self.moduleSettings.barVisible['bg']
+		end,
+		set = function(v)
+			self.moduleSettings.barVisible['bg'] = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 29
 	}
 	
 	opts["textSettings"] =
@@ -447,6 +483,7 @@ function MirrorBarHandler.prototype:SetSettings(bar)
 	bar.moduleSettings.scale = self.moduleSettings.scale
 	bar.moduleSettings.textVerticalOffset = self.moduleSettings.textVerticalOffset
 	bar.moduleSettings.textHorizontalOffset = self.moduleSettings.textHorizontalOffset
+	bar.moduleSettings.barVisible = self.moduleSettings.barVisible
 end
 
 

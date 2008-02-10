@@ -42,8 +42,12 @@ function IceBarElement.prototype:Enable()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
 
 	if DogTag ~= nil then
-		DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.unit, self.moduleSettings.upperText)
-		DogTag:AddFontString(self.frame.bottomLowerText, self.frame, self.unit, self.moduleSettings.lowerText)
+		if self.frame.bottomUpperText and self.moduleSettings.upperText then
+			DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.unit, self.moduleSettings.upperText)
+		end
+		if self.frame.bottomLowerText and self.moduleSettings.lowerText then
+			DogTag:AddFontString(self.frame.bottomLowerText, self.frame, self.unit, self.moduleSettings.lowerText)
+		end
 	end
 end
 
@@ -159,7 +163,10 @@ function IceBarElement.prototype:GetOptions()
 				self.barFrame:Hide()
 			end
 		end,
-		order = 13.1
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 28
 	}
 			
 	opts["bgVisible"] = {
@@ -177,7 +184,10 @@ function IceBarElement.prototype:GetOptions()
 				self.frame.bg:Hide()
 			end
 		end,
-		order = 13.2
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 29
 	}
 
 	opts["shouldAnimate"] =
@@ -405,7 +415,9 @@ function IceBarElement.prototype:CreateFrame()
 	self:CreateTexts()
 	
 	self.frame:SetScale(self.moduleSettings.scale)
-	self.frame:SetScript("OnUpdate", function() self:MyOnUpdate() end)
+	if not string.find(self.elementName, "MirrorBar") then
+		self.frame:SetScript("OnUpdate", function() self:MyOnUpdate() end)
+	end
 end
 
 

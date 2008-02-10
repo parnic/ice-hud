@@ -135,6 +135,48 @@ function CastBar.prototype:GetOptions()
 		end
 	}
 
+	opts["barVisible"] = {
+		type = 'toggle',
+		name = 'Bar visible',
+		desc = 'Toggle bar visibility',
+		get = function()
+			return self.moduleSettings.barVisible['bar']
+		end,
+		set = function(v)
+			self.moduleSettings.barVisible['bar'] = v
+			if v then
+				self.barFrame:Show()
+			else
+				self.barFrame:Hide()
+			end
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 28
+	}
+			
+	opts["bgVisible"] = {
+		type = 'toggle',
+		name = 'Bar background visible',
+		desc = 'Toggle bar background visibility',
+		get = function()
+			return self.moduleSettings.barVisible['bg']
+		end,
+		set = function(v)
+			self.moduleSettings.barVisible['bg'] = v
+			if v then
+				self.frame.bg:Show()
+			else
+				self.frame.bg:Hide()
+			end
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 29
+	}
+
 	opts["textSettings"] =
 	{
 		type = 'group',
