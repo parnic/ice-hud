@@ -41,6 +41,11 @@ function IceBarElement.prototype:Enable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckCombat")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
 
+	self:RegisterFontStrings()
+end
+
+
+function IceBarElement.prototype:RegisterFontStrings()
 	if DogTag ~= nil then
 		if self.frame.bottomUpperText and self.moduleSettings.upperText then
 			DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.unit, self.moduleSettings.upperText)
@@ -326,6 +331,7 @@ function IceBarElement.prototype:GetOptions()
 					end
 
 					self.moduleSettings.upperText = v
+					self:RegisterFontStrings()
 					self:Redraw()
 				end,
 				usage = "<upper text to display>"
@@ -347,6 +353,7 @@ function IceBarElement.prototype:GetOptions()
 					end
 
 					self.moduleSettings.lowerText = v
+					self:RegisterFontStrings()
 					self:Redraw()
 				end,
 				usage = "<lower text to display>"
