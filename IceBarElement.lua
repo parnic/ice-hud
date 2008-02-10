@@ -740,10 +740,10 @@ end
 
 function IceBarElement.prototype:SetTextAlpha()
 	if self.frame.bottomUpperText then
-		self.frame.bottomUpperText:SetAlpha(self.moduleSettings.lockUpperTextAlpha and 1 or math.min(self.alpha + 0.1, 1))
+		self.frame.bottomUpperText:SetAlpha(self.moduleSettings.lockUpperTextAlpha and 1 or math.min(self.alpha > 0 and self.alpha + 0.1 or 0, 1))
 	end
 	if self.frame.bottomLowerText then
-		self.frame.bottomLowerText:SetAlpha(self.moduleSettings.lockLowerTextAlpha and 1 or math.min(self.alpha + 0.1, 1))
+		self.frame.bottomLowerText:SetAlpha(self.moduleSettings.lockLowerTextAlpha and 1 or math.min(self.alpha > 0 and self.alpha + 0.1 or 0, 1))
 	end
 end
 
