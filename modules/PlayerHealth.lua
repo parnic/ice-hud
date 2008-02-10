@@ -1,7 +1,5 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-local DogTag = nil
-
 local PlayerHealth = AceOO.Class(IceUnitBar)
 
 PlayerHealth.prototype.resting = nil
@@ -11,10 +9,6 @@ function PlayerHealth.prototype:init()
 	PlayerHealth.super.prototype.init(self, "PlayerHealth", "player")
 	
 	self:SetDefaultColor("PlayerHealth", 37, 164, 30)
-
-	if AceLibrary:HasInstance("LibDogTag-2.0") then
-		DogTag = AceLibrary("LibDogTag-2.0")
-	end
 end
 
 
@@ -44,11 +38,6 @@ function PlayerHealth.prototype:Enable(core)
 		self:HideBlizz()
 	end
 
-	if DogTag ~= nil then
---		DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.unit, self.moduleSettings.upperText)
---		DogTag:AddFontString(self.frame.bottomLowerText, self.frame, self.unit, self.moduleSettings.lowerText)
-	end
-	
 	self:Resting()
 	--self:Update(self.unit)
 end
@@ -150,9 +139,7 @@ function PlayerHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.health/self.maxHealth, color)
 
-	if DogTag ~= nil and false then
-		DogTag:UpdateAllForFrame(self.frame)
-	else
+	if not AceLibrary:HasInstance("LibDogTag-2.0") then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
 		self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), textColor)
 	end

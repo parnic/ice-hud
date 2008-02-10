@@ -1,7 +1,5 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-local DogTag = nil
-
 local TargetHealth = AceOO.Class(IceUnitBar)
 
 TargetHealth.prototype.color = nil
@@ -14,10 +12,6 @@ function TargetHealth.prototype:init()
 	self:SetDefaultColor("TargetHealthHostile", 231, 31, 36)
 	self:SetDefaultColor("TargetHealthFriendly", 46, 223, 37)
 	self:SetDefaultColor("TargetHealthNeutral", 210, 219, 87)
-
-	if AceLibrary:HasInstance("LibDogTag-2.0") then
-		DogTag = AceLibrary("LibDogTag-2.0")
-	end
 end
 
 
@@ -211,11 +205,6 @@ function TargetHealth.prototype:Enable(core)
 
 	self:CreateRaidIconFrame()
 
-	if DogTag ~= nil then
---		DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.unit, self.moduleSettings.upperText)
---		DogTag:AddFontString(self.frame.bottomLowerText, self.frame, self.unit, self.moduleSettings.lowerText)
-	end
-
 	self:Update(self.unit)
 end
 
@@ -264,9 +253,7 @@ function TargetHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.health/self.maxHealth, self.color)
 
-	if DogTag ~= nil and false then
-		DogTag:UpdateAllForFrame(self.frame)
-	else
+	if not AceLibrary:HasInstance("LibDogTag-2.0") then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
 
 		-- assumption that if a unit's max health is 100, it's not actual amount

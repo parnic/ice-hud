@@ -40,6 +40,11 @@ function IceBarElement.prototype:Enable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OutCombat")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckCombat")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
+
+	if DogTag ~= nil then
+		DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.unit, self.moduleSettings.upperText)
+		DogTag:AddFontString(self.frame.bottomLowerText, self.frame, self.unit, self.moduleSettings.lowerText)
+	end
 end
 
 
@@ -246,7 +251,7 @@ function IceBarElement.prototype:GetOptions()
 			upperTextString = {
 				type = 'text',
 				name = 'Upper Text',
-				desc = 'The upper text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ for tag info',
+				desc = 'The upper text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info',
 				disabled = function()
 					return DogTag == nil or self.elementName == "DruidMana"
 				end,
@@ -255,7 +260,7 @@ function IceBarElement.prototype:GetOptions()
 				end,
 				set = function(v)
 					if DogTag ~= nil and v ~= '' and v ~= nil then
-						v = DogTag:FixCasing(v)
+						v = DogTag:FixCodeStyle(v)
 					end
 
 					self.moduleSettings.upperText = v
@@ -267,7 +272,7 @@ function IceBarElement.prototype:GetOptions()
 			lowerTextString = {
 				type = 'text',
 				name = 'Lower Text',
-				desc = 'The lower text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ for tag info',
+				desc = 'The lower text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info',
 				disabled = function()
 					return DogTag == nil or self.elementName == "DruidMana"
 				end,
@@ -276,7 +281,7 @@ function IceBarElement.prototype:GetOptions()
 				end,
 				set = function(v)
 					if DogTag ~= nil and v ~= '' and v ~= nil then
-						v = DogTag:FixCasing(v)
+						v = DogTag:FixCodeStyle(v)
 					end
 
 					self.moduleSettings.lowerText = v
@@ -579,6 +584,8 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	end
 
 	self:SetScale(self.barFrame.bar, self.DesiredScale)
+
+	DogTag:UpdateAllForFrame(self.frame)
 end
 
 

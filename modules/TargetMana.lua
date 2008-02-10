@@ -1,7 +1,5 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-local DogTag = nil
-
 local TargetMana = AceOO.Class(IceUnitBar)
 
 
@@ -13,10 +11,6 @@ function TargetMana.prototype:init()
 	self:SetDefaultColor("TargetRage", 235, 44, 26)
 	self:SetDefaultColor("TargetEnergy", 228, 242, 31)
 	self:SetDefaultColor("TargetFocus", 242, 149, 98)
-
-	if AceLibrary:HasInstance("LibDogTag-2.0") then
-		DogTag = AceLibrary("LibDogTag-2.0")
-	end
 end
 
 
@@ -34,7 +28,7 @@ end
 
 function TargetMana.prototype:Enable(core)
 	TargetMana.super.prototype.Enable(self, core)
-	
+
 	self:RegisterEvent("UNIT_MANA", "Update")
 	self:RegisterEvent("UNIT_MAXMANA", "Update")
 	self:RegisterEvent("UNIT_RAGE", "Update")
@@ -46,11 +40,6 @@ function TargetMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_AURA", "Update")
 	self:RegisterEvent("UNIT_FLAGS", "Update")
 
-	if DogTag ~= nil then
---		DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.unit, self.moduleSettings.upperText)
---		DogTag:AddFontString(self.frame.bottomLowerText, self.frame, self.unit, self.moduleSettings.lowerText)
-	end
-	
 	self:Update("target")
 end
 
@@ -90,9 +79,7 @@ function TargetMana.prototype:Update(unit)
 	
 	self:UpdateBar(self.mana/self.maxMana, color)
 
-	if DogTag ~= nil and false then
-		DogTag:UpdateAllForFrame(self.frame)
-	else
+	if not AceLibrary:HasInstance("LibDogTag-2.0") then
 		self:SetBottomText1(math.floor(self.manaPercentage * 100))
 		self:SetBottomText2(self:GetFormattedText(self.mana, self.maxMana), color)
 	end

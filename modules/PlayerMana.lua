@@ -1,7 +1,5 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-local DogTag = nil
-
 local PlayerMana = AceOO.Class(IceUnitBar)
 
 PlayerMana.prototype.manaType = nil
@@ -15,10 +13,6 @@ function PlayerMana.prototype:init()
 	self:SetDefaultColor("PlayerMana", 62, 54, 152)
 	self:SetDefaultColor("PlayerRage", 171, 59, 59)
 	self:SetDefaultColor("PlayerEnergy", 218, 231, 31)
-
-	if AceLibrary:HasInstance("LibDogTag-2.0") then
-		DogTag = AceLibrary("LibDogTag-2.0")
-	end
 end
 
 
@@ -115,11 +109,6 @@ function PlayerMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
 	self:ManaType(self.unit)
-
-	if DogTag ~= nil then
---		DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.unit, self.moduleSettings.upperText)
---		DogTag:AddFontString(self.frame.bottomLowerText, self.frame, self.unit, self.moduleSettings.lowerText)
-	end
 end
 
 
@@ -196,9 +185,7 @@ function PlayerMana.prototype:Update(unit)
  		self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
  	end
 
-	if DogTag ~= nil and false then
-		DogTag:UpdateAllForFrame(self.frame)
-	else
+	if not AceLibrary:HasInstance("LibDogTag-2.0") then
 		-- extra hack for whiny rogues (are there other kind?)
 		local displayPercentage = self.manaPercentage
 		if (self.manaType == 3) then
