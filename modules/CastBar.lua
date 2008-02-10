@@ -114,16 +114,23 @@ function CastBar.prototype:GetOptions()
 	opts["shouldAnimate"] =
 	{
 		type = 'toggle',
-		name = '|c' .. self.configColor .. 'Animate amount changes|r',
-		desc = 'Whether or not to animate the bar falloffs/gains',
-		get = function()
-			return self.moduleSettings.shouldAnimate
-		end,
-		set = function(value)
-			self.moduleSettings.shouldAnimate = value
-			self:Redraw()
-		end,
-		disabled = function()
+		name = 's',
+		desc = 's',
+		set = 's',
+		get = 's',
+		hidden = function()
+			return true
+		end
+	}
+
+	opts["desiredLerpTime"] =
+	{
+		type = 'toggle',
+		name = 'd',
+		desc = 'd',
+		set = 'd',
+		get = 'd',
+		hidden = function()
 			return true
 		end
 	}
