@@ -139,7 +139,7 @@ function TargetHealth.prototype:GetOptions()
 			self:UpdateRaidTargetIcon()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or not self.moduleSettings.showRaidIcon
 		end,
 		order = 51
 	}
