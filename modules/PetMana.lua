@@ -22,14 +22,16 @@ function PetMana.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = -1
 	settings.scale = 0.7
-	settings["upperText"] = ""
-	settings["lowerText"] = "[PercentMP:Round]"
+	settings["textVerticalOffset"] = 4
+	settings["upperText"] = "[PercentMP:Round]"
+	settings["lowerText"] = ""
 
 	return settings
 end
 
 
 -- OVERRIDE
+--[[
 function PetMana.prototype:CreateFrame()
 	PetMana.super.prototype.CreateFrame(self)
 
@@ -43,7 +45,7 @@ function PetMana.prototype:CreateFrame()
 	self.frame.bottomUpperText:ClearAllPoints()
 	self.frame.bottomUpperText:SetPoint(point, relativeTo, relativePoint, 0, 0)
 end
-
+]]
 
 function PetMana.prototype:Enable(core)
 	PetMana.super.prototype.Enable(self, core)

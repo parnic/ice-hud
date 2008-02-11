@@ -24,14 +24,16 @@ function PetHealth.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = -1
 	settings.scale = 0.7
-	settings["upperText"] = ""
-	settings["lowerText"] = "[PercentHP:Round]"
+	settings["textVerticalOffset"] = 4
+	settings["upperText"] = "[PercentHP:Round]"
+	settings["lowerText"] = ""
 
 	return settings
 end
 
 
 -- OVERRIDE
+--[[
 function PetHealth.prototype:CreateFrame()
 	PetHealth.super.prototype.CreateFrame(self)
 
@@ -45,7 +47,7 @@ function PetHealth.prototype:CreateFrame()
 	self.frame.bottomUpperText:ClearAllPoints()
 	self.frame.bottomUpperText:SetPoint(point, relativeTo, relativePoint, 0, 0)
 end
-
+]]
 
 function PetHealth.prototype:Enable(core)
 	PetHealth.super.prototype.Enable(self, core)
