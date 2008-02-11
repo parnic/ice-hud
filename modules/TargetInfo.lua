@@ -2,6 +2,8 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 local TargetInfo = AceOO.Class(IceElement)
 
+local DogTag = nil
+
 local target = "target"
 local internal = "internal"
 
@@ -30,6 +32,10 @@ function TargetInfo.prototype:init()
 	TargetInfo.super.prototype.init(self, "TargetInfo")
 	
 	self.scalingEnabled = true
+
+	if AceLibrary:HasInstance("LibDogTag-2.0") then
+		DogTag = AceLibrary("LibDogTag-2.0")
+	end
 end
 
 
@@ -39,7 +45,7 @@ end
 -- OVERRIDE
 function TargetInfo.prototype:Enable(core)
 	TargetInfo.super.prototype.Enable(self, core)
-	
+
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
 	self:RegisterEvent("UNIT_AURA", "AuraChanged")
 
@@ -51,8 +57,10 @@ function TargetInfo.prototype:Enable(core)
 	self:RegisterEvent("UNIT_DYNAMIC_FLAGS", "TargetFlags")
 
 	self:RegisterEvent("RAID_TARGET_UPDATE", "UpdateRaidTargetIcon")
-	
+
 	RegisterUnitWatch(self.frame)
+
+	self:RegisterFontStrings()
 end
 
 
@@ -61,6 +69,8 @@ function TargetInfo.prototype:Disable(core)
 	TargetInfo.super.prototype.Disable(self, core)
 	
 	UnregisterUnitWatch(self.frame)
+
+	self:UnregisterFontStrings()
 end
 
 
@@ -241,6 +251,66 @@ function TargetInfo.prototype:GetOptions()
 		order = 38
 	}
 
+	opts["line1Tag"] = {
+		type = 'text',
+		name = 'Line 1 tag',
+		desc = 'DogTag-formatted string to use for the top text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags',
+		get = function()
+			return self.moduleSettings.line1Tag
+		end,
+		set = function(v)
+			v = DogTag:FixCodeStyle(v)
+			self.moduleSettings.line1Tag = v
+			self:RegisterFontStrings()
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or DogTag == nil
+		end,
+		usage = '',
+		order = 39.1
+	}
+
+	opts["line2Tag"] = {
+		type = 'text',
+		name = 'Line 2 tag',
+		desc = 'DogTag-formatted string to use for the middle text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags',
+		get = function()
+			return self.moduleSettings.line2Tag
+		end,
+		set = function(v)
+			v = DogTag:FixCodeStyle(v)
+			self.moduleSettings.line2Tag = v
+			self:RegisterFontStrings()
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or DogTag == nil
+		end,
+		usage = '',
+		order = 39.2
+	}
+
+	opts["line3Tag"] = {
+		type = 'text',
+		name = 'Line 3 tag',
+		desc = 'DogTag-formatted string to use for the bottom text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags',
+		get = function()
+			return self.moduleSettings.line3Tag
+		end,
+		set = function(v)
+			v = DogTag:FixCodeStyle(v)
+			self.moduleSettings.line3Tag = v
+			self:RegisterFontStrings()
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or DogTag == nil
+		end,
+		usage = '',
+		order = 39.3
+	}
+
 	return opts
 end
 
@@ -248,6 +318,7 @@ end
 -- OVERRIDE
 function TargetInfo.prototype:GetDefaultSettings()
 	local defaults =  TargetInfo.super.prototype.GetDefaultSettings(self)
+
 	defaults["fontSize"] = 13
 	defaults["stackFontSize"] = 11
 	defaults["vpos"] = -50
@@ -257,7 +328,49 @@ function TargetInfo.prototype:GetDefaultSettings()
 	defaults["mouseBuff"] = true
 	defaults["filter"] = "Never"
 	defaults["perRow"] = 10
+	defaults["line1Tag"] = "[NameHostile]"
+	defaults["line2Tag"] = "[Level:DifficultyColor] [ [IsPlayer ? Race ! CreatureType]:ClassColor] [ [IsPlayer ? Class]:ClassColor] [ [~PvP ? Text(PvE) ! Text(PvP)]:HostileColor] [Leader:Yellow] [InCombat:Red] [Classification]"
+	defaults["line3Tag"] = "[Guild:Angle]"
+
 	return defaults
+end
+
+
+function TargetInfo.prototype:RegisterFontStrings()
+	if DogTag ~= nil then
+		if self.frame.targetName then
+			if self.moduleSettings.line1Tag ~= '' then
+				DogTag:AddFontString(self.frame.targetName, self.frame, target, self.moduleSettings.line1Tag)
+			else
+				DogTag:RemoveFontString(self.frame.targetName)
+			end
+		end
+		if self.frame.targetInfo then
+			if self.moduleSettings.line2Tag ~= '' then
+				DogTag:AddFontString(self.frame.targetInfo, self.frame, target, self.moduleSettings.line2Tag)
+			else
+				DogTag:RemoveFontString(self.frame.targetInfo)
+			end
+		end
+		if self.frame.targetGuild then
+			if self.moduleSettings.line3Tag ~= '' then
+				DogTag:AddFontString(self.frame.targetGuild, self.frame, target, self.moduleSettings.line3Tag)
+			else
+				DogTag:RemoveFontString(self.frame.targetGuild)
+			end
+		end
+
+		self:TargetChanged()
+		DogTag:UpdateAllForFrame(self.frame)
+	end
+end
+
+function TargetInfo.prototype:UnregisterFontStrings()
+	if DogTag ~= nil then
+		DogTag:RemoveFontString(self.frame.targetName)
+		DogTag:RemoveFontString(self.frame.targetInfo)
+		DogTag:RemoveFontString(self.frame.targetGuild)
+	end
 end
 
 
@@ -655,12 +768,12 @@ function TargetInfo.prototype:TargetChanged()
 		self.frame.targetName:SetText()
 		self.frame.targetInfo:SetText()
 		self.frame.targetGuild:SetText()
-		
+
 		self:UpdateBuffs()
 		self:UpdateRaidTargetIcon()
 		return
 	end
-	
+
 
 	-- pass "internal" as a paramater so event handler code doesn't execute
 	-- Update() unnecassarily
@@ -786,21 +899,36 @@ function TargetInfo.prototype:Update(unit)
 		return
 	end
 
-	local reactionColor = self:ConvertToHex(UnitReactionColor[self.reaction])
-	if (self.tapped) then
-		reactionColor = self:GetHexColor("Tapped")
+	if DogTag == nil or self.moduleSettings.line1Tag == '' then
+		local reactionColor = self:ConvertToHex(UnitReactionColor[self.reaction])
+		if (self.tapped) then
+			reactionColor = self:GetHexColor("Tapped")
+		end
+
+		local line1 = string.format("|c%s%s|r", reactionColor, self.name or '')
+		self.frame.targetName:SetText(line1)
 	end
 
-	local line1 = string.format("|c%s%s|r", reactionColor, self.name or '')
-	self.frame.targetName:SetText(line1)
+	if DogTag == nil or self.moduleSettings.line2Tag == '' then
+		local line2 = string.format("%s %s%s%s%s%s",
+			self.level or '', self.classLocale or '', self.pvp or '', self.leader or '', self.classification or '', self.combat or '')
+		self.frame.targetInfo:SetText(line2)
+	end
 
-	local line2 = string.format("%s %s%s%s%s%s",
-		self.level or '', self.classLocale or '', self.pvp or '', self.leader or '', self.classification or '', self.combat or '')
-	self.frame.targetInfo:SetText(line2)
+	if DogTag == nil or self.moduleSettings.line3Tag == '' then
+		local realm = self.realm and " " .. self.realm or ""
+		local line3 = string.format("%s%s", self.guild or '', realm)
+		self.frame.targetGuild:SetText(line3)
+	end
 
-	local realm = self.realm and " " .. self.realm or ""
-	local line3 = string.format("%s%s", self.guild or '', realm)
-	self.frame.targetGuild:SetText(line3)
+	-- Parnic - i have no idea why i have to force UpdateFontString here...but
+	--          if i just do AllForFrame or AllForUnit, then selecting a unit after
+	--          having nothing selected refuses to update the frames...*sigh*
+	if DogTag ~= nil then
+		DogTag:UpdateFontString(self.frame.targetName)
+		DogTag:UpdateFontString(self.frame.targetInfo)
+		DogTag:UpdateFontString(self.frame.targetGuild)
+	end
 end
 
 
