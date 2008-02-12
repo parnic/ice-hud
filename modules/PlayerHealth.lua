@@ -20,6 +20,7 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["hideBlizz"] = true
 	settings["upperText"] = "[PercentHP:Round]"
 	settings["lowerText"] = "[FractionalHP:HPColor:Bracket]"
+	settings["allowMouseInteraction"] = true
 
 	return settings
 end
@@ -101,8 +102,58 @@ function PlayerHealth.prototype:GetOptions()
 		end,
 		order = 42
 	}
+
+	opts["allowClickTarget"] = {
+		type = 'toggle',
+		name = 'Allow click-targeting',
+		desc = 'Whether or not to allow click targeting/casting and the player drop-down menu for this bar (Note: does not work properly with HiBar, have to click near the base of the bar)',
+		get = function()
+			return self.moduleSettings.allowMouseInteraction
+		end,
+		set = function(v)
+			self.moduleSettings.allowMouseInteraction = v
+			self:CreateBackground(true)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		usage = '',
+		order = 43
+	}
 	
 	return opts
+end
+
+
+function PlayerHealth.prototype:CreateBackground(redraw)
+	PlayerHealth.super.prototype.CreateBackground(self)
+
+	if not self.frame.button then
+		self.frame.button = CreateFrame("Button", nil, self.frame, "SecureUnitButtonTemplate")
+	end
+
+	self.frame.button:ClearAllPoints()
+	self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", -6, 0)
+	self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth()/3, 0)
+
+	self.frame.button.menu = function()
+		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "cursor");
+	end
+
+	if self.moduleSettings.allowMouseInteraction then
+		self.frame.button:EnableMouse(true)
+		self.frame.button:RegisterForClicks("AnyUp")
+		self.frame.button:SetAttribute("type1", "target")
+		self.frame.button:SetAttribute("type2", "menu")
+		self.frame.button:SetAttribute("unit", self.unit)
+
+		-- set up click casting
+		ClickCastFrames = ClickCastFrames or {}
+		ClickCastFrames[self.frame.button] = true
+	else
+		self.frame.button:EnableMouse(false)
+		self.frame.button:RegisterForClicks()
+	end
 end
 
 
