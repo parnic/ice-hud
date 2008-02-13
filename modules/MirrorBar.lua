@@ -26,6 +26,7 @@ function MirrorBar.prototype:init(side, offset, name, db)
 	self.moduleSettings.side = side
 	self.moduleSettings.offset = offset
 	self.moduleSettings.barVisible = {bar = true, bg = true}
+	self.moduleSettings.shouldAnimate = false
 
 	-- unregister the event superclass registered, we don't want to register
 	-- this to the core
@@ -175,13 +176,16 @@ end
 
 function MirrorBarHandler.prototype:GetDefaultSettings()
 	local settings = MirrorBarHandler.super.prototype.GetDefaultSettings(self)
+
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 3
 	settings["barFontSize"] = 13
 	settings["barFontBold"] = true
 	settings["lockTextAlpha"] = true
+	settings["shouldAnimate"] = false
 	settings["textVisible"] = {upper = true, lower = true}
 	settings["barVisible"] = {bg = true, bar = true}
+
 	return settings
 end
 

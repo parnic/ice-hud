@@ -15,10 +15,13 @@ end
 -- OVERRIDE
 function TargetCast.prototype:GetDefaultSettings()
 	local settings = TargetCast.super.prototype.GetDefaultSettings(self)
+
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 3
 	settings["flashInstants"] = "Never"
 	settings["flashFailures"] = "Never"
+	settings["shouldAnimate"] = false
+
 	return settings
 end
 

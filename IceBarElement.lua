@@ -72,7 +72,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["lowerText"] = ''
 	settings["textVerticalOffset"] = -1
 	settings["textHorizontalOffset"] = 0
-	settings["shouldAnimate"] = false
+	settings["shouldAnimate"] = true
 	settings["desiredLerpTime"] = 0.2
 	settings["barVisible"] = {bg = true, bar = true}
 

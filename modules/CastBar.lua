@@ -26,6 +26,7 @@ function CastBar.prototype:GetDefaultSettings()
 	settings["flashFailures"] = "Caster"
 	settings["lagAlpha"] = 0.7
 	settings["showBlizzCast"] = false
+	settings["shouldAnimate"] = false
 
 	return settings
 end
