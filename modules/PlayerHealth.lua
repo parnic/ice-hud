@@ -133,8 +133,15 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 	end
 
 	self.frame.button:ClearAllPoints()
-	self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", -6, 0)
-	self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth()/3, 0)
+	-- Parnic - kinda hacky, but in order to fit this region to multiple types of bars, we need to do this...
+	--          would be nice to define this somewhere in data, but for now...here we are
+	if self.settings.barTexture == "HiBar" then
+		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
+		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
+	else
+		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", -6, 0)
+		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth() / 3, 0)
+	end
 
 	self.frame.button.menu = function()
 		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "cursor");
@@ -150,6 +157,13 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 		-- set up click casting
 		ClickCastFrames = ClickCastFrames or {}
 		ClickCastFrames[self.frame.button] = true
+
+-- Parnic - debug code for showing the clickable region on this bar
+--		self.frame.button:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
+--						edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+--						tile = false,
+--						insets = { left = 0, right = 0, top = 0, bottom = 0 }});
+--		self.frame.button:SetBackdropColor(0,0,0,1);
 	else
 		self.frame.button:EnableMouse(false)
 		self.frame.button:RegisterForClicks()
