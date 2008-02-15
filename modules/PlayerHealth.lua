@@ -557,11 +557,11 @@ function PlayerHealth.prototype:Resting()
 			self.frame.statusIcon = self:CreateTexCoord(self.frame.statusIcon, "Interface\\CharacterFrame\\UI-StateIcon", 20, 20,
 						self.moduleSettings.statusIconScale, 0.0625, 0.4475, 0.0625, 0.4375)
 			self:SetTexLoc(self.frame.statusIcon, self.moduleSettings.statusIconOffset['x'], self.moduleSettings.statusIconOffset['y'])
-		elseif not self.moduleSettings.showStatusIcon and self.frame.statusIcon and not UnitAffectingCombat(self.unit) then
+		elseif not self.moduleSettings.showStatusIcon and self.frame.statusIcon and not self.combat then
 			self.frame.statusIcon = self:DestroyTexFrame(self.frame.statusIcon)
 		end
 	else
-		if not UnitAffectingCombat(self.unit) and self.frame.statusIcon then
+		if not self.combat and self.frame.statusIcon then
 			self.frame.statusIcon = self:DestroyTexFrame(self.frame.statusIcon)
 		end
 	end
@@ -571,7 +571,9 @@ end
 
 
 function PlayerHealth.prototype:CheckCombat()
-	if UnitAffectingCombat(self.unit) or configMode then
+	PlayerHealth.super.prototype.CheckCombat(self)
+
+	if self.combat or configMode then
 		if (configMode or self.moduleSettings.showStatusIcon) and not self.frame.statusIcon then
 			self.frame.statusIcon = self:CreateTexCoord(self.frame.statusIcon, "Interface\\CharacterFrame\\UI-StateIcon", 20, 20,
 						self.moduleSettings.statusIconScale, 0.5625, 0.9375, 0.0625, 0.4375)
