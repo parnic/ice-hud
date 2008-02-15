@@ -23,6 +23,7 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["upperText"] = "[PercentHP:Round]"
 	settings["lowerText"] = "[FractionalHP:HPColor:Bracket]"
 	settings["allowMouseInteraction"] = true
+	settings["lockIconAlpha"] = false
 
 	settings["showStatusIcon"] = true
 	settings["statusIconOffset"] = {x=110, y=0}
@@ -173,6 +174,20 @@ function PlayerHealth.prototype:GetOptions()
 					self:EnteringWorld()
 				end,
 				order = 5
+			},
+
+			lockIconAlpha = {
+				type = "toggle",
+				name = "Lock all icons to 100% alpha",
+				desc = "With this enabled, all icons will be 100% visible regardless of the alpha settings for this bar.",
+				get = function()
+					return self.moduleSettings.lockIconAlpha
+				end,
+				set = function(v)
+					self.moduleSettings.lockIconAlpha = v
+					self:Redraw()
+				end,
+				order = 6
 			},
 
 			statusIcon = {
@@ -525,17 +540,18 @@ end
 
 
 function PlayerHealth.prototype:EnteringWorld()
-	self:Resting()
 	self:CheckCombat()
 	self:CheckLeader()
 	self:CheckPvP()
+	-- Parnic - moved :Resting to the end because it calls Update which sets alpha on everything
+	self:Resting()
 end
 
 
 function PlayerHealth.prototype:Resting()
 	self.resting = IsResting()
-	self:Update(self.unit)
 
+	-- moved icon logic above :Update so that it will trigger the alpha settings properly
 	if (self.resting) then
 		if self.moduleSettings.showStatusIcon and not self.frame.statusIcon then
 			self.frame.statusIcon = self:CreateTexCoord(self.frame.statusIcon, "Interface\\CharacterFrame\\UI-StateIcon", 20, 20,
@@ -549,6 +565,8 @@ function PlayerHealth.prototype:Resting()
 			self.frame.statusIcon = self:DestroyTexFrame(self.frame.statusIcon)
 		end
 	end
+
+	self:Update(self.unit)
 end
 
 
@@ -670,6 +688,27 @@ function PlayerHealth.prototype:Update(unit)
 	if not AceLibrary:HasInstance("LibDogTag-2.0") then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
 		self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), textColor)
+	end
+
+	self:SetIconAlpha()
+end
+
+
+function PlayerHealth.prototype:SetIconAlpha()
+	if self.frame.statusIcon then
+		self.frame.statusIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
+	end
+
+	if self.frame.leaderIcon then
+		self.frame.leaderIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
+	end
+
+	if self.frame.lootMasterIcon then
+		self.frame.lootMasterIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
+	end
+
+	if self.frame.PvPIcon then
+		self.frame.PvPIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
 	end
 end
 

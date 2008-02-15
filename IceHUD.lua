@@ -9,6 +9,7 @@ IceHUD.options =
 	type = 'group',
 	name = "IceHUD",
 	desc = "IceHUD",
+	icon = "Interface\\Icons\\Spell_Frost_Frost",
 	args = 
 	{
 		headerGeneral = {

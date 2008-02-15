@@ -29,6 +29,7 @@ function TargetHealth.prototype:GetDefaultSettings()
 	settings["showRaidIcon"] = true
 	settings["raidIconXOffset"] = 12
 	settings["raidIconYOffset"] = 0
+	settings["lockIconAlpha"] = false
 
 	return settings
 end
@@ -127,6 +128,23 @@ function TargetHealth.prototype:GetOptions()
 		order = 50
 	}
 
+	opts["lockIconAlpha"] = {
+		type = "toggle",
+		name = "Lock raid icon to 100% alpha",
+		desc = "With this enabled, the raid icon is always 100% alpha, regardless of the bar's alpha. Otherwise, it assumes the bar's alpha level.",
+		get = function()
+			return self.moduleSettings.lockIconAlpha
+		end,
+		set = function(value)
+			self.moduleSettings.lockIconAlpha = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 51
+	}
+
 	opts["raidIconOnTop"] = {
 		type = "toggle",
 		name = "Draw Raid Icon On Top",
@@ -141,7 +159,7 @@ function TargetHealth.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.showRaidIcon
 		end,
-		order = 51
+		order = 52
 	}
 
 	opts["raidIconXOffset"] = {
@@ -162,7 +180,7 @@ function TargetHealth.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 52
+		order = 53
 	}
 
 	opts["raidIconYOffset"] = {
@@ -183,7 +201,7 @@ function TargetHealth.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 53
+		order = 54
 	}
 	
 	return opts
@@ -271,6 +289,10 @@ function TargetHealth.prototype:Update(unit)
 		else
 			self:SetBottomText2()
 		end
+	end
+
+	if self.frame.raidIcon then
+		self.frame.raidIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
 	end
 end
 
