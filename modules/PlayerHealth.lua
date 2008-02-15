@@ -561,7 +561,7 @@ function PlayerHealth.prototype:Resting()
 			self.frame.statusIcon = self:DestroyTexFrame(self.frame.statusIcon)
 		end
 	else
-		if not UnitAffectingCombat and self.frame.statusIcon then
+		if not UnitAffectingCombat(self.unit) and self.frame.statusIcon then
 			self.frame.statusIcon = self:DestroyTexFrame(self.frame.statusIcon)
 		end
 	end
