@@ -1,5 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
+local MobHealth = nil
 local TargetHealth = AceOO.Class(IceUnitBar)
 
 TargetHealth.prototype.color = nil
@@ -12,6 +13,8 @@ function TargetHealth.prototype:init()
 	self:SetDefaultColor("TargetHealthHostile", 231, 31, 36)
 	self:SetDefaultColor("TargetHealthFriendly", 46, 223, 37)
 	self:SetDefaultColor("TargetHealthNeutral", 210, 219, 87)
+
+	MobHealth = AceLibrary:HasInstance("LibMobHealth-4.0") and AceLibrary("LibMobHealth-4.0") or nil
 end
 
 
@@ -30,6 +33,7 @@ function TargetHealth.prototype:GetDefaultSettings()
 	settings["raidIconXOffset"] = 12
 	settings["raidIconYOffset"] = 0
 	settings["lockIconAlpha"] = false
+	settings["abbreviateHealth"] = true
 
 	return settings
 end
@@ -38,7 +42,7 @@ end
 -- OVERRIDE
 function TargetHealth.prototype:GetOptions()
 	local opts = TargetHealth.super.prototype.GetOptions(self)
-	
+
 	opts["mobhealth"] = {
 		type = "toggle",
 		name = "MobHealth3 support",
@@ -55,7 +59,7 @@ function TargetHealth.prototype:GetOptions()
 		end,
 		order = 40
 	}
-	
+
 	opts["classColor"] = {
 		type = "toggle",
 		name = "Class color bar",
@@ -72,7 +76,7 @@ function TargetHealth.prototype:GetOptions()
 		end,
 		order = 41
 	}
-	
+
 	opts["hideBlizz"] = {
 		type = "toggle",
 		name = "Hide Blizzard Frame",
@@ -203,7 +207,23 @@ function TargetHealth.prototype:GetOptions()
 		end,
 		order = 54
 	}
-	
+
+	opts["shortenHealth"] = {
+		type = 'toggle',
+		name = 'Abbreviate estimated health',
+		desc = 'If this is checked, then a health value of 1100 will display as 1.1k, otherwise it shows the number\n\nNote: this only applies if you are NOT using DogTag',
+		get = function()
+			return self.moduleSettings.abbreviateHealth
+		end,
+		set = function(v)
+			self.moduleSettings.abbreviateHealth = v
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 40.1
+	}
+
 	return opts
 end
 
@@ -274,12 +294,18 @@ function TargetHealth.prototype:Update(unit)
 	if not AceLibrary:HasInstance("LibDogTag-2.0") then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
 
-		-- assumption that if a unit's max health is 100, it's not actual amount
-		-- but rather a percentage - this obviously has one caveat though
+		-- first see if we have LibMobHealth that we can piggyback on
+		if MobHealth then
+			self.health = MobHealth:GetUnitCurrentHP(self.unit)
+			self.maxHealth = MobHealth:GetUnitMaxHP(self.unit)
+		elseif (self.maxHealth == 100 and self.moduleSettings.mobhealth and MobHealth3) then
+			-- assumption that if a unit's max health is 100, it's not actual amount
+			-- but rather a percentage - this obviously has one caveat though
 
-		if (self.maxHealth == 100 and self.moduleSettings.mobhealth and MobHealth3) then
 			self.health, self.maxHealth, _ = MobHealth3:GetUnitHealth(self.unit, self.health, self.maxHealth)
+		end
 
+		if self.moduleSettings.abbreviateHealth then
 			self.health = self:Round(self.health)
 			self.maxHealth = self:Round(self.maxHealth)
 		end
