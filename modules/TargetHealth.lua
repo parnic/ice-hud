@@ -24,7 +24,7 @@ function TargetHealth.prototype:GetDefaultSettings()
 	settings["classColor"] = false
 	settings["hideBlizz"] = true
 	settings["upperText"] = "[PercentHP:Round]"
-	settings["lowerText"] = "[FractionalHP:HPColor:Bracket]"
+	settings["lowerText"] = "[Text([CurHP:Round]/[MaxHP:Round]):HPColor:Bracket]"
 	settings["raidIconOnTop"] = true
 	settings["showRaidIcon"] = true
 	settings["raidIconXOffset"] = 12
@@ -166,8 +166,8 @@ function TargetHealth.prototype:GetOptions()
 		type = "range",
 		name = "Raid Icon X Offset",
 		desc = "How far to push the raid icon right or left",
-		min = -50,
-		max = 50,
+		min = -300,
+		max = 300,
 		step = 1,
 		get = function()
 			return self.moduleSettings.raidIconXOffset
@@ -188,7 +188,7 @@ function TargetHealth.prototype:GetOptions()
 		name = "Raid Icon Y Offset",
 		desc = "How far to push the raid icon up or down",
 		min = -300,
-		max = 50,
+		max = 300,
 		step = 1,
 		get = function()
 			return self.moduleSettings.raidIconYOffset
