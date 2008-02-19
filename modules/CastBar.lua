@@ -210,10 +210,10 @@ function CastBar.prototype:GetOptions()
 				name = "Lock Bar Text Alpha",
 				desc = "Locks text alpha to 100%",
 				get = function()
-					return self.moduleSettings.lockTextAlpha
+					return self.moduleSettings.lockUpperTextAlpha
 				end,
 				set = function(v)
-					self.moduleSettings.lockTextAlpha = v
+					self.moduleSettings.lockUpperTextAlpha = v
 					self:Redraw()
 				end,
 				order = 13
