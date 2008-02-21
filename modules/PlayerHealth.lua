@@ -497,7 +497,7 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 	PlayerHealth.super.prototype.CreateBackground(self)
 
 	if not self.frame.button then
-		self.frame.button = CreateFrame("Button", nil, self.frame, "SecureUnitButtonTemplate")
+		self.frame.button = CreateFrame("Button", "IceHUD_PlayerClickFrame", self.frame, "SecureUnitButtonTemplate")
 	end
 
 	self.frame.button:ClearAllPoints()
