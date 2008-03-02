@@ -481,7 +481,7 @@ end
 function TargetInfo.prototype:CreateInfoTextFrame()
 	self.frame.targetInfo = self:FontFactory(self.moduleSettings.fontSize, nil, self.frame.targetInfo)
 
-	self.frame.targetInfo:SetWidth(self.width)
+--	self.frame.targetInfo:SetWidth(self.width)
 	self.frame.targetInfo:SetHeight(14)
 	self.frame.targetInfo:SetJustifyH("CENTER")
 	self.frame.targetInfo:SetJustifyV("TOP")
@@ -494,7 +494,7 @@ end
 function TargetInfo.prototype:CreateGuildTextFrame()
 	self.frame.targetGuild = self:FontFactory(self.moduleSettings.fontSize, nil, self.frame.targetGuild)
 
-	self.frame.targetInfo:SetWidth(self.width)
+--	self.frame.targetInfo:SetWidth(self.width)
 	self.frame.targetGuild:SetHeight(14)
 	self.frame.targetGuild:SetJustifyH("CENTER")
 	self.frame.targetGuild:SetJustifyV("TOP")
