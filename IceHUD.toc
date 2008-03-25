@@ -1,4 +1,4 @@
-## Interface: 20300
+## Interface: 20400
 ## Author: Iceroth, continued by Parnic
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
