@@ -27,7 +27,7 @@ function TargetHealth.prototype:GetDefaultSettings()
 	settings["classColor"] = false
 	settings["hideBlizz"] = true
 	settings["upperText"] = "[PercentHP:Round]"
-	settings["lowerText"] = "[Text([CurHP:Round]/[MaxHP:Round]):HPColor:Bracket]"
+	settings["lowerText"] = "[(HP:Round \"/\" MaxHP:Round):HPColor:Bracket]"
 	settings["raidIconOnTop"] = true
 	settings["showRaidIcon"] = true
 	settings["raidIconXOffset"] = 12
@@ -291,7 +291,7 @@ function TargetHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.health/self.maxHealth, self.color)
 
-	if not AceLibrary:HasInstance("LibDogTag-2.0") then
+	if not AceLibrary:HasInstance("LibDogTag-3.0") then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
 
 		-- first see if we have LibMobHealth that we can piggyback on

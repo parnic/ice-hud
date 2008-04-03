@@ -33,8 +33,9 @@ function TargetInfo.prototype:init()
 	
 	self.scalingEnabled = true
 
-	if AceLibrary:HasInstance("LibDogTag-2.0") then
-		DogTag = AceLibrary("LibDogTag-2.0")
+	if AceLibrary:HasInstance("LibDogTag-3.0") then
+		DogTag = AceLibrary("LibDogTag-3.0")
+		AceLibrary("LibDogTag-Unit-3.0")
 	end
 end
 
@@ -59,6 +60,15 @@ function TargetInfo.prototype:Enable(core)
 	self:RegisterEvent("RAID_TARGET_UPDATE", "UpdateRaidTargetIcon")
 
 	RegisterUnitWatch(self.frame)
+
+	if self.moduleSettings.myTagVersion < IceHUD.CurrTagVersion then
+		local origDefaults = self:GetDefaultSettings()
+
+		self.moduleSettings.line1tag = origDefaults["line1tag"]
+		self.moduleSettings.line2tag = origDefaults["line2tag"]
+		self.moduleSettings.line3tag = origDefaults["line3tag"]
+		self.moduleSettings.myTagVersion = IceHUD.CurrTagVersion
+	end
 
 	self:RegisterFontStrings()
 end
@@ -259,7 +269,7 @@ function TargetInfo.prototype:GetOptions()
 			return self.moduleSettings.line1Tag
 		end,
 		set = function(v)
-			v = DogTag:FixCodeStyle(v)
+			v = DogTag:CleanCode(v)
 			self.moduleSettings.line1Tag = v
 			self:RegisterFontStrings()
 			self:Redraw()
@@ -279,7 +289,7 @@ function TargetInfo.prototype:GetOptions()
 			return self.moduleSettings.line2Tag
 		end,
 		set = function(v)
-			v = DogTag:FixCodeStyle(v)
+			v = DogTag:CleanCode(v)
 			self.moduleSettings.line2Tag = v
 			self:RegisterFontStrings()
 			self:Redraw()
@@ -299,7 +309,7 @@ function TargetInfo.prototype:GetOptions()
 			return self.moduleSettings.line3Tag
 		end,
 		set = function(v)
-			v = DogTag:FixCodeStyle(v)
+			v = DogTag:CleanCode(v)
 			self.moduleSettings.line3Tag = v
 			self:RegisterFontStrings()
 			self:Redraw()
@@ -328,9 +338,10 @@ function TargetInfo.prototype:GetDefaultSettings()
 	defaults["mouseBuff"] = true
 	defaults["filter"] = "Never"
 	defaults["perRow"] = 10
-	defaults["line1Tag"] = "[NameHostile]"
-	defaults["line2Tag"] = "[Level:DifficultyColor] [ [IsPlayer ? Race ! CreatureType]:ClassColor] [ [IsPlayer ? Class]:ClassColor] [ [~PvP ? Text(PvE) ! Text(PvP)]:HostileColor] [Leader:Yellow] [InCombat:Red] [Classification]"
+	defaults["line1Tag"] = "[Name:HostileColor]"
+	defaults["line2Tag"] = "[Level:DifficultyColor] [[IsPlayer ? Race ! CreatureType]:ClassColor] [[IsPlayer ? Class]:ClassColor] [[~PvP ? \"PvE\" ! \"PvP\"]:HostileColor] [IsLeader ? \"Leader\":Yellow] [InCombat:Red] [Classification]"
 	defaults["line3Tag"] = "[Guild:Angle]"
+	defaults["myTagVersion"] = 2
 
 	return defaults
 end
@@ -340,21 +351,21 @@ function TargetInfo.prototype:RegisterFontStrings()
 	if DogTag ~= nil then
 		if self.frame.targetName then
 			if self.moduleSettings.line1Tag ~= '' then
-				DogTag:AddFontString(self.frame.targetName, self.frame, target, self.moduleSettings.line1Tag)
+				DogTag:AddFontString(self.frame.targetName, self.frame, self.moduleSettings.line1Tag, "Unit", { unit = target })
 			else
 				DogTag:RemoveFontString(self.frame.targetName)
 			end
 		end
 		if self.frame.targetInfo then
 			if self.moduleSettings.line2Tag ~= '' then
-				DogTag:AddFontString(self.frame.targetInfo, self.frame, target, self.moduleSettings.line2Tag)
+				DogTag:AddFontString(self.frame.targetInfo, self.frame, self.moduleSettings.line2Tag, "Unit", { unit = target })
 			else
 				DogTag:RemoveFontString(self.frame.targetInfo)
 			end
 		end
 		if self.frame.targetGuild then
 			if self.moduleSettings.line3Tag ~= '' then
-				DogTag:AddFontString(self.frame.targetGuild, self.frame, target, self.moduleSettings.line3Tag)
+				DogTag:AddFontString(self.frame.targetGuild, self.frame, self.moduleSettings.line3Tag, "Unit", { unit = target })
 			else
 				DogTag:RemoveFontString(self.frame.targetGuild)
 			end

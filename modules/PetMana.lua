@@ -122,7 +122,7 @@ function PetMana.prototype:Update(unit)
 	
 	self:UpdateBar(self.mana/self.maxMana, color)
 
-	if not AceLibrary:HasInstance("LibDogTag-2.0") then
+	if not AceLibrary:HasInstance("LibDogTag-3.0") then
 		self:SetBottomText1(math.floor(self.manaPercentage * 100))
 	end
 end

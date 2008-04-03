@@ -185,7 +185,7 @@ function PlayerMana.prototype:Update(unit)
  		self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
  	end
 
-	if not AceLibrary:HasInstance("LibDogTag-2.0") then
+	if not AceLibrary:HasInstance("LibDogTag-3.0") then
 		-- extra hack for whiny rogues (are there other kind?)
 		local displayPercentage = self.manaPercentage
 		if (self.manaType == 3) then

@@ -23,8 +23,9 @@ IceBarElement.prototype.CurrScale = 1
 function IceBarElement.prototype:init(name)
 	IceBarElement.super.prototype.init(self, name)
 
-	if AceLibrary:HasInstance("LibDogTag-2.0") then
-		DogTag = AceLibrary("LibDogTag-2.0")
+	if AceLibrary:HasInstance("LibDogTag-3.0") then
+		DogTag = AceLibrary("LibDogTag-3.0")
+		AceLibrary("LibDogTag-Unit-3.0")
 	end
 end
 
@@ -41,6 +42,14 @@ function IceBarElement.prototype:Enable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckCombat")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
 
+	if self.moduleSettings.myTagVersion < IceHUD.CurrTagVersion then
+		local origDefaults = self:GetDefaultSettings()
+
+		self.moduleSettings.upperText = origDefaults["upperText"]
+		self.moduleSettings.lowerText = origDefaults["lowerText"]
+		self.moduleSettings.myTagVersion = IceHUD.CurrTagVersion
+	end
+
 	self:RegisterFontStrings()
 end
 
@@ -48,10 +57,10 @@ end
 function IceBarElement.prototype:RegisterFontStrings()
 	if DogTag ~= nil then
 		if self.frame.bottomUpperText and self.moduleSettings.upperText then
-			DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.unit, self.moduleSettings.upperText)
+			DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.moduleSettings.upperText, "Unit", { unit = self.unit })
 		end
 		if self.frame.bottomLowerText and self.moduleSettings.lowerText then
-			DogTag:AddFontString(self.frame.bottomLowerText, self.frame, self.unit, self.moduleSettings.lowerText)
+			DogTag:AddFontString(self.frame.bottomLowerText, self.frame, self.moduleSettings.lowerText, "Unit", {unit = self.unit })
 		end
 	end
 end
@@ -75,6 +84,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["shouldAnimate"] = true
 	settings["desiredLerpTime"] = 0.2
 	settings["barVisible"] = {bg = true, bar = true}
+	settings["myTagVersion"] = 2
 
 	return settings
 end
@@ -327,7 +337,7 @@ function IceBarElement.prototype:GetOptions()
 				end,
 				set = function(v)
 					if DogTag ~= nil and v ~= '' and v ~= nil then
-						v = DogTag:FixCodeStyle(v)
+						v = DogTag:CleanCode(v)
 					end
 
 					self.moduleSettings.upperText = v
@@ -349,7 +359,7 @@ function IceBarElement.prototype:GetOptions()
 				end,
 				set = function(v)
 					if DogTag ~= nil and v ~= '' and v ~= nil then
-						v = DogTag:FixCodeStyle(v)
+						v = DogTag:CleanCode(v)
 					end
 
 					self.moduleSettings.lowerText = v

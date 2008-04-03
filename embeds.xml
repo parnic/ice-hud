@@ -10,7 +10,8 @@
 <Script file="libs\AceAddon-2.0\AceAddon-2.0.lua"/>
 <Script file="libs\Deformat-2.0\Deformat-2.0.lua"/>
 <Script file="libs\Gratuity-2.0\Gratuity-2.0.lua"/>
-<Include file="libs\LibDogTag-2.0\lib.xml"/>
+<Include file="libs\LibDogTag-3.0\lib.xml"/>
+<Include file="libs\LibDogTag-Unit-3.0\lib.xml"/>
 <Include file="libs\LibMobHealth-4.0\lib.xml"/>
 <Include file="libs\LibSharedMedia-2.0\lib.xml"/>
 <Script file="libs\Waterfall-1.0\Waterfall-1.0.lua"/>

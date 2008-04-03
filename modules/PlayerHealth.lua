@@ -687,7 +687,7 @@ function PlayerHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.health/self.maxHealth, color)
 
-	if not AceLibrary:HasInstance("LibDogTag-2.0") then
+	if not AceLibrary:HasInstance("LibDogTag-3.0") then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
 		self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), textColor)
 	end
