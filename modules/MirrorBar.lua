@@ -185,6 +185,7 @@ function MirrorBarHandler.prototype:GetDefaultSettings()
 	settings["shouldAnimate"] = false
 	settings["textVisible"] = {upper = true, lower = true}
 	settings["barVisible"] = {bg = true, bar = true}
+	settings["myTagVersion"] = 2
 
 	return settings
 end
@@ -488,6 +489,7 @@ function MirrorBarHandler.prototype:SetSettings(bar)
 	bar.moduleSettings.textVerticalOffset = self.moduleSettings.textVerticalOffset
 	bar.moduleSettings.textHorizontalOffset = self.moduleSettings.textHorizontalOffset
 	bar.moduleSettings.barVisible = self.moduleSettings.barVisible
+	bar.moduleSettings.myTagVersion = self.moduleSettings.myTagVersion
 end
 
 
