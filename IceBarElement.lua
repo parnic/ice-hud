@@ -514,6 +514,12 @@ function IceBarElement.prototype:CreateBar()
 	
 	self.barFrame.bar:SetTexture(IceElement.TexturePath .. self.settings.barTexture)
 	self.barFrame.bar:SetAllPoints(self.frame)
+
+	if (self.moduleSettings.side == IceCore.Side.Left) then
+		self.barFrame.bar:SetTexCoord(1, 0, 1-self.CurrScale, 1)
+	else
+		self.barFrame.bar:SetTexCoord(0, 1, 1-self.CurrScale, 1)
+	end
 	
 	self.barFrame:SetStatusBarTexture(self.barFrame.bar)
 	
@@ -605,12 +611,16 @@ end
 
 
 function IceBarElement.prototype:SetScale(texture, scale)
+	local oldScale = self.CurrScale
+
 	self.CurrScale = self:LerpScale(scale)
 
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		texture:SetTexCoord(1, 0, 1-self.CurrScale, 1)
-	else
-		texture:SetTexCoord(0, 1, 1-self.CurrScale, 1)
+	if oldScale ~= self.CurrScale then
+		if (self.moduleSettings.side == IceCore.Side.Left) then
+			texture:SetTexCoord(1, 0, 1-self.CurrScale, 1)
+		else
+			texture:SetTexCoord(0, 1, 1-self.CurrScale, 1)
+		end
 	end
 end
 
