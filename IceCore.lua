@@ -18,20 +18,21 @@ IceCore.prototype.elements = {}
 IceCore.prototype.enabled = nil
 IceCore.prototype.presets = {}
 IceCore.prototype.settingsHash = nil
+IceCore.prototype.bConfigMode = false
 
 -- Constructor --
 function IceCore.prototype:init()
 	IceCore.super.prototype.init(self)
 	IceHUD:Debug("IceCore.prototype:init()")
-	
+
 	self:RegisterDB("IceCoreDB")
-	
+
 	self.IceHUDFrame = CreateFrame("Frame","IceHUDFrame", UIParent)
-	
+
 	-- We are ready to load modules
 	self:RegisterEvent(IceCore.RegisterModule, "Register")
 	self:TriggerEvent(IceCore.Loaded)
-	
+
 
 	-- DEFAULT SETTINGS
 	local defaultPreset = "RoundBar"
@@ -96,6 +97,8 @@ end
 
 
 function IceCore.prototype:Disable()
+	self:ConfigModeToggle(false)
+
 	for i = 1, table.getn(self.elements) do
 		if (self.elements[i]:IsEnabled()) then
 			self.elements[i]:Disable(true)
@@ -386,6 +389,26 @@ function IceCore.prototype:SetColor(color, r, g, b)
 	self:Redraw()
 end
 
+
+function IceCore.prototype:IsInConfigMode()
+	return self.bConfigMode
+end
+
+function IceCore.prototype:ConfigModeToggle(bWantConfig)
+	self.bConfigMode = bWantConfig
+
+	if bWantConfig then
+		for i = 1, table.getn(self.elements) do
+			self.elements[i].frame:Show()
+		end
+	else
+		for i = 1, table.getn(self.elements) do
+			if not self.elements[i]:IsVisible() then
+				self.elements[i].frame:Hide()
+			end
+		end
+	end
+end
 
 
 -------------------------------------------------------------------------------

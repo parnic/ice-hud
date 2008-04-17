@@ -20,6 +20,8 @@ IceElement.moduleSettings = nil
 IceElement.prototype.configColor = "ff8888ff"
 IceElement.prototype.scalingEnabled = nil
 
+IceElement.prototype.bIsVisible = true
+
 -- Constructor --
 -- IceElements are to be instantiated before IceCore is loaded.
 -- Therefore we can wait for IceCore to load and then register our
@@ -57,7 +59,7 @@ function IceElement.prototype:Create(parent)
 	
 	self.parent = parent
 	self:CreateFrame()
-	self.frame:Hide()
+	self:Show(false)
 end
 
 
@@ -76,7 +78,7 @@ function IceElement.prototype:Enable(core)
 	if (not core) then
 		self.moduleSettings.enabled = true
 	end
-	self.frame:Show()
+	self:Show(true)
 end
 
 
@@ -84,7 +86,7 @@ function IceElement.prototype:Disable(core)
 	if (not core) then
 		self.moduleSettings.enabled = false
 	end
-	self.frame:Hide()
+	self:Show(false)
 	self:UnregisterAllEvents()
 end
 
@@ -259,6 +261,25 @@ function IceElement.prototype:FontFactory(size, frame, font, flags)
 	end
 	
 	return fontString
+end
+
+
+function IceElement.prototype:IsVisible()
+	return self.bIsVisible
+end
+
+function IceElement.prototype:Show(bShouldShow)
+	if self.bIsVisible == bShouldShow then
+		return
+	end
+
+	self.bIsVisible = bShouldShow
+
+	if not bShouldShow then
+		self.frame:Hide()
+	else
+		self.frame:Show()
+	end
 end
 
 

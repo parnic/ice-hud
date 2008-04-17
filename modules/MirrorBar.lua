@@ -46,7 +46,7 @@ function MirrorBar.prototype:Enable(core)
 	self.frame.bottomUpperText:SetWidth(200)
 	self.frame.bottomLowerText:SetWidth(200)
 
-	self.frame:Hide()
+	self:Show(false)
 end
 
 
@@ -55,7 +55,7 @@ function MirrorBar.prototype:Create(parent)
 	MirrorBar.super.prototype.Create(self, parent)
 	
 	if (self.timer) then
-		self.frame:Show()
+		self:Show(true)
 	end
 end
 
@@ -114,14 +114,14 @@ function MirrorBar.prototype:MirrorStart(timer, value, maxValue, scale, paused, 
 	self.startTime = GetTime()
 
 	self:Update()
-	self.frame:Show()
+	self:Show(true)
 	self.frame:SetScript("OnUpdate", function() self:OnUpdate(arg1) end)
 end
 
 
 function MirrorBar.prototype:MirrorStop()
 	self:CleanUp()
-	self.frame:Hide()
+	self:Show(false)
 	self.frame:SetScript("OnUpdate", nil)
 end
 

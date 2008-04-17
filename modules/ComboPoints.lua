@@ -142,7 +142,7 @@ function ComboPoints.prototype:CreateFrame()
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
 	
-	self.frame:Show()
+	self:Show(true)
 
 	self:CreateComboFrame()
 end

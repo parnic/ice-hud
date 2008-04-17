@@ -260,10 +260,10 @@ function TargetHealth.prototype:Update(unit)
 	end
 
 	if not (UnitExists(unit)) then
-		self.frame:Hide()
+		self:Show(false)
 		return
 	else	
-		self.frame:Show()
+		self:Show(true)
 	end
 
 	self:UpdateRaidTargetIcon()

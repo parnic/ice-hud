@@ -126,8 +126,8 @@ function IceBarElement.prototype:GetOptions()
 		type = 'range',
 		name = '|c' .. self.configColor .. 'Offset|r',
 		desc = 'Offset of the bar',
-		min = -1,
-		max = 10,
+		min = -10,
+		max = 15,
 		step = 1,
 		get = function()
 			return self.moduleSettings.offset

@@ -150,10 +150,10 @@ function DruidMana.prototype:Update()
 	local forms = (UnitPowerType(self.unit) ~= 0)
 	
 	if (not self.alive or not forms or not self.druidMana or not self.druidManaMax) then
-		self.frame:Hide()
+		self:Show(false)
 		return
 	else
-		self.frame:Show()
+		self:Show(true)
 	end
 	
 	self:UpdateBar(self.druidMana / self.druidManaMax, "DruidMana")

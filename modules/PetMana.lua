@@ -73,10 +73,10 @@ end
 
 function PetMana.prototype:CheckPet()
 	if (UnitExists(self.unit)) then
-		self.frame:Show()
+		self:Show(true)
 		self:Update(self.unit)
 	else
-		self.frame:Hide()
+		self:Show(false)
 	end
 end
 
@@ -98,10 +98,10 @@ function PetMana.prototype:Update(unit)
 	end
 	
 	if ((not UnitExists(unit)) or (self.maxMana == 0)) then
-		self.frame:Hide()
+		self:Show(false)
 		return
 	else	
-		self.frame:Show()
+		self:Show(true)
 	end
 	
 	local color = "PetMana"

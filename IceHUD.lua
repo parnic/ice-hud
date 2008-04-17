@@ -19,7 +19,7 @@ IceHUD.options =
 			name = "General Settings",
 			order = 10
 		},
-		
+
 		positioningSettings = {
 			type = 'group',
 			name = 'Positioning Settings',
@@ -41,7 +41,7 @@ IceHUD.options =
 					step = 10,
 					order = 11
 				},
-				
+
 				hpos = {
 					type = 'range',
 					name = 'Horizontal position',
@@ -57,7 +57,7 @@ IceHUD.options =
 					step = 10,
 					order = 12
 				},
-				
+
 				gap = {
 					type = 'range',
 					name = 'Gap',
@@ -73,7 +73,7 @@ IceHUD.options =
 					step = 5,
 					order = 13,
 				},
-				
+
 				scale = {
 					type = 'range',
 					name = 'Scale',
@@ -92,8 +92,8 @@ IceHUD.options =
 				},
 			}
 		},
-		
-		
+
+
 		alphaSettings = {
 			type = 'group',
 			name = 'Transparency Settings',
@@ -105,7 +105,7 @@ IceHUD.options =
 					name = "Bar Alpha",
 					order = 10
 				},
-			
+
 				alphaic = {
 					type = 'range',
 					name = 'Alpha IC',
@@ -122,7 +122,7 @@ IceHUD.options =
 					isPercent = true,
 					order = 11,
 				},
-				
+
 				alphaooc = {
 					type = 'range',
 					name = 'Alpha OOC',
@@ -139,7 +139,7 @@ IceHUD.options =
 					isPercent = true,
 					order = 12,
 				},
-				
+
 				alphaTarget = {
 					type = 'range',
 					name = 'Alpha OOC and Target or not Full',
@@ -156,16 +156,16 @@ IceHUD.options =
 					isPercent = true,
 					order = 13,
 				},
-				
-				
-				
+
+
+
 				headerAlphaBackgroundBlank = { type = 'header', name = " ", order = 20 },
 				headerAlphaBackground = {
 					type = 'header',
 					name = "Background Alpha",
 					order = 20
 				},
-				
+
 				alphaicbg = {
 					type = 'range',
 					name = 'BG Alpha IC',
@@ -182,7 +182,7 @@ IceHUD.options =
 					isPercent = true,
 					order = 21,
 				},
-				
+
 				alphaoocbg = {
 					type = 'range',
 					name = 'BG Alpha OOC',
@@ -199,7 +199,7 @@ IceHUD.options =
 					isPercent = true,
 					order = 22,
 				},
-				
+
 				alphaTargetbg = {
 					type = 'range',
 					name = 'BG Alpha OOC and Target or not Full',
@@ -216,15 +216,15 @@ IceHUD.options =
 					isPercent = true,
 					order = 23,
 				},
-				
-				
+
+
 				headerBarAdvancedBlank = { type = 'header', name = " ", order = 30 },
 				headerBarAdvanced = {
 					type = 'header',
 					name = "Other",
 					order = 30
 				},
-				
+
 				backgroundToggle = {
 					type = "toggle",
 					name = "Contextual Background",
@@ -237,7 +237,7 @@ IceHUD.options =
 					end,
 					order = 31
 				},
-				
+
 				backgroundColor = {
 					type = 'color',
 					name = 'Background Color',
@@ -252,8 +252,8 @@ IceHUD.options =
 				},
 			}
 		},
-		
-		
+
+
 		textSettings = {
 			type = 'text',
 			name =  'Font',
@@ -451,6 +451,18 @@ IceHUD.options =
 			order = 94
 		},
 
+		configMode = {
+			type = 'toggle',
+			name = '|cffff0000Configuration Mode|r',
+			desc = 'Puts IceHUD into configuration mode so bars can be placed more easily',
+			get = function()
+				return IceHUD.IceCore:IsInConfigMode()
+			end,
+			set = function(value)
+				IceHUD.IceCore:ConfigModeToggle(value)
+			end,
+			order = 95
+		},
 	}
 }
 

@@ -54,7 +54,7 @@ function IceCastBar.prototype:Enable(core)
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "SpellCastChannelUpdate") -- unit
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "SpellCastChannelStop") -- unit
 
-	self.frame:Hide()
+	self:Show(false)
 end
 
 
@@ -179,7 +179,7 @@ function IceCastBar.prototype:StartBar(action, message)
 		self.actionMessage = spell .. self:GetShortRank(rank)
 	end
 
-	self.frame:Show()
+	self:Show(true)
 	self.frame:SetScript("OnUpdate", function() self:OnUpdate() end)
 end
 
@@ -189,7 +189,7 @@ function IceCastBar.prototype:StopBar()
 	self.actionStartTime = nil
 	self.actionDuration = nil
 
-	self.frame:Hide()
+	self:Show(false)
 	self.frame:SetScript("OnUpdate", nil)
 end
 

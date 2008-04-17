@@ -78,11 +78,11 @@ end
 
 function PetHealth.prototype:CheckPet()
 	if (UnitExists(self.unit)) then
-		self.frame:Show()
+		self:Show(true)
 		self:PetHappiness(self.unit)
 		self:Update(self.unit)
 	else
-		self.frame:Hide()
+		self:Show(false)
 	end
 end
 
