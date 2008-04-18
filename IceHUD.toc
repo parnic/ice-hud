@@ -39,3 +39,7 @@ modules\CastBar.lua
 modules\TargetCast.lua
 modules\MirrorBar.lua
 modules\SunderCount.lua
+modules\GlobalCoolDown.lua
+modules\SliceAndDice.lua
+modules\TargetCC.lua
+modules\FocusCC.lua
