@@ -49,6 +49,7 @@ function TargetCC.prototype:init()
     self.debuffList["Freezing Trap Effect"] = "Incapacitate"
     self.debuffList["Chastize"] = "Incapacitate"
     self.debuffList["Maim"] = "Incapacitate"
+    self.debuffList["Banish"] = "Incapacitate"
 
     self.debuffList["Psychic Scream"] = "Fear"
     self.debuffList["Fear"] = "Fear"
