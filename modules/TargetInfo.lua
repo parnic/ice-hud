@@ -436,8 +436,9 @@ function TargetInfo.prototype:CreateFrame(redraw)
 	if not (self.frame) then
 		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.parent, "SecureUnitButtonTemplate")
 	end
-	
-	self.width = self.settings.gap + 50
+
+	-- Parnic - yes, 200 is fairly arbitrary. make a best effort for long names to fit
+	self.width = math.max(200, self.settings.gap + 50)
 
 	self.frame:SetScale(self.moduleSettings.scale)
 	
