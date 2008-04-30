@@ -100,7 +100,27 @@ function TargetInfo.prototype:GetOptions()
 			self:Redraw()
 		end,
 		min = -300,
-		max = 300,
+		max = 600,
+		step = 10,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 31
+	}
+
+	opts["hpos"] = {
+		type = "range",
+		name = "Horizontal Position",
+		desc = "Horizontal Position",
+		get = function()
+			return self.moduleSettings.hpos
+		end,
+		set = function(v)
+			self.moduleSettings.hpos = v
+			self:Redraw()
+		end,
+		min = -500,
+		max = 500,
 		step = 10,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -332,6 +352,7 @@ function TargetInfo.prototype:GetDefaultSettings()
 	defaults["fontSize"] = 13
 	defaults["stackFontSize"] = 11
 	defaults["vpos"] = -50
+	defaults["hpos"] = 0
 	defaults["zoom"] = 0.08
 	defaults["buffSize"] = 20
 	defaults["mouseTarget"] = true
@@ -427,7 +448,7 @@ function TargetInfo.prototype:CreateFrame(redraw)
 	self.frame:SetWidth(self.width)
 	self.frame:SetHeight(32)
 	self.frame:ClearAllPoints()
-	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
+	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
 	self.frame:SetScale(self.moduleSettings.scale)
 	
 	if (self.moduleSettings.mouseTarget) then
