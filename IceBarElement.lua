@@ -85,6 +85,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["desiredLerpTime"] = 0.2
 	settings["barVisible"] = {bg = true, bar = true}
 	settings["myTagVersion"] = 2
+	settings["widthModifier"] = 0
 
 	return settings
 end
@@ -239,6 +240,26 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.shouldAnimate
+		end
+	}
+
+	opts["widthModifier"] = 
+	{
+		type = 'range',
+		name = '|c' .. self.configColor .. 'Bar width modifier|r',
+		desc = 'Make this bar wider or thinner than others',
+		min = -80,
+		max = 80,
+		step = 1,
+		get = function()
+			return self.moduleSettings.widthModifier
+		end,
+		set = function(v)
+			self.moduleSettings.widthModifier = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
 		end
 	}
 
@@ -460,7 +481,7 @@ function IceBarElement.prototype:CreateBackground()
 	end
 	
 	self.frame:SetFrameStrata("BACKGROUND")
-	self.frame:SetWidth(self.settings.barWidth)
+	self.frame:SetWidth(self.settings.barWidth + self.moduleSettings.widthModifier)
 	self.frame:SetHeight(self.settings.barHeight)
 	
 	if not (self.frame.bg) then
@@ -504,7 +525,7 @@ function IceBarElement.prototype:CreateBar()
 	end
 	
 	self.barFrame:SetFrameStrata("LOW")
-	self.barFrame:SetWidth(self.settings.barWidth)
+	self.barFrame:SetWidth(self.settings.barWidth + self.moduleSettings.widthModifier)
 	self.barFrame:SetHeight(self.settings.barHeight)
 	
 	
