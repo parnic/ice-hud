@@ -13,6 +13,8 @@ local impSndTalentIdx = 4
 local impSndBonusPerRank = 0.15
 local maxComboPoints = 5
 
+local CurrMaxSnDDuration = 0
+
 -- Constructor --
 function SliceAndDice.prototype:init()
 	SliceAndDice.super.prototype.init(self, "SliceAndDice", "player")
@@ -31,10 +33,14 @@ function SliceAndDice.prototype:Enable(core)
 	SliceAndDice.super.prototype.Enable(self, core)
 	
 	self:RegisterEvent("PLAYER_AURAS_CHANGED", "UpdateSliceAndDice")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateDurationBar")
+	self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateDurationBar")
 
 	self:ScheduleRepeatingEvent(self.elementName, self.UpdateSliceAndDice, 0.1, self)
 
 	self:Show(false)
+
+	self:SetBottomText1("")
 end
 
 function SliceAndDice.prototype:Disable(core)
@@ -55,6 +61,7 @@ function SliceAndDice.prototype:GetDefaultSettings()
     settings["offset"] = 4
     settings["upperText"]="SnD:#"
     settings["showAsPercentOfMax"] = true
+    settings["durationAlpha"] = 0.6
 
     return settings
 end
@@ -86,8 +93,65 @@ function SliceAndDice.prototype:GetOptions()
             return not self.moduleSettings.enabled
         end
     }
+
+    opts["durationAlpha"] =
+    {
+        type = "range",
+        name = "Potential SnD time bar alpha",
+        desc = "What alpha value to use for the bar that displays how long your SnD will last if you activate it. (This gets multiplied by the bar's current alpha to stay in line with the bar on top of it)",
+        min = 0,
+        max = 100,
+        step = 5,
+        get = function()
+            return self.moduleSettings.durationAlpha * 100
+        end,
+        set = function(v)
+            self.moduleSettings.durationAlpha = v / 100.0
+            self:Redraw()
+        end,
+        disabled = function()
+            return not self.moduleSettings.enabled
+        end
+    }
     
     return opts
+end
+
+function SliceAndDice.prototype:CreateFrame()
+	SliceAndDice.super.prototype.CreateFrame(self)
+
+	self:CreateDurationBar()
+end
+
+function SliceAndDice.prototype:CreateDurationBar()
+	if not self.durationFrame then
+		self.durationFrame = CreateFrame("Statusbar", nil, self.frame)
+		self.CurrScale = 0
+	end
+
+	self.durationFrame:SetFrameStrata("LOW")
+	self.durationFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
+	self.durationFrame:SetHeight(self.settings.barHeight)
+
+	if not self.durationFrame.bar then
+		self.durationFrame.bar = self.frame:CreateTexture(nil, "BACKGROUND")
+	end
+
+	self.durationFrame.bar:SetTexture(IceElement.TexturePath .. self.settings.barTexture)
+	self.durationFrame.bar:SetAllPoints(self.frame)
+
+	self.durationFrame:SetStatusBarTexture(self.durationFrame.bar)
+
+	self:UpdateBar(1, "undef")
+
+	self.durationFrame:ClearAllPoints()
+	self.durationFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
+
+	self.durationFrame:SetAlpha(self.alpha * self.moduleSettings.durationAlpha)
+
+	-- force update the bar...if we're in here, then either the UI was just loaded or the player is jacking with the options.
+	-- either way, make sure the duration bar matches accordingly
+	self:UpdateDurationBar()
 end
 
 -- 'Protected' methods --------------------------------------------------------
@@ -112,20 +176,58 @@ end
 function SliceAndDice.prototype:UpdateSliceAndDice()
     local duration, remaining = _GetBuffDuration("player", "Ability_Rogue_SliceDice")
 
-    if (duration ~= nil) and (remaining ~= nil) then
+    if duration ~= nil and remaining ~= nil then
         self:Show(true)
-        self:UpdateBar(remaining / (self.moduleSettings.showAsPercentOfMax and self:GetMaxBuffTime() or duration), "SliceAndDice")
+        self:UpdateBar(remaining / (self.moduleSettings.showAsPercentOfMax and CurrMaxSnDDuration or duration), "SliceAndDice")
+
         formatString = self.moduleSettings.upperText or ''
         self:SetBottomText1(string.gsub(formatString, "#", tostring(floor(remaining))))
     else
-        self:Show(false)
+	self:UpdateBar(0, "SliceAndDice")
+	self:SetBottomText1("")
+
+	if GetComboPoints("target") == 0 or not UnitExists("target") then
+	        self:Show(false)
+	end
     end
 end
 
-function SliceAndDice.prototype:GetMaxBuffTime()
+function SliceAndDice.prototype:UpdateDurationBar()
+	local points = GetComboPoints("target")
+	local scale
+
+	-- first, set the cached upper limit of SnD duration
+	CurrMaxSnDDuration = self:GetMaxBuffTime(maxComboPoints)
+
+	-- player doesn't want to show the percent of max or the alpha is zeroed out, so don't bother with the duration bar
+	if not self.moduleSettings.showAsPercentOfMax or self.moduleSettings.durationAlpha == 0 then
+		return
+	end
+
+	-- if we have combo points and a target selected, go ahead and show the bar so the duration bar can be seen
+	if points > 0 and UnitExists("target") then
+		self:Show(true)
+	end
+
+	-- compute the scale from the current number of combo points
+	scale = self:GetMaxBuffTime(points) / CurrMaxSnDDuration
+
+	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
+	if (self.moduleSettings.side == IceCore.Side.Left) then
+		self.durationFrame.bar:SetTexCoord(1, 0, 1-scale, 1)
+	else
+		self.durationFrame.bar:SetTexCoord(0, 1, 1-scale, 1)
+	end
+end
+
+function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints)
     local maxduration
 
-    maxduration = baseTime + (maxComboPoints * gapPerComboPoint)
+    if numComboPoints == 0 then
+        return 0
+    end
+
+    maxduration = baseTime + ((numComboPoints - 1) * gapPerComboPoint)
 
     if self:HasNetherbladeBonus() then
         maxduration = maxduration + netherbladeBonus
