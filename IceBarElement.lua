@@ -481,7 +481,7 @@ function IceBarElement.prototype:CreateBackground()
 	end
 	
 	self.frame:SetFrameStrata("BACKGROUND")
-	self.frame:SetWidth(self.settings.barWidth + self.moduleSettings.widthModifier)
+	self.frame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.frame:SetHeight(self.settings.barHeight)
 	
 	if not (self.frame.bg) then
@@ -525,7 +525,7 @@ function IceBarElement.prototype:CreateBar()
 	end
 	
 	self.barFrame:SetFrameStrata("LOW")
-	self.barFrame:SetWidth(self.settings.barWidth + self.moduleSettings.widthModifier)
+	self.barFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.barFrame:SetHeight(self.settings.barHeight)
 	
 	
