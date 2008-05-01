@@ -15,6 +15,7 @@ local impSndBonusPerRank = 0.15
 local maxComboPoints = 5
 
 local CurrMaxSnDDuration = 0
+local PotentialSnDDuration = 0
 
 -- Constructor --
 function SliceAndDice.prototype:init()
@@ -25,6 +26,7 @@ function SliceAndDice.prototype:init()
 	self.moduleSettings.shouldAnimate = false
 
 	self:SetDefaultColor("SliceAndDice", 0.75, 1, 0.2)
+	self:SetDefaultColor("SliceAndDicePotential", 1, 1, 1)
 end
 
 -- 'Public' methods -----------------------------------------------------------
@@ -60,7 +62,7 @@ function SliceAndDice.prototype:GetDefaultSettings()
     settings["lowThreshold"] = 0
     settings["side"] = IceCore.Side.Right
     settings["offset"] = 4
-    settings["upperText"]="SnD:#"
+    settings["upperText"]="SnD:"
     settings["showAsPercentOfMax"] = true
     settings["durationAlpha"] = 0.6
 
@@ -142,13 +144,12 @@ function SliceAndDice.prototype:CreateDurationBar()
 	self.durationFrame.bar:SetAllPoints(self.frame)
 
 	self.durationFrame:SetStatusBarTexture(self.durationFrame.bar)
+	self.durationFrame:SetStatusBarColor(self:GetColor("SliceAndDicePotential", self.alpha * self.moduleSettings.durationAlpha))
 
 	self:UpdateBar(1, "undef")
 
 	self.durationFrame:ClearAllPoints()
 	self.durationFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
-
-	self.durationFrame:SetAlpha(self.alpha * self.moduleSettings.durationAlpha)
 
 	-- force update the bar...if we're in here, then either the UI was just loaded or the player is jacking with the options.
 	-- either way, make sure the duration bar matches accordingly
@@ -182,14 +183,17 @@ function SliceAndDice.prototype:UpdateSliceAndDice()
         self:UpdateBar(remaining / (self.moduleSettings.showAsPercentOfMax and CurrMaxSnDDuration or duration), "SliceAndDice")
 
         formatString = self.moduleSettings.upperText or ''
-        self:SetBottomText1(string.gsub(formatString, "#", tostring(floor(remaining))))
     else
 	self:UpdateBar(0, "SliceAndDice")
-	self:SetBottomText1("")
 
 	if GetComboPoints("target") == 0 or not UnitExists("target") then
 	        self:Show(false)
 	end
+    end
+
+    -- somewhat redundant, but we also need to check potential remaining time
+    if (duration ~= nil and remaining ~= nil) or PotentialSnDDuration > 0 then
+        self:SetBottomText1(self.moduleSettings.upperText .. tostring(floor(remaining or 0)) .. " (" .. PotentialSnDDuration .. ")")
     end
 end
 
@@ -210,8 +214,10 @@ function SliceAndDice.prototype:UpdateDurationBar()
 		self:Show(true)
 	end
 
+	PotentialSnDDuration = self:GetMaxBuffTime(points)
+
 	-- compute the scale from the current number of combo points
-	scale = self:GetMaxBuffTime(points) / CurrMaxSnDDuration
+	scale = PotentialSnDDuration / CurrMaxSnDDuration
 
 	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
 	if (self.moduleSettings.side == IceCore.Side.Left) then
