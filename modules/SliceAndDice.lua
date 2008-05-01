@@ -3,7 +3,8 @@ local AceOO = AceLibrary("AceOO-2.0")
 local SliceAndDice = AceOO.Class(IceUnitBar)
 
 local NetherbladeItemIdList = {29044, 29045, 29046, 29047, 29048}
-local NetherbladeEquipLocList = {"HeadSlot", "ShoulderSlot", "ChestSlot", "LegsSlot", "HandsSlot"}
+-- Parnic - bah, have to abandon the more robust string representation of each slot because of loc issues...
+local NetherbladeEquipLocList = {1, 3, 5, 7, 10} --"HeadSlot", "ShoulderSlot", "ChestSlot", "LegsSlot", "HandsSlot"}
 
 local baseTime = 9
 local gapPerComboPoint = 3
@@ -249,7 +250,7 @@ function SliceAndDice.prototype:HasNetherbladeBonus()
 	-- run through all the possible equip locations of a netherblade piece
 	for i=1,#NetherbladeEquipLocList do
 		-- pull the link string for the item in this equip loc
-		linkStr = GetInventoryItemLink(self.unit, GetInventorySlotInfo(NetherbladeEquipLocList[i]))
+		linkStr = GetInventoryItemLink(self.unit, NetherbladeEquipLocList[i])
 		-- get the item id out of that link string
 		itemId = self:GetItemIdFromItemLink(linkStr)
 
@@ -269,9 +270,11 @@ end
 function SliceAndDice.prototype:GetItemIdFromItemLink(linkStr)
 	local itemId
 
-	_, itemId, _, _, _, _, _, _, _ = strsplit(":", linkStr)
+	if linkStr then
+		_, itemId, _, _, _, _, _, _, _ = strsplit(":", linkStr)
+	end
 
-	return itemId
+	return itemId or 0
 end
 
 function SliceAndDice.prototype:IsItemIdInList(itemId, list)
