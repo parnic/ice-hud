@@ -50,6 +50,7 @@ function FocusCC.prototype:init()
     self.debuffList["Chastize"] = "Incapacitate"
     self.debuffList["Maim"] = "Incapacitate"
     self.debuffList["Banish"] = "Incapacitate"
+    self.debuffList["Shackle"] = "Incapacitate"
 
     self.debuffList["Psychic Scream"] = "Fear"
     self.debuffList["Fear"] = "Fear"
