@@ -8,6 +8,7 @@ local target = "target"
 local internal = "internal"
 
 TargetInfo.prototype.buffSize = nil
+TargetInfo.prototype.ownBuffSize = nil
 TargetInfo.prototype.width = nil
 
 TargetInfo.prototype.name = nil
@@ -208,6 +209,26 @@ function TargetInfo.prototype:GetOptions()
 		end,
 		order = 34
 	}
+
+	opts["ownBuffSize"] = {
+		type = 'range',
+		name = 'Own buff size',
+		desc = 'Buff/debuff size for buffs/debuffs that were applied by you, the player',
+		get = function()
+			return self.moduleSettings.ownBuffSize
+		end,
+		set = function(v)
+			self.moduleSettings.ownBuffSize = v
+			self:RedrawBuffs()
+		end,
+		min = 8,
+		max = 60,
+		step = 1,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 35
+	}
 	
 	opts["filter"] = {
 		type = 'text',
@@ -224,7 +245,7 @@ function TargetInfo.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		validate = { "Never", "In Combat", "Always" },
-		order = 35
+		order = 36
 	}
 	
 	opts["perRow"] = {
@@ -244,7 +265,7 @@ function TargetInfo.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 36
+		order = 37
 	}
 	
 	opts["mouseTarget"] = {
@@ -261,7 +282,7 @@ function TargetInfo.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 37
+		order = 38
 	}
 	
 	opts["mouseBuff"] = {
@@ -278,7 +299,7 @@ function TargetInfo.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 38
+		order = 39
 	}
 
 	opts["line1Tag"] = {
@@ -355,6 +376,7 @@ function TargetInfo.prototype:GetDefaultSettings()
 	defaults["hpos"] = 0
 	defaults["zoom"] = 0.08
 	defaults["buffSize"] = 20
+	defaults["ownBuffSize"] = 20
 	defaults["mouseTarget"] = true
 	defaults["mouseBuff"] = true
 	defaults["filter"] = "Never"
@@ -603,6 +625,8 @@ end
 
 
 function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
+	local lastX = 0
+
 	for i = 1, IceCore.BuffLimit do
 		if (not buffs[i]) then
 			buffs[i] = CreateFrame("Frame", nil, parent)
@@ -611,12 +635,22 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 		end
 
 		buffs[i]:SetFrameStrata("BACKGROUND")
-		buffs[i]:SetWidth(self.moduleSettings.buffSize)
-		buffs[i]:SetHeight(self.moduleSettings.buffSize)
+		if buffs[i].fromPlayer then
+			buffs[i]:SetWidth(self.moduleSettings.ownBuffSize)
+			buffs[i]:SetHeight(self.moduleSettings.ownBuffSize)
+		else
+			buffs[i]:SetWidth(self.moduleSettings.buffSize)
+			buffs[i]:SetHeight(self.moduleSettings.buffSize)
+		end
 		
 		buffs[i].icon:SetFrameStrata("BACKGROUND")
-		buffs[i].icon:SetWidth(self.moduleSettings.buffSize-2)
-		buffs[i].icon:SetHeight(self.moduleSettings.buffSize-2)
+		if buffs[i].fromPlayer then
+			buffs[i].icon:SetWidth(self.moduleSettings.ownBuffSize-2)
+			buffs[i].icon:SetHeight(self.moduleSettings.ownBuffSize-2)
+		else
+			buffs[i].icon:SetWidth(self.moduleSettings.buffSize-2)
+			buffs[i].icon:SetHeight(self.moduleSettings.buffSize-2)
+		end
 		
 		buffs[i].cd:SetFrameStrata("BACKGROUND")
 		buffs[i].cd:SetFrameLevel(buffs[i].icon:GetFrameLevel()+1)
@@ -625,23 +659,31 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 		buffs[i].cd:SetAllPoints(buffs[i])
 
 
+		local buffSize = self.moduleSettings.buffSize
+		if buffs[i].fromPlayer then
+			buffSize = self.moduleSettings.ownBuffSize
+		end
+
 		local pos = math.fmod(i, self.moduleSettings.perRow)
 		if (pos == 0) then
 			pos = self.moduleSettings.perRow
+		elseif (pos == 1) then
+			lastX = (((pos-1) * buffSize) + pos) * direction
 		end
-		
-		local x = (((pos-1) * self.moduleSettings.buffSize) + pos) * direction
-		local y = math.floor((i-1) / self.moduleSettings.perRow) * self.moduleSettings.buffSize * -1
+
+		local x = lastX + (buffSize * direction)
+		lastX = x
+		local y = math.floor((i-1) / self.moduleSettings.perRow) * math.max(self.moduleSettings.buffSize, self.moduleSettings.ownBuffSize) * -1
 
 		buffs[i]:ClearAllPoints()
 		buffs[i]:SetPoint("TOP", x, y)
-		
-		
+
+
 		buffs[i].icon:ClearAllPoints()
 		buffs[i].icon:SetPoint("CENTER", 0, 0)
 
-		buffs[i]:Show()
-		buffs[i].icon:Show()
+--		buffs[i]:Show()
+--		buffs[i].icon:Show()
 
 		if (not buffs[i].texture) then
 			buffs[i].texture = buffs[i]:CreateTexture()
@@ -677,8 +719,9 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 	return buffs
 end
 
-
-
+function TargetInfo.prototype:SetBuffSize(buff)
+	
+end
 
 function TargetInfo.prototype:UpdateBuffs()
 	local zoom = self.moduleSettings.zoom
@@ -711,8 +754,10 @@ function TargetInfo.prototype:UpdateBuffs()
 				buffTimeLeft and buffTimeLeft > 0) then
 				local start = GetTime() - buffDuration + buffTimeLeft
 				self.frame.buffFrame.buffs[i].cd:SetCooldown(start, buffDuration)
+				self.frame.buffFrame.buffs[i].fromPlayer = true
 				self.frame.buffFrame.buffs[i].cd:Show()
 			else
+				self.frame.buffFrame.buffs[i].fromPlayer = false
 				self.frame.buffFrame.buffs[i].cd:Hide()
 			end
 
@@ -727,8 +772,9 @@ function TargetInfo.prototype:UpdateBuffs()
 		else
 			self.frame.buffFrame.buffs[i]:Hide()
 		end
-
 	end
+
+	self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, -1, self.frame.buffFrame.buffs, "buff")
 
 	for i = 1, IceCore.BuffLimit do
 		local buffName, buffRank, buffTexture, buffApplications, debuffDispelType,
@@ -746,8 +792,10 @@ function TargetInfo.prototype:UpdateBuffs()
 				debuffTimeLeft and debuffTimeLeft > 0) then
 				local start = GetTime() - debuffDuration + debuffTimeLeft
 				self.frame.debuffFrame.buffs[i].cd:SetCooldown(start, debuffDuration)
+				self.frame.debuffFrame.buffs[i].fromPlayer = true
 				self.frame.debuffFrame.buffs[i].cd:Show()
 			else
+				self.frame.debuffFrame.buffs[i].fromPlayer = false
 				self.frame.debuffFrame.buffs[i].cd:Hide()
 			end
 
@@ -766,6 +814,8 @@ function TargetInfo.prototype:UpdateBuffs()
 			self.frame.debuffFrame.buffs[i]:Hide()
 		end
 	end
+
+	self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame, 1, self.frame.debuffFrame.buffs, "debuff")
 end
 
 
