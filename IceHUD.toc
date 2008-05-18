@@ -43,3 +43,5 @@ modules\GlobalCoolDown.lua
 modules\SliceAndDice.lua
 modules\TargetCC.lua
 modules\FocusCC.lua
+modules\FocusHealth.lua
+modules\FocusMana.lua
