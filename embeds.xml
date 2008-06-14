@@ -14,7 +14,7 @@
 <Include file="libs\LibDogTag-Unit-3.0\lib.xml"/>
 <Include file="libs\LibDruidMana-1.0\lib.xml"/>
 <Include file="libs\LibMobHealth-4.0\lib.xml"/>
-<Include file="libs\LibSharedMedia-2.0\lib.xml"/>
+<Include file="libs\LibSharedMedia-3.0\lib.xml"/>
 <Script file="libs\Waterfall-1.0\Waterfall-1.0.lua"/>
 
 </Ui>
