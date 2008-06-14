@@ -114,7 +114,7 @@ function GlobalCoolDown.prototype:CooldownStateChanged()
 
     local start, dur = GetSpellCooldown(self.spellId, BOOKTYPE_SPELL)
 
-    if dur > 0 and dur <= 1 then
+    if dur > 0 and dur <= 1.5 then
         self.startTime = start
         self.duration = dur
 
