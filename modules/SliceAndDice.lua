@@ -65,6 +65,7 @@ function SliceAndDice.prototype:GetDefaultSettings()
     settings["upperText"]="SnD:"
     settings["showAsPercentOfMax"] = true
     settings["durationAlpha"] = 0.6
+    settings["usesDogTagStrings"] = false
 
     return settings
 end

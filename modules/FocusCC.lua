@@ -84,6 +84,7 @@ function FocusCC.prototype:GetDefaultSettings()
     settings["lowThreshold"] = 0
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 4
+	settings["usesDogTagStrings"] = false
     
 	return settings
 end

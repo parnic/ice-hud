@@ -108,6 +108,7 @@ function LacerateCount.prototype:GetDefaultSettings()
 	defaults["lacerateFontSize"] = 20
 	defaults["lacerateMode"] = "Numeric"
 	defaults["gradient"] = false
+	defaults["usesDogTagStrings"] = false
 	return defaults
 end
 

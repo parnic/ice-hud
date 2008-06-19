@@ -90,6 +90,7 @@ function TargetCC.prototype:GetDefaultSettings()
     settings["lowThreshold"] = 0
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 3
+	settings["usesDogTagStrings"] = false
 
     return settings
 end

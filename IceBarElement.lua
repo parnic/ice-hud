@@ -55,7 +55,7 @@ end
 
 
 function IceBarElement.prototype:RegisterFontStrings()
-	if DogTag ~= nil then
+	if DogTag ~= nil and self.moduleSettings.usesDogTagStrings then
 		if self.frame.bottomUpperText and self.moduleSettings.upperText then
 			DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.moduleSettings.upperText, "Unit", { unit = self.unit })
 		end
@@ -86,6 +86,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["barVisible"] = {bg = true, bar = true}
 	settings["myTagVersion"] = 2
 	settings["widthModifier"] = 0
+	settings["usesDogTagStrings"] = true
 
 	return settings
 end
@@ -710,7 +711,7 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 		self.barFrame:Show()
 	end
 
-	if DogTag ~= nil then
+	if DogTag ~= nil and self.moduleSettings.usesDogTagStrings then
 		DogTag:UpdateAllForFrame(self.frame)
 		self:SetTextAlpha()
 	end
@@ -746,7 +747,7 @@ function IceBarElement.prototype:SetBottomText1(text, color)
 	if (self.moduleSettings.lockUpperTextAlpha and (self.alpha > 0)) then
 		alpha = 1
 	end
-	
+
 	self.frame.bottomUpperText:SetText(text)
 end
 

@@ -27,6 +27,7 @@ function CastBar.prototype:GetDefaultSettings()
 	settings["lagAlpha"] = 0.7
 	settings["showBlizzCast"] = false
 	settings["shouldAnimate"] = false
+	settings["usesDogTagStrings"] = false
 
 	return settings
 end

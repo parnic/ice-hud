@@ -108,6 +108,7 @@ function SunderCount.prototype:GetDefaultSettings()
 	defaults["sunderFontSize"] = 20
 	defaults["sunderMode"] = "Numeric"
 	defaults["gradient"] = false
+	defaults["usesDogTagStrings"] = false
 	return defaults
 end
 

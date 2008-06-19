@@ -265,7 +265,7 @@ IceHUD.options =
 			set = function(value)
 				IceHUD.IceCore:SetFontFamily(value)
 			end,
-			validate = SML:List(SML.MediaType.FONT),	
+			validate = SML:List('font'),	
 		},
 				
 		barSettings = {

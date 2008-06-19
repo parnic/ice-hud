@@ -65,6 +65,7 @@ function GlobalCoolDown.prototype:GetDefaultSettings()
     settings["desiredLerpTime"] = nil
     settings["lowThreshold"] = 0
     settings["barVisible"]["bg"] = false
+	settings["usesDogTagStrings"] = false
 
 	return settings
 end

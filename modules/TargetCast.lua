@@ -21,6 +21,7 @@ function TargetCast.prototype:GetDefaultSettings()
 	settings["flashInstants"] = "Never"
 	settings["flashFailures"] = "Never"
 	settings["shouldAnimate"] = false
+	settings["usesDogTagStrings"] = false
 
 	return settings
 end

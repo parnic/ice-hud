@@ -186,6 +186,7 @@ function MirrorBarHandler.prototype:GetDefaultSettings()
 	settings["textVisible"] = {upper = true, lower = true}
 	settings["barVisible"] = {bg = true, bar = true}
 	settings["myTagVersion"] = 2
+	settings["usesDogTagStrings"] = false
 
 	return settings
 end
