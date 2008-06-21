@@ -51,6 +51,7 @@ function TargetCC.prototype:init()
     self.debuffList["Maim"] = "Incapacitate"
     self.debuffList["Banish"] = "Incapacitate"
     self.debuffList["Shackle"] = "Incapacitate"
+    self.debuffList["Shackle Undead"] = "Incapacitate"
 
     self.debuffList["Psychic Scream"] = "Fear"
     self.debuffList["Fear"] = "Fear"
