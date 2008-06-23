@@ -5,8 +5,8 @@
 ## Notes: Another HUD addon
 ## Version: 1.2 ($Revision$)
 ## SavedVariables: IceCoreDB
-## OptionalDeps: Ace2, GratuityLib, LibSharedMedia-3.0, WaterfallLib, Deformat-2.0, LibDogTag-3.0, LibDruidMana-1.0
-## X-Embeds: Ace2, GratuityLib, LibSharedMedia-3.0, WaterfallLib, Deformat-2.0, LibDogTag-3.0, LibDogTag-Unit-3.0, LibMobHealth-4.0, LibDruidMana-1.0
+## OptionalDeps: Ace2, GratuityLib, LibSharedMedia-3.0, Waterfall-1.0, Deformat, LibDogTag-3.0, LibDruidMana-1.0
+## X-Embeds: Ace2, GratuityLib, LibSharedMedia-3.0, Waterfall-1.0, Deformat, LibDogTag-3.0, LibDogTag-Unit-3.0, LibDruidMana-1.0
 ## X-Category: UnitFrame
 ## X-Date: $Date$
 ## X-Website: http://www.wowace.com/forums/index.php/topic,1705.0.html
