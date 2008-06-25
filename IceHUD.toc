@@ -42,6 +42,7 @@ modules\SunderCount.lua
 modules\GlobalCoolDown.lua
 modules\SliceAndDice.lua
 modules\TargetCC.lua
+# - make sure FocusCC loads after TargetCC since it inherits
 modules\FocusCC.lua
 modules\FocusHealth.lua
 modules\FocusMana.lua
