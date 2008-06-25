@@ -40,18 +40,18 @@ end
 
 function GlobalCoolDown.prototype:GetSpellName()
 	local defaultSpells = {
-		ROGUE="Cheap Shot",
-		PRIEST="Renew",
-		DRUID="Rejuvenation",
-		WARRIOR="Battle Shout",
-		MAGE="Frost Armor",
-		WARLOCK="Life Tap",
-		PALADIN="Purify",
-		SHAMAN="Lightning Shield",
-		HUNTER="Serpent Sting"
-	}    
+		ROGUE=GetSpellInfo(1833), -- cheap shot
+		PRIEST=GetSpellInfo(139), -- renew
+		DRUID=GetSpellInfo(774), -- rejuvenation
+		WARRIOR=GetSpellInfo(6673), -- battle shout
+		MAGE=GetSpellInfo(168), -- frost armor
+		WARLOCK=GetSpellInfo(1454), -- life tap
+		PALADIN=GetSpellInfo(1152), -- purify
+		SHAMAN=GetSpellInfo(324), -- lightning shield
+		HUNTER=GetSpellInfo(1978) -- serpent sting
+	}	
 	local _, unitClass = UnitClass("player")
-    return defaultSpells[unitClass]
+	return defaultSpells[unitClass]
 end
 
 -- OVERRIDE
@@ -61,10 +61,10 @@ function GlobalCoolDown.prototype:GetDefaultSettings()
 	settings["enabled"] = false
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 1
-    settings["shouldAnimate"] = false
-    settings["desiredLerpTime"] = nil
-    settings["lowThreshold"] = 0
-    settings["barVisible"]["bg"] = false
+	settings["shouldAnimate"] = false
+	settings["desiredLerpTime"] = nil
+	settings["lowThreshold"] = 0
+	settings["barVisible"]["bg"] = false
 	settings["usesDogTagStrings"] = false
 
 	return settings
@@ -78,74 +78,74 @@ function GlobalCoolDown.prototype:GetOptions()
 	opts["desiredLerpTime"] = nil
 	opts["lowThreshold"] = nil
 	opts["textSettings"] = nil
-    
-	return opts    
+	
+	return opts	
 end
 
 -- 'Protected' methods --------------------------------------------------------
 
 function _FindSpellId(spellName)
-    for tab = 1, 4 do
-        local _, _, offset, numSpells = GetSpellTabInfo(tab)
+	for tab = 1, 4 do
+		local _, _, offset, numSpells = GetSpellTabInfo(tab)
 
-        for i = (1+offset), (offset+numSpells) do
-            local spell = GetSpellName(i, BOOKTYPE_SPELL)
+		for i = (1+offset), (offset+numSpells) do
+			local spell = GetSpellName(i, BOOKTYPE_SPELL)
 
-            if spell:lower() == spellName:lower() then
-                return i
-            end
-        end
-    end
+			if spell:lower() == spellName:lower() then
+				return i
+			end
+		end
+	end
 
-    return nil
+	return nil
 end
 
 function GlobalCoolDown.prototype:UpdateSpell()
-    if not self.spellId then
-        self.spellId = _FindSpellId(self:GetSpellName())
-    end    
+	if not self.spellId then
+		self.spellId = _FindSpellId(self:GetSpellName())
+	end	
 end
 
 function GlobalCoolDown.prototype:CooldownStateChanged()
-    self:UpdateSpell()
+	self:UpdateSpell()
 
-    if not self.spellId then
-        return
-    end
+	if not self.spellId then
+		return
+	end
 
-    local start, dur = GetSpellCooldown(self.spellId, BOOKTYPE_SPELL)
+	local start, dur = GetSpellCooldown(self.spellId, BOOKTYPE_SPELL)
 
-    if dur > 0 and dur <= 1.5 then
-        self.startTime = start
-        self.duration = dur
+	if dur > 0 and dur <= 1.5 then
+		self.startTime = start
+		self.duration = dur
 
 	self.CurrScale = 1
-        self.frame:SetFrameStrata("TOOLTIP")
-        self:Show(true)
-        self.frame.bg:SetAlpha(0)
-    else
-        self.duration = nil
-        self.startTime = nil
+		self.frame:SetFrameStrata("TOOLTIP")
+		self:Show(true)
+		self.frame.bg:SetAlpha(0)
+	else
+		self.duration = nil
+		self.startTime = nil
 
-        self:Show(false)
-    end
+		self:Show(false)
+	end
 end
 
 function GlobalCoolDown.prototype:UpdateGlobalCoolDown()
-    if (self.duration ~= nil) and (self.startTime ~= nil) then
-        remaining = GetTime() - self.startTime
+	if (self.duration ~= nil) and (self.startTime ~= nil) then
+		remaining = GetTime() - self.startTime
 
-        if (remaining > self.duration) then
-            self.duration = nil
-            self.startTime = nil
+		if (remaining > self.duration) then
+			self.duration = nil
+			self.startTime = nil
 
-            self:Show(false)
-        else
-            self:UpdateBar(1 - (remaining / self.duration), "GlobalCoolDown", 0.8)
-        end
-    else
-        self:Show(false)
-    end
+			self:Show(false)
+		else
+			self:UpdateBar(1 - (remaining / self.duration), "GlobalCoolDown", 0.8)
+		end
+	else
+		self:Show(false)
+	end
 end
 
 -- Load us up
