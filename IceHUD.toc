@@ -12,7 +12,6 @@
 ## X-Website: http://www.wowace.com/forums/index.php/topic,1705.0.html
 
 # Libraries
-CallbackHandler-1.0.lua
 embeds.xml
 
 # IceHUD core functionality
