@@ -39,17 +39,33 @@ function GlobalCoolDown.prototype:Disable(core)
 end
 
 function GlobalCoolDown.prototype:GetSpellName()
-	local defaultSpells = {
-		ROGUE=GetSpellInfo(1833), -- cheap shot
-		PRIEST=GetSpellInfo(139), -- renew
-		DRUID=GetSpellInfo(774), -- rejuvenation
-		WARRIOR=GetSpellInfo(6673), -- battle shout
-		MAGE=GetSpellInfo(168), -- frost armor
-		WARLOCK=GetSpellInfo(1454), -- life tap
-		PALADIN=GetSpellInfo(1152), -- purify
-		SHAMAN=GetSpellInfo(324), -- lightning shield
-		HUNTER=GetSpellInfo(1978) -- serpent sting
-	}	
+	local defaultSpells;
+	if (IceHUD.WowVer >= 30000)
+		defaultSpells = {
+			ROGUE=GetSpellInfo(1833), -- cheap shot
+			PRIEST=GetSpellInfo(139), -- renew
+			DRUID=GetSpellInfo(774), -- rejuvenation
+			WARRIOR=GetSpellInfo(6673), -- battle shout
+			MAGE=GetSpellInfo(168), -- frost armor
+			WARLOCK=GetSpellInfo(1454), -- life tap
+			PALADIN=GetSpellInfo(1152), -- purify
+			SHAMAN=GetSpellInfo(324), -- lightning shield
+			HUNTER=GetSpellInfo(1978), -- serpent sting
+			DEATHKNIGHT=GetSpellInfo(45462) -- plague strike
+		}
+	else
+		defaultSpells = {
+			ROGUE=GetSpellInfo(1833), -- cheap shot
+			PRIEST=GetSpellInfo(139), -- renew
+			DRUID=GetSpellInfo(774), -- rejuvenation
+			WARRIOR=GetSpellInfo(6673), -- battle shout
+			MAGE=GetSpellInfo(168), -- frost armor
+			WARLOCK=GetSpellInfo(1454), -- life tap
+			PALADIN=GetSpellInfo(1152), -- purify
+			SHAMAN=GetSpellInfo(324), -- lightning shield
+			HUNTER=GetSpellInfo(1978) -- serpent sting
+		}
+	end
 	local _, unitClass = UnitClass("player")
 	return defaultSpells[unitClass]
 end
@@ -85,6 +101,10 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function _FindSpellId(spellName)
+	if not spellName then
+		return nil
+	end
+
 	for tab = 1, 4 do
 		local _, _, offset, numSpells = GetSpellTabInfo(tab)
 

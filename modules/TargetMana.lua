@@ -39,6 +39,13 @@ function TargetMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_MAXFOCUS", "Update")
 	self:RegisterEvent("UNIT_AURA", "Update")
 	self:RegisterEvent("UNIT_FLAGS", "Update")
+	-- DK rune stuff
+	if IceHUD.WowVer >= 30000 then
+		self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
+		self:RegisterEvent("RUNE_TYPE_UPDATE", "Update")
+		self:RegisterEvent("RUNE_POWER_UPDATE", "Update")
+		self:RegisterEvent("RUNE_REGEN_UPDATE", "Update")
+	end
 
 	self:Update("target")
 end

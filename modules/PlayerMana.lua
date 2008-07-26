@@ -105,6 +105,13 @@ function PlayerMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_MAXRAGE", "Update")
 	self:RegisterEvent("UNIT_ENERGY", "UpdateEnergy")
 	self:RegisterEvent("UNIT_MAXENERGY", "Update")
+	-- DK rune stuff
+	if IceHUD.WowVer >= 30000 then
+		self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
+		self:RegisterEvent("RUNE_TYPE_UPDATE", "Update")
+		self:RegisterEvent("RUNE_POWER_UPDATE", "Update")
+		self:RegisterEvent("RUNE_REGEN_UPDATE", "Update")
+	end
 	
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
@@ -209,7 +216,7 @@ end
 
 -- OVERRIDE
 function PlayerMana.prototype:UpdateBar(scale, color, alpha)
-	self.noFlash = (self.manaType ~= 0)
+	self.noFlash = (self.manaType ~= 0 and self.manaType ~= 6)
 
 	PlayerMana.super.prototype.UpdateBar(self, scale, color, alpha)
 end

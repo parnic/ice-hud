@@ -739,8 +739,14 @@ function TargetInfo.prototype:UpdateBuffs()
 	
 
 	for i = 1, IceCore.BuffLimit do
-		local buffName, buffRank, buffTexture, buffApplications,
-			buffDuration, buffTimeLeft = UnitBuff("target", i, filter and not hostile)
+		local buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft;
+		if IceHUD.WowVer >= 30000 then
+			buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft
+				= UnitBuff("target", i, filter and not hostile)
+		else
+			buffName, buffRank, buffTexture, buffApplications, buffDuration, buffTimeLeft
+				= UnitBuff("target", i, filter and not hostile)
+		end
 
 		if (buffTexture) then
 			self.frame.buffFrame.buffs[i].icon.texture:SetTexture(buffTexture)

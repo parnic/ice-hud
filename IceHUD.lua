@@ -5,6 +5,8 @@ local SML = AceLibrary("LibSharedMedia-3.0")
 
 IceHUD.CurrTagVersion = 3
 
+IceHUD.WowVer = select(4, GetBuildInfo())
+
 IceHUD.Location = "Interface\\AddOns\\IceHUD"
 IceHUD.options =
 {
