@@ -74,6 +74,8 @@ local IncapacitateCCList = {
 	710,
 	-- Shackle Undead
 	9484,
+	-- Cyclone
+	33786,
 	-- Chains of Ice
 	45524,
 	-- Hungering Cold
