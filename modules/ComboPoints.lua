@@ -82,7 +82,7 @@ function ComboPoints.prototype:GetOptions()
 	opts["gradient"] = {
 		type = "toggle",
 		name = "Change color",
-		desc = "1 compo point: yellow, 5 combo points: red",
+		desc = "1 combo point: yellow, 5 combo points: red",
 		get = function()
 			return self.moduleSettings.gradient
 		end,

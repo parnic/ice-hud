@@ -40,7 +40,7 @@ end
 
 function GlobalCoolDown.prototype:GetSpellName()
 	local defaultSpells;
-	if (IceHUD.WowVer >= 30000)
+	if (IceHUD.WowVer >= 30000) then
 		defaultSpells = {
 			ROGUE=GetSpellInfo(1833), -- cheap shot
 			PRIEST=GetSpellInfo(139), -- renew

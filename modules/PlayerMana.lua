@@ -108,9 +108,6 @@ function PlayerMana.prototype:Enable(core)
 	-- DK rune stuff
 	if IceHUD.WowVer >= 30000 then
 		self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
-		self:RegisterEvent("RUNE_TYPE_UPDATE", "Update")
-		self:RegisterEvent("RUNE_POWER_UPDATE", "Update")
-		self:RegisterEvent("RUNE_REGEN_UPDATE", "Update")
 	end
 	
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
