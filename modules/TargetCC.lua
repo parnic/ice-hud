@@ -73,7 +73,11 @@ local IncapacitateCCList = {
 	-- Banish
 	710,
 	-- Shackle Undead
-	9484
+	9484,
+	-- Chains of Ice
+	45524,
+	-- Hungering Cold
+	49203
 }
 
 local FearCCList = {
