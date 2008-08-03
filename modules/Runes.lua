@@ -154,8 +154,6 @@ function Runes.prototype:Enable(core)
 
 	self:RegisterEvent("RUNE_POWER_UPDATE", "UpdateRunePower");
 	self:RegisterEvent("RUNE_TYPE_UPDATE", "UpdateRuneType");
--- not sure what rune_regen_update is for just yet...UpdateRuneRegen doesn't exist as of yet
---	self:RegisterEvent("RUNE_REGEN_UPDATE", "UpdateRuneRegen");
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
@@ -164,7 +162,13 @@ end
 
 -- simply shows/hides the foreground rune when it becomes usable/unusable. this allows the background transparent rune to show only
 function Runes.prototype:UpdateRunePower(rune, usable)
+	DEFAULT_CHAT_FRAME:AddMessage("Runes.prototype:UpdateRunePower: rune="..rune.." usable="..(usable and "yes" or "no"));
+	if not rune or not self.frame.graphical or #self.frame.graphical <= rune then
+		return
+	end
+
 --	DEFAULT_CHAT_FRAME:AddMessage("Runes.prototype:UpdateRunePower: rune="..rune.." usable="..(usable and "yes" or "no").." GetRuneType(rune)="..GetRuneType(rune));
+
 	if usable then
 		self.frame.graphical[rune]:Show()
 	else

@@ -96,7 +96,7 @@ end
 
 function PlayerMana.prototype:Enable(core)
 	PlayerMana.super.prototype.Enable(self, core)
-	
+
 	self:CreateTickerFrame()
 
 	self:RegisterEvent("UNIT_MANA", "Update")
@@ -107,9 +107,14 @@ function PlayerMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_MAXENERGY", "Update")
 	-- DK rune stuff
 	if IceHUD.WowVer >= 30000 then
-		self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
+		if GetCVarBool("predictedPower") and self.frame then
+			self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
+		else
+			self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
+		end
+		self:RegisterEvent("UNIT_MAXRUNIC_POWER", "Update")
 	end
-	
+
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
 	self:ManaType(self.unit)
@@ -140,9 +145,9 @@ function PlayerMana.prototype:ManaType(unit)
 	if (unit ~= self.unit) then
 		return
 	end
-	
+
 	self.manaType = UnitPowerType(self.unit)
-	
+
 	-- register ticker for rogue energy
 	if (self.moduleSettings.tickerEnabled and (self.manaType == 3) and self.alive) then
 		self.tickerFrame:Show()
