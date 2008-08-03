@@ -162,7 +162,6 @@ end
 
 -- simply shows/hides the foreground rune when it becomes usable/unusable. this allows the background transparent rune to show only
 function Runes.prototype:UpdateRunePower(rune, usable)
-	DEFAULT_CHAT_FRAME:AddMessage("Runes.prototype:UpdateRunePower: rune="..rune.." usable="..(usable and "yes" or "no"));
 	if not rune or not self.frame.graphical or #self.frame.graphical <= rune then
 		return
 	end
