@@ -12,9 +12,9 @@ local RUNETYPE_CHROMATIC = 4;
 -- setup the names to be more easily readable
 Runes.prototype.runeNames = {
 	[RUNETYPE_BLOOD] = "Blood",
-	[RUNETYPE_DEATH] = "Death",
+	[RUNETYPE_DEATH] = "Unholy",
 	[RUNETYPE_FROST] = "Frost",
-	[RUNETYPE_CHROMATIC] = "Chromatic",
+	[RUNETYPE_CHROMATIC] = "Death",
 }
 
 Runes.prototype.runeSize = 25
@@ -26,7 +26,7 @@ function Runes.prototype:init()
 	Runes.super.prototype.init(self, "Runes")
 
 	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_BLOOD], 255, 0, 0)
-	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_DEATH], 229, 119, 229)
+	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_DEATH], 0, 229, 0)
 	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_FROST], 88, 195, 239)
 	-- todo: i guess i should figure out the chromatic rune's default color...set to white for now
 	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_CHROMATIC], 255, 255, 255)
@@ -184,19 +184,15 @@ function Runes.prototype:UpdateRuneType(rune)
 
 	local thisRuneName = self.runeNames[GetRuneType(rune)]
 
-	self.frame.graphicalBG[rune]:SetStatusBarTexture(self:GetRuneTexture(thisRuneName, true))
+	self.frame.graphicalBG[rune]:SetStatusBarTexture(self:GetRuneTexture(thisRuneName))
 	self.frame.graphicalBG[rune]:SetStatusBarColor(self:GetColor("Runes"..thisRuneName))
 
 	self.frame.graphical[rune]:SetStatusBarTexture(self:GetRuneTexture(thisRuneName))
 	self.frame.graphical[rune]:SetStatusBarColor(self:GetColor("Runes"..thisRuneName))
 end
 
-function Runes.prototype:GetRuneTexture(runeName, bg)
-	if bg then
-		return "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-"..runeName.."-Off.tga"
-	else
-		return "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-"..runeName.."-On.tga"
-	end
+function Runes.prototype:GetRuneTexture(runeName)
+	return "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-"..runeName
 end
 
 -- 'Protected' methods --------------------------------------------------------
@@ -243,7 +239,7 @@ function Runes.prototype:CreateRune(i, type, name)
 	if (not self.frame.graphicalBG[i]) then
 		self.frame.graphicalBG[i] = CreateFrame("StatusBar", nil, self.frame)
 
-		self.frame.graphicalBG[i]:SetStatusBarTexture(self:GetRuneTexture(name, true))
+		self.frame.graphicalBG[i]:SetStatusBarTexture(self:GetRuneTexture(name))
 	end
 
 	self.frame.graphicalBG[i]:SetFrameStrata("BACKGROUND")
