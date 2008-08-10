@@ -203,15 +203,15 @@ function SunderCount.prototype:CreateSunderFrame()
 end
 
 
-function SunderCount.prototype:GetDebuffCount(unit, ability)
+function SunderCount.prototype:GetDebuffCount(unit, ability, onlyMine)
 	for i = 1, MAX_DEBUFF_COUNT do
-		local name, _, texture, applications = UnitDebuff(unit, i)
+		local name, _, texture, applications, _, duration = UnitDebuff(unit, i)
 
 		if not texture then
 			break
 		end
 
-		if string.match(texture, ability) then
+		if string.match(texture, ability) and (not onlyMine or duration) then
 			return applications
 		end
 	end
