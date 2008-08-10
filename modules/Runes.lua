@@ -54,7 +54,7 @@ function Runes.prototype:GetOptions()
 			self:Redraw()
 		end,
 		min = -300,
-		max = 200,
+		max = 300,
 		step = 10,
 		disabled = function()
 			return not self.moduleSettings.enabled
