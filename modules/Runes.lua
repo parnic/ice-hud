@@ -162,7 +162,7 @@ end
 
 -- simply shows/hides the foreground rune when it becomes usable/unusable. this allows the background transparent rune to show only
 function Runes.prototype:UpdateRunePower(rune, usable)
-	if not rune or not self.frame.graphical or #self.frame.graphical <= rune then
+	if not rune or not self.frame.graphical or #self.frame.graphical < rune then
 		return
 	end
 
@@ -245,7 +245,16 @@ function Runes.prototype:CreateRune(i, type, name)
 	self.frame.graphicalBG[i]:SetFrameStrata("BACKGROUND")
 	self.frame.graphicalBG[i]:SetWidth(self.runeSize)
 	self.frame.graphicalBG[i]:SetHeight(self.runeSize)
-	self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.runeSize-5) + (i-1), 0)
+	-- hax for blizzard's swapping the unholy and frost rune placement on the default ui...
+	local runeSwapI
+	if i == 3 or i == 4 then
+		runeSwapI = i + 2
+	elseif i == 5 or i == 6 then
+		runeSwapI = i - 2
+	else
+		runeSwapI = i
+	end
+	self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (runeSwapI-1) * (self.runeSize-5) + (runeSwapI-1), 0)
 	self.frame.graphicalBG[i]:SetAlpha(0.25)
 
 	self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("Runes"..name))

@@ -41,11 +41,11 @@ function TargetMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_FLAGS", "Update")
 	-- DK rune stuff
 	if IceHUD.WowVer >= 30000 then
-		if GetCVarBool("predictedPower") and self.frame then
-			self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
-		else
+--		if GetCVarBool("predictedPower") and self.frame then
+--			self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
+--		else
 			self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
-		end
+--		end
 		self:RegisterEvent("UNIT_MAXRUNIC_POWER", "Update")
 	end
 
