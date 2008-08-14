@@ -34,7 +34,8 @@ end
 -- OVERRIDE
 function PlayerMana.prototype:GetOptions()
 	local opts = PlayerMana.super.prototype.GetOptions(self)
-	
+
+if self:ShouldUseTicker() then
 	opts["tickerEnabled"] = {
 		type = "toggle",
 		name = "Show rogue/cat energy ticker",
@@ -72,7 +73,7 @@ function PlayerMana.prototype:GetOptions()
 		end,
 		order = 52
 	}
-
+end
 	opts["scaleManaColor"] = {
 		type = "toggle",
 		name = "Color bar by mana %",
@@ -99,25 +100,35 @@ function PlayerMana.prototype:Enable(core)
 
 	self:CreateTickerFrame()
 
-	self:RegisterEvent("UNIT_MANA", "Update")
 	self:RegisterEvent("UNIT_MAXMANA", "Update")
-	self:RegisterEvent("UNIT_RAGE", "Update")
 	self:RegisterEvent("UNIT_MAXRAGE", "Update")
-	self:RegisterEvent("UNIT_ENERGY", "UpdateEnergy")
 	self:RegisterEvent("UNIT_MAXENERGY", "Update")
-	-- DK rune stuff
+	-- DK rune / wotlk stuff
 	if IceHUD.WowVer >= 30000 then
---		if GetCVarBool("predictedPower") and self.frame then
---			self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
---		else
+		-- allow new 'predicted power' stuff to show the power updates constantly instead of ticking
+		if GetCVarBool("predictedPower") and self.frame then
+			self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
+		else
+			self:RegisterEvent("UNIT_MANA", "Update")
+			self:RegisterEvent("UNIT_RAGE", "Update")
+			self:RegisterEvent("UNIT_ENERGY", "UpdateEnergy")
 			self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
---		end
+		end
+
 		self:RegisterEvent("UNIT_MAXRUNIC_POWER", "Update")
+	else
+		self:RegisterEvent("UNIT_MANA", "Update")
+		self:RegisterEvent("UNIT_RAGE", "Update")
+		self:RegisterEvent("UNIT_ENERGY", "UpdateEnergy")
 	end
 
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
 	self:ManaType(self.unit)
+end
+
+function PlayerMana.prototype:ShouldUseTicker()
+	return IceHUD.WowVer < 30000 or not GetCVarBool("predictedPower")
 end
 
 
@@ -148,15 +159,17 @@ function PlayerMana.prototype:ManaType(unit)
 
 	self.manaType = UnitPowerType(self.unit)
 
-	-- register ticker for rogue energy
-	if (self.moduleSettings.tickerEnabled and (self.manaType == 3) and self.alive) then
-		self.tickerFrame:Show()
-		self.tickerFrame:SetScript("OnUpdate", function() self:EnergyTick() end)
-	else
-		self.tickerFrame:Hide()
-		self.tickerFrame:SetScript("OnUpdate", nil)
+	if self:ShouldUseTicker() then
+		-- register ticker for rogue energy
+		if (self.moduleSettings.tickerEnabled and (self.manaType == 3) and self.alive) then
+			self.tickerFrame:Show()
+			self.tickerFrame:SetScript("OnUpdate", function() self:EnergyTick() end)
+		else
+			self.tickerFrame:Hide()
+			self.tickerFrame:SetScript("OnUpdate", nil)
+		end
 	end
-	
+
 	self:Update(self.unit)
 end
 
@@ -166,8 +179,8 @@ function PlayerMana.prototype:Update(unit)
 	if (unit and (unit ~= "player")) then
 		return
 	end
-	
-	if (self.manaType ~= 3) then
+
+	if (self.manaType ~= 3 and self:ShouldUseTicker()) then
 		self.tickerFrame:Hide()
 	end
 	
@@ -186,13 +199,15 @@ function PlayerMana.prototype:Update(unit)
 	end
 	
 	self:UpdateBar(self.mana/self.maxMana, color)
-	
-	-- hide ticker if rest of the bar is not visible
-	if (self.alpha == 0) then
- 		self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", 0))
- 	else
- 		self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
- 	end
+
+	if self:ShouldUseTicker() then
+		-- hide ticker if rest of the bar is not visible
+		if (self.alpha == 0) then
+	 		self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", 0))
+	 	else
+	 		self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
+	 	end
+	end
 
 	if not AceLibrary:HasInstance("LibDogTag-3.0") then
 		-- extra hack for whiny rogues (are there other kind?)
@@ -226,11 +241,10 @@ end
 
 
 function PlayerMana.prototype:UpdateEnergy(unit)
-	if (unit and (unit ~= "player")) then
+	if (unit and (unit ~= "player")) or (not self:ShouldUseTicker()) then
 		return
 	end
-	
-	
+
 	if ((not (self.previousEnergy) or (self.previousEnergy <= UnitMana(self.unit))) and
 		(self.moduleSettings.tickerEnabled)) then
 			self.tickStart = GetTime()
@@ -243,6 +257,10 @@ end
 
 
 function PlayerMana.prototype:EnergyTick()
+	if not self:ShouldUseTicker() then
+		return
+	end
+
 	if not (self.tickStart) then
 		self.tickerFrame:Hide()
 		return
@@ -269,6 +287,10 @@ end
 
 
 function PlayerMana.prototype:CreateTickerFrame()
+	if not self:ShouldUseTicker() then
+		return
+	end
+
 	if not (self.tickerFrame) then
 		self.tickerFrame = CreateFrame("StatusBar", nil, self.barFrame)
 	end

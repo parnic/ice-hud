@@ -29,24 +29,30 @@ end
 function TargetMana.prototype:Enable(core)
 	TargetMana.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("UNIT_MANA", "Update")
 	self:RegisterEvent("UNIT_MAXMANA", "Update")
-	self:RegisterEvent("UNIT_RAGE", "Update")
 	self:RegisterEvent("UNIT_MAXRAGE", "Update")
-	self:RegisterEvent("UNIT_ENERGY", "Update")
 	self:RegisterEvent("UNIT_MAXENERGY", "Update")
-	self:RegisterEvent("UNIT_FOCUS", "Update")
 	self:RegisterEvent("UNIT_MAXFOCUS", "Update")
 	self:RegisterEvent("UNIT_AURA", "Update")
 	self:RegisterEvent("UNIT_FLAGS", "Update")
 	-- DK rune stuff
 	if IceHUD.WowVer >= 30000 then
---		if GetCVarBool("predictedPower") and self.frame then
---			self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
---		else
+		if GetCVarBool("predictedPower") and self.frame then
+			self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
+		else
+			self:RegisterEvent("UNIT_MANA", "Update")
+			self:RegisterEvent("UNIT_RAGE", "Update")
+			self:RegisterEvent("UNIT_ENERGY", "Update")
+			self:RegisterEvent("UNIT_FOCUS", "Update")
 			self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
---		end
+		end
+
 		self:RegisterEvent("UNIT_MAXRUNIC_POWER", "Update")
+	else
+		self:RegisterEvent("UNIT_MANA", "Update")
+		self:RegisterEvent("UNIT_RAGE", "Update")
+		self:RegisterEvent("UNIT_ENERGY", "Update")
+		self:RegisterEvent("UNIT_FOCUS", "Update")
 	end
 
 	self:Update("target")
