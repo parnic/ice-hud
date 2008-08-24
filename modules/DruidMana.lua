@@ -44,8 +44,17 @@ function DruidMana.prototype:Enable(core)
 
 	if LibDruidMana then
 		self:RegisterEvent("UPDATE_SHAPESHIFT_FORM", "Update")
-		self:RegisterEvent("UNIT_MANA", "Update")
 		self:RegisterEvent("UNIT_MAXMANA", "Update")
+
+		if IceHUD.WowVer >= 30000 then
+			if GetCVarBool("predictedPower") and self.frame then
+				self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
+			else
+				self:RegisterEvent("UNIT_MANA", "Update")
+			end
+		else
+			self:RegisterEvent("UNIT_MANA", "Update")
+		end
 	end
 end
 

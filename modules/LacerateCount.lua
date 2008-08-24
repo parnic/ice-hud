@@ -205,7 +205,12 @@ end
 
 function LacerateCount.prototype:GetDebuffCount(unit, ability, onlyMine)
 	for i = 1, MAX_DEBUFF_COUNT do
-		local name, _, texture, applications, _, duration = UnitDebuff(unit, i)
+		local name, texture, applications, duration
+		if IceHUD.WowVer >= 30000 then
+			name, _, texture, applications, _, _, duration = UnitDebuff(unit, i)
+		else
+			name, _, texture, applications, _, duration = UnitDebuff(unit, i)
+		end
 
 		if not texture then
 			break

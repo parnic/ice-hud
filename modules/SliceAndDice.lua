@@ -13,6 +13,8 @@ local impSndTalentPage = 2
 local impSndTalentIdx = 4
 local impSndBonusPerRank = 0.15
 local maxComboPoints = 5
+local sndEndTime = 0
+local sndDuration = 0
 
 local CurrMaxSnDDuration = 0
 local PotentialSnDDuration = 0
@@ -35,11 +37,14 @@ end
 function SliceAndDice.prototype:Enable(core)
 	SliceAndDice.super.prototype.Enable(self, core)
 	
-	self:RegisterEvent("PLAYER_AURAS_CHANGED", "UpdateSliceAndDice")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateDurationBar")
-	self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateDurationBar")
-
-	self:ScheduleRepeatingEvent(self.elementName, self.UpdateSliceAndDice, 0.1, self)
+	if IceHUD.WowVer >= 30000 then
+		self:RegisterEvent("UNIT_AURA", "UpdateSliceAndDice")
+		self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateDurationBar")
+	else
+		self:RegisterEvent("PLAYER_AURAS_CHANGED", "UpdateSliceAndDice")
+		self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateDurationBar")
+	end
 
 	self:Show(false)
 
@@ -159,47 +164,94 @@ end
 
 -- 'Protected' methods --------------------------------------------------------
 
-function _GetBuffDuration(unitName, buffName)
+function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
     local i = 1
-    local buff, rank, texture, count, duration, remaining = UnitBuff(unitName, i)
+    local buff, rank, texture, count, type, duration, endTime, remaining
+    if IceHUD.WowVer >= 30000 then
+        buff, rank, texture, count, type, duration, endTime = UnitBuff(unitName, i)
+    else
+        buff, rank, texture, count, duration, remaining = UnitBuff(unitName, i)
+    end
 
     while buff do
         if (texture and string.match(texture, buffName)) then
+            if endTime and not remaining then
+                remaining = endTime - GetTime()
+            end
             return duration, remaining
         end
 
         i = i + 1;
 
-        buff, rank, texture, count, duration, remaining = UnitBuff(unitName, i)
+        if IceHUD.WowVer >= 30000 then
+            buff, rank, texture, count, type, duration, endTime = UnitBuff(unitName, i)
+        else
+            buff, rank, texture, count, duration, remaining = UnitBuff(unitName, i)
+        end
     end
 
     return nil, nil
 end
 
-function SliceAndDice.prototype:UpdateSliceAndDice()
-    local duration, remaining = _GetBuffDuration("player", "Ability_Rogue_SliceDice")
+function SliceAndDice.prototype:UpdateSliceAndDice(unit, fromUpdate)
+    if unit and unit ~= self.unit then
+        return
+    end
 
-    if duration ~= nil and remaining ~= nil then
+    local now = GetTime()
+    local remaining = nil
+
+    if not fromUpdate or IceHUD.WowVer < 30000 then
+        sndDuration, remaining = self:GetBuffDuration(self.unit, "Ability_Rogue_SliceDice")
+
+	if not remaining then
+            sndEndTime = 0
+	else
+            sndEndTime = remaining + now
+        end
+    end
+
+    if sndEndTime and sndEndTime >= now then
+        if not fromUpdate then
+            self.frame:SetScript("OnUpdate", function() self:UpdateSliceAndDice(self.unit, true) end)
+        end
+
         self:Show(true)
-        self:UpdateBar(remaining / (self.moduleSettings.showAsPercentOfMax and CurrMaxSnDDuration or duration), "SliceAndDice")
+        if not remaining then
+            remaining = sndEndTime - now
+        end
+        self:UpdateBar(remaining / (self.moduleSettings.showAsPercentOfMax and CurrMaxSnDDuration or sndDuration), "SliceAndDice")
 
         formatString = self.moduleSettings.upperText or ''
     else
 	self:UpdateBar(0, "SliceAndDice")
 
-	if GetComboPoints("target") == 0 or not UnitExists("target") then
-	        self:Show(false)
+	if ((IceHUD.WowVer >= 30000 and GetComboPoints(self.unit, "target") == 0) or (IceHUD.WowVer < 30000 and GetComboPoints("target") == 0)) or not UnitExists("target") then
+            if self.bIsVisible then
+                self.frame:SetScript("OnUpdate", nil)
+            end
+
+            self:Show(false)
 	end
     end
 
     -- somewhat redundant, but we also need to check potential remaining time
-    if (duration ~= nil and remaining ~= nil) or PotentialSnDDuration > 0 then
+    if (remaining ~= nil) or PotentialSnDDuration > 0 then
         self:SetBottomText1(self.moduleSettings.upperText .. tostring(floor(remaining or 0)) .. " (" .. PotentialSnDDuration .. ")")
     end
 end
 
-function SliceAndDice.prototype:UpdateDurationBar()
-	local points = GetComboPoints("target")
+function SliceAndDice.prototype:UpdateDurationBar(unit)
+	if unit and unit ~= self.unit then
+		return
+	end
+
+	local points
+	if IceHUD.WowVer >= 30000 then
+		points = GetComboPoints(self.unit, "target")
+	else
+		points = GetComboPoints("target")
+	end
 	local scale
 
 	-- first, set the cached upper limit of SnD duration
@@ -225,6 +277,10 @@ function SliceAndDice.prototype:UpdateDurationBar()
 		self.durationFrame.bar:SetTexCoord(1, 0, 1-scale, 1)
 	else
 		self.durationFrame.bar:SetTexCoord(0, 1, 1-scale, 1)
+	end
+
+	if sndEndTime < GetTime() then
+		self:SetBottomText1(self.moduleSettings.upperText .. "0 (" .. PotentialSnDDuration .. ")")
 	end
 end
 

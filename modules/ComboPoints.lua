@@ -126,7 +126,11 @@ function ComboPoints.prototype:Enable(core)
 	ComboPoints.super.prototype.Enable(self, core)
 	
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateComboPoints")
-	self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateComboPoints")
+	if IceHUD.WowVer >= 30000 then
+		self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
+	else
+		self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateComboPoints")
+	end
 end
 
 
@@ -204,7 +208,12 @@ end
 
 
 function ComboPoints.prototype:UpdateComboPoints()
-	local points = GetComboPoints("target")
+	local points
+	if IceHUD.WowVer >= 30000 then
+		points = GetComboPoints("player", "target")
+	else
+		points = GetComboPoints("target")
+	end
 
 	if (points == 0) then
 		points = nil
