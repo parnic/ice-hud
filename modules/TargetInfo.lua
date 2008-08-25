@@ -758,7 +758,13 @@ function TargetInfo.prototype:UpdateBuffs()
 			-- cooldown frame
 			if (buffDuration and buffDuration > 0 and
 				buffTimeLeft and buffTimeLeft > 0) then
-				local start = GetTime() - buffDuration + buffTimeLeft
+				local start
+				if IceHUD.WowVer >= 30000 then
+					-- in wotlk, the "bufftimeleft" parameter is actually the ending time for the buff
+					start = buffTimeLeft - buffDuration
+				else
+					start = GetTime() - buffDuration + buffTimeLeft
+				end
 				self.frame.buffFrame.buffs[i].cd:SetCooldown(start, buffDuration)
 				self.frame.buffFrame.buffs[i].fromPlayer = true
 				self.frame.buffFrame.buffs[i].cd:Show()
@@ -796,7 +802,13 @@ function TargetInfo.prototype:UpdateBuffs()
 			-- cooldown frame
 			if (debuffDuration and debuffDuration > 0 and
 				debuffTimeLeft and debuffTimeLeft > 0) then
-				local start = GetTime() - debuffDuration + debuffTimeLeft
+				local start
+				if IceHUD.WowVer >= 30000 then
+					-- in wotlk, the "bufftimeleft" parameter is actually the ending time for the buff
+					start = debuffTimeLeft - debuffDuration
+				else
+					start = GetTime() - debuffDuration + debuffTimeLeft
+				end
 				self.frame.debuffFrame.buffs[i].cd:SetCooldown(start, debuffDuration)
 				self.frame.debuffFrame.buffs[i].fromPlayer = true
 				self.frame.debuffFrame.buffs[i].cd:Show()
