@@ -27,6 +27,7 @@ function PetHealth.prototype:GetDefaultSettings()
 	settings["textVerticalOffset"] = 4
 	settings["upperText"] = "[PercentHP:Round]"
 	settings["lowerText"] = ""
+	settings["barVerticalOffset"] = 35
 
 	return settings
 end

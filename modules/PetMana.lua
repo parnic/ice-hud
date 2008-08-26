@@ -25,6 +25,7 @@ function PetMana.prototype:GetDefaultSettings()
 	settings["textVerticalOffset"] = 4
 	settings["upperText"] = "[PercentMP:Round]"
 	settings["lowerText"] = ""
+	settings["barVerticalOffset"] = 35
 
 	return settings
 end

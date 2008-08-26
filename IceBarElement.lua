@@ -87,6 +87,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["myTagVersion"] = 2
 	settings["widthModifier"] = 0
 	settings["usesDogTagStrings"] = true
+	settings["barVerticalOffset"] = 0
 
 	return settings
 end
@@ -257,6 +258,26 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		set = function(v)
 			self.moduleSettings.widthModifier = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end
+	}
+
+	opts["barVerticalOffset"] = 
+	{
+		type='range',
+		name = '|c' .. self.configColor .. 'Bar vertical offset|r',
+		desc = 'Adjust the vertical placement of this bar',
+		min = -100,
+		max = 100,
+		step = 1,
+		get = function()
+			return self.moduleSettings.barVerticalOffset
+		end,
+		set = function(v)
+			self.moduleSettings.barVerticalOffset = v
 			self:Redraw()
 		end,
 		disabled = function()
@@ -515,7 +536,7 @@ function IceBarElement.prototype:CreateBackground()
 	end	
 	
 	self.frame:ClearAllPoints()
-	self.frame:SetPoint("BOTTOM"..ownPoint, self.parent, "BOTTOM"..self.moduleSettings.side, offx, 0)
+	self.frame:SetPoint("BOTTOM"..ownPoint, self.parent, "BOTTOM"..self.moduleSettings.side, offx, self.moduleSettings.barVerticalOffset)
 end
 
 

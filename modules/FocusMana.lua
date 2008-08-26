@@ -23,6 +23,7 @@ function FocusMana.prototype:GetDefaultSettings()
 	settings["scale"] = 0.7
 	settings["upperText"] = "[PercentMP:Round]"
 	settings["lowerText"] = ""
+	settings["barVerticalOffset"] = 35
 
 	return settings
 end

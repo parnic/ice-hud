@@ -36,6 +36,7 @@ function FocusHealth.prototype:GetDefaultSettings()
 	settings["raidIconYOffset"] = 0
 	settings["lockIconAlpha"] = false
 	settings["abbreviateHealth"] = true
+	settings["barVerticalOffset"] = 35
 
 	return settings
 end
