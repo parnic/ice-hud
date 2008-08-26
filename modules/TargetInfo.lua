@@ -626,6 +626,7 @@ end
 
 function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 	local lastX = 0
+	local lastBuffSize = 0
 
 	for i = 1, IceCore.BuffLimit do
 		if (not buffs[i]) then
@@ -664,19 +665,17 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 			buffSize = self.moduleSettings.ownBuffSize
 		end
 
-		local pos = math.fmod(i, self.moduleSettings.perRow)
-		if (pos == 0) then
-			pos = self.moduleSettings.perRow
-		elseif (pos == 1) then
-			lastX = (((pos-1) * buffSize) + pos) * direction
-		end
-
-		local x = lastX + (buffSize * direction)
+		local x = lastX + lastBuffSize
 		lastX = x
+		lastBuffSize = (buffSize * direction)
 		local y = math.floor((i-1) / self.moduleSettings.perRow) * math.max(self.moduleSettings.buffSize, self.moduleSettings.ownBuffSize) * -1
 
 		buffs[i]:ClearAllPoints()
-		buffs[i]:SetPoint("TOP", x, y)
+		if direction < 0 then
+			buffs[i]:SetPoint("TOPRIGHT", x, y)
+		else
+			buffs[i]:SetPoint("TOPLEFT", x, y)
+		end
 
 
 		buffs[i].icon:ClearAllPoints()
