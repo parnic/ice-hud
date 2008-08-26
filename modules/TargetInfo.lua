@@ -665,6 +665,12 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 			buffSize = self.moduleSettings.ownBuffSize
 		end
 
+		local pos = i % self.moduleSettings.perRow
+		if pos == 1 or self.moduleSettings.perRow == 1 then
+			lastX = 0
+			lastBuffSize = 0
+		end
+
 		local x = lastX + lastBuffSize
 		lastX = x
 		lastBuffSize = (buffSize * direction)
