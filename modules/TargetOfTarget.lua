@@ -119,6 +119,44 @@ function TargetOfTarget.prototype:GetOptions()
 		validate = SML:List(SML.MediaType.STATUSBAR),
 		order = 35
 	}
+
+	opts["sizeToGap"] = {
+		type = 'toggle',
+		name = 'Size to gap',
+		desc = "Automatically size this module to the addon's 'gap' setting",
+		get = function()
+			return self.moduleSettings.sizeToGap
+		end,
+		set = function(v)
+			self.moduleSettings.sizeToGap = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end
+	}
+
+	opts["totWidth"] = {
+		type = 'range',
+		name = 'Width',
+		desc = "Sets the width of this module if 'size to gap' is not set",
+		min = 100,
+		max = 600,
+		step = 1,
+		get = function()
+			return self.moduleSettings.totWidth
+		end,
+		set = function(v)
+			self.moduleSettings.totWidth = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return self.moduleSettings.sizeToGap
+		end
+	}
 	
 	return opts
 end
@@ -132,6 +170,8 @@ function TargetOfTarget.prototype:GetDefaultSettings()
 	defaults["fontSize"] = 15
 	defaults["mouse"] = true
 	defaults["texture"] = "Blizzard"
+	defaults["sizeToGap"] = true
+	defaults["totWidth"] = 200
 	return defaults
 end
 
@@ -176,7 +216,11 @@ function TargetOfTarget.prototype:CreateFrame()
 	end
 
 	self.frame:SetFrameStrata("BACKGROUND")
-	self.frame:SetWidth(self.settings.gap)
+	if self.moduleSettings.sizeToGap then
+		self.frame:SetWidth(self.settings.gap)
+	else
+		self.frame:SetWidth(self.moduleSettings.totWidth)
+	end
 	self.frame:SetHeight(self.height)
 	self.frame:SetPoint("TOP", self.parent, "TOP", 0, self.moduleSettings.vpos)
 	self.frame:SetScale(self.moduleSettings.scale)
@@ -219,7 +263,11 @@ function TargetOfTarget.prototype:CreateBarFrame()
 	end
 
 	self.frame.bar:SetFrameStrata("BACKGROUND")
-	self.frame.bar:SetWidth(self.settings.gap)
+	if self.moduleSettings.sizeToGap then
+		self.frame.bar:SetWidth(self.settings.gap)
+	else
+		self.frame.bar:SetWidth(self.moduleSettings.totWidth)
+	end
 	self.frame.bar:SetHeight(self.height)
 
 	self.frame.bar:SetPoint("LEFT", self.frame, "LEFT", 0, 0)
@@ -249,7 +297,11 @@ end
 function TargetOfTarget.prototype:CreateToTFrame()
 	self.frame.totName = self:FontFactory(self.moduleSettings.fontSize, self.frame.bar, self.frame.totName)
 	
-	self.frame.totName:SetWidth(self.settings.gap-40)
+	if self.moduleSettings.sizeToGap then
+		self.frame.totName:SetWidth(self.settings.gap-40)
+	else
+		self.frame.totName:SetWidth(self.moduleSettings.totWidth-40)
+	end
 	self.frame.totName:SetHeight(self.height)
 	self.frame.totName:SetJustifyH("LEFT")
 	self.frame.totName:SetJustifyV("TOP")
