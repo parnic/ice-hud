@@ -48,6 +48,26 @@ function TargetOfTarget.prototype:GetOptions()
 		order = 31
 	}
 
+	opts["hpos"] = {
+		type = "range",
+		name = "Horizontal Position",
+		desc = "Horizontal Position",
+		get = function()
+			return self.moduleSettings.hpos
+		end,
+		set = function(v)
+			self.moduleSettings.hpos = v
+			self:Redraw()
+		end,
+		min = -500,
+		max = 500,
+		step = 10,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 31.5
+	}
+
 	opts["showDebuffs"] = {
 		type = "toggle",
 		name = "Show stacking debuffs",
@@ -166,6 +186,7 @@ end
 function TargetOfTarget.prototype:GetDefaultSettings()
 	local defaults =  TargetOfTarget.super.prototype.GetDefaultSettings(self)
 	defaults["vpos"] = -130
+	defaults["hpos"] = 0
 	defaults["showDebuffs"] = true
 	defaults["fontSize"] = 15
 	defaults["mouse"] = true
@@ -222,7 +243,7 @@ function TargetOfTarget.prototype:CreateFrame()
 		self.frame:SetWidth(self.moduleSettings.totWidth)
 	end
 	self.frame:SetHeight(self.height)
-	self.frame:SetPoint("TOP", self.parent, "TOP", 0, self.moduleSettings.vpos)
+	self.frame:SetPoint("TOP", self.parent, "TOP", self.moduleSettings.hpos, self.moduleSettings.vpos)
 	self.frame:SetScale(self.moduleSettings.scale)
 	
 	

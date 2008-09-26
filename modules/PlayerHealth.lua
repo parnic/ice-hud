@@ -23,6 +23,7 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["upperText"] = "[PercentHP:Round]"
 	settings["lowerText"] = "[FractionalHP:HPColor:Bracket]"
 	settings["allowMouseInteraction"] = true
+	settings["allowMouseInteractionCombat"] = false
 	settings["lockIconAlpha"] = false
 
 	settings["showStatusIcon"] = true
@@ -151,6 +152,24 @@ function PlayerHealth.prototype:GetOptions()
 		end,
 		usage = '',
 		order = 43
+	}
+
+	opts["allowClickTargetCombat"] = {
+		type = 'toggle',
+		name = 'Allow click-targeting in combat',
+		desc = 'Whether or not to allow click targeting/casting and the player drop-down menu for this bar while the player is in combat (Note: does not work properly with HiBar, have to click near the base of the bar)',
+		get = function()
+			return self.moduleSettings.allowMouseInteractionCombat
+		end,
+		set = function(v)
+			self.moduleSettings.allowMouseInteractionCombat = v
+			self:CreateBackground(true)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not self.moduleSettings.allowMouseInteraction
+		end,
+		usage = '',
+		order = 43.5
 	}
 
 	opts["iconSettings"] =
@@ -515,7 +534,12 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "cursor");
 	end
 
-	if self.moduleSettings.allowMouseInteraction then
+	self:EnableClickTargeting(self.moduleSettings.allowMouseInteraction)
+end
+
+
+function PlayerHealth.prototype:EnableClickTargeting(bEnable)
+	if bEnable then
 		self.frame.button:EnableMouse(true)
 		self.frame.button:RegisterForClicks("AnyUp")
 		self.frame.button:SetAttribute("type1", "target")
@@ -572,6 +596,16 @@ end
 
 function PlayerHealth.prototype:CheckCombat()
 	PlayerHealth.super.prototype.CheckCombat(self)
+
+	if self.combat then
+		if self.moduleSettings.allowMouseInteraction and not self.moduleSettings.allowMouseInteractionCombat then
+			self:EnableClickTargeting(false)
+		end
+	else
+		if self.moduleSettings.allowMouseInteraction and not self.moduleSettings.allowMouseInteractionCombat then
+			self:EnableClickTargeting(true)
+		end
+	end
 
 	if self.combat or configMode then
 		if (configMode or self.moduleSettings.showStatusIcon) and not self.frame.statusIcon then
