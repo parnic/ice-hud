@@ -439,13 +439,29 @@ function IceCore.prototype:LoadPresets()
 		barProportion = 0.14,
 		barSpace = 1,
 	}
-	
-	self.presets["UBar"] = {
-		barTexture = "UBar",
-		barWidth = 155,
+
+	self.presets["ColorBar"] = {
+		barTexture = "ColorBar",
+		barWidth = 120,
 		barHeight = 220,
-		barProportion = 0.14,
-		barSpace = 1,
+		barProportion = 0.15,
+		barSpace = 3,
+	}
+
+	self.presets["RivetBar"] = {
+		barTexture = "RivetBar",
+		barWidth = 120,
+		barHeight = 220,
+		barProportion = 0.15,
+		barSpace = 3,
+	}
+
+	self.presets["RivetBar2"] = {
+		barTexture = "RivetBar2",
+		barWidth = 120,
+		barHeight = 220,
+		barProportion = 0.15,
+		barSpace = 3,
 	}
 end
 
