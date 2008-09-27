@@ -37,7 +37,7 @@ end
 function SliceAndDice.prototype:Enable(core)
 	SliceAndDice.super.prototype.Enable(self, core)
 	
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateDurationBar")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
 	if IceHUD.WowVer >= 30000 then
 		self:RegisterEvent("UNIT_AURA", "UpdateSliceAndDice")
 		self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateDurationBar")
@@ -49,6 +49,11 @@ function SliceAndDice.prototype:Enable(core)
 	self:Show(false)
 
 	self:SetBottomText1("")
+end
+
+function SliceAndDice.prototype:TargetChanged()
+	self:UpdateDurationBar()
+	self:UpdateSliceAndDice()
 end
 
 function SliceAndDice.prototype:Disable(core)
@@ -226,7 +231,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(unit, fromUpdate)
     else
 	self:UpdateBar(0, "SliceAndDice")
 
-	if ((IceHUD.WowVer >= 30000 and GetComboPoints(self.unit, "target") == 0) or (IceHUD.WowVer < 30000 and GetComboPoints("target") == 0)) or not UnitExists("target") then
+	if ((IceHUD.WowVer >= 30000 and GetComboPoints(self.unit, "target") == 0) or (IceHUD.WowVer < 30000 and GetComboPoints() == 0)) or not UnitExists("target") then
             if self.bIsVisible then
                 self.frame:SetScript("OnUpdate", nil)
             end
@@ -348,6 +353,12 @@ function SliceAndDice.prototype:IsItemIdInList(itemId, list)
 	end
 
 	return false
+end
+
+function SliceAndDice.prototype:OutCombat()
+	SliceAndDice.super.prototype.OutCombat(self)
+
+	self:UpdateSliceAndDice()
 end
 
 local _, unitClass = UnitClass("player")

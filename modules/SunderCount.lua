@@ -71,9 +71,10 @@ function SunderCount.prototype:GetOptions()
 		end,
 		set = function(v)
 			self.moduleSettings.sunderMode = v
+			self:CreateSunderFrame(true)
 			self:Redraw()
 		end,
-		validate = { "Numeric", "Graphical" },
+		validate = { "Numeric", "Graphical Bar", "Graphical Circle" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -128,6 +129,12 @@ function SunderCount.prototype:Enable(core)
 	
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateSunderCount")
 	self:RegisterEvent("UNIT_AURA", "UpdateSunderCount")
+
+	if self.moduleSettings.sunderMode == "Graphical" then
+		self.moduleSettings.sunderMode = "Graphical Bar"
+	end
+
+	self:CreateSunderFrame(true)
 end
 
 
@@ -151,7 +158,7 @@ end
 
 
 
-function SunderCount.prototype:CreateSunderFrame()
+function SunderCount.prototype:CreateSunderFrame(doTextureUpdate)
 
 	-- create numeric sunders
 	self.frame.numeric = self:FontFactory(self.moduleSettings.sunderFontSize, nil, self.frame.numeric)
@@ -171,8 +178,16 @@ function SunderCount.prototype:CreateSunderFrame()
 	for i = 1, 5 do
 		if (not self.frame.graphicalBG[i]) then
 			self.frame.graphicalBG[i] = CreateFrame("StatusBar", nil, self.frame)
-			self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboBG")
 		end
+
+		if doTextureUpdate then
+			if self.moduleSettings.sunderMode == "Graphical Bar" then
+				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboBG")
+			elseif self.moduleSettings.sunderMode == "Graphical Circle" then
+				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRoundBG")
+			end
+		end
+
 		self.frame.graphicalBG[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphicalBG[i]:SetWidth(self.sunderSize)
 		self.frame.graphicalBG[i]:SetHeight(self.sunderSize)
@@ -187,8 +202,16 @@ function SunderCount.prototype:CreateSunderFrame()
 	for i = 1, 5 do
 		if (not self.frame.graphical[i]) then
 			self.frame.graphical[i] = CreateFrame("StatusBar", nil, self.frame)
-			self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "Combo")
 		end
+
+		if doTextureUpdate then
+			if self.moduleSettings.sunderMode == "Graphical Bar" then
+				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "Combo")
+			elseif self.moduleSettings.sunderMode == "Graphical Circle" then
+				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRound")
+			end
+		end
+
 		self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphical[i]:SetAllPoints(self.frame.graphicalBG[i])
 

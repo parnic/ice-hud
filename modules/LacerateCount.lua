@@ -71,9 +71,10 @@ function LacerateCount.prototype:GetOptions()
 		end,
 		set = function(v)
 			self.moduleSettings.lacerateMode = v
+			self:CreateLacerateFrame(true)
 			self:Redraw()
 		end,
-		validate = { "Numeric", "Graphical" },
+		validate = { "Numeric", "Graphical Bar", "Graphical Circle" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -128,6 +129,12 @@ function LacerateCount.prototype:Enable(core)
 	
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateLacerateCount")
 	self:RegisterEvent("UNIT_AURA", "UpdateLacerateCount")
+
+	if self.moduleSettings.lacerateMode == "Graphical" then
+		self.moduleSettings.lacerateMode = "Graphical Bar"
+	end
+
+	self:CreateLacerateFrame(true)
 end
 
 
@@ -151,7 +158,7 @@ end
 
 
 
-function LacerateCount.prototype:CreateLacerateFrame()
+function LacerateCount.prototype:CreateLacerateFrame(doTextureUpdate)
 
 	-- create numeric lacerates
 	self.frame.numeric = self:FontFactory(self.moduleSettings.lacerateFontSize, nil, self.frame.numeric)
@@ -171,8 +178,16 @@ function LacerateCount.prototype:CreateLacerateFrame()
 	for i = 1, 5 do
 		if (not self.frame.graphicalBG[i]) then
 			self.frame.graphicalBG[i] = CreateFrame("StatusBar", nil, self.frame)
-			self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboBG")
 		end
+
+		if doTextureUpdate then
+			if self.moduleSettings.lacerateMode == "Graphical Bar" then
+				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboBG")
+			elseif self.moduleSettings.lacerateMode == "Graphical Circle" then
+				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRoundBG")
+			end
+		end
+
 		self.frame.graphicalBG[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphicalBG[i]:SetWidth(self.lacerateSize)
 		self.frame.graphicalBG[i]:SetHeight(self.lacerateSize)
@@ -187,8 +202,16 @@ function LacerateCount.prototype:CreateLacerateFrame()
 	for i = 1, 5 do
 		if (not self.frame.graphical[i]) then
 			self.frame.graphical[i] = CreateFrame("StatusBar", nil, self.frame)
-			self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "Combo")
 		end
+
+		if doTextureUpdate then
+			if self.moduleSettings.lacerateMode == "Graphical Bar" then
+				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "Combo")
+			elseif self.moduleSettings.lacerateMode == "Graphical Circle" then
+				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRound")
+			end
+		end
+
 		self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphical[i]:SetAllPoints(self.frame.graphicalBG[i])
 

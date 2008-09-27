@@ -70,9 +70,10 @@ function ComboPoints.prototype:GetOptions()
 		end,
 		set = function(v)
 			self.moduleSettings.comboMode = v
+			self:CreateComboFrame(true)
 			self:Redraw()
 		end,
-		validate = { "Numeric", "Graphical" },
+		validate = { "Numeric", "Graphical Bar", "Graphical Circle" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -131,6 +132,12 @@ function ComboPoints.prototype:Enable(core)
 	else
 		self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateComboPoints")
 	end
+
+	if self.moduleSettings.comboMode == "Graphical" then
+		self.moduleSettings.comboMode = "Graphical Bar"
+	end
+
+	self:CreateComboFrame(true)
 end
 
 
@@ -154,7 +161,7 @@ end
 
 
 
-function ComboPoints.prototype:CreateComboFrame()
+function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 
 	-- create numeric combo points
 	self.frame.numeric = self:FontFactory(self.moduleSettings.comboFontSize, nil, self.frame.numeric)
@@ -174,8 +181,16 @@ function ComboPoints.prototype:CreateComboFrame()
 	for i = 1, 5 do
 		if (not self.frame.graphicalBG[i]) then
 			self.frame.graphicalBG[i] = CreateFrame("StatusBar", nil, self.frame)
-			self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboBG")
 		end
+
+		if forceTextureUpdate then
+			if self.moduleSettings.comboMode == "Graphical Bar" then
+				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboBG")
+			elseif self.moduleSettings.comboMode == "Graphical Circle" then
+				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRoundBG")
+			end
+		end
+
 		self.frame.graphicalBG[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphicalBG[i]:SetWidth(self.comboSize)
 		self.frame.graphicalBG[i]:SetHeight(self.comboSize)
@@ -190,8 +205,16 @@ function ComboPoints.prototype:CreateComboFrame()
 	for i = 1, 5 do
 		if (not self.frame.graphical[i]) then
 			self.frame.graphical[i] = CreateFrame("StatusBar", nil, self.frame)
-			self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "Combo")
 		end
+
+		if forceTextureUpdate then
+			if self.moduleSettings.comboMode == "Graphical Bar" then
+				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "Combo")
+			elseif self.moduleSettings.comboMode == "Graphical Circle" then
+				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRound")
+			end
+		end
+
 		self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphical[i]:SetAllPoints(self.frame.graphicalBG[i])
 
@@ -204,8 +227,6 @@ function ComboPoints.prototype:CreateComboFrame()
 		self.frame.graphical[i]:Hide()
 	end
 end
-
-
 
 function ComboPoints.prototype:UpdateComboPoints()
 	local points
