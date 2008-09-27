@@ -457,13 +457,20 @@ function TargetOfTarget.prototype:Update()
 	local health = UnitHealth(self.unit)
 	local maxHealth = UnitHealthMax(self.unit)
 	local healthPercentage = math.floor( (health/maxHealth)*100 )
-	
-	local rColor = UnitReactionColor[reaction or 5]
 
-	self.frame.totName:SetTextColor(rColor.r, rColor.g, rColor.b, 0.9)
+	if IceHUD.WowVer >= 30000 then
+		self.frame.totName:SetTextColor(UnitSelectionColor(self.unit))
+		self.frame.totName:SetAlpha(0.9)
+
+		self.frame.totHealth:SetTextColor(UnitSelectionColor(self.unit))
+		self.frame.totHealth:SetAlpha(0.9)
+	else
+		local rColor = UnitReactionColor[reaction or 5]
+		self.frame.totName:SetTextColor(rColor.r, rColor.g, rColor.b, 0.9)
+		self.frame.totHealth:SetTextColor(rColor.r, rColor.g, rColor.b, 0.9)
+	end
+
 	self.frame.totName:SetText(name)
-
-	self.frame.totHealth:SetTextColor(rColor.r, rColor.g, rColor.b, 0.9)
 	self.frame.totHealth:SetText(healthPercentage .. "%")
 
 	self.frame.bar.texture:SetVertexColor(self:GetColor(unitClass, 0.7))
