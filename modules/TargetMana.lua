@@ -1,11 +1,16 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-local TargetMana = AceOO.Class(IceUnitBar)
+IceTargetMana = AceOO.Class(IceUnitBar)
+IceTargetMana.prototype.registerEvents = true
 
 
 -- Constructor --
-function TargetMana.prototype:init()
-	TargetMana.super.prototype.init(self, "TargetMana", "target")
+function IceTargetMana.prototype:init(moduleName, unit)
+	if not moduleName or not unit then
+		IceTargetMana.super.prototype.init(self, "TargetMana", "target")
+	else
+		IceTargetMana.super.prototype.init(self, moduleName, unit)
+	end
 	
 	self:SetDefaultColor("TargetMana", 52, 64, 221)
 	self:SetDefaultColor("TargetRage", 235, 44, 26)
@@ -14,8 +19,8 @@ function TargetMana.prototype:init()
 end
 
 
-function TargetMana.prototype:GetDefaultSettings()
-	local settings = TargetMana.super.prototype.GetDefaultSettings(self)
+function IceTargetMana.prototype:GetDefaultSettings()
+	local settings = IceTargetMana.super.prototype.GetDefaultSettings(self)
 
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 2
@@ -26,42 +31,44 @@ function TargetMana.prototype:GetDefaultSettings()
 end
 
 
-function TargetMana.prototype:Enable(core)
-	TargetMana.super.prototype.Enable(self, core)
+function IceTargetMana.prototype:Enable(core)
+	IceTargetMana.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("UNIT_MAXMANA", "Update")
-	self:RegisterEvent("UNIT_MAXRAGE", "Update")
-	self:RegisterEvent("UNIT_MAXENERGY", "Update")
-	self:RegisterEvent("UNIT_MAXFOCUS", "Update")
-	self:RegisterEvent("UNIT_AURA", "Update")
-	self:RegisterEvent("UNIT_FLAGS", "Update")
-	-- DK rune stuff
-	if IceHUD.WowVer >= 30000 then
-		if GetCVarBool("predictedPower") and self.frame then
-			self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
+	if self.registerEvents then
+		self:RegisterEvent("UNIT_MAXMANA", "Update")
+		self:RegisterEvent("UNIT_MAXRAGE", "Update")
+		self:RegisterEvent("UNIT_MAXENERGY", "Update")
+		self:RegisterEvent("UNIT_MAXFOCUS", "Update")
+		self:RegisterEvent("UNIT_AURA", "Update")
+		self:RegisterEvent("UNIT_FLAGS", "Update")
+		-- DK rune stuff
+		if IceHUD.WowVer >= 30000 then
+			if GetCVarBool("predictedPower") and self.frame then
+				self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
+			else
+				self:RegisterEvent("UNIT_MANA", "Update")
+				self:RegisterEvent("UNIT_RAGE", "Update")
+				self:RegisterEvent("UNIT_ENERGY", "Update")
+				self:RegisterEvent("UNIT_FOCUS", "Update")
+				self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
+			end
+
+			self:RegisterEvent("UNIT_MAXRUNIC_POWER", "Update")
 		else
 			self:RegisterEvent("UNIT_MANA", "Update")
 			self:RegisterEvent("UNIT_RAGE", "Update")
 			self:RegisterEvent("UNIT_ENERGY", "Update")
 			self:RegisterEvent("UNIT_FOCUS", "Update")
-			self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
 		end
-
-		self:RegisterEvent("UNIT_MAXRUNIC_POWER", "Update")
-	else
-		self:RegisterEvent("UNIT_MANA", "Update")
-		self:RegisterEvent("UNIT_RAGE", "Update")
-		self:RegisterEvent("UNIT_ENERGY", "Update")
-		self:RegisterEvent("UNIT_FOCUS", "Update")
 	end
 
-	self:Update("target")
+	self:Update(self.unit)
 end
 
 
 
-function TargetMana.prototype:Update(unit)
-	TargetMana.super.prototype.Update(self)
+function IceTargetMana.prototype:Update(unit)
+	IceTargetMana.super.prototype.Update(self)
 	if (unit and (unit ~= self.unit)) then
 		return
 	end
@@ -102,8 +109,8 @@ end
 
 
 -- OVERRIDE
-function TargetMana.prototype:GetOptions()
-	local opts = TargetMana.super.prototype.GetOptions(self)
+function IceTargetMana.prototype:GetOptions()
+	local opts = IceTargetMana.super.prototype.GetOptions(self)
 
 	opts["scaleManaColor"] = {
 		type = "toggle",
@@ -127,4 +134,4 @@ end
 
 
 -- Load us up
-IceHUD.TargetMana = TargetMana:new()
+IceHUD.TargetMana = IceTargetMana:new()

@@ -49,3 +49,5 @@ modules\FocusMana.lua
 modules\FocusCast.lua
 modules\LacerateCount.lua
 modules\Runes.lua
+modules\TargetOfTargetHealth.lua
+modules\TargetOfTargetMana.lua

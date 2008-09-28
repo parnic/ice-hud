@@ -1,15 +1,20 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local MobHealth = nil
-local TargetHealth = AceOO.Class(IceUnitBar)
+IceTargetHealth = AceOO.Class(IceUnitBar)
 
-TargetHealth.prototype.color = nil
-
+IceTargetHealth.prototype.color = nil
+IceTargetHealth.prototype.determineColor = true
+IceTargetHealth.prototype.registerEvents = true
 
 -- Constructor --
-function TargetHealth.prototype:init()
-	TargetHealth.super.prototype.init(self, "TargetHealth", "target")
-	
+function IceTargetHealth.prototype:init(moduleName, unit)
+	if not moduleName or not unit then
+		IceTargetHealth.super.prototype.init(self, "TargetHealth", "target")
+	else
+		IceTargetHealth.super.prototype.init(self, moduleName, unit)
+	end
+
 	self:SetDefaultColor("TargetHealthHostile", 231, 31, 36)
 	self:SetDefaultColor("TargetHealthFriendly", 46, 223, 37)
 	self:SetDefaultColor("TargetHealthNeutral", 210, 219, 87)
@@ -18,8 +23,8 @@ function TargetHealth.prototype:init()
 end
 
 
-function TargetHealth.prototype:GetDefaultSettings()
-	local settings = TargetHealth.super.prototype.GetDefaultSettings(self)
+function IceTargetHealth.prototype:GetDefaultSettings()
+	local settings = IceTargetHealth.super.prototype.GetDefaultSettings(self)
 
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 2
@@ -40,8 +45,8 @@ end
 
 
 -- OVERRIDE
-function TargetHealth.prototype:GetOptions()
-	local opts = TargetHealth.super.prototype.GetOptions(self)
+function IceTargetHealth.prototype:GetOptions()
+	local opts = IceTargetHealth.super.prototype.GetOptions(self)
 
 	opts["mobhealth"] = {
 		type = "toggle",
@@ -228,14 +233,16 @@ function TargetHealth.prototype:GetOptions()
 end
 
 
-function TargetHealth.prototype:Enable(core)
-	TargetHealth.super.prototype.Enable(self, core)
+function IceTargetHealth.prototype:Enable(core)
+	IceTargetHealth.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("UNIT_HEALTH", "Update")
-	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
-	self:RegisterEvent("UNIT_FLAGS", "Update")
-	self:RegisterEvent("UNIT_FACTION", "Update")
-	self:RegisterEvent("RAID_TARGET_UPDATE", "UpdateRaidTargetIcon")
+	if self.registerEvents then
+		self:RegisterEvent("UNIT_HEALTH", "Update")
+		self:RegisterEvent("UNIT_MAXHEALTH", "Update")
+		self:RegisterEvent("UNIT_FLAGS", "Update")
+		self:RegisterEvent("UNIT_FACTION", "Update")
+		self:RegisterEvent("RAID_TARGET_UPDATE", "UpdateRaidTargetIcon")
+	end
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
@@ -247,14 +254,15 @@ function TargetHealth.prototype:Enable(core)
 end
 
 
-function TargetHealth.prototype:Disable(core)
-	TargetHealth.super.prototype.Disable(self, core)
+function IceTargetHealth.prototype:Disable(core)
+	IceTargetHealth.super.prototype.Disable(self, core)
 end
 
 
 
-function TargetHealth.prototype:Update(unit)
-	TargetHealth.super.prototype.Update(self)
+function IceTargetHealth.prototype:Update(unit)
+	IceTargetHealth.super.prototype.Update(self)
+
 	if (unit and (unit ~= self.unit)) then
 		return
 	end
@@ -268,25 +276,27 @@ function TargetHealth.prototype:Update(unit)
 
 	self:UpdateRaidTargetIcon()
 
-	self.color = "TargetHealthFriendly" -- friendly > 4
+	if self.determineColor then
+		self.color = "TargetHealthFriendly" -- friendly > 4
 
-	local reaction = UnitReaction("target", "player")
-	if (reaction and (reaction == 4)) then
-		self.color = "TargetHealthNeutral"
-	elseif (reaction and (reaction < 4)) then
-		self.color = "TargetHealthHostile"
-	end
+		local reaction = UnitReaction("target", "player")
+		if (reaction and (reaction == 4)) then
+			self.color = "TargetHealthNeutral"
+		elseif (reaction and (reaction < 4)) then
+			self.color = "TargetHealthHostile"
+		end
 	
-	if (self.moduleSettings.classColor) then
-		self.color = self.unitClass
-	end
+		if (self.moduleSettings.classColor) then
+			self.color = self.unitClass
+		end
 
-	if (self.moduleSettings.scaleHealthColor) then
-		self.color = "ScaledHealthColor"
-	end
+		if (self.moduleSettings.scaleHealthColor) then
+			self.color = "ScaledHealthColor"
+		end
 
-	if (self.tapped) then
-		self.color = "Tapped"
+		if (self.tapped) then
+			self.color = "Tapped"
+		end
 	end
 
 	self:UpdateBar(self.health/self.maxHealth, self.color)
@@ -316,14 +326,10 @@ function TargetHealth.prototype:Update(unit)
 			self:SetBottomText2()
 		end
 	end
-
-	if self.frame.raidIcon then
-		self.frame.raidIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
-	end
 end
 
 
-function TargetHealth.prototype:CreateRaidIconFrame()
+function IceTargetHealth.prototype:CreateRaidIconFrame()
 	if (not self.frame.raidIcon) then
 		self.frame.raidIcon = CreateFrame("Frame", nil, self.frame)
 	end
@@ -342,13 +348,13 @@ function TargetHealth.prototype:CreateRaidIconFrame()
 	self.frame.raidIcon:Hide()
 end
 
-function TargetHealth.prototype:SetRaidIconPlacement()
+function IceTargetHealth.prototype:SetRaidIconPlacement()
 	self.frame.raidIcon:ClearAllPoints()
 	self.frame.raidIcon:SetPoint("BOTTOM", self.frame, "TOPLEFT", self.moduleSettings.raidIconXOffset, self.moduleSettings.raidIconYOffset)
 end
 
 
-function TargetHealth.prototype:UpdateRaidTargetIcon()
+function IceTargetHealth.prototype:UpdateRaidTargetIcon()
 	if self.moduleSettings.raidIconOnTop then
 		self.frame.raidIcon:SetFrameStrata("MEDIUM")
 	else
@@ -368,10 +374,14 @@ function TargetHealth.prototype:UpdateRaidTargetIcon()
 	else
 		self.frame.raidIcon:Hide()
 	end
+
+	if self.frame.raidIcon then
+		self.frame.raidIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
+	end
 end
 
 
-function TargetHealth.prototype:Round(health)
+function IceTargetHealth.prototype:Round(health)
 	if (health > 1000000) then
 		return self:MathRound(health/1000000, 1) .. "M"
 	end
@@ -382,7 +392,7 @@ function TargetHealth.prototype:Round(health)
 end
 
 
-function TargetHealth.prototype:MathRound(num, idp)
+function IceTargetHealth.prototype:MathRound(num, idp)
 	local mult = 10^(idp or 0)
 	return math.floor(num  * mult + 0.5) / mult
 end
@@ -391,7 +401,7 @@ end
 
 
 
-function TargetHealth.prototype:ShowBlizz()
+function IceTargetHealth.prototype:ShowBlizz()
 	TargetFrame:Show()
 	TargetFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
 	TargetFrame:RegisterEvent("UNIT_HEALTH")
@@ -409,7 +419,7 @@ function TargetHealth.prototype:ShowBlizz()
 end
 
 
-function TargetHealth.prototype:HideBlizz()
+function IceTargetHealth.prototype:HideBlizz()
 	TargetFrame:Hide()
 	TargetFrame:UnregisterAllEvents()
 	
@@ -420,4 +430,4 @@ end
 
 
 -- Load us up
-IceHUD.TargetHealth = TargetHealth:new()
+IceHUD.TargetHealth = IceTargetHealth:new()
