@@ -15,5 +15,7 @@
 <Include file="libs\LibDruidMana-1.0\lib.xml"/>
 <Include file="libs\LibSharedMedia-3.0\lib.xml"/>
 <Script file="libs\Waterfall-1.0\Waterfall-1.0.lua"/>
+<Include file="libs\Threat-2.0\embeds.xml"/>
+<Include file="libs\Threat-2.0\Threat-2.0\lib.xml"/>
 
 </Ui>

@@ -51,3 +51,4 @@ modules\LacerateCount.lua
 modules\Runes.lua
 modules\TargetOfTargetHealth.lua
 modules\TargetOfTargetMana.lua
+modules\Threat.lua
