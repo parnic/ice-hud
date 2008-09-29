@@ -1,0 +1,19 @@
+package-as: IceHUD
+
+externals:
+    /LibSharedMedia-3.0: http://svn.wowace.com/wowace/trunk/LibSharedMedia-3.0
+    /AceDebug-2.0: http://svn.wowace.com/wowace/branches/Ace2/WotLK/AceDebug-2.0
+    /LibDruidMana-1.0: http://svn.wowace.com/wowace/trunk/LibDruidMana-1.0
+    /CallbackHandler-1.0: http://svn.wowace.com/wowace/trunk/Ace3/CallbackHandler-1.0
+    /AceEvent-2.0: http://svn.wowace.com/wowace/branches/Ace2/WotLK/AceEvent-2.0
+    /Threat-2.0: http://svn.wowace.com/wowace/trunk/Threat-2.0
+    /Waterfall-1.0: http://svn.wowace.com/wowace/trunk/Waterfall-1.0/Waterfall-1.0
+    /LibDogTag-3.0: http://svn.wowace.com/wowace/trunk/LibDogTag-3.0
+    /AceOO-2.0: http://svn.wowace.com/wowace/branches/Ace2/WotLK/AceOO-2.0
+    /AceAddon-2.0: http://svn.wowace.com/wowace/branches/Ace2/WotLK/AceAddon-2.0
+    /Deformat-2.0: http://svn.wowace.com/wowace/trunk/Deformat/Deformat-2.0
+    /AceLibrary: http://svn.wowace.com/wowace/branches/Ace2/WotLK/AceLibrary
+    /AceConsole-2.0: http://svn.wowace.com/wowace/branches/Ace2/WotLK/AceConsole-2.0
+    /LibRangeCheck-2.0: http://svn.wowace.com/wowace/trunk/LibRangeCheck-2.0/LibRangeCheck-2.0
+    /AceDB-2.0: http://svn.wowace.com/wowace/branches/Ace2/WotLK/AceDB-2.0
+    /LibDogTag-Unit-3.0: http://svn.wowace.com/wowace/trunk/LibDogTag-Unit-3.0
