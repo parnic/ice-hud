@@ -1,4 +1,4 @@
-IceHUD = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDebug-2.0")
+IceHUD = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0")
 
 local waterfall = AceLibrary("Waterfall-1.0")
 local SML = AceLibrary("LibSharedMedia-3.0")
@@ -522,4 +522,8 @@ function IceHUD:OnEnable()
 	self:RegisterChatCommand({ "/icehud" }, IceHUD.slashMenu)
 end
 
+function IceHUD:Debug()
+end
 
+function IceHUD:SetDebugging()
+end
