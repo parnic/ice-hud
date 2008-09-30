@@ -3,6 +3,7 @@
 
 <Script file="Libs\LibStub\LibStub.lua"/>
 <Script file="libs\AceLibrary\AceLibrary.lua"/>
+<Script file="libs\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
 <Script file="libs\AceOO-2.0\AceOO-2.0.lua"/>
 <Script file="libs\AceDB-2.0\AceDB-2.0.lua"/>
 <Script file="libs\AceDB-3.0\AceDB-3.0.lua"/>
@@ -16,7 +17,6 @@
 <Include file="Libs\AceComm-3.0\AceComm-3.0.xml"/>
 <Include file="Libs\AceTimer-3.0\AceTimer-3.0.xml"/>
 <Include file="Libs\AceSerializer-3.0\AceSerializer-3.0.xml"/>
-<Script file="libs\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
 <Include file="libs\LibDogTag-3.0\lib.xml"/>
 <Include file="libs\LibDogTag-Unit-3.0\lib.xml"/>
 <Include file="libs\LibDruidMana-1.0\lib.xml"/>

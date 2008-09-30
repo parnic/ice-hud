@@ -71,7 +71,7 @@ IceHUD.options =
 						IceHUD.IceCore:SetGap(v)
 					end,
 					min = 50,
-					max = 300,
+					max = 500,
 					step = 5,
 					order = 13,
 				},

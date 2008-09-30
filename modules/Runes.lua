@@ -62,6 +62,26 @@ function Runes.prototype:GetOptions()
 		order = 31
 	}
 
+	opts["hpos"] = {
+		type = "range",
+		name = "Horizontal Position",
+		desc = "Horizontal Position",
+		get = function()
+			return self.moduleSettings.hpos
+		end,
+		set = function(v)
+			self.moduleSettings.hpos = v
+			self:Redraw()
+		end,
+		min = -500,
+		max = 500,
+		step = 10,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 31
+	}
+
 	opts["hideBlizz"] = {
 		type = "toggle",
 		name = "Hide Blizzard Frame",
@@ -131,6 +151,7 @@ function Runes.prototype:GetDefaultSettings()
 	local defaults =  Runes.super.prototype.GetDefaultSettings(self)
 
 	defaults["vpos"] = 0
+	defaults["hpos"] = 10
 	defaults["runeFontSize"] = 20
 	defaults["runeMode"] = "Graphical"
 	defaults["usesDogTagStrings"] = false
@@ -205,8 +226,8 @@ function Runes.prototype:CreateFrame()
 	self.frame:SetWidth(self.runeSize*self.numRunes)
 	self.frame:SetHeight(1)
 	self.frame:ClearAllPoints()
-	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
-	
+	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
+
 	self:Show(true)
 
 	self:CreateRuneFrame()
