@@ -18,17 +18,17 @@ externals:
     libs/AceConsole-2.0: svn://svn.wowace.com/wow/ace2/mainline/trunk/AceConsole-2.0
     libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
     libs/Deformat-2.0: svn://svn.wowace.com/wow/deformat/mainline/trunk/Deformat-2.0
-    libs/LibDogTag-Unit-3.0: svn://svn.wowace.com/wow/lib-dog-tag-unit-3-0/mainline/trunk
-    libs/LibDruidMana-1.0: svn://svn.wowace.com/wow/lib-druid-mana-1-0/mainline/trunk
-    libs/LibRangeCheck-2.0: svn://svn.wowace.com/wow/lib-range-check-2-0/mainline/trunk/LibRangeCheck-2.0
-    libs/LibSharedMedia-3.0: svn://svn.wowace.com/wow/lib-shared-media-3-0/mainline/trunk
-    libs/LibDogTag-3.0: svn://svn.wowace.com/wow/lib-dog-tag-3-0/mainline/trunk
+    libs/LibDogTag-Unit-3.0: svn://svn.wowace.com/wow/libdogtag-unit-3-0/mainline/trunk
+    libs/LibDruidMana-1.0: svn://svn.wowace.com/wow/libdruidmana-1-0/mainline/trunk
+    libs/LibRangeCheck-2.0: svn://svn.wowace.com/wow/librangecheck-2-0/mainline/trunk/LibRangeCheck-2.0
+    libs/LibSharedMedia-3.0: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk
+    libs/LibDogTag-3.0: svn://svn.wowace.com/wow/libdogtag-3-0/mainline/trunk
     libs/Threat-2.0: svn://svn.wowace.com/wow/threat-2-0/mainline/trunk/Threat-2.0
     libs/Waterfall-1.0: svn://svn.wowace.com/wow/waterfall-1-0/mainline/trunk/Waterfall-1.0
 
 optional-dependencies:
     - threat-2-0
-    - lib-dog-tag-3-0
-    - lib-dog-tag-unit-3-0
-    - lib-range-check-2-0
-    - lib-druid-mana-1-0
+    - libdogtag-3-0
+    - libdogtag-unit-3-0
+    - librangecheck-2-0
+    - libdruidmana-1-0
