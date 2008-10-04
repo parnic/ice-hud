@@ -331,7 +331,7 @@ function CastBar.prototype:CreateLagBar()
 	end
 	
 	self.lagBar:SetFrameStrata("BACKGROUND")
-	self.lagBar:SetWidth(self.settings.barWidth)
+	self.lagBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.lagBar:SetHeight(self.settings.barHeight)
 	
 	
