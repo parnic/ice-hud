@@ -81,6 +81,7 @@ function IceCastBar.prototype:OnUpdate()
 	local time = GetTime()
 
 	self:Update()
+	self:SetTextAlpha()
 
 	-- handle casting and channeling
 	if (self.action == IceCastBar.Actions.Cast or self.action == IceCastBar.Actions.Channel) then
