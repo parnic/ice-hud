@@ -269,7 +269,7 @@ IceHUD.options =
 			end,
 			validate = SML:List('font'),	
 		},
-				
+
 		barSettings = {
 			type = 'group',
 			name = 'Bar Settings',
@@ -289,15 +289,15 @@ IceHUD.options =
 					validate = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2" },
 					order = 9
 				},
-			
-			
+
+
 				headerBarAdvancedBlank = { type = 'header', name = " ", order = 10 },
 				headerBarAdvanced = {
 					type = 'header',
 					name = "Advanced Bar Settings",
 					order = 10
 				},
-			
+
 				barTexture = {
 					type = 'text',
 					name = 'Bar Texture',
@@ -311,7 +311,7 @@ IceHUD.options =
 					validate = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2" },		
 					order = 11
 				},
-				
+
 				barWidth = {
 					type = 'range',
 					name = 'Bar Width',
@@ -327,7 +327,7 @@ IceHUD.options =
 					step = 1,
 					order = 12
 				},
-				
+
 				barHeight = {
 					type = 'range',
 					name = 'Bar Height',
@@ -343,7 +343,7 @@ IceHUD.options =
 					step = 1,
 					order = 13
 				},
-				
+
 				barProportion = {
 					type = 'range',
 					name = 'Bar Proportion',
@@ -360,7 +360,7 @@ IceHUD.options =
 					isPercent = true,
 					order = 14
 				},
-				
+
 				barSpace = {
 					type = 'range',
 					name = 'Bar Space',
@@ -376,10 +376,38 @@ IceHUD.options =
 					step = 1,
 					order = 15
 				},
+
+				bgBlendMode = {
+					type = 'text',
+					name = 'Bar Background Blend Mode',
+					desc = 'IceHUD Bar Background Blend mode',
+					get = function()
+						return IceHUD.IceCore:GetBarBgBlendMode()
+					end,
+					set = function(value)
+						IceHUD.IceCore:SetBarBgBlendMode(value)
+					end,
+					validate = { BLEND = "Blend", ADD = "Additive" }, --"Disable", "Alphakey", "Mod" },		
+					order = 16
+				},
+
+				barBlendMode = {
+					type = 'text',
+					name = 'Bar Blend Mode',
+					desc = 'IceHUD Bar Blend mode',
+					get = function()
+						return IceHUD.IceCore:GetBarBlendMode()
+					end,
+					set = function(value)
+						IceHUD.IceCore:SetBarBlendMode(value)
+					end,
+					validate = { BLEND = "Blend", ADD = "Additive" }, --"Disable", "Alphakey", "Mod" },		
+					order = 17
+				},
 			}
 		},
-		
-		
+
+
 		modules = {
 			type='group',
 			desc = 'Module configuration options',

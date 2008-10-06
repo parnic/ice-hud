@@ -305,6 +305,24 @@ function IceCore.prototype:SetBarTexture(value)
 end
 
 
+function IceCore.prototype:GetBarBlendMode()
+	return self.settings.barBlendMode
+end
+function IceCore.prototype:SetBarBlendMode(value)
+	self.settings.barBlendMode = value
+	self:Redraw()
+end
+
+
+function IceCore.prototype:GetBarBgBlendMode()
+	return self.settings.barBgBlendMode
+end
+function IceCore.prototype:SetBarBgBlendMode(value)
+	self.settings.barBgBlendMode = value
+	self:Redraw()
+end
+
+
 function IceCore.prototype:GetBarWidth()
 	return self.settings.barWidth
 end
@@ -355,6 +373,8 @@ function IceCore.prototype:ChangePreset(value)
 	self:SetBarWidth(self.presets[value].barWidth)
 	self:SetBarSpace(self.presets[value].barSpace)
 	self:SetBarProportion(self.presets[value].barProportion)
+	self:SetBarBlendMode(self.presets[value].barBlendMode)
+	self:SetBarBgBlendMode(self.presets[value].barBgBlendMode)
 end
 
 
@@ -422,6 +442,8 @@ function IceCore.prototype:LoadPresets()
 		barHeight = 220,
 		barProportion = 0.15,
 		barSpace = 3,
+		barBlendMode = "BLEND",
+		barBgBlendMode = "BLEND",
 	}
 	
 	self.presets["HiBar"] = {
@@ -430,6 +452,8 @@ function IceCore.prototype:LoadPresets()
 		barHeight = 150,
 		barProportion = 0.34,
 		barSpace = 4,
+		barBlendMode = "BLEND",
+		barBgBlendMode = "BLEND",
 	}
 	
 	self.presets["RoundBar"] = {
@@ -438,6 +462,8 @@ function IceCore.prototype:LoadPresets()
 		barHeight = 220,
 		barProportion = 0.14,
 		barSpace = 1,
+		barBlendMode = "BLEND",
+		barBgBlendMode = "BLEND",
 	}
 
 	self.presets["ColorBar"] = {
@@ -446,6 +472,8 @@ function IceCore.prototype:LoadPresets()
 		barHeight = 220,
 		barProportion = 0.15,
 		barSpace = 3,
+		barBlendMode = "Blend",
+		barBgBlendMode = "BLEND",
 	}
 
 	self.presets["RivetBar"] = {
@@ -454,6 +482,8 @@ function IceCore.prototype:LoadPresets()
 		barHeight = 220,
 		barProportion = 0.15,
 		barSpace = 3,
+		barBlendMode = "BLEND",
+		barBgBlendMode = "BLEND",
 	}
 
 	self.presets["RivetBar2"] = {
@@ -462,6 +492,8 @@ function IceCore.prototype:LoadPresets()
 		barHeight = 220,
 		barProportion = 0.15,
 		barSpace = 3,
+		barBlendMode = "BLEND",
+		barBgBlendMode = "BLEND",
 	}
 end
 

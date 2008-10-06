@@ -511,6 +511,7 @@ function IceBarElement.prototype:CreateBackground()
 	end
 	
 	self.frame.bg:SetTexture(IceElement.TexturePath .. self.settings.barTexture.."BG")
+	self.frame.bg:SetBlendMode(self.settings.barBgBlendMode)
 	self.frame.bg:ClearAllPoints()
 	self.frame.bg:SetAllPoints(self.frame)
 	
@@ -556,6 +557,7 @@ function IceBarElement.prototype:CreateBar()
 	end
 	
 	self.barFrame.bar:SetTexture(IceElement.TexturePath .. self.settings.barTexture)
+	self.barFrame.bar:SetBlendMode(self.settings.barBlendMode)
 	self.barFrame.bar:SetAllPoints(self.frame)
 
 	if (self.moduleSettings.side == IceCore.Side.Left) then
