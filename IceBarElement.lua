@@ -490,7 +490,10 @@ function IceBarElement.prototype:CreateFrame()
 	self:CreateTexts()
 	
 	self.frame:SetScale(self.moduleSettings.scale)
-	if not string.find(self.elementName, "MirrorBar") then
+	-- never register the OnUpdate for the mirror bar since it's handled internally
+	-- in addition, do not register OnUpdate if predictedPower is set and this is the player mana or target mana bar
+	if not string.find(self.elementName, "MirrorBar")
+		and (not GetCVarBool("predictedPower") or (not string.find(self.elementName, "PlayerMana") and not string.find(self.elementName, "TargetMana"))) then
 		self.frame:SetScript("OnUpdate", function() self:MyOnUpdate() end)
 	end
 end
