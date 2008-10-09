@@ -513,7 +513,7 @@ function IceCore.prototype:LoadPresets()
 		barProportion = 0.14,
 		barSpace = 1,
 		barBlendMode = "ADD",
-		barBgBlendMode = "BLEND",
+		barBgBlendMode = "ADD",
 	}
 
 	self.presets["BloodGlaives"] = {
@@ -522,7 +522,7 @@ function IceCore.prototype:LoadPresets()
 		barHeight = 220,
 		barProportion = 0.14,
 		barSpace = 1,
-		barBlendMode = "BLEND",
+		barBlendMode = "ADD",
 		barBgBlendMode = "BLEND",
 	}
 end
