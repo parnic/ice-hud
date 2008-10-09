@@ -495,5 +495,35 @@ function IceCore.prototype:LoadPresets()
 		barBlendMode = "BLEND",
 		barBgBlendMode = "BLEND",
 	}
+
+	self.presets["CleanCurves"] = {
+		barTexture = "CleanCurves",
+		barWidth = 155,
+		barHeight = 220,
+		barProportion = 0.14,
+		barSpace = 1,
+		barBlendMode = "BLEND",
+		barBgBlendMode = "BLEND",
+	}
+
+	self.presets["GlowArc"] = {
+		barTexture = "GlowArc",
+		barWidth = 155,
+		barHeight = 220,
+		barProportion = 0.14,
+		barSpace = 1,
+		barBlendMode = "ADD",
+		barBgBlendMode = "BLEND",
+	}
+
+	self.presets["BloodGlaives"] = {
+		barTexture = "BloodGlaives",
+		barWidth = 155,
+		barHeight = 220,
+		barProportion = 0.14,
+		barSpace = 1,
+		barBlendMode = "BLEND",
+		barBgBlendMode = "BLEND",
+	}
 end
 

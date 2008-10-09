@@ -73,7 +73,7 @@ function ComboPoints.prototype:GetOptions()
 			self:CreateComboFrame(true)
 			self:Redraw()
 		end,
-		validate = { "Numeric", "Graphical Bar", "Graphical Circle" },
+		validate = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -188,6 +188,10 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboBG")
 			elseif self.moduleSettings.comboMode == "Graphical Circle" then
 				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRoundBG")
+			elseif self.moduleSettings.comboMode == "Graphical Glow" then
+				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboGlowBG")
+			elseif self.moduleSettings.comboMode == "Graphical Clean Circle" then
+				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboCleanCurvesBG")
 			end
 		end
 
@@ -212,6 +216,10 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "Combo")
 			elseif self.moduleSettings.comboMode == "Graphical Circle" then
 				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRound")
+			elseif self.moduleSettings.comboMode == "Graphical Glow" then
+				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboGlow")
+			elseif self.moduleSettings.comboMode == "Graphical Clean Circle" then
+				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboCleanCurves")
 			end
 		end
 
