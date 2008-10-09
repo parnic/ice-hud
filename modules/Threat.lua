@@ -33,6 +33,7 @@ function IHUD_Threat.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 3
 	settings["enabled"] = false
+	settings["aggroAlpha"] = 0.7
 	return settings
 end
 
@@ -59,6 +60,27 @@ function IHUD_Threat.prototype:GetOptions()
 			return Threat == nil
 		end,
 		order = 20
+	}
+
+	opts["aggroAlpha"] = 
+	{
+		type = 'range',
+		name = 'Aggro Indicator',
+		desc = 'Aggro indicator alpha (0 is disabled)',
+		min = 0,
+		max = 1,
+		step = 0.1,
+		get = function()
+			return self.moduleSettings.aggroAlpha
+		end,
+		set = function(value)
+			self.moduleSettings.aggroAlpha = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 21
 	}
 
 	return opts
@@ -111,7 +133,7 @@ function IHUD_Threat.prototype:CreateAggroBar()
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor("CastCasting")
 	end
-	self.aggroBar:SetStatusBarColor(r, g, b, self.moduleSettings.lagAlpha)
+	self.aggroBar:SetStatusBarColor(r, g, b, self.moduleSettings.aggroAlpha)
 	
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.aggroBar.bar:SetTexCoord(1, 0, 0, 0)
