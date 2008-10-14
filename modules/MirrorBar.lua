@@ -27,6 +27,10 @@ function MirrorBar.prototype:init(side, offset, name, db)
 	self.moduleSettings.offset = offset
 	self.moduleSettings.barVisible = {bar = true, bg = true}
 	self.moduleSettings.shouldAnimate = false
+	-- this has to be set to 0 or else it will error out when trying to use it for SetPoint later
+	self.moduleSettings.barVerticalOffset = 0
+	-- avoid nil warnings here
+	self.moduleSettings.myTagVersion = IceHUD.CurrTagVersion
 
 	-- unregister the event superclass registered, we don't want to register
 	-- this to the core
@@ -42,7 +46,7 @@ end
 
 function MirrorBar.prototype:Enable(core)
 	MirrorBar.super.prototype.Enable(self, core)
-	
+
 	self.frame.bottomUpperText:SetWidth(200)
 	self.frame.bottomLowerText:SetWidth(200)
 
@@ -53,7 +57,7 @@ end
 -- OVERRIDE
 function MirrorBar.prototype:Create(parent)
 	MirrorBar.super.prototype.Create(self, parent)
-	
+
 	if (self.timer) then
 		self:Show(true)
 	end
@@ -68,9 +72,9 @@ function MirrorBar.prototype:OnUpdate(elapsed)
 	self:Update()
 
 	self.value = self.value + (self.timerScale * elapsed * 1000)
-	
+
 	scale = self.value / self.maxValue
-	
+
 	if (scale < 0) then -- lag compensation
 		scale = 0
 	end
@@ -78,10 +82,10 @@ function MirrorBar.prototype:OnUpdate(elapsed)
 		scale = 1
 	end
 
-	
+
 	local timeRemaining = (self.value) / 1000
 	local remaining = string.format("%.1f", timeRemaining)
-	
+
 	if (timeRemaining < 0) then -- lag compensation
 		remaining = 0
 	end
@@ -90,16 +94,11 @@ function MirrorBar.prototype:OnUpdate(elapsed)
 	end
 
 	self:UpdateBar(scale, self.timer)
-	
+
 	local text = self.label .. " " .. remaining .. "s"
-	
-	if (math.fmod(self.moduleSettings.offset, 2) == 1) then
-		self:SetBottomText1(text)
-		self:SetBottomText2()
-	else
-		self:SetBottomText1()
-		self:SetBottomText2(text, "Text", 1)
-	end
+
+	self:SetBottomText1(text)
+	self:SetBottomText2()
 end
 
 
@@ -110,7 +109,7 @@ function MirrorBar.prototype:MirrorStart(timer, value, maxValue, scale, paused, 
 	self.timerScale = scale
 	self.paused = (paused > 0)
 	self.label = label
-	
+
 	self.startTime = GetTime()
 
 	self:Update()
@@ -195,7 +194,7 @@ end
 -- OVERRIDE
 function MirrorBarHandler.prototype:GetOptions()
 	local opts = MirrorBarHandler.super.prototype.GetOptions(self)
-	
+
 	opts["side"] = 
 	{
 		type = 'text',
@@ -219,7 +218,7 @@ function MirrorBarHandler.prototype:GetOptions()
 		validate = { "Left", "Right" },		
 		order = 30
 	}
-	
+
 	opts["offset"] = 
 	{
 		type = 'range',
@@ -254,7 +253,7 @@ function MirrorBarHandler.prototype:GetOptions()
 		end,
 		order = 28
 	}
-			
+		
 	opts["bgVisible"] = {
 		type = 'toggle',
 		name = 'Bar background visible',
@@ -271,7 +270,7 @@ function MirrorBarHandler.prototype:GetOptions()
 		end,
 		order = 29
 	}
-	
+
 	opts["textSettings"] =
 	{
 		type = 'group',
@@ -295,7 +294,7 @@ function MirrorBarHandler.prototype:GetOptions()
 				step = 1,
 				order = 11
 			},
-			
+
 			fontBold = {
 				type = 'toggle',
 				name = 'Bar Font Bold',
@@ -309,7 +308,7 @@ function MirrorBarHandler.prototype:GetOptions()
 				end,
 				order = 12
 			},
-			
+
 			lockFontAlpha = {
 				type = "toggle",
 				name = "Lock Bar Text Alpha",
@@ -323,7 +322,7 @@ function MirrorBarHandler.prototype:GetOptions()
 				end,
 				order = 13
 			},
-			
+
 			upperTextVisible = {
 				type = 'toggle',
 				name = 'Upper text visible',
@@ -337,7 +336,7 @@ function MirrorBarHandler.prototype:GetOptions()
 				end,
 				order = 14
 			},
-			
+
 			lowerTextVisible = {
 				type = 'toggle',
 				name = 'Lower text visible',
@@ -391,7 +390,7 @@ function MirrorBarHandler.prototype:GetOptions()
 			}
 		}
 	}
-	
+
 	return opts
 end
 
@@ -401,7 +400,7 @@ function MirrorBarHandler.prototype:Enable(core)
 	self:RegisterEvent("MIRROR_TIMER_START", "MirrorStart")
 	self:RegisterEvent("MIRROR_TIMER_STOP", "MirrorStop")
 	self:RegisterEvent("MIRROR_TIMER_PAUSE", "MirrorPause")
-	
+
 	-- hide blizz mirror bar
 	UIParent:UnregisterEvent("MIRROR_TIMER_START");
 end
@@ -409,14 +408,14 @@ end
 
 function MirrorBarHandler.prototype:Disable(core)
 	MirrorBarHandler.super.prototype.Disable(self, core)
-	
+
 	UIParent:RegisterEvent("MIRROR_TIMER_START");
 end
 
 
 function MirrorBarHandler.prototype:Redraw()
 	MirrorBarHandler.super.prototype.Redraw(self)
-	
+
 	if (not self.moduleSettings.enabled) then
 		return
 	end
@@ -431,7 +430,7 @@ end
 
 function MirrorBarHandler.prototype:MirrorStart(timer, value, maxValue, scale, paused, label)
 	local done = nil
-	
+
 	-- check if we can find an already running timer to reverse it
 	for i = 1, table.getn(self.bars) do
 		if (self.bars[i].timer == timer) then
@@ -439,7 +438,7 @@ function MirrorBarHandler.prototype:MirrorStart(timer, value, maxValue, scale, p
 			self.bars[i]:MirrorStart(timer, value, maxValue, scale, paused, label)
 		end
 	end
-	
+
 	-- check if there's a free instance in case we didn't find an already running bar
 	if not (done) then
 		for i = 1, table.getn(self.bars) do
@@ -449,7 +448,7 @@ function MirrorBarHandler.prototype:MirrorStart(timer, value, maxValue, scale, p
 			end
 		end
 	end
-	
+
 	-- finally create a new instance if no available ones were found
 	if not (done) then
 		local count = table.getn(self.bars)
@@ -490,7 +489,6 @@ function MirrorBarHandler.prototype:SetSettings(bar)
 	bar.moduleSettings.textVerticalOffset = self.moduleSettings.textVerticalOffset
 	bar.moduleSettings.textHorizontalOffset = self.moduleSettings.textHorizontalOffset
 	bar.moduleSettings.barVisible = self.moduleSettings.barVisible
-	bar.moduleSettings.myTagVersion = self.moduleSettings.myTagVersion
 end
 
 
