@@ -10,6 +10,8 @@ CastBar.prototype.spellCastSent = nil
 function CastBar.prototype:init()
 	CastBar.super.prototype.init(self, "CastBar")
 
+	self:SetDefaultColor("CastLag", 255, 0, 0)
+
 	self.unit = "player"
 end
 
@@ -344,7 +346,7 @@ function CastBar.prototype:CreateLagBar()
 	
 	self.lagBar:SetStatusBarTexture(self.lagBar.bar)
 	
-	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
+	local r, g, b = self:GetColor("CastLag")
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor("CastCasting")
 	end

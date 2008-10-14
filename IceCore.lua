@@ -525,5 +525,13 @@ function IceCore.prototype:LoadPresets()
 		barBlendMode = "ADD",
 		barBgBlendMode = "BLEND",
 	}
+
+	self.presets["ArcHUD"] = {
+		barTexture = "ArcHUD",
+		barWidth = 160,
+		barHeight = 300,
+		barProportion = 0.15,
+		barSpace = 3,
+	}
 end
 

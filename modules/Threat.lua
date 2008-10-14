@@ -22,6 +22,7 @@ function IHUD_Threat.prototype:init()
 	self:SetDefaultColor("ThreatHigh", 204, 0, 153)
 	self:SetDefaultColor("ThreatDanger", 255, 0, 0)
 	self:SetDefaultColor("ThreatCustom", 255, 255, 0)
+	self:SetDefaultColor("ThreatPullAggro", 255, 0, 0)
 
 	self:OnCoreLoad()
 end
@@ -126,7 +127,7 @@ function IHUD_Threat.prototype:CreateAggroBar()
 	
 	self.aggroBar:SetStatusBarTexture(self.aggroBar.bar)
 	
-	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
+	local r, g, b = self:GetColor("ThreatPullAggro")
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor("CastCasting")
 	end

@@ -286,7 +286,7 @@ IceHUD.options =
 					set = function(value)
 						IceHUD.IceCore:SetBarPreset(value)
 					end,
-					validate = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc", "BloodGlaives" },
+					validate = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc", "BloodGlaives", "ArcHUD" },
 					order = 9
 				},
 
@@ -308,7 +308,7 @@ IceHUD.options =
 					set = function(value)
 						IceHUD.IceCore:SetBarTexture(value)
 					end,
-					validate = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc", "BloodGlaives", "FangRune", "RuneBar", "RuneColor" },		
+					validate = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc", "BloodGlaives", "FangRune", "RuneBar", "RuneColor", "ArcHUD" },		
 					order = 11
 				},
 

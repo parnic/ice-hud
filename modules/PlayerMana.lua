@@ -144,7 +144,7 @@ end
 
 -- OVERRIDE
 function PlayerMana.prototype:UseTargetAlpha(scale)
-	if (self.manaType == 1) then
+	if (self.manaType == 1 or self.manaType == 6) then
 		return (scale and (scale > 0))
 	else
 		return PlayerMana.super.prototype.UseTargetAlpha(self, scale)
