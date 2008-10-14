@@ -6,7 +6,6 @@ Description: adds a threat bar to IceHUD
 ]]
 
 local AceOO = AceLibrary("AceOO-2.0")
-local Threat = LibStub("Threat-2.0")
 
 local IHUD_Threat = AceOO.Class(IceUnitBar)
 
@@ -34,6 +33,7 @@ function IHUD_Threat.prototype:GetDefaultSettings()
 	settings["offset"] = 3
 	settings["enabled"] = false
 	settings["aggroAlpha"] = 0.7
+	settings["usesDogTagStrings"] = false
 	return settings
 end
 
@@ -55,9 +55,6 @@ function IHUD_Threat.prototype:GetOptions()
 			else
 				self:Disable()
 			end
-		end,
-		disabled = function()
-			return Threat == nil
 		end,
 		order = 20
 	}
@@ -117,7 +114,7 @@ function IHUD_Threat.prototype:CreateAggroBar()
 	end
 	
 	self.aggroBar:SetFrameStrata("BACKGROUND")
-	self.aggroBar:SetWidth(self.settings.barWidth)
+	self.aggroBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.aggroBar:SetHeight(self.settings.barHeight)
 	
 	if not (self.aggroBar.bar) then
@@ -147,12 +144,6 @@ end
 
 -- bar stuff
 function IHUD_Threat.prototype:Update(unit)
-	-- only show bar if the user has Threat-2.0 and there's any threat
-	if not Threat or not Threat:IsActive() then
-		self:Show(false)
-		return
-	end
-
 	IHUD_Threat.super.prototype.Update(self)
 
 	if (unit and (unit ~= self.unit)) then
@@ -162,95 +153,71 @@ function IHUD_Threat.prototype:Update(unit)
 	if not unit then
 		unit = self.unit
 	end
-	
-	if not UnitExists("target") or not UnitCanAttack("player", "target") or UnitIsDead("target") or UnitIsFriend("player", "target") or UnitPlayerControlled("target")
-	then
+
+	if not UnitExists("target") or not UnitCanAttack("player", "target") or UnitIsDead("target") or UnitIsFriend("player", "target") or UnitPlayerControlled("target") then
 		self:Show(false)
 		return
 	else
 		self:Show(true)
 	end
 
-	-- get my threat and the tank threat
-	local threatMe = Threat:GetThreat( UnitGUID("player") , UnitGUID("target") )
-	local threatTank = 0
-	local threatTankName = ""
-	
-	if UnitExists("targettarget") then
-		threatTankName = UnitGUID("targettarget")
-		threatTank = Threat:GetThreat( UnitGUID("targettarget"), UnitGUID("target") )
+	local isTanking, threatState, scaledPercent, rawPercent = UnitDetailedThreatSituation("player", "target")
+	local scaledPercentZeroToOne
+
+	if not threatState or not scaledPercent or not rawPercent then
+		scaledPercentZeroToOne = 0
+		scaledPercent = 0
+
+		IceHUD:Debug( "Threat: nil threat on valid target" )
 	else
-		threatTank, threatTankName = Threat:GetMaxThreatOnTarget( UnitGUID("target") )
-	end
+		scaledPercentZeroToOne = scaledPercent / 100
 
-	-- adjust max threat to avoid divide by 0
-	if ( threatTank == 0 ) then
-		threatTank = 1
+		IceHUD:Debug( "isTanking="..(isTanking or "nil").." threatState="..(threatState or "nil").." scaledPercent="..(scaledPercent or "nil").." rawPercent="..(rawPercent or "nil") )
 	end
-
-	-- aggro gain limit
-	local threatMulti = 1.3
-	if ( Threat:UnitInMeleeRange( "target" ) ) then
-		threatMulti = 1.1
---	elseif ( UnitExists("targettarget") and ( UnitName("targettarget") == UnitName("player") ) ) then
---		threatMulti = 1
-	elseif ( threatTankName == UnitGUID("player") ) then
-		threatMulti = 1
-	end
-	
-	-- get my threat percentage
-	local threatPct = self:MathRound( (100/threatTank) * threatMe, 1 )
-
-	IceHUD:Debug( "threatMe = " .. threatMe .. ", threatTank = " .. threatTank .. ", threatPct = " .. threatPct )
 	
 	-- set percentage text
-	self:SetBottomText1( threatPct .. "%" )
+	self:SetBottomText1( IceHUD:MathRound(scaledPercent) .. "%" )
 	self:SetBottomText2()
 
+	-- Parnic: threat lib is no longer used in wotlk
+	--         ...assuming a 1.1 threat multi if not tanking for the time being unless we decide to switch it back to 1.3/1.1 based on ranged/melee status later
+	local threatMulti = 1.1
+	if ( isTanking ) then
+		threatMulti = 1
+	end
+
+	-- Parnic: this should probably be switched to use the new api colors for threat...
 	-- set bar color
 	if( threatMulti == 1 ) then
 		self.color = "ThreatDanger"
-	elseif( threatPct < 50 ) then
+	elseif( scaledPercent < 50 ) then
 		self.color = "ThreatLow"
-	elseif ( threatPct < 80 ) then
+	elseif ( scaledPercent < 80 ) then
 		self.color = "ThreatMedium"
 	else
 		self.color = "ThreatHigh"
 	end
 
---[[	local g = floor( (255 / (threatTank*threatMulti) ) *threatMe )
-	
-	if(g>255) then g=255 end
-	if(g<0) then g=0 end
-	
-	IceHUD.IceCore:SetColor("ThreatCustom", 255, 255, 0)	
-	self.color = "ThreatCustom"
-]]	
 	-- set the bar value
-	self:UpdateBar( threatMe / ( threatTank*threatMulti ), self.color )
-	
+	self:UpdateBar( scaledPercentZeroToOne, self.color )
+
 	-- do the aggro indicator bar stuff, but only if it has changed
 	if ( self.aggroBarMulti ~= threatMulti ) then
 		self.aggroBarMulti = threatMulti
 
 		local pos = 1 - (1 / threatMulti)
 		local y = self.settings.barHeight - ( pos * self.settings.barHeight )
-		
+
 		if ( self.moduleSettings.side == IceCore.Side.Left ) then
 			self.aggroBar.bar:SetTexCoord(1, 0, 0, pos)
 		else
 			self.aggroBar.bar:SetTexCoord(0, 1, 0, pos)
 		end
-		
+
 		self.aggroBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, y)
 	end
 end
 
--- rounding stuff
-function IHUD_Threat.prototype:MathRound(num, idp)
-	local mult = 10^(idp or 0)
-	return math.floor(num  * mult + 0.5) / mult
-end
 
 -- Load us up
 IceHUD.IHUD_Threat = IHUD_Threat:new()

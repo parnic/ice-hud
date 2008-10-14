@@ -286,7 +286,7 @@ IceHUD.options =
 					set = function(value)
 						IceHUD.IceCore:SetBarPreset(value)
 					end,
-					validate = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc", "BloodGlaives" },
+					validate = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc", "BloodGlaives", "FangRune", "RuneBar", "RuneColor" },
 					order = 9
 				},
 
@@ -554,4 +554,10 @@ function IceHUD:Debug()
 end
 
 function IceHUD:SetDebugging()
+end
+
+-- rounding stuff
+function IceHUD:MathRound(num, idp)
+	local mult = 10^(idp or 0)
+	return math.floor(num  * mult + 0.5) / mult
 end

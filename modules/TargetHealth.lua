@@ -383,21 +383,13 @@ end
 
 function IceTargetHealth.prototype:Round(health)
 	if (health > 1000000) then
-		return self:MathRound(health/1000000, 1) .. "M"
+		return IceHUD:MathRound(health/1000000, 1) .. "M"
 	end
 	if (health > 1000) then
-		return self:MathRound(health/1000, 1) .. "k"
+		return IceHUD:MathRound(health/1000, 1) .. "k"
 	end
 	return health
 end
-
-
-function IceTargetHealth.prototype:MathRound(num, idp)
-	local mult = 10^(idp or 0)
-	return math.floor(num  * mult + 0.5) / mult
-end
-
-
 
 
 
