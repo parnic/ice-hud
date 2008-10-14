@@ -3,7 +3,7 @@
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f -Ace2-|r
 ## Notes: Another HUD addon
-## Version: 1.3.3 (Revision: @project-revision@)
+## Version: @project-version@ (Revision: @project-revision@)
 ## SavedVariables: IceCoreDB
 ## OptionalDeps: Ace2, LibSharedMedia-3.0, Waterfall-1.0, Deformat, LibDogTag-3.0, LibDogTag-Unit-3.0, LibDruidMana-1.0, LibRangeCheck-2.0
 ## X-Category: HUDs
