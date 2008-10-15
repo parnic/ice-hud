@@ -26,7 +26,7 @@ function IceTargetHealth.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 2
 	settings["classColor"] = false
-	settings["hideBlizz"] = true
+	settings["hideBlizz"] = false
 	settings["upperText"] = "[PercentHP:Round]"
 	settings["lowerText"] = "[(HP:Round \"/\" MaxHP:Round):HPColor:Bracket]"
 	settings["raidIconOnTop"] = true

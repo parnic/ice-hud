@@ -19,7 +19,7 @@ function PlayerHealth.prototype:GetDefaultSettings()
 
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 1
-	settings["hideBlizz"] = true
+	settings["hideBlizz"] = false
 	settings["upperText"] = "[PercentHP:Round]"
 	settings["lowerText"] = "[FractionalHP:HPColor:Bracket]"
 	settings["allowMouseInteraction"] = true
