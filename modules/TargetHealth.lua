@@ -1,6 +1,5 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-local MobHealth = nil
 IceTargetHealth = AceOO.Class(IceUnitBar)
 
 IceTargetHealth.prototype.color = nil
@@ -18,8 +17,6 @@ function IceTargetHealth.prototype:init(moduleName, unit)
 	self:SetDefaultColor("TargetHealthHostile", 231, 31, 36)
 	self:SetDefaultColor("TargetHealthFriendly", 46, 223, 37)
 	self:SetDefaultColor("TargetHealthNeutral", 210, 219, 87)
-
-	MobHealth = AceLibrary:HasInstance("LibMobHealth-4.0") and AceLibrary("LibMobHealth-4.0") or nil
 end
 
 
@@ -28,7 +25,6 @@ function IceTargetHealth.prototype:GetDefaultSettings()
 
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 2
-	settings["mobhealth"] = (MobHealth3 ~= nil)
 	settings["classColor"] = false
 	settings["hideBlizz"] = true
 	settings["upperText"] = "[PercentHP:Round]"
@@ -47,23 +43,6 @@ end
 -- OVERRIDE
 function IceTargetHealth.prototype:GetOptions()
 	local opts = IceTargetHealth.super.prototype.GetOptions(self)
-
-	opts["mobhealth"] = {
-		type = "toggle",
-		name = "MobHealth3 support",
-		desc = "Enable/disable MobHealth3 target HP data. If this option is gray, you do not have MobHealth3.",
-		get = function()
-			return self.moduleSettings.mobhealth
-		end,
-		set = function(value)
-			self.moduleSettings.mobhealth = value
-			self:Update(self.unit)
-		end,
-		disabled = function()
-			return (not self.moduleSettings.enabled) and (MobHealth3 == nil)
-		end,
-		order = 40
-	}
 
 	opts["classColor"] = {
 		type = "toggle",
@@ -303,17 +282,6 @@ function IceTargetHealth.prototype:Update(unit)
 
 	if not AceLibrary:HasInstance("LibDogTag-3.0") then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
-
-		-- first see if we have LibMobHealth that we can piggyback on
-		if MobHealth then
-			self.health = MobHealth:GetUnitCurrentHP(self.unit)
-			self.maxHealth = MobHealth:GetUnitMaxHP(self.unit)
-		elseif (self.maxHealth == 100 and self.moduleSettings.mobhealth and MobHealth3) then
-			-- assumption that if a unit's max health is 100, it's not actual amount
-			-- but rather a percentage - this obviously has one caveat though
-
-			self.health, self.maxHealth, _ = MobHealth3:GetUnitHealth(self.unit, self.health, self.maxHealth)
-		end
 
 		if self.moduleSettings.abbreviateHealth then
 			self.health = self:Round(self.health)

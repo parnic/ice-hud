@@ -18,7 +18,6 @@ function TargetTargetHealth.prototype:GetDefaultSettings()
 
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 12
-	settings["mobHealth"] = (MobHealth3 ~= nil)
 	settings["classColor"] = false
 	settings["selfColor"] = { r = 0, g = 0, b = 1 }
 	settings["useSelfColor"] = true
