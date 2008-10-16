@@ -38,8 +38,8 @@ IceHUD.options =
 					set = function(v)
 						IceHUD.IceCore:SetVerticalPos(v)
 					end,
-					min = -400,
-					max = 400,
+					min = -700,
+					max = 700,
 					step = 10,
 					order = 11
 				},

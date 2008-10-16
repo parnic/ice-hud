@@ -6,12 +6,15 @@ local NetherbladeItemIdList = {29044, 29045, 29046, 29047, 29048}
 -- Parnic - bah, have to abandon the more robust string representation of each slot because of loc issues...
 local NetherbladeEquipLocList = {1, 3, 5, 7, 10} --"HeadSlot", "ShoulderSlot", "ChestSlot", "LegsSlot", "HandsSlot"}
 
+local GlyphSpellId = 56810
+
 local baseTime = 9
 local gapPerComboPoint = 3
 local netherbladeBonus = 3
+local glyphBonusSec = 3
 local impSndTalentPage = 2
 local impSndTalentIdx = 4
-local impSndBonusPerRank = 0.15
+local impSndBonusPerRank = 0.25
 local maxComboPoints = 5
 local sndEndTime = 0
 local sndDuration = 0
@@ -302,6 +305,10 @@ function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints)
         maxduration = maxduration + netherbladeBonus
     end
 
+    if self:HasGlyphBonus() then
+        maxduration = maxduration + glyphBonusSec
+    end
+
     _, _, _, _, rank = GetTalentInfo(impSndTalentPage, impSndTalentIdx)
 
     maxduration = maxduration * (1 + (rank * impSndBonusPerRank))
@@ -333,6 +340,18 @@ function SliceAndDice.prototype:HasNetherbladeBonus()
 			end
 		end
 	end
+end
+
+function SliceAndDice.prototype:HasGlyphBonus()
+	for i=1,GetNumGlyphSockets() do
+		local enabled, _, spell = GetGlyphSocketInfo(i)
+
+		if enabled and spell == GlyphSpellId then
+			return true
+		end
+	end
+
+	return false
 end
 
 function SliceAndDice.prototype:GetItemIdFromItemLink(linkStr)
