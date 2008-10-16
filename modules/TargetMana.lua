@@ -26,6 +26,7 @@ function IceTargetMana.prototype:GetDefaultSettings()
 	settings["offset"] = 2
 	settings["upperText"] = "[PercentMP:Round]"
 	settings["lowerText"] = "[FractionalMP:PowerColor]"
+	settings["onlyShowMana"] = false
 
 	return settings
 end
@@ -79,6 +80,11 @@ function IceTargetMana.prototype:Update(unit)
 	else	
 		self:Show(true)
 	end
+
+	if self.moduleSettings.onlyShowMana and UnitPowerType(self.unit) ~= 0 then
+		self:Show(false)
+		return
+	end
 	
 	
 	local manaType = UnitPowerType(self.unit)
@@ -127,6 +133,22 @@ function IceTargetMana.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 51
+	}
+
+	opts["onlyShowMana"] = {
+		type = 'toggle',
+		name = 'Only show if target uses mana',
+		desc = 'Will only show this bar if the target uses mana (as opposed to rage, energy, runic power, etc.)',
+		get = function()
+			return self.moduleSettings.onlyShowMana
+		end,
+		set = function(v)
+			self.moduleSettings.onlyShowMana = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end
 	}
 
 	return opts
