@@ -20,6 +20,8 @@ IceCore.prototype.presets = {}
 IceCore.prototype.settingsHash = nil
 IceCore.prototype.bConfigMode = false
 
+local waterfall = AceLibrary("Waterfall-1.0")
+
 -- Constructor --
 function IceCore.prototype:init()
 	IceCore.super.prototype.init(self)
@@ -55,7 +57,10 @@ function IceCore.prototype:init()
 		barTexture = "Bar",
 		barPreset = defaultPreset,
 		fontFamily = "Arial Narrow",
-		debug = false
+		debug = false,
+
+		barBlendMode = "BLEND",
+		barBgBlendMode = "BLEND",
 	}
 	
 	self:LoadPresets()
@@ -375,6 +380,8 @@ function IceCore.prototype:ChangePreset(value)
 	self:SetBarProportion(self.presets[value].barProportion)
 	self:SetBarBlendMode(self.presets[value].barBlendMode)
 	self:SetBarBgBlendMode(self.presets[value].barBgBlendMode)
+
+	waterfall:Refresh("IceHUD")
 end
 
 
@@ -532,6 +539,8 @@ function IceCore.prototype:LoadPresets()
 		barHeight = 300,
 		barProportion = 0.15,
 		barSpace = 3,
+		barBlendMode = "BLEND",
+		barBgBlendMode = "BLEND",
 	}
 end
 
