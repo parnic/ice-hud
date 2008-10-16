@@ -731,7 +731,7 @@ end
 function TargetInfo.prototype:UpdateBuffs()
 	local zoom = self.moduleSettings.zoom
 	local filter = false
-	
+
 	if (self.moduleSettings.filter == "Always") then
 		filter = true
 	elseif (self.moduleSettings.filter == "In Combat") then
@@ -739,27 +739,29 @@ function TargetInfo.prototype:UpdateBuffs()
 			filter = true
 		end
 	end
-	
+
 	local hostile = UnitCanAttack("player", "target")
-	
+
 
 	for i = 1, IceCore.BuffLimit do
-		local buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft;
+		local buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe;
 		if IceHUD.WowVer >= 30000 then
-			buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft
+			buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe
 				= UnitBuff("target", i, filter and not hostile)
 		else
 			buffName, buffRank, buffTexture, buffApplications, buffDuration, buffTimeLeft
 				= UnitBuff("target", i, filter and not hostile)
+
+			isFromMe = buffDuration and buffTimeLeft
 		end
 
 		if (buffTexture) then
 			self.frame.buffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
 			self.frame.buffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
-			
+
 			local alpha = buffTexture and 0.5 or 0
 			self.frame.buffFrame.buffs[i].texture:SetTexture(0, 0, 0, alpha)
-			
+
 			-- cooldown frame
 			if (buffDuration and buffDuration > 0 and
 				buffTimeLeft and buffTimeLeft > 0) then
@@ -771,20 +773,20 @@ function TargetInfo.prototype:UpdateBuffs()
 					start = GetTime() - buffDuration + buffTimeLeft
 				end
 				self.frame.buffFrame.buffs[i].cd:SetCooldown(start, buffDuration)
-				self.frame.buffFrame.buffs[i].fromPlayer = true
 				self.frame.buffFrame.buffs[i].cd:Show()
 			else
-				self.frame.buffFrame.buffs[i].fromPlayer = false
 				self.frame.buffFrame.buffs[i].cd:Hide()
 			end
+
+			self.frame.buffFrame.buffs[i].fromPlayer = isFromMe
 
 			if (buffApplications and (buffApplications > 1)) then
 				self.frame.buffFrame.buffs[i].icon.stack:SetText(buffApplications)
 			else
 				self.frame.buffFrame.buffs[i].icon.stack:SetText(nil)
 			end
-		
-		
+
+
 			self.frame.buffFrame.buffs[i]:Show()
 		else
 			self.frame.buffFrame.buffs[i]:Hide()
