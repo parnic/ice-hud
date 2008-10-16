@@ -345,7 +345,7 @@ function IceCastBar.prototype:SpellCastChannelStart(unit)
 end
 
 function IceCastBar.prototype:SpellCastChannelUpdate(unit)
-	if (unit ~= self.unit) then return end
+	if (unit ~= self.unit or not self.actionStartTime) then return end
 	--IceHUD:Debug("SpellCastChannelUpdate", unit, UnitChannelInfo(unit))
 	
 	local spell, rank, displayName, icon, startTime, endTime = UnitChannelInfo(unit)
