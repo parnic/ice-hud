@@ -109,6 +109,7 @@ function ComboPoints.prototype:GetDefaultSettings()
 	defaults["comboMode"] = "Numeric"
 	defaults["gradient"] = false
 	defaults["usesDogTagStrings"] = false
+	defaults["alwaysFullAlpha"] = true
 	return defaults
 end
 

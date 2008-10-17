@@ -8,10 +8,6 @@ IceBarElement.virtual = true
 IceBarElement.BarTextureWidth = 128
 
 IceBarElement.prototype.barFrame = nil
-IceBarElement.prototype.backroundAlpha = nil
-
-IceBarElement.prototype.combat = nil
-IceBarElement.prototype.target = nil
 
 IceBarElement.prototype.CurrLerpTime = 0
 IceBarElement.prototype.LastScale = 1
@@ -36,11 +32,6 @@ end
 -- OVERRIDE
 function IceBarElement.prototype:Enable()
 	IceBarElement.super.prototype.Enable(self)
-
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "InCombat")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OutCombat")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckCombat")
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
 
 	if self.moduleSettings.myTagVersion < IceHUD.CurrTagVersion then
 		local origDefaults = self:GetDefaultSettings()
@@ -467,6 +458,7 @@ function IceBarElement.prototype:Redraw()
 
 	self.alpha = self.settings.alphaooc
 	self:CreateFrame()
+
 	self.frame:SetAlpha(self.alpha)
 end
 
@@ -714,6 +706,11 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 		self.backgroundAlpha = self.settings.alphaoocbg
 	end
 
+	-- post-process override for the bar alpha to be 1 (ignoring BG alpha for now)
+	if self.moduleSettings.alwaysFullAlpha then
+		self.alpha = 1
+	end
+
 	self.frame:SetStatusBarColor(r, g, b, self.backgroundAlpha)
 	self.barFrame:SetStatusBarColor(self:GetColor(color))
 
@@ -842,31 +839,4 @@ end
 
 function IceBarElement.prototype:MyOnUpdate()
 	self:SetScale(self.barFrame.bar, self.DesiredScale)
-end
-
-
--- Combat event handlers ------------------------------------------------------
-
-function IceBarElement.prototype:InCombat()
-	self.combat = true
-	self:Update(self.unit)
-end
-
-
-function IceBarElement.prototype:OutCombat()
-	self.combat = false
-	self:Update(self.unit)
-end
-
-
-function IceBarElement.prototype:CheckCombat()
-	self.combat = UnitAffectingCombat("player")
-	self.target = UnitExists("target")
-	self:Update(self.unit)
-end
-
-
-function IceBarElement.prototype:TargetChanged()
-	self.target = UnitExists("target")
-	self:Update(self.unit)
 end

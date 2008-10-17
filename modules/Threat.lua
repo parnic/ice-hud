@@ -88,7 +88,6 @@ end
 function IHUD_Threat.prototype:Enable(core)
 	IHUD_Threat.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "Update")
 	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.2, self)
 
 	self:Update(self.unit)
@@ -106,6 +105,11 @@ function IHUD_Threat.prototype:CreateFrame()
 	IHUD_Threat.super.prototype.CreateFrame(self)
 	
 	self:CreateAggroBar()
+end
+
+-- needs to be inverted for threat bar
+function IHUD_Threat.prototype:UseTargetAlpha(scale)
+	return (scale and (scale > 0))
 end
 
 -- create the aggro range indicator bar
@@ -217,6 +221,8 @@ function IHUD_Threat.prototype:Update(unit)
 
 		self.aggroBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, y)
 	end
+
+	self:UpdateAlpha()
 end
 
 

@@ -18,7 +18,7 @@ TargetInfo.prototype.classLocale = nil
 TargetInfo.prototype.classEnglish = nil
 TargetInfo.prototype.leader = nil
 
-TargetInfo.prototype.combat = nil
+TargetInfo.prototype.targetCombat = nil
 TargetInfo.prototype.pvp = nil
 TargetInfo.prototype.level = nil
 TargetInfo.prototype.classification = nil
@@ -48,7 +48,6 @@ end
 function TargetInfo.prototype:Enable(core)
 	TargetInfo.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
 	self:RegisterEvent("UNIT_AURA", "AuraChanged")
 
 	self:RegisterEvent("UNIT_NAME_UPDATE", "TargetName")
@@ -386,6 +385,7 @@ function TargetInfo.prototype:GetDefaultSettings()
 	defaults["line2Tag"] = "[Level:DifficultyColor] [SmartRace:ClassColor] [SmartClass:ClassColor] [PvPIcon] [IsLeader ? 'Leader':Yellow] [InCombat ? 'Combat':Red] [Classification]"
 	defaults["line3Tag"] = "[Guild:Angle]"
 	defaults["myTagVersion"] = 2
+	defaults["alwaysFullAlpha"] = true
 
 	return defaults
 end
@@ -554,8 +554,6 @@ function TargetInfo.prototype:CreateGuildTextFrame()
 	self.frame.targetGuild:SetHeight(14)
 	self.frame.targetGuild:SetJustifyH("CENTER")
 	self.frame.targetGuild:SetJustifyV("TOP")
-
-	self.frame.targetGuild:SetAlpha(0.6)
 
 	self.frame.targetGuild:SetPoint("TOP", self.frame, "BOTTOM", 0, 0)
 	self.frame.targetGuild:Show()
@@ -870,6 +868,8 @@ end
 
 
 function TargetInfo.prototype:TargetChanged()
+	TargetInfo.super.prototype.TargetChanged(self)
+
 	if (not UnitExists(target)) then
 		--self.frame:Hide()
 		--self.frame.target:Hide()
@@ -996,7 +996,7 @@ end
 function TargetInfo.prototype:TargetFlags(unit)
 	if (unit == target or unit == internal) then
 		self.tapped = UnitIsTapped(target) and (not UnitIsTappedByPlayer(target))
-		self.combat = UnitAffectingCombat(target) and " |cffee4030Combat|r" or ""
+		self.targetCombat = UnitAffectingCombat(target) and " |cffee4030Combat|r" or ""
 		self:UpdateBuffs()
 		self:Update(unit)
 	end
@@ -1020,7 +1020,7 @@ function TargetInfo.prototype:Update(unit)
 
 	if DogTag == nil or self.moduleSettings.line2Tag == '' then
 		local line2 = string.format("%s %s%s%s%s%s",
-			self.level or '', self.classLocale or '', self.pvp or '', self.leader or '', self.classification or '', self.combat or '')
+			self.level or '', self.classLocale or '', self.pvp or '', self.leader or '', self.classification or '', self.targetCombat or '')
 		self.frame.targetInfo:SetText(line2)
 	end
 
@@ -1038,6 +1038,8 @@ function TargetInfo.prototype:Update(unit)
 		DogTag:UpdateFontString(self.frame.targetInfo)
 		DogTag:UpdateFontString(self.frame.targetGuild)
 	end
+
+	self:UpdateAlpha()
 end
 
 

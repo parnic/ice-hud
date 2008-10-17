@@ -13,6 +13,10 @@ IceElement.prototype.frame = nil
 
 IceElement.prototype.defaultColors = {} -- Shared table for all child classes to save some memory
 IceElement.prototype.alpha = nil
+IceElement.prototype.backroundAlpha = nil
+
+IceElement.prototype.combat = nil
+IceElement.prototype.target = nil
 
 IceElement.settings = nil
 IceElement.moduleSettings = nil
@@ -78,6 +82,12 @@ function IceElement.prototype:Enable(core)
 	if (not core) then
 		self.moduleSettings.enabled = true
 	end
+
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "InCombat")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OutCombat")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckCombat")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
+
 	self:Show(true)
 end
 
@@ -145,6 +155,25 @@ function IceElement.prototype:GetOptions()
 		order = 21
 	}
 
+	opts["alwaysFullAlpha"] =
+	{
+		type = 'toggle',
+		name = 'Always show at 100% alpha',
+		desc = 'Whether to always show this module at 100% alpha or not',
+		get = function()
+			return self.moduleSettings.alwaysFullAlpha
+		end,
+		set = function(value)
+			self.moduleSettings.alwaysFullAlpha = value
+			self:Update(self.unit)
+			self:Redraw()
+		end,	
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 22
+	}	
+
 	return opts
 end
 
@@ -156,6 +185,7 @@ function IceElement.prototype:GetDefaultSettings()
 	local defaults = {}
 	defaults["enabled"] = true
 	defaults["scale"] = 1
+	defaults["alwaysFullAlpha"] = false
 	return defaults
 end
 
@@ -170,6 +200,30 @@ function IceElement.prototype:CreateFrame()
 	end
 
 	self.frame:SetScale(self.moduleSettings.scale)
+
+	self:UpdateAlpha()
+end
+
+
+function IceElement.prototype:UpdateAlpha()
+	if self.moduleSettings.alwaysFullAlpha then
+		self.frame:SetAlpha(1)
+		return
+	end
+
+	self.alpha = self.settings.alphaooc
+	if (self.combat) then
+		self.alpha = self.settings.alphaic
+		self.backgroundAlpha = self.settings.alphaicbg
+	elseif (self.target or self:UseTargetAlpha(scale)) then
+		self.alpha = self.settings.alphaTarget
+		self.backgroundAlpha = self.settings.alphaTargetbg
+	else
+		self.alpha = self.settings.alphaooc
+		self.backgroundAlpha = self.settings.alphaoocbg
+	end
+
+	self.frame:SetAlpha(self.alpha)
 end
 
 
@@ -264,6 +318,16 @@ function IceElement.prototype:FontFactory(size, frame, font, flags)
 end
 
 
+function IceElement.prototype:UseTargetAlpha(scale)
+	return false
+end
+
+
+function IceElement.prototype:Update()
+	self:UpdateAlpha()
+end
+
+
 function IceElement.prototype:IsVisible()
 	return self.bIsVisible
 end
@@ -291,6 +355,32 @@ function IceElement.prototype:OnCoreLoad()
 	self:TriggerEvent(IceCore.RegisterModule, self)
 end
 
+
+-- Combat event handlers ------------------------------------------------------
+
+function IceElement.prototype:InCombat()
+	self.combat = true
+	self:Update(self.unit)
+end
+
+
+function IceElement.prototype:OutCombat()
+	self.combat = false
+	self:Update(self.unit)
+end
+
+
+function IceElement.prototype:CheckCombat()
+	self.combat = UnitAffectingCombat("player")
+	self.target = UnitExists("target")
+	self:Update(self.unit)
+end
+
+
+function IceElement.prototype:TargetChanged()
+	self.target = UnitExists("target")
+	self:Update(self.unit)
+end
 
 
 

@@ -210,7 +210,6 @@ end
 function TargetOfTarget.prototype:Enable(core)
 	TargetOfTarget.super.prototype.Enable(self, core)
 	
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "Update")
 	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.2, self)
 	RegisterUnitWatch(self.frame)
 	
@@ -476,6 +475,8 @@ function TargetOfTarget.prototype:Update()
 	self.frame.bar.texture:SetVertexColor(self:GetColor(unitClass, 0.7))
 	self.frame.bar:SetMinMaxValues(0, maxHealth)
 	self.frame.bar:SetValue(health)
+
+	self:UpdateAlpha()
 end
 
 
