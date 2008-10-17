@@ -156,6 +156,7 @@ function Runes.prototype:GetDefaultSettings()
 	defaults["runeMode"] = "Graphical"
 	defaults["usesDogTagStrings"] = false
 	defaults["hideBlizz"] = true
+	defaults["alwaysFullAlpha"] = true
 
 	return defaults
 end
@@ -308,6 +309,13 @@ function Runes.prototype:HideBlizz()
 	RuneFrame:Hide()
 
 	RuneFrame:UnregisterAllEvents()
+end
+
+function Runes.prototype:TargetChanged()
+	Runes.super.prototype.TargetChanged(self)
+	-- sort of a hack fix...if "ooc" alpha is set to 0, then the runes frame is all jacked up when the user spawns in
+	-- need to re-run CreateFrame in order to setup the frame properly. not sure why :(
+	self:Redraw()
 end
 
 -- Load us up
