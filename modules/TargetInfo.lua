@@ -747,7 +747,7 @@ function TargetInfo.prototype:UpdateBuffs()
 		local buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe;
 		if IceHUD.WowVer >= 30000 then
 			buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe
-				= UnitBuff("target", i, filter and not hostile)
+				= UnitAura("target", i, "HELPFUL" .. (filter and not hostile and "|PLAYER" or "")) --UnitBuff("target", i, filter and not hostile)
 		else
 			buffName, buffRank, buffTexture, buffApplications, buffDuration, buffTimeLeft
 				= UnitBuff("target", i, filter and not hostile)
@@ -797,7 +797,7 @@ function TargetInfo.prototype:UpdateBuffs()
 
 	for i = 1, IceCore.BuffLimit do
 		local buffName, buffRank, buffTexture, buffApplications, debuffDispelType,
-			debuffDuration, debuffTimeLeft = UnitDebuff("target", i, filter and not hostile)
+			debuffDuration, debuffTimeLeft, isFromMe = UnitAura("target", i, "HARMFUL" .. (filter and not hostile and "|PLAYER" or "")) --UnitDebuff("target", i, filter and not hostile)
 
 		if (buffTexture and (not hostile or not filter or (filter and debuffDuration))) then
 
@@ -817,12 +817,12 @@ function TargetInfo.prototype:UpdateBuffs()
 					start = GetTime() - debuffDuration + debuffTimeLeft
 				end
 				self.frame.debuffFrame.buffs[i].cd:SetCooldown(start, debuffDuration)
-				self.frame.debuffFrame.buffs[i].fromPlayer = true
 				self.frame.debuffFrame.buffs[i].cd:Show()
 			else
-				self.frame.debuffFrame.buffs[i].fromPlayer = false
 				self.frame.debuffFrame.buffs[i].cd:Hide()
 			end
+
+			self.frame.debuffFrame.buffs[i].fromPlayer = isFromMe
 
 			self.frame.debuffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
 			self.frame.debuffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
