@@ -1,6 +1,7 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local ComboPoints = AceOO.Class(IceElement)
+local waterfall = AceLibrary("Waterfall-1.0")
 
 ComboPoints.prototype.comboSize = 20
 
@@ -41,6 +42,26 @@ function ComboPoints.prototype:GetOptions()
 		order = 31
 	}
 
+	opts["hpos"] = {
+		type = "range",
+		name = "Horizontal Position",
+		desc = "Horizontal Position",
+		get = function()
+			return self.moduleSettings.hpos
+		end,
+		set = function(v)
+			self.moduleSettings.hpos = v
+			self:Redraw()
+		end,
+		min = -700,
+		max = 700,
+		step = 10,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 31
+	}
+
 	opts["comboFontSize"] = {
 		type = "range",
 		name = "Combo Points Font Size",
@@ -72,12 +93,31 @@ function ComboPoints.prototype:GetOptions()
 			self.moduleSettings.comboMode = v
 			self:CreateComboFrame(true)
 			self:Redraw()
+			waterfall:Refresh("IceHUD")
 		end,
 		validate = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
 		order = 33
+	}
+
+	opts["graphicalLayout"] = {
+		type = 'text',
+		name = 'Layout',
+		desc = 'How the graphical combo points should be displayed',
+		get = function()
+			return self.moduleSettings.graphicalLayout
+		end,
+		set = function(v)
+			self.moduleSettings.graphicalLayout = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or self.moduleSettings.comboMode == "Numeric"
+		end,
+		validate = {"Horizontal", "Vertical"},
+		order = 33.1
 	}
 
 	opts["gradient"] = {
@@ -105,11 +145,13 @@ end
 function ComboPoints.prototype:GetDefaultSettings()
 	local defaults =  ComboPoints.super.prototype.GetDefaultSettings(self)
 	defaults["vpos"] = 0
+	defaults["hpos"] = 0
 	defaults["comboFontSize"] = 20
 	defaults["comboMode"] = "Numeric"
 	defaults["gradient"] = false
 	defaults["usesDogTagStrings"] = false
 	defaults["alwaysFullAlpha"] = true
+	defaults["graphicalLayout"] = "Horizontal"
 	return defaults
 end
 
@@ -150,10 +192,15 @@ function ComboPoints.prototype:CreateFrame()
 	ComboPoints.super.prototype.CreateFrame(self)
 
 	self.frame:SetFrameStrata("BACKGROUND")
-	self.frame:SetWidth(self.comboSize*5)
-	self.frame:SetHeight(1)
+	if self.moduleSettings.graphicalLayout == "Horizontal" then
+		self.frame:SetWidth(self.comboSize*5)
+		self.frame:SetHeight(1)
+	else
+		self.frame:SetWidth(1)
+		self.frame:SetHeight(self.comboSize*5)
+	end
 	self.frame:ClearAllPoints()
-	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
+	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
 	
 	self:Show(true)
 
@@ -163,7 +210,6 @@ end
 
 
 function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
-
 	-- create numeric combo points
 	self.frame.numeric = self:FontFactory(self.moduleSettings.comboFontSize, nil, self.frame.numeric)
 
@@ -199,7 +245,11 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 		self.frame.graphicalBG[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphicalBG[i]:SetWidth(self.comboSize)
 		self.frame.graphicalBG[i]:SetHeight(self.comboSize)
-		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.comboSize-5) + (i-1), 0)
+		if self.moduleSettings.graphicalLayout == "Horizontal" then
+			self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.comboSize-5) + (i-1), 0)
+		else
+			self.frame.graphicalBG[i]:SetPoint("TOPLEFT", 0, -1 * ((i-1) * (self.comboSize-5) + (i-1)))
+		end
 		self.frame.graphicalBG[i]:SetAlpha(0.15)
 		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("ComboPoints"))
 
@@ -239,7 +289,9 @@ end
 
 function ComboPoints.prototype:UpdateComboPoints()
 	local points
-	if IceHUD.WowVer >= 30000 then
+	if IceHUD.IceCore:IsInConfigMode() then
+		points = 5
+	elseif IceHUD.WowVer >= 30000 then
 		points = GetComboPoints("player", "target")
 	else
 		points = GetComboPoints("target")
