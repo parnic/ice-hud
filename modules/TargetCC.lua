@@ -3,6 +3,10 @@ local AceOO = AceLibrary("AceOO-2.0")
 -- needs to not be local so that we can inherit from it
 TargetCC = AceOO.Class(IceUnitBar)
 
+TargetCC.prototype.debuffName = nil
+TargetCC.prototype.debuffRemaining = 0
+TargetCC.prototype.debuffDuration = 0
+
 -- list of spell ID's for each CC type so we can avoid localization issues
 local StunCCList = {
 	-- kidney shot
@@ -138,8 +142,9 @@ function TargetCC.prototype:Enable(core)
 	TargetCC.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_AURA", "UpdateTargetDebuffs")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateTargetDebuffs")
 
-	self:ScheduleRepeatingEvent(self.elementName, self.UpdateTargetDebuffs, 0.1, self)
+--	self:ScheduleRepeatingEvent(self.elementName, self.UpdateTargetDebuffs, 0.1, self)
 
 	self:Show(false)
 end
@@ -147,7 +152,7 @@ end
 function TargetCC.prototype:Disable(core)
 	TargetCC.super.prototype.Disable(self, core)
 
-	self:CancelScheduledEvent(self.elementName)
+--	self:CancelScheduledEvent(self.elementName)
 end
 
 -- OVERRIDE
@@ -197,10 +202,13 @@ end
 
 function _GetMaxDebuffDuration(unitName, debuffNames)
 	local i = 1
-	local debuff, rank, texture, count, debuffType, duration, remaining = UnitDebuff(unitName, i)
+	local debuff, rank, texture, count, debuffType, duration, endTime = UnitAura(unitName, i, "HARMFUL")
 	local result = {nil, nil, nil}
+	local remaining
 
 	while debuff do
+		remaining = endTime - GetTime()
+
 		if debuffNames[debuff] then
 			if result[0] then
 				if result[2] < remaining then
@@ -213,14 +221,29 @@ function _GetMaxDebuffDuration(unitName, debuffNames)
 
 		i = i + 1;
 
-		debuff, rank, texture, count, debuffType, duration, remaining = UnitDebuff(unitName, i)
+		debuff, rank, texture, count, debuffType, duration, endTime = UnitAura(unitName, i, "HARMFUL")
 	end
 
 	return unpack(result)
 end
 
-function TargetCC.prototype:UpdateTargetDebuffs()
-	local name, duration, remaining = _GetMaxDebuffDuration(self.unit, self.debuffList)
+function TargetCC.prototype:UpdateTargetDebuffs(unit, isUpdate)
+	local name, duration, remaining
+	if not isUpdate then
+		self.frame:SetScript("OnUpdate", function() self:UpdateTargetDebuffs(self.unit, true) end)
+		self.debuffName, self.debuffDuration, self.debuffRemaining = _GetMaxDebuffDuration(self.unit, self.debuffList)
+	else
+		self.debuffRemaining = math.max(0, self.debuffRemaining - (1.0 / GetFramerate()))
+		if self.debuffRemaining <= 0 then
+			self.debuffName = nil
+			self.frame:SetScript("OnUpdate", nil)
+		end
+	end
+
+	name = self.debuffName
+	duration = self.debuffDuration
+	remaining = self.debuffRemaining
+
 	local targetName = UnitName(self.unit)
 
 	if (name ~= nil) and (self.previousDebuff == nil) and (duration ~= nil) and (remaining ~= nil) then
