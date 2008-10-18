@@ -526,8 +526,13 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
 		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
 	else
-		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", -6, 0)
-		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth() / 3, 0)
+		if self.moduleSettings.side == IceCore.Side.Left then
+			self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", -6, 0)
+			self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth() / 3, 0)
+		else
+			self.frame.button:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 6, 0)
+			self.frame.button:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth() / 1.5, 0)
+		end
 	end
 
 	self.frame.button.menu = function()
