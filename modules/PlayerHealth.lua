@@ -22,7 +22,7 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["hideBlizz"] = false
 	settings["upperText"] = "[PercentHP:Round]"
 	settings["lowerText"] = "[FractionalHP:HPColor:Bracket]"
-	settings["allowMouseInteraction"] = true
+	settings["allowMouseInteraction"] = false
 	settings["allowMouseInteractionCombat"] = false
 	settings["lockIconAlpha"] = false
 
