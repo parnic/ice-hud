@@ -166,6 +166,7 @@ function TargetCC.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 3
 	settings["usesDogTagStrings"] = false
+	settings["onlyShowForMyDebuffs"] = false
 
 	return settings
 end
@@ -195,21 +196,36 @@ function TargetCC.prototype:GetOptions()
 		end,
 	}
 
+	opts["onlyShowForMyDebuffs"] = {
+		type = 'toggle',
+		name = 'Only show for my debuffs',
+		desc = 'With this checked, the bar will only activate for your own CC spells and not those of others.',
+		get = function()
+			return self.moduleSettings.onlyShowForMyDebuffs
+		end,
+		set = function(v)
+			self.moduleSettings.onlyShowForMyDebuffs = v
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+	}
+
 	return opts	
 end
 	
 -- 'Protected' methods --------------------------------------------------------
 
-function _GetMaxDebuffDuration(unitName, debuffNames)
+function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 	local i = 1
-	local debuff, rank, texture, count, debuffType, duration, endTime = UnitAura(unitName, i, "HARMFUL")
+	local debuff, rank, texture, count, debuffType, duration, endTime, isMine = UnitAura(unitName, i, "HARMFUL")
 	local result = {nil, nil, nil}
 	local remaining
 
 	while debuff do
 		remaining = endTime - GetTime()
 
-		if debuffNames[debuff] then
+		if debuffNames[debuff] and (not self.moduleSettings.onlyShowForMyDebuffs or isMine) then
 			if result[0] then
 				if result[2] < remaining then
 					result = {debuff, duration, remaining}
@@ -221,7 +237,7 @@ function _GetMaxDebuffDuration(unitName, debuffNames)
 
 		i = i + 1;
 
-		debuff, rank, texture, count, debuffType, duration, endTime = UnitAura(unitName, i, "HARMFUL")
+		debuff, rank, texture, count, debuffType, duration, endTime, isMine = UnitAura(unitName, i, "HARMFUL")
 	end
 
 	return unpack(result)
@@ -231,7 +247,7 @@ function TargetCC.prototype:UpdateTargetDebuffs(unit, isUpdate)
 	local name, duration, remaining
 	if not isUpdate then
 		self.frame:SetScript("OnUpdate", function() self:UpdateTargetDebuffs(self.unit, true) end)
-		self.debuffName, self.debuffDuration, self.debuffRemaining = _GetMaxDebuffDuration(self.unit, self.debuffList)
+		self.debuffName, self.debuffDuration, self.debuffRemaining = self:GetMaxDebuffDuration(self.unit, self.debuffList)
 	else
 		self.debuffRemaining = math.max(0, self.debuffRemaining - (1.0 / GetFramerate()))
 		if self.debuffRemaining <= 0 then
