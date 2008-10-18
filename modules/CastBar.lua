@@ -415,4 +415,4 @@ end
 -------------------------------------------------------------------------------
 
 -- Load us up
-CastBar:new()
+IceHUD.PlayerCast = CastBar:new()
