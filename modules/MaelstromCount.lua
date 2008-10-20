@@ -1,14 +1,14 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-local LacerateCount = AceOO.Class(IceElement)
+local MaelstromCount = AceOO.Class(IceElement)
 
-LacerateCount.prototype.lacerateSize = 20
+MaelstromCount.prototype.maelstromSize = 20
 
 -- Constructor --
-function LacerateCount.prototype:init()
-	LacerateCount.super.prototype.init(self, "LacerateCount")
+function MaelstromCount.prototype:init()
+	MaelstromCount.super.prototype.init(self, "MaelstromCount")
 	
-	self:SetDefaultColor("LacerateCount", 1, 1, 0)
+	self:SetDefaultColor("MaelstromCount", 1, 1, 0)
 	self.scalingEnabled = true
 end
 
@@ -18,8 +18,8 @@ end
 
 
 -- OVERRIDE
-function LacerateCount.prototype:GetOptions()
-	local opts = LacerateCount.super.prototype.GetOptions(self)
+function MaelstromCount.prototype:GetOptions()
+	local opts = MaelstromCount.super.prototype.GetOptions(self)
 
 	opts["vpos"] = {
 		type = "range",
@@ -41,15 +41,15 @@ function LacerateCount.prototype:GetOptions()
 		order = 31
 	}
 
-	opts["lacerateFontSize"] = {
+	opts["maelstromFontSize"] = {
 		type = "range",
-		name = "Lacerate Count Font Size",
-		desc = "Lacerate Count Font Size",
+		name = "Maelstrom Count Font Size",
+		desc = "Maelstrom Count Font Size",
 		get = function()
-			return self.moduleSettings.lacerateFontSize
+			return self.moduleSettings.maelstromFontSize
 		end,
 		set = function(v)
-			self.moduleSettings.lacerateFontSize = v
+			self.moduleSettings.maelstromFontSize = v
 			self:Redraw()
 		end,
 		min = 10,
@@ -61,16 +61,16 @@ function LacerateCount.prototype:GetOptions()
 		order = 32
 	}
 
-	opts["lacerateMode"] = {
+	opts["maelstromMode"] = {
 		type = "text",
 		name = "Display Mode",
-		desc = "Show graphical or numeric lacerates",
+		desc = "Show graphical or numeric maelstroms",
 		get = function()
-			return self.moduleSettings.lacerateMode
+			return self.moduleSettings.maelstromMode
 		end,
 		set = function(v)
-			self.moduleSettings.lacerateMode = v
-			self:CreateLacerateFrame(true)
+			self.moduleSettings.maelstromMode = v
+			self:CreateMaelstromFrame(true)
 			self:Redraw()
 		end,
 		validate = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
@@ -83,7 +83,7 @@ function LacerateCount.prototype:GetOptions()
 	opts["gradient"] = {
 		type = "toggle",
 		name = "Change color",
-		desc = "1 lacerate: yellow, 5 lacerates: red",
+		desc = "1 maelstrom: yellow, 5 maelstroms: red",
 		get = function()
 			return self.moduleSettings.gradient
 		end,
@@ -102,39 +102,35 @@ end
 
 
 -- OVERRIDE
-function LacerateCount.prototype:GetDefaultSettings()
-	local defaults =  LacerateCount.super.prototype.GetDefaultSettings(self)
-	defaults["vpos"] = -20
-	defaults["lacerateFontSize"] = 20
-	defaults["lacerateMode"] = "Numeric"
+function MaelstromCount.prototype:GetDefaultSettings()
+	local defaults =  MaelstromCount.super.prototype.GetDefaultSettings(self)
+	defaults["vpos"] = 0
+	defaults["maelstromFontSize"] = 20
+	defaults["maelstromMode"] = "Numeric"
 	defaults["gradient"] = false
 	defaults["usesDogTagStrings"] = false
 	defaults["alwaysFullAlpha"] = true
+	defaults["enabled"] = false
 	return defaults
 end
 
 
 -- OVERRIDE
-function LacerateCount.prototype:Redraw()
-	LacerateCount.super.prototype.Redraw(self)
+function MaelstromCount.prototype:Redraw()
+	MaelstromCount.super.prototype.Redraw(self)
 	
 	self:CreateFrame()
-	self:UpdateLacerateCount()
+	self:UpdateMaelstromCount()
 end
 
 
 -- OVERRIDE
-function LacerateCount.prototype:Enable(core)
-	LacerateCount.super.prototype.Enable(self, core)
+function MaelstromCount.prototype:Enable(core)
+	MaelstromCount.super.prototype.Enable(self, core)
 	
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateLacerateCount")
-	self:RegisterEvent("UNIT_AURA", "UpdateLacerateCount")
+	self:RegisterEvent("UNIT_AURA", "UpdateMaelstromCount")
 
-	if self.moduleSettings.lacerateMode == "Graphical" then
-		self.moduleSettings.lacerateMode = "Graphical Bar"
-	end
-
-	self:CreateLacerateFrame(true)
+	self:CreateMaelstromFrame(true)
 end
 
 
@@ -142,25 +138,25 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 -- OVERRIDE
-function LacerateCount.prototype:CreateFrame()
-	LacerateCount.super.prototype.CreateFrame(self)
+function MaelstromCount.prototype:CreateFrame()
+	MaelstromCount.super.prototype.CreateFrame(self)
 
 	self.frame:SetFrameStrata("BACKGROUND")
-	self.frame:SetWidth(self.lacerateSize*5)
+	self.frame:SetWidth(self.maelstromSize*5)
 	self.frame:SetHeight(1)
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
 	
 	self:Show(true)
 
-	self:CreateLacerateFrame()
+	self:CreateMaelstromFrame()
 end
 
 
 
-function LacerateCount.prototype:CreateLacerateFrame(doTextureUpdate)
-	-- create numeric lacerates
-	self.frame.numeric = self:FontFactory(self.moduleSettings.lacerateFontSize, nil, self.frame.numeric)
+function MaelstromCount.prototype:CreateMaelstromFrame(doTextureUpdate)
+	-- create numeric maelstroms
+	self.frame.numeric = self:FontFactory(self.moduleSettings.maelstromFontSize, nil, self.frame.numeric)
 
 	self.frame.numeric:SetWidth(50)
 	self.frame.numeric:SetJustifyH("CENTER")
@@ -180,41 +176,41 @@ function LacerateCount.prototype:CreateLacerateFrame(doTextureUpdate)
 		end
 
 		if doTextureUpdate then
-			if self.moduleSettings.lacerateMode == "Graphical Bar" then
+			if self.moduleSettings.maelstromMode == "Graphical Bar" then
 				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboBG")
-			elseif self.moduleSettings.lacerateMode == "Graphical Circle" then
+			elseif self.moduleSettings.maelstromMode == "Graphical Circle" then
 				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRoundBG")
-			elseif self.moduleSettings.lacerateMode == "Graphical Glow" then
+			elseif self.moduleSettings.maelstromMode == "Graphical Glow" then
 				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboGlowBG")
-			elseif self.moduleSettings.lacerateMode == "Graphical Clean Circle" then
+			elseif self.moduleSettings.maelstromMode == "Graphical Clean Circle" then
 				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboCleanCurvesBG")
 			end
 		end
 
 		self.frame.graphicalBG[i]:SetFrameStrata("BACKGROUND")
-		self.frame.graphicalBG[i]:SetWidth(self.lacerateSize)
-		self.frame.graphicalBG[i]:SetHeight(self.lacerateSize)
-		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.lacerateSize-5) + (i-1), 0)
+		self.frame.graphicalBG[i]:SetWidth(self.maelstromSize)
+		self.frame.graphicalBG[i]:SetHeight(self.maelstromSize)
+		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.maelstromSize-5) + (i-1), 0)
 		self.frame.graphicalBG[i]:SetAlpha(0.15)
-		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("LacerateCount"))
+		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("MaelstromCount"))
 
 		self.frame.graphicalBG[i]:Hide()
 	end
 
-	-- create lacerates
+	-- create maelstroms
 	for i = 1, 5 do
 		if (not self.frame.graphical[i]) then
 			self.frame.graphical[i] = CreateFrame("StatusBar", nil, self.frame)
 		end
 
 		if doTextureUpdate then
-			if self.moduleSettings.lacerateMode == "Graphical Bar" then
+			if self.moduleSettings.maelstromMode == "Graphical Bar" then
 				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "Combo")
-			elseif self.moduleSettings.lacerateMode == "Graphical Circle" then
+			elseif self.moduleSettings.maelstromMode == "Graphical Circle" then
 				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRound")
-			elseif self.moduleSettings.lacerateMode == "Graphical Glow" then
+			elseif self.moduleSettings.maelstromMode == "Graphical Glow" then
 				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboGlow")
-			elseif self.moduleSettings.lacerateMode == "Graphical Clean Circle" then
+			elseif self.moduleSettings.maelstromMode == "Graphical Clean Circle" then
 				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboCleanCurves")
 			end
 		end
@@ -222,7 +218,7 @@ function LacerateCount.prototype:CreateLacerateFrame(doTextureUpdate)
 		self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphical[i]:SetAllPoints(self.frame.graphicalBG[i])
 
-		local r, g, b = self:GetColor("LacerateCount")
+		local r, g, b = self:GetColor("MaelstromCount")
 		if (self.moduleSettings.gradient) then
 			g = g - (0.15*i)
 		end
@@ -233,20 +229,24 @@ function LacerateCount.prototype:CreateLacerateFrame(doTextureUpdate)
 end
 
 
-function LacerateCount.prototype:UpdateLacerateCount()
+function MaelstromCount.prototype:UpdateMaelstromCount(unit)
+	if unit and unit ~= "player" then
+		return
+	end
+
 	local points
 	if IceHUD.IceCore:IsInConfigMode() then
 		points = 5
 	else
-		points = IceHUD:GetDebuffCount("target", "Ability_Druid_Lacerate", true)
+		points = IceHUD:GetBuffCount("player", "Spell_Shaman_MaelstromWeapon")
 	end
 
 	if (points == 0) then
 		points = nil
 	end
 
-	if (self.moduleSettings.lacerateMode == "Numeric") then
-		local r, g, b = self:GetColor("LacerateCount")
+	if (self.moduleSettings.maelstromMode == "Numeric") then
+		local r, g, b = self:GetColor("MaelstromCount")
 		if (self.moduleSettings.gradient and points) then
 			g = g - (0.15*points)
 		end
@@ -275,6 +275,6 @@ end
 
 -- Load us up
 local _, unitClass = UnitClass("player")
-if (unitClass == "DRUID") then
-	IceHUD.LacerateCount = LacerateCount:new()
+if (unitClass == "SHAMAN") then
+	IceHUD.MaelstromCount = MaelstromCount:new()
 end

@@ -435,8 +435,9 @@ function IceCore.prototype:ConfigModeToggle(bWantConfig)
 		for i = 1, table.getn(self.elements) do
 			if not self.elements[i]:IsVisible() then
 				self.elements[i].frame:Hide()
-				self.elements[i]:Redraw()
 			end
+
+			self.elements[i]:Redraw()
 		end
 	end
 end

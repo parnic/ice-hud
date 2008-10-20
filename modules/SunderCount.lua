@@ -159,7 +159,6 @@ end
 
 
 function SunderCount.prototype:CreateSunderFrame(doTextureUpdate)
-
 	-- create numeric sunders
 	self.frame.numeric = self:FontFactory(self.moduleSettings.sunderFontSize, nil, self.frame.numeric)
 
@@ -185,9 +184,9 @@ function SunderCount.prototype:CreateSunderFrame(doTextureUpdate)
 				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboBG")
 			elseif self.moduleSettings.sunderMode == "Graphical Circle" then
 				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRoundBG")
-			elseif self.moduleSettings.comboMode == "Graphical Glow" then
+			elseif self.moduleSettings.sunderMode == "Graphical Glow" then
 				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboGlowBG")
-			elseif self.moduleSettings.comboMode == "Graphical Clean Circle" then
+			elseif self.moduleSettings.sunderMode == "Graphical Clean Circle" then
 				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboCleanCurvesBG")
 			end
 		end
@@ -213,9 +212,9 @@ function SunderCount.prototype:CreateSunderFrame(doTextureUpdate)
 				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "Combo")
 			elseif self.moduleSettings.sunderMode == "Graphical Circle" then
 				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRound")
-			elseif self.moduleSettings.comboMode == "Graphical Glow" then
+			elseif self.moduleSettings.sunderMode == "Graphical Glow" then
 				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboGlow")
-			elseif self.moduleSettings.comboMode == "Graphical Clean Circle" then
+			elseif self.moduleSettings.sunderMode == "Graphical Clean Circle" then
 				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboCleanCurves")
 			end
 		end
@@ -235,7 +234,12 @@ end
 
 
 function SunderCount.prototype:UpdateSunderCount()
-	local points = IceHUD:GetDebuffCount("target", "Ability_Warrior_Sunder")
+	local points
+	if IceHUD.IceCore:IsInConfigMode() then
+		points = 5
+	else
+		points = IceHUD:GetDebuffCount("target", "Ability_Warrior_Sunder")
+	end
 
 	if (points == 0) then
 		points = nil
