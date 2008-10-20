@@ -1,7 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local LacerateCount = AceOO.Class(IceElement)
-local MAX_DEBUFF_COUNT = 40
 
 LacerateCount.prototype.lacerateSize = 20
 
@@ -84,7 +83,7 @@ function LacerateCount.prototype:GetOptions()
 	opts["gradient"] = {
 		type = "toggle",
 		name = "Change color",
-		desc = "1 compo point: yellow, 5 lacerates: red",
+		desc = "1 lacerate: yellow, 5 lacerates: red",
 		get = function()
 			return self.moduleSettings.gradient
 		end,
@@ -235,30 +234,8 @@ function LacerateCount.prototype:CreateLacerateFrame(doTextureUpdate)
 end
 
 
-function LacerateCount.prototype:GetDebuffCount(unit, ability, onlyMine)
-	for i = 1, MAX_DEBUFF_COUNT do
-		local name, texture, applications, duration
-		if IceHUD.WowVer >= 30000 then
-			name, _, texture, applications, _, _, duration = UnitDebuff(unit, i)
-		else
-			name, _, texture, applications, _, duration = UnitDebuff(unit, i)
-		end
-
-		if not texture then
-			break
-		end
-
-		if string.match(texture, ability) and (not onlyMine or duration) then
-			return applications
-		end
-	end
-
-	return 0
-end
-
-
 function LacerateCount.prototype:UpdateLacerateCount()
-	local points = self:GetDebuffCount("target", "Ability_Druid_Lacerate", true)
+	local points = IceHUD:GetDebuffCount("target", "Ability_Druid_Lacerate", true)
 
 	if (points == 0) then
 		points = nil

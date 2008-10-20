@@ -1,7 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local SunderCount = AceOO.Class(IceElement)
-local MAX_DEBUFF_COUNT = 40
 
 SunderCount.prototype.sunderSize = 20
 
@@ -84,7 +83,7 @@ function SunderCount.prototype:GetOptions()
 	opts["gradient"] = {
 		type = "toggle",
 		name = "Change color",
-		desc = "1 compo point: yellow, 5 sunders: red",
+		desc = "1 sunder: yellow, 5 sunders: red",
 		get = function()
 			return self.moduleSettings.gradient
 		end,
@@ -235,30 +234,8 @@ function SunderCount.prototype:CreateSunderFrame(doTextureUpdate)
 end
 
 
-function SunderCount.prototype:GetDebuffCount(unit, ability, onlyMine)
-	for i = 1, MAX_DEBUFF_COUNT do
-		local name, texture, applications, duration
-		if IceHUD.WowVer >= 30000 then
-			name, _, texture, applications, _, _, duration = UnitDebuff(unit, i)
-		else
-			name, _, texture, applications, _, duration = UnitDebuff(unit, i)
-		end
-
-		if not texture then
-			break
-		end
-
-		if string.match(texture, ability) and (not onlyMine or duration) then
-			return applications
-		end
-	end
-
-	return 0
-end
-
-
 function SunderCount.prototype:UpdateSunderCount()
-	local points = self:GetDebuffCount("target", "Ability_Warrior_Sunder")
+	local points = IceHUD:GetDebuffCount("target", "Ability_Warrior_Sunder")
 
 	if (points == 0) then
 		points = nil

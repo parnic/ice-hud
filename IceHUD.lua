@@ -561,3 +561,27 @@ function IceHUD:MathRound(num, idp)
 	local mult = 10^(idp or 0)
 	return math.floor(num  * mult + 0.5) / mult
 end
+
+function IceHUD:GetBuffCount(unit, ability, onlyMine)
+	return IceHUD:GetAuraCount("HELPFUL"..(onlyMine and "|PLAYER" or ""), unit, ability)
+end
+
+function IceHUD:GetDebuffCount(unit, ability, onlyMine)
+	return IceHUD:GetAuraCount("HARMFUL"..(onlyMine and "|PLAYER" or ""), unit, ability)
+end
+
+function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine)
+	for i = 1, 40 do
+		local _, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+
+		if not texture then
+			break
+		end
+
+		if string.match(texture, ability) then
+			return applications
+		end
+	end
+
+	return 0
+end
