@@ -110,7 +110,6 @@ function MaelstromCount.prototype:GetDefaultSettings()
 	defaults["gradient"] = false
 	defaults["usesDogTagStrings"] = false
 	defaults["alwaysFullAlpha"] = true
-	defaults["enabled"] = false
 	return defaults
 end
 
