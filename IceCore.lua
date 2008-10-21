@@ -429,6 +429,9 @@ function IceCore.prototype:ConfigModeToggle(bWantConfig)
 			if self.elements[i]:IsEnabled() then
 				self.elements[i].frame:Show()
 				self.elements[i]:Redraw()
+				if AceOO.inherits(self.elements[i], IceBarElement) then
+					self.elements[i]:SetBottomText1(self.elements[i].elementName)
+				end
 			end
 		end
 	else
