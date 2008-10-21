@@ -440,6 +440,11 @@ function IceCore.prototype:ConfigModeToggle(bWantConfig)
 				self.elements[i].frame:Hide()
 			end
 
+			-- blank the bottom text that we set before. if the module uses this text, it will reset itself on redraw
+			if AceOO.inherits(self.elements[i], IceBarElement) then
+				self.elements[i]:SetBottomText1()
+			end
+
 			self.elements[i]:Redraw()
 		end
 	end
