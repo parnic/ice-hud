@@ -79,6 +79,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["widthModifier"] = 0
 	settings["usesDogTagStrings"] = true
 	settings["barVerticalOffset"] = 0
+	settings["forceJustifyText"] = "NONE"
 
 	return settings
 end
@@ -403,6 +404,23 @@ function IceBarElement.prototype:GetOptions()
 				usage = "<lower text to display>"
 			},
 
+			forceJustifyText = {
+				type = 'text',
+				name =  'Force Text Justification',
+				desc = 'This sets the alignment for the text on this bar',
+				get = function()
+					return self.moduleSettings.forceJustifyText
+				end,
+				set = function(value)
+					self.moduleSettings.forceJustifyText = value
+					self:Redraw()
+				end,
+				validate = { NONE = "None", LEFT = "Left", RIGHT = "Right" },
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+			},
+
 			textVerticalOffset = {
 				type = 'range',
 				name = '|c' .. self.configColor .. 'Text Vertical Offset|r',
@@ -426,8 +444,8 @@ function IceBarElement.prototype:GetOptions()
 				type = 'range',
 				name = '|c' .. self.configColor .. 'Text Horizontal Offset|r',
 				desc = 'Offset of the text from the bar horizontally',
-				min = -50,
-				max = 50,
+				min = -150,
+				max = 150,
 				step = 1,
 				get = function()
 					return self.moduleSettings.textHorizontalOffset
@@ -581,6 +599,11 @@ function IceBarElement.prototype:CreateTexts()
 	self.frame.bottomUpperText:SetHeight(14)
 	self.frame.bottomLowerText:SetHeight(14)
 
+	local ownPoint = self.moduleSettings.side
+	if (self.moduleSettings.offset > 1) then
+		ownPoint = self:Flip(ownPoint)
+	end
+
 	local justify = "RIGHT"
 	if ((self.moduleSettings.side == "LEFT" and self.moduleSettings.offset <= 1) or
 		(self.moduleSettings.side == "RIGHT" and self.moduleSettings.offset > 1)) 
@@ -588,26 +611,25 @@ function IceBarElement.prototype:CreateTexts()
 		justify = "LEFT"
 	end
 
+	if self.moduleSettings.forceJustifyText and self.moduleSettings.forceJustifyText ~= "NONE" then
+		ownPoint = self.moduleSettings.forceJustifyText
+		justify = self.moduleSettings.forceJustifyText
+	end
 
 	self.frame.bottomUpperText:SetJustifyH(justify)
 	self.frame.bottomLowerText:SetJustifyH(justify)
 
 
-	local ownPoint = self.moduleSettings.side
-	if (self.moduleSettings.offset > 1) then
-		ownPoint = self:Flip(ownPoint)
-	end
-	
 	local parentPoint = self:Flip(self.moduleSettings.side)
-	
-	
+
+
 	local offx = 0
 	-- adjust offset for bars where text is aligned to the outer side
 	if (self.moduleSettings.offset <= 1) then
 		offx = self.settings.barProportion * self.settings.barWidth - offx
 	end
-
-
+	
+	
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		offx = offx * -1
 	end
