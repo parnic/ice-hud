@@ -164,7 +164,7 @@ function TargetCC.prototype:GetDefaultSettings()
 	settings["desiredLerpTime"] = nil
 	settings["lowThreshold"] = 0
 	settings["side"] = IceCore.Side.Left
-	settings["offset"] = 3
+	settings["offset"] = 5
 	settings["usesDogTagStrings"] = false
 	settings["onlyShowForMyDebuffs"] = false
 

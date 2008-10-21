@@ -31,7 +31,7 @@ end
 function IHUD_Threat.prototype:GetDefaultSettings()
 	local settings = IHUD_Threat.super.prototype.GetDefaultSettings(self)
 	settings["side"] = IceCore.Side.Left
-	settings["offset"] = 3
+	settings["offset"] = 4
 	settings["enabled"] = false
 	settings["aggroAlpha"] = 0.7
 	settings["usesDogTagStrings"] = false

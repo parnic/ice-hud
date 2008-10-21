@@ -74,7 +74,7 @@ function SliceAndDice.prototype:GetDefaultSettings()
     settings["desiredLerpTime"] = nil
     settings["lowThreshold"] = 0
     settings["side"] = IceCore.Side.Right
-    settings["offset"] = 4
+    settings["offset"] = 6
     settings["upperText"]="SnD:"
     settings["showAsPercentOfMax"] = true
     settings["durationAlpha"] = 0.6

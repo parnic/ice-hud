@@ -75,8 +75,8 @@ function GlobalCoolDown.prototype:GetDefaultSettings()
 	local settings = GlobalCoolDown.super.prototype.GetDefaultSettings(self)
 
 	settings["enabled"] = false
-	settings["side"] = IceCore.Side.Right
-	settings["offset"] = 1
+	settings["side"] = IceCore.Side.Left
+	settings["offset"] = 6
 	settings["shouldAnimate"] = false
 	settings["desiredLerpTime"] = nil
 	settings["lowThreshold"] = 0

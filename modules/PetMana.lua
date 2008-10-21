@@ -19,8 +19,8 @@ end
 function PetMana.prototype:GetDefaultSettings()
 	local settings = PetMana.super.prototype.GetDefaultSettings(self)
 
-	settings["side"] = IceCore.Side.Right
-	settings["offset"] = -1
+	settings["side"] = IceCore.Side.Left
+	settings["offset"] = -2
 	settings.scale = 0.7
 	settings["textVerticalOffset"] = 4
 	settings["upperText"] = "[PercentMP:Round]"

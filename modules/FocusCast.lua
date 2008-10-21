@@ -18,6 +18,7 @@ function FocusCast.prototype:GetDefaultSettings()
 
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = -3
+	settings["scale"] = 0.7
 	settings["flashInstants"] = "Never"
 	settings["flashFailures"] = "Never"
 	settings["shouldAnimate"] = false

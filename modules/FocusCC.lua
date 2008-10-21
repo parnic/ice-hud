@@ -15,8 +15,8 @@ end
 function FocusCC.prototype:GetDefaultSettings()
 	local settings = FocusCC.super.prototype.GetDefaultSettings(self)
 
-	settings["side"] = IceCore.Side.Left
-	settings["offset"] = 4
+	settings["side"] = IceCore.Side.Right
+	settings["offset"] = 5
     
 	return settings
 end
