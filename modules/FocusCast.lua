@@ -24,6 +24,7 @@ function FocusCast.prototype:GetDefaultSettings()
 	settings["shouldAnimate"] = false
 	settings["usesDogTagStrings"] = false
 	settings["enabled"] = false
+	settings["barVerticalOffset"] = 35
 
 	return settings
 end
