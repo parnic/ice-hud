@@ -180,6 +180,11 @@ function PlayerMana.prototype:Update(unit)
 		return
 	end
 
+	-- the user can toggle the predictedPower cvar at any time and the addon will not get notified. handle it.
+	if not self.tickerFrame and self:ShouldUseTicker() then
+		self:CreateTickerFrame()
+	end
+
 	if (self.manaType ~= 3 and self:ShouldUseTicker()) then
 		self.tickerFrame:Hide()
 	end
