@@ -18,11 +18,6 @@ IceBarElement.prototype.CurrScale = 1
 -- Constructor --
 function IceBarElement.prototype:init(name)
 	IceBarElement.super.prototype.init(self, name)
-
-	if AceLibrary:HasInstance("LibDogTag-3.0") then
-		DogTag = AceLibrary("LibDogTag-3.0")
-		AceLibrary("LibDogTag-Unit-3.0")
-	end
 end
 
 
@@ -32,6 +27,11 @@ end
 -- OVERRIDE
 function IceBarElement.prototype:Enable()
 	IceBarElement.super.prototype.Enable(self)
+
+	if IceHUD.IceCore:ShouldUseDogTags() and AceLibrary:HasInstance("LibDogTag-3.0") then
+		DogTag = AceLibrary("LibDogTag-3.0")
+		AceLibrary("LibDogTag-Unit-3.0")
+	end
 
 	if self.moduleSettings.myTagVersion < IceHUD.CurrTagVersion then
 		local origDefaults = self:GetDefaultSettings()

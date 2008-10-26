@@ -14,14 +14,14 @@ function RangeCheck.prototype:init()
 	if AceLibrary:HasInstance("LibRangeCheck-2.0") then
 		LibRange = AceLibrary("LibRangeCheck-2.0")
 	end
-
-	if AceLibrary:HasInstance("LibDogTag-3.0") then
-		DogTag = AceLibrary("LibDogTag-3.0")
-	end
 end
 
 function RangeCheck.prototype:Enable(core)
 	RangeCheck.super.prototype.Enable(self, core)
+
+	if IceHUD.IceCore:ShouldUseDogTags() then
+		DogTag = AceLibrary("LibDogTag-3.0")
+	end
 
 	self:RegisterFontStrings()
 end

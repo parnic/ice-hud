@@ -61,6 +61,8 @@ function IceCore.prototype:init()
 
 		barBlendMode = "BLEND",
 		barBgBlendMode = "BLEND",
+
+		bShouldUseDogTags = true
 	}
 	
 	self:LoadPresets()
@@ -448,6 +450,14 @@ function IceCore.prototype:ConfigModeToggle(bWantConfig)
 			self.elements[i]:Redraw()
 		end
 	end
+end
+
+function IceCore.prototype:ShouldUseDogTags()
+	return AceLibrary:HasInstance("LibDogTag-3.0") and self.settings.bShouldUseDogTags
+end
+
+function IceCore.prototype:SetShouldUseDogTags(should)
+	self.settings.bShouldUseDogTags = should
 end
 
 

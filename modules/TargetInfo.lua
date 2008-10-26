@@ -33,11 +33,6 @@ function TargetInfo.prototype:init()
 	TargetInfo.super.prototype.init(self, "TargetInfo")
 	
 	self.scalingEnabled = true
-
-	if AceLibrary:HasInstance("LibDogTag-3.0") then
-		DogTag = AceLibrary("LibDogTag-3.0")
-		AceLibrary("LibDogTag-Unit-3.0")
-	end
 end
 
 
@@ -47,6 +42,11 @@ end
 -- OVERRIDE
 function TargetInfo.prototype:Enable(core)
 	TargetInfo.super.prototype.Enable(self, core)
+
+	if IceHUD.IceCore:ShouldUseDogTags() then
+		DogTag = AceLibrary("LibDogTag-3.0")
+		AceLibrary("LibDogTag-Unit-3.0")
+	end
 
 	self:RegisterEvent("UNIT_AURA", "AuraChanged")
 

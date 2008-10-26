@@ -214,7 +214,7 @@ function PlayerMana.prototype:Update(unit)
 	 	end
 	end
 
-	if not AceLibrary:HasInstance("LibDogTag-3.0") then
+	if not IceHUD.IceCore:ShouldUseDogTags() then
 		-- extra hack for whiny rogues (are there other kind?)
 		local displayPercentage = self.manaPercentage
 		if (self.manaType == 3) then

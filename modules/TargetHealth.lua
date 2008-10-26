@@ -5,6 +5,15 @@ IceTargetHealth = AceOO.Class(IceUnitBar)
 IceTargetHealth.prototype.color = nil
 IceTargetHealth.prototype.determineColor = true
 IceTargetHealth.prototype.registerEvents = true
+IceTargetHealth.prototype.texWidth = 128
+IceTargetHealth.prototype.texHeight = 128
+IceTargetHealth.prototype.classLeft = 0
+IceTargetHealth.prototype.classRight = 0.9375
+IceTargetHealth.prototype.classTop = 0
+IceTargetHealth.prototype.classBottom = 0.78125
+IceTargetHealth.prototype.EliteTexture = IceElement.TexturePath .. "Elite"
+IceTargetHealth.prototype.RareEliteTexture = IceElement.TexturePath .. "RareElite"
+IceTargetHealth.prototype.RareTexture = IceElement.TexturePath .. "Rare"
 
 -- Constructor --
 function IceTargetHealth.prototype:init(moduleName, unit)
@@ -35,6 +44,8 @@ function IceTargetHealth.prototype:GetDefaultSettings()
 	settings["raidIconYOffset"] = 0
 	settings["lockIconAlpha"] = false
 	settings["abbreviateHealth"] = true
+	settings["classIconOffset"] = {x=0, y=0}
+	settings["showClassificationIcon"] = false
 
 	return settings
 end
@@ -191,11 +202,11 @@ function IceTargetHealth.prototype:GetOptions()
 		end,
 		order = 54
 	}
-
+if not IceHUD.IceCore:ShouldUseDogTags() then
 	opts["shortenHealth"] = {
 		type = 'toggle',
 		name = 'Abbreviate estimated health',
-		desc = 'If this is checked, then a health value of 1100 will display as 1.1k, otherwise it shows the number\n\nNote: this only applies if you are NOT using DogTag',
+		desc = 'If this is checked, then a health value of 1100 will display as 1.1k, otherwise it shows the number',
 		get = function()
 			return self.moduleSettings.abbreviateHealth
 		end,
@@ -206,6 +217,64 @@ function IceTargetHealth.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 40.1
+	}
+end
+
+	opts["showClassificationIcon"] = {
+		type = "toggle",
+		name = "Show Elite Icon",
+		desc = "Whether or not to show the rare/elite icon above this bar",
+		get = function()
+			return self.moduleSettings.showClassificationIcon
+		end,
+		set = function(value)
+			self.moduleSettings.showClassificationIcon = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 60
+	}
+
+	opts["classIconXOffset"] = {
+		type = "range",
+		name = "Elite Icon X Offset",
+		desc = "How far to push the elite icon right or left",
+		min = -300,
+		max = 300,
+		step = 1,
+		get = function()
+			return self.moduleSettings.classIconOffset['x']
+		end,
+		set = function(value)
+			self.moduleSettings.classIconOffset['x'] = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 61
+	}
+
+	opts["classIconYOffset"] = {
+		type = "range",
+		name = "Elite Icon Y Offset",
+		desc = "How far to push the elite icon up or down",
+		min = -300,
+		max = 300,
+		step = 1,
+		get = function()
+			return self.moduleSettings.classIconOffset['y']
+		end,
+		set = function(value)
+			self.moduleSettings.classIconOffset['y'] = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 62
 	}
 
 	return opts
@@ -246,7 +315,7 @@ function IceTargetHealth.prototype:Update(unit)
 		return
 	end
 
-	if not (UnitExists(unit)) then
+	if unit and not (UnitExists(unit)) then
 		self:Show(false)
 		return
 	else	
@@ -254,6 +323,31 @@ function IceTargetHealth.prototype:Update(unit)
 	end
 
 	self:UpdateRaidTargetIcon()
+
+	local classification = UnitClassification(self.unit);
+	if not self.moduleSettings.showClassificationIcon then
+		self:DestroyTexFrame(self.frame.classIcon)
+	else
+		if not self.frame.classIcon then
+			self.frame.classIcon = self:CreateTexCoord(self.frame.classIcon, self.EliteTexture, self.texWidth, self.texHeight,
+						self.moduleSettings.scale / 3.0, self.classLeft, self.classRight, self.classTop, self.classBottom)
+		end
+
+		self:SetTexLoc(self.frame.classIcon, self.moduleSettings.classIconOffset['x'], self.moduleSettings.classIconOffset['y'])
+		self.frame.classIcon:Show()
+		self.frame.classIcon:SetAlpha(self.alpha == 0 and 0 or math.min(1, self.alpha + 0.2))
+
+		if IceHUD.IceCore:IsInConfigMode() or classification == "worldboss" or classification == "elite" then
+			self.frame.classIcon:SetTexture(self.EliteTexture)
+		elseif classification == "rareelite" then
+			self.frame.classIcon:SetTexture(self.RareEliteTexture)
+		elseif classification == "rare" then
+			self.frame.classIcon:SetTexture(self.RareTexture)
+		else
+			self:DestroyTexFrame(self.frame.classIcon)
+			self.frame.classIcon:Hide()
+		end
+	end
 
 	if self.determineColor then
 		self.color = "TargetHealthFriendly" -- friendly > 4
@@ -280,7 +374,7 @@ function IceTargetHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.health/self.maxHealth, self.color)
 
-	if not AceLibrary:HasInstance("LibDogTag-3.0") then
+	if not IceHUD.IceCore:ShouldUseDogTags() then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
 
 		if self.moduleSettings.abbreviateHealth then
@@ -295,6 +389,47 @@ function IceTargetHealth.prototype:Update(unit)
 		end
 	end
 end
+
+
+function IceTargetHealth.prototype:CreateTexCoord(texframe, icon, width, height, scale, left, right, top, bottom)
+	if not texframe then
+		texframe = self.frame:CreateTexture(nil, "BACKGROUND")
+	end
+
+	texframe:SetTexture(icon)
+	if left and right and top and bottom then
+		texframe:SetTexCoord(left, right, top, bottom)
+	end
+	self:SetTexScale(texframe, width, height, scale or 1)
+
+	return texframe
+end
+
+
+function IceTargetHealth.prototype:SetTexLoc(texframe, xpos, ypos, anchorFrom, anchorTo)
+	texframe:ClearAllPoints()
+	texframe:SetPoint(anchorFrom or "TOPLEFT", self.frame, anchorTo or "TOPLEFT", xpos or 0, ypos or 0)
+end
+
+
+function IceTargetHealth.prototype:SetTexScale(texframe, width, height, scale)
+	texframe:SetWidth(width * scale)
+	texframe:SetHeight(height * scale)
+end
+
+
+function IceTargetHealth.prototype:DestroyTexFrame(texframe)
+	if not texframe then
+		return nil
+	end
+
+	texframe:SetTexture(nil)
+	texframe:Hide()
+	texframe:ClearAllPoints()
+
+	return texframe
+end
+
 
 
 function IceTargetHealth.prototype:CreateRaidIconFrame()
@@ -329,12 +464,12 @@ function IceTargetHealth.prototype:UpdateRaidTargetIcon()
 		self.frame.raidIcon:SetFrameStrata("LOW")
 	end
 
-	if not (UnitExists(self.unit)) or not self.moduleSettings.showRaidIcon then
+	if not self.moduleSettings.showRaidIcon or (not UnitExists(self.unit) and not IceHUD.IceCore:IsInConfigMode()) then
 		self.frame.raidIcon:Hide()
 		return
 	end
 
-	local index = GetRaidTargetIndex(self.unit);
+	local index = IceHUD.IceCore:IsInConfigMode() and 1 or GetRaidTargetIndex(self.unit);
 
 	if (index and (index > 0)) then
 		SetRaidTargetIconTexture(self.frame.raidIcon.icon, index)

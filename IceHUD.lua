@@ -493,6 +493,34 @@ IceHUD.options =
 			end,
 			order = 95
 		},
+
+		useDogTags = {
+			type = 'toggle',
+			name = 'Use Dog Tags',
+			desc = 'Whether or not the addon should use the DogTag library (this will increase the CPU usage of the mod)\n\nNOTE: after changing this option, you must reload the UI or else bad things happen',
+			get = function()
+				return IceHUD.IceCore:ShouldUseDogTags()
+			end,
+			set = function(v)
+				StaticPopupDialogs["ICEHUD_CHANGED_DOGTAG"] = {
+					text = "This option requires the UI to be reloaded. Do you wish to reload it now?",
+					button1 = "Yes",
+					OnAccept = function()
+						ReloadUI()
+					end,
+					button2 = "No",
+					timeout = 0,
+					whileDead = 1,
+					hideOnEscape = 1
+				};
+				IceHUD.IceCore:SetShouldUseDogTags(v)
+				StaticPopup_Show("ICEHUD_CHANGED_DOGTAG")
+			end,
+			hidden = function()
+				return not AceLibrary:HasInstance("LibDogTag-3.0")
+			end,
+			order = 96
+		},
 	}
 }
 

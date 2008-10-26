@@ -123,7 +123,7 @@ function PetMana.prototype:Update(unit)
 	
 	self:UpdateBar(self.mana/self.maxMana, color)
 
-	if not AceLibrary:HasInstance("LibDogTag-3.0") then
+	if not IceHUD.IceCore:ShouldUseDogTags() then
 		self:SetBottomText1(math.floor(self.manaPercentage * 100))
 	end
 end

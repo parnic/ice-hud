@@ -726,7 +726,7 @@ function PlayerHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.health/self.maxHealth, color)
 
-	if not AceLibrary:HasInstance("LibDogTag-3.0") then
+	if not IceHUD.IceCore:ShouldUseDogTags() then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
 		self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), textColor)
 	end
@@ -755,7 +755,9 @@ end
 
 
 function PlayerHealth.prototype:CreateTexCoord(texframe, icon, width, height, scale, left, right, top, bottom)
-	texframe = self.frame:CreateTexture(nil, "BACKGROUND")
+	if not texframe then
+		texframe = self.frame:CreateTexture(nil, "BACKGROUND")
+	end
 	texframe:SetTexture(icon)
 	texframe:SetTexCoord(left, right, top, bottom)
 	self:SetTexScale(texframe, width, height, scale)
@@ -777,6 +779,10 @@ end
 
 
 function PlayerHealth.prototype:DestroyTexFrame(texframe)
+	if not texframe then
+		return nil
+	end
+
 	texframe:SetTexture(nil)
 	texframe:Hide()
 	texframe:ClearAllPoints()

@@ -112,7 +112,7 @@ function PetHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.health/self.maxHealth, color)
 
-	if not AceLibrary:HasInstance("LibDogTag-3.0") then
+	if not IceHUD.IceCore:ShouldUseDogTags() then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
 	end
 end
