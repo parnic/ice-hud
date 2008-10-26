@@ -1009,13 +1009,14 @@ function TargetInfo.prototype:Update(unit)
 	end
 
 	if DogTag == nil or self.moduleSettings.line1Tag == '' then
-		local reactionColor = self:ConvertToHex(UnitReactionColor[self.reaction])
-		if (self.tapped) then
-			reactionColor = self:GetHexColor("Tapped")
-		end
+--		local reactionColor = UnitSelectionColor("target")
+--		if (self.tapped) then
+--			reactionColor = self:GetHexColor("Tapped")
+--		end
 
-		local line1 = string.format("|c%s%s|r", reactionColor, self.name or '')
-		self.frame.targetName:SetText(line1)
+--		local line1 = string.format("%s", self.name or '')
+		self.frame.targetName:SetText(self.name or '')
+		self.frame.targetName:SetVertexColor(UnitSelectionColor("target"))
 	end
 
 	if DogTag == nil or self.moduleSettings.line2Tag == '' then
