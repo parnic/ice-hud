@@ -38,21 +38,21 @@ function IceCastBar.prototype:Enable(core)
 	IceCastBar.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_SPELLCAST_SENT", "SpellCastSent") -- "player", spell, rank, target
-	self:RegisterEvent("UNIT_SPELLCAST_START", "SpellCastStart") -- unit
-	self:RegisterEvent("UNIT_SPELLCAST_STOP", "SpellCastStop") -- unit
+	self:RegisterEvent("UNIT_SPELLCAST_START", "SpellCastStart") -- unit, spell, rank
+	self:RegisterEvent("UNIT_SPELLCAST_STOP", "SpellCastStop") -- unit, spell, rank
 	
-	self:RegisterEvent("UNIT_SPELLCAST_FAILED", "SpellCastFailed") -- unit
-	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "SpellCastInterrupted") -- unit
+	self:RegisterEvent("UNIT_SPELLCAST_FAILED", "SpellCastFailed") -- unit, spell, rank
+	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "SpellCastInterrupted") -- unit, spell, rank
 
 	self:RegisterEvent("CHAT_MSG_SPELL_HOSTILEPLAYER_DAMAGE", "CheckChatInterrupt")
 	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "CheckChatInterrupt")
 
-	self:RegisterEvent("UNIT_SPELLCAST_DELAYED", "SpellCastDelayed") -- unit
+	self:RegisterEvent("UNIT_SPELLCAST_DELAYED", "SpellCastDelayed") -- unit, spell, rank
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "SpellCastSucceeded") -- "player", spell, rank
 
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "SpellCastChannelStart") -- unit
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "SpellCastChannelUpdate") -- unit
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "SpellCastChannelStop") -- unit
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "SpellCastChannelStart") -- unit, spell, rank
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "SpellCastChannelUpdate") -- unit, spell, rank
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "SpellCastChannelStop") -- unit, spell, rank
 
 	self:Show(false)
 end
@@ -245,9 +245,14 @@ function IceCastBar.prototype:SpellCastStop(unit, spell, rank)
 end
 
 
-function IceCastBar.prototype:SpellCastFailed(unit)
+function IceCastBar.prototype:SpellCastFailed(unit, spell, rank)
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastFailed", unit, self.current)
+
+	-- ignore if not coming from current spell
+	if (self.current and spell and self.current ~= spell) then
+		return
+	end
 	
 	self.current = nil
 	
@@ -277,9 +282,14 @@ function IceCastBar.prototype:CheckChatInterrupt(msg)
 	end
 end
 
-function IceCastBar.prototype:SpellCastInterrupted(unit)
+function IceCastBar.prototype:SpellCastInterrupted(unit, spell, rank)
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastInterrupted", unit, self.current)
+
+	-- ignore if not coming from current spell
+	if (self.current and spell and self.current ~= spell) then
+		return
+	end
 	
 	self.current = nil
 	
