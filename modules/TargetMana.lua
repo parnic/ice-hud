@@ -42,24 +42,16 @@ function IceTargetMana.prototype:Enable(core)
 		self:RegisterEvent("UNIT_MAXFOCUS", "Update")
 		self:RegisterEvent("UNIT_AURA", "Update")
 		self:RegisterEvent("UNIT_FLAGS", "Update")
+
+		self:RegisterEvent("UNIT_MANA", "Update")
+		self:RegisterEvent("UNIT_RAGE", "Update")
+		self:RegisterEvent("UNIT_ENERGY", "Update")
+		self:RegisterEvent("UNIT_FOCUS", "Update")
+
 		-- DK rune stuff
 		if IceHUD.WowVer >= 30000 then
-			if GetCVarBool("predictedPower") and self.frame then
-				self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
-			else
-				self:RegisterEvent("UNIT_MANA", "Update")
-				self:RegisterEvent("UNIT_RAGE", "Update")
-				self:RegisterEvent("UNIT_ENERGY", "Update")
-				self:RegisterEvent("UNIT_FOCUS", "Update")
-				self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
-			end
-
+			self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
 			self:RegisterEvent("UNIT_MAXRUNIC_POWER", "Update")
-		else
-			self:RegisterEvent("UNIT_MANA", "Update")
-			self:RegisterEvent("UNIT_RAGE", "Update")
-			self:RegisterEvent("UNIT_ENERGY", "Update")
-			self:RegisterEvent("UNIT_FOCUS", "Update")
 		end
 	end
 
@@ -81,14 +73,14 @@ function IceTargetMana.prototype:Update(unit)
 		self:Show(true)
 	end
 
-	if self.moduleSettings.onlyShowMana and UnitPowerType(self.unit) ~= 0 then
+	local manaType = UnitPowerType(self.unit)
+
+	if self.moduleSettings.onlyShowMana and manaType ~= 0 then
 		self:Show(false)
 		return
 	end
-	
-	
-	local manaType = UnitPowerType(self.unit)
-	
+
+
 	local color = "TargetMana"
 	if (self.moduleSettings.scaleManaColor) then
 		color = "ScaledManaColor"
@@ -105,7 +97,7 @@ function IceTargetMana.prototype:Update(unit)
 		color = "Tapped"
 	end
 	
-	self:UpdateBar(self.mana/self.maxMana, color)
+	self:UpdateBar(self.manaPercentage, color)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		self:SetBottomText1(math.floor(self.manaPercentage * 100))

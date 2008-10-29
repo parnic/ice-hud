@@ -103,23 +103,16 @@ function PlayerMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_MAXMANA", "Update")
 	self:RegisterEvent("UNIT_MAXRAGE", "Update")
 	self:RegisterEvent("UNIT_MAXENERGY", "Update")
-	-- DK rune / wotlk stuff
-	if IceHUD.WowVer >= 30000 then
-		-- allow new 'predicted power' stuff to show the power updates constantly instead of ticking
-		if GetCVarBool("predictedPower") and self.frame then
-			self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
-		else
-			self:RegisterEvent("UNIT_MANA", "Update")
-			self:RegisterEvent("UNIT_RAGE", "Update")
-			self:RegisterEvent("UNIT_ENERGY", "UpdateEnergy")
-			self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
-		end
+	self:RegisterEvent("UNIT_MAXRUNIC_POWER", "Update")
 
-		self:RegisterEvent("UNIT_MAXRUNIC_POWER", "Update")
-	else
-		self:RegisterEvent("UNIT_MANA", "Update")
-		self:RegisterEvent("UNIT_RAGE", "Update")
-		self:RegisterEvent("UNIT_ENERGY", "UpdateEnergy")
+	self:RegisterEvent("UNIT_MANA", "Update")
+	self:RegisterEvent("UNIT_RAGE", "Update")
+	self:RegisterEvent("UNIT_ENERGY", "UpdateEnergy")
+	self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
+
+	-- allow new 'predicted power' stuff to show the power updates constantly instead of ticking
+	if GetCVarBool("predictedPower") then
+		self:SetupOnUpdate(true)
 	end
 
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
@@ -129,6 +122,14 @@ end
 
 function PlayerMana.prototype:ShouldUseTicker()
 	return IceHUD.WowVer < 30000 or not GetCVarBool("predictedPower")
+end
+
+function PlayerMana.prototype:SetupOnUpdate(enable)
+	if enable then
+		self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
+	else
+		self.frame:SetScript("OnUpdate", nil)
+	end
 end
 
 
@@ -180,6 +181,12 @@ function PlayerMana.prototype:Update(unit)
 		return
 	end
 
+	if self.manaPercentage == 1 then
+		self:SetupOnUpdate(false)
+	elseif GetCVarBool("predictedPower") then
+		self:SetupOnUpdate(true)
+	end
+
 	-- the user can toggle the predictedPower cvar at any time and the addon will not get notified. handle it.
 	if not self.tickerFrame and self:ShouldUseTicker() then
 		self:CreateTickerFrame()
@@ -203,7 +210,7 @@ function PlayerMana.prototype:Update(unit)
 		end
 	end
 	
-	self:UpdateBar(self.mana/self.maxMana, color)
+	self:UpdateBar(self.manaPercentage, color)
 
 	if self:ShouldUseTicker() then
 		-- hide ticker if rest of the bar is not visible
@@ -246,18 +253,19 @@ end
 
 
 function PlayerMana.prototype:UpdateEnergy(unit)
-	if (unit and (unit ~= "player")) or (not self:ShouldUseTicker()) then
+	if (unit and (unit ~= "player")) then
 		return
 	end
 
-	if ((not (self.previousEnergy) or (self.previousEnergy <= UnitMana(self.unit))) and
+	self.previousEnergy = UnitMana(self.unit)
+	self:Update(unit)
+
+	if self:ShouldUseTicker() and
+		((not (self.previousEnergy) or (self.previousEnergy <= UnitMana(self.unit))) and
 		(self.moduleSettings.tickerEnabled)) then
 			self.tickStart = GetTime()
 			self.tickerFrame:Show()
 	end
-	
-	self.previousEnergy = UnitMana(self.unit)
-	self:Update(unit)
 end
 
 
