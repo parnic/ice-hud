@@ -128,7 +128,21 @@ function PlayerMana.prototype:SetupOnUpdate(enable)
 	if enable then
 		self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
 	else
-		self.frame:SetScript("OnUpdate", nil)
+		-- make sure the animation has a chance to finish filling up the bar before we cut it off completely
+		if self.CurrScale ~= self.DesiredScale then
+			self.frame:SetScript("OnUpdate", function() self:MyOnUpdate() end)
+		else
+			self.frame:SetScript("OnUpdate", nil)
+		end
+	end
+end
+
+
+function PlayerMana.prototype:MyOnUpdate()
+	PlayerMana.super.prototype.MyOnUpdate(self)
+
+	if self.CurrScale == self.DesiredScale then
+		self:SetupOnUpdate(false)
 	end
 end
 
