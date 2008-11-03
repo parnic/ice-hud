@@ -250,12 +250,26 @@ function Runes.prototype:CreateRuneFrame()
 		self.frame.graphical = {}
 	end
 
+	local runeType
 	for i=1, self.numRunes do
-		self:CreateRune(i, GetRuneType(i), self.runeNames[GetRuneType(i)])
+		runeType = GetRuneType(i)
+
+		-- Parnic debug stuff for arena rune problem
+		--DEFAULT_CHAT_FRAME:AddMessage("i="..i.." GetRuneType(i)=="..(runeType and runeType or "nil").." self.runeNames[type]=="..(self.runeNames[runeType] and self.runeNames[runeType] or "nil"))
+
+		-- runeType really shouldn't be nil here, but blizzard's code checks GetRuneType's return value, so I guess I should too...
+		if runeType then
+			self:CreateRune(i, runeType, self.runeNames[runeType])
+		end
 	end
 end
 
 function Runes.prototype:CreateRune(i, type, name)
+	-- whiskey tango foxtrot?! apparently arenas can cause this? I can't test out the real cause myself, so putting in a stopgap for now
+	if not name then
+		return
+	end
+
 	-- create backgrounds
 	if (not self.frame.graphicalBG[i]) then
 		self.frame.graphicalBG[i] = CreateFrame("StatusBar", nil, self.frame)
