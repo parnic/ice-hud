@@ -195,7 +195,9 @@ function PlayerMana.prototype:Update(unit)
 		return
 	end
 
-	if self.manaPercentage == 1 then
+	local powerType = UnitPowerType(self.unit)
+	if (self.manaPercentage == 1 and powerType ~= 1 and powerType ~= 6)
+		or (self.manaPercentage == 0 and (powerType == 1 or powerType == 6)) then
 		self:SetupOnUpdate(false)
 	elseif GetCVarBool("predictedPower") then
 		self:SetupOnUpdate(true)

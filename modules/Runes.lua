@@ -26,10 +26,9 @@ function Runes.prototype:init()
 	Runes.super.prototype.init(self, "Runes")
 
 	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_BLOOD], 255, 0, 0)
-	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_DEATH], 0, 229, 0)
-	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_FROST], 88, 195, 239)
-	-- todo: i guess i should figure out the chromatic rune's default color...set to white for now
-	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_CHROMATIC], 255, 255, 255)
+	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_DEATH], 0, 207, 0)
+	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_FROST], 0, 255, 255)
+	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_CHROMATIC], 204, 26, 255)
 	self.scalingEnabled = true
 end
 
@@ -292,7 +291,7 @@ function Runes.prototype:CreateRune(i, type, name)
 
 	self.frame.graphical[i]:SetStatusBarColor(self:GetColor("Runes"..name))
 
-	self.frame.graphical[i]:Show()
+--	self.frame.graphical[i]:Show()
 end
 
 function Runes.prototype:ShowBlizz()
