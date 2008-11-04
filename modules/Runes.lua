@@ -228,7 +228,7 @@ function Runes.prototype:CreateFrame()
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
 
-	self:Show(true)
+--	self:Show(true)
 
 	self:CreateRuneFrame()
 end
@@ -328,6 +328,21 @@ function Runes.prototype:TargetChanged()
 	Runes.super.prototype.TargetChanged(self)
 	-- sort of a hack fix...if "ooc" alpha is set to 0, then the runes frame is all jacked up when the user spawns in
 	-- need to re-run CreateFrame in order to setup the frame properly. not sure why :(
+	self:Redraw()
+end
+
+function Runes.prototype:InCombat()
+	Runes.super.prototype.InCombat(self)
+	self:Redraw()
+end
+
+function Runes.prototype:OutCombat()
+	Runes.super.prototype.OutCombat(self)
+	self:Redraw()
+end
+
+function Runes.prototype:CheckCombat()
+	Runes.super.prototype.CheckCombat(self)
 	self:Redraw()
 end
 
