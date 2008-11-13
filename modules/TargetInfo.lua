@@ -1008,24 +1008,14 @@ function TargetInfo.prototype:Update(unit)
 		return
 	end
 
-	if DogTag == nil or self.moduleSettings.line1Tag == '' then
---		local reactionColor = UnitSelectionColor("target")
---		if (self.tapped) then
---			reactionColor = self:GetHexColor("Tapped")
---		end
-
---		local line1 = string.format("%s", self.name or '')
+	if DogTag == nil then
 		self.frame.targetName:SetText(self.name or '')
 		self.frame.targetName:SetVertexColor(UnitSelectionColor("target"))
-	end
 
-	if DogTag == nil or self.moduleSettings.line2Tag == '' then
 		local line2 = string.format("%s %s%s%s%s%s",
 			self.level or '', self.classLocale or '', self.pvp or '', self.leader or '', self.classification or '', self.targetCombat or '')
 		self.frame.targetInfo:SetText(line2)
-	end
 
-	if DogTag == nil or self.moduleSettings.line3Tag == '' then
 		local realm = self.realm and " " .. self.realm or ""
 		local line3 = string.format("%s%s", self.guild or '', realm)
 		self.frame.targetGuild:SetText(line3)
