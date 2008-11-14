@@ -101,6 +101,24 @@ function Runes.prototype:GetOptions()
 		end,
 		order = 32
 	}
+
+	opts["displayMode"] = {
+		type = 'text',
+		name = 'Rune orientation',
+		desc = 'Whether the runes should draw side-by-side or on top of one another',
+		get = function()
+			return self.moduleSettings.displayMode
+		end,
+		set = function(v)
+			self.moduleSettings.displayMode = v
+			self:Redraw()
+		end,
+		validate = { "Horizontal", "Vertical" },
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 35
+	}
 -- todo: numeric mode isn't supported just yet...so these options are removed for now
 --[[
 	opts["runeFontSize"] = {
@@ -156,6 +174,7 @@ function Runes.prototype:GetDefaultSettings()
 	defaults["usesDogTagStrings"] = false
 	defaults["hideBlizz"] = true
 	defaults["alwaysFullAlpha"] = false
+	defaults["displayMode"] = "Horizontal"
 
 	return defaults
 end
@@ -301,7 +320,11 @@ function Runes.prototype:CreateRune(i, type, name)
 	else
 		runeSwapI = i
 	end
-	self.frame.graphical[i]:SetPoint("TOPLEFT", (runeSwapI-1) * (self.runeSize-5) + (runeSwapI-1), 0)
+	if self.moduleSettings.displayMode == "Horizontal" then
+		self.frame.graphical[i]:SetPoint("TOPLEFT", (runeSwapI-1) * (self.runeSize-5) + (runeSwapI-1), 0)
+	else
+		self.frame.graphical[i]:SetPoint("TOPLEFT", 0, -1 * ((runeSwapI-1) * (self.runeSize-5) + (runeSwapI-1)))
+	end
 
 	self.frame.graphical[i]:SetStatusBarColor(self:GetColor("Runes"..name))
 	self.frame.graphical[i]:Show()
