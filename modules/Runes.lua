@@ -190,10 +190,25 @@ function Runes.prototype:UpdateRunePower(rune, usable)
 --	DEFAULT_CHAT_FRAME:AddMessage("Runes.prototype:UpdateRunePower: rune="..rune.." usable="..(usable and "yes" or "no").." GetRuneType(rune)="..GetRuneType(rune));
 
 	if usable then
-		self.frame.graphical[rune]:Show()
+--		self.frame.graphical[rune]:Show()
+		self.frame.graphical[rune].cd:Hide()
+
+		local fadeInfo={
+			mode = "IN",
+			timeToFade = 0.5,
+			finishedFunc = function(rune) self:ShineFinished(rune) end,
+			finishedArg1 = rune
+		}
+		UIFrameFade(self.frame.graphical[rune].shine, fadeInfo);
 	else
-		self.frame.graphical[rune]:Hide()
+--		self.frame.graphical[rune]:Hide()
+		self.frame.graphical[rune].cd:SetCooldown(GetRuneCooldown(rune))
+		self.frame.graphical[rune].cd:Show()
 	end
+end
+
+function Runes.prototype:ShineFinished(rune)
+	UIFrameFadeOut(self.frame.graphical[rune].shine, 0.5);
 end
 
 function Runes.prototype:UpdateRuneType(rune)
@@ -204,9 +219,6 @@ function Runes.prototype:UpdateRuneType(rune)
 	end
 
 	local thisRuneName = self.runeNames[GetRuneType(rune)]
-
-	self.frame.graphicalBG[rune]:SetStatusBarTexture(self:GetRuneTexture(thisRuneName))
-	self.frame.graphicalBG[rune]:SetStatusBarColor(self:GetColor("Runes"..thisRuneName))
 
 	self.frame.graphical[rune]:SetStatusBarTexture(self:GetRuneTexture(thisRuneName))
 	self.frame.graphical[rune]:SetStatusBarColor(self:GetColor("Runes"..thisRuneName))
@@ -228,8 +240,6 @@ function Runes.prototype:CreateFrame()
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
 
---	self:Show(true)
-
 	self:CreateRuneFrame()
 end
 
@@ -245,8 +255,7 @@ function Runes.prototype:CreateRuneFrame()
 	self.frame.numeric:SetPoint("TOP", self.frame, "TOP", 0, 0)
 	self.frame.numeric:Hide()
 
-	if (not self.frame.graphicalBG) then
-		self.frame.graphicalBG = {}
+	if (not self.frame.graphical) then
 		self.frame.graphical = {}
 	end
 
@@ -270,16 +279,19 @@ function Runes.prototype:CreateRune(i, type, name)
 		return
 	end
 
-	-- create backgrounds
-	if (not self.frame.graphicalBG[i]) then
-		self.frame.graphicalBG[i] = CreateFrame("StatusBar", nil, self.frame)
+	-- create runes
+	if (not self.frame.graphical[i]) then
+		self.frame.graphical[i] = CreateFrame("StatusBar", nil, self.frame)
+		self.frame.graphical[i].cd = CreateFrame("Cooldown", nil, self.frame.graphical[i], "CooldownFrameTemplate")
+		self.frame.graphical[i].shine = self.frame.graphical[i]:CreateTexture(nil, "OVERLAY")
 
-		self.frame.graphicalBG[i]:SetStatusBarTexture(self:GetRuneTexture(name))
+		self.frame.graphical[i]:SetStatusBarTexture(self:GetRuneTexture(name))
 	end
 
-	self.frame.graphicalBG[i]:SetFrameStrata("BACKGROUND")
-	self.frame.graphicalBG[i]:SetWidth(self.runeSize)
-	self.frame.graphicalBG[i]:SetHeight(self.runeSize)
+	self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
+	self.frame.graphical[i]:SetWidth(self.runeSize)
+	self.frame.graphical[i]:SetHeight(self.runeSize)
+
 	-- hax for blizzard's swapping the unholy and frost rune placement on the default ui...
 	local runeSwapI
 	if i == 3 or i == 4 then
@@ -289,23 +301,28 @@ function Runes.prototype:CreateRune(i, type, name)
 	else
 		runeSwapI = i
 	end
-	self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (runeSwapI-1) * (self.runeSize-5) + (runeSwapI-1), 0)
-	self.frame.graphicalBG[i]:SetAlpha(0.25)
-
-	self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("Runes"..name))
-
-	-- create runes
-	if (not self.frame.graphical[i]) then
-		self.frame.graphical[i] = CreateFrame("StatusBar", nil, self.frame)
-
-		self.frame.graphical[i]:SetStatusBarTexture(self:GetRuneTexture(name))
-	end
-	self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
-	self.frame.graphical[i]:SetAllPoints(self.frame.graphicalBG[i])
+	self.frame.graphical[i]:SetPoint("TOPLEFT", (runeSwapI-1) * (self.runeSize-5) + (runeSwapI-1), 0)
 
 	self.frame.graphical[i]:SetStatusBarColor(self:GetColor("Runes"..name))
+	self.frame.graphical[i]:Show()
 
---	self.frame.graphical[i]:Show()
+	self.frame.graphical[i].cd:SetFrameStrata("BACKGROUND")
+	self.frame.graphical[i].cd:SetFrameLevel(self.frame.graphical[i]:GetFrameLevel()+1)
+	self.frame.graphical[i].cd:ClearAllPoints()
+	self.frame.graphical[i].cd:SetAllPoints(self.frame.graphical[i])
+
+	self.frame.graphical[i].shine:SetTexture("Interface\\ComboFrame\\ComboPoint")
+	self.frame.graphical[i].shine:SetBlendMode("ADD")
+	self.frame.graphical[i].shine:SetTexCoord(0.5625, 1, 0, 1)
+	self.frame.graphical[i].shine:ClearAllPoints()
+	self.frame.graphical[i].shine:SetPoint("CENTER", self.frame.graphical[i], "CENTER")
+	self.frame.graphical[i].shine:SetWidth(self.runeSize + 25)
+	self.frame.graphical[i].shine:SetHeight(self.runeSize + 10)
+	self.frame.graphical[i].shine:Hide()
+end
+
+function Runes.prototype:GetAlphaAdd()
+	return 0.15
 end
 
 function Runes.prototype:ShowBlizz()

@@ -223,7 +223,16 @@ function IceElement.prototype:UpdateAlpha()
 		self.backgroundAlpha = self.settings.alphaoocbg
 	end
 
+	if self.alpha ~= 0 then
+		self.alpha = math.min(1, self.alpha + self:GetAlphaAdd())
+	end
+
 	self.frame:SetAlpha(self.alpha)
+end
+
+-- use this to add some value to alpha every time. if you always want an element to be slightly brighter than the actual alpha for visibility
+function IceElement.prototype:GetAlphaAdd()
+	return 0
 end
 
 
