@@ -155,7 +155,7 @@ function Runes.prototype:GetDefaultSettings()
 	defaults["runeMode"] = "Graphical"
 	defaults["usesDogTagStrings"] = false
 	defaults["hideBlizz"] = true
-	defaults["alwaysFullAlpha"] = true
+	defaults["alwaysFullAlpha"] = false
 
 	return defaults
 end
