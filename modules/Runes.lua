@@ -119,6 +119,24 @@ function Runes.prototype:GetOptions()
 		end,
 		order = 35
 	}
+
+	opts["cooldownMode"] = {
+		type = 'text',
+		name = 'Rune cooldown mode',
+		desc = 'Choose whether the runes use a cooldown-style wipe or simply an alpha fade to show availability.',
+		get = function()
+			return self.moduleSettings.cooldownMode
+		end,
+		set = function(v)
+			self.moduleSettings.cooldownMode = v
+			self:Redraw()
+		end,
+		validate = { "Cooldown", "Alpha" },
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 36
+	}
 -- todo: numeric mode isn't supported just yet...so these options are removed for now
 --[[
 	opts["runeFontSize"] = {
@@ -175,6 +193,7 @@ function Runes.prototype:GetDefaultSettings()
 	defaults["hideBlizz"] = true
 	defaults["alwaysFullAlpha"] = false
 	defaults["displayMode"] = "Horizontal"
+	defaults["cooldownMode"] = "Cooldown"
 
 	return defaults
 end
@@ -210,19 +229,27 @@ function Runes.prototype:UpdateRunePower(rune, usable)
 
 	if usable then
 --		self.frame.graphical[rune]:Show()
-		self.frame.graphical[rune].cd:Hide()
+		if self.moduleSettings.cooldownMode == "Cooldown" then
+			self.frame.graphical[rune].cd:Hide()
 
-		local fadeInfo={
-			mode = "IN",
-			timeToFade = 0.5,
-			finishedFunc = function(rune) self:ShineFinished(rune) end,
-			finishedArg1 = rune
-		}
-		UIFrameFade(self.frame.graphical[rune].shine, fadeInfo);
+			local fadeInfo={
+				mode = "IN",
+				timeToFade = 0.5,
+				finishedFunc = function(rune) self:ShineFinished(rune) end,
+				finishedArg1 = rune
+			}
+			UIFrameFade(self.frame.graphical[rune].shine, fadeInfo);
+		elseif self.moduleSettings.cooldownMode == "Alpha" then
+			self.frame.graphical[rune]:SetAlpha(1)
+		end
 	else
 --		self.frame.graphical[rune]:Hide()
-		self.frame.graphical[rune].cd:SetCooldown(GetRuneCooldown(rune))
-		self.frame.graphical[rune].cd:Show()
+		if self.moduleSettings.cooldownMode == "Cooldown" then
+			self.frame.graphical[rune].cd:SetCooldown(GetRuneCooldown(rune))
+			self.frame.graphical[rune].cd:Show()
+		elseif self.moduleSettings.cooldownMode == "Alpha" then
+			self.frame.graphical[rune]:SetAlpha(0.2)
+		end
 	end
 end
 
