@@ -603,6 +603,7 @@ end
 IceHUD.OnMenuRequest = IceHUD.options
 IceHUD.hasIcon = "Interface\\Icons\\Spell_Frost_Frost"
 IceHUD.hideWithoutStandby = true
+IceHUD.independentProfile = true
 function IceHUD.OnClick()
 	if not waterfall then return end
 
