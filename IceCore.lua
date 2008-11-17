@@ -6,6 +6,8 @@ IceCore.Side = { Left = "LEFT", Right = "RIGHT" }
 
 IceCore.BuffLimit = 40
 
+IceCore.prototype.defaults = {}
+
 -- Events modules should register/trigger during load
 IceCore.Loaded = "IceCore_Loaded"
 IceCore.RegisterModule = "IceCore_RegisterModule"
@@ -27,8 +29,6 @@ function IceCore.prototype:init()
 	IceCore.super.prototype.init(self)
 	IceHUD:Debug("IceCore.prototype:init()")
 
-	self:RegisterDB("IceCoreDB")
-
 	self.IceHUDFrame = CreateFrame("Frame","IceHUDFrame", UIParent)
 
 	-- We are ready to load modules
@@ -36,9 +36,14 @@ function IceCore.prototype:init()
 	self:TriggerEvent(IceCore.Loaded)
 
 
-	-- DEFAULT SETTINGS
+	self:SetupDefaults()
+end
+
+
+function IceCore.prototype:SetupDefaults()
+-- DEFAULT SETTINGS
 	local defaultPreset = "RoundBar"
-	local defaults = {
+	self.defaults = {
 		gap = 150,
 		verticalPos = -110,
 		horizontalPos = 0,
@@ -67,28 +72,23 @@ function IceCore.prototype:init()
 	
 	self:LoadPresets()
 	for k, v in pairs(self.presets[defaultPreset]) do
-		defaults[k] = v
+		self.defaults[k] = v
 	end
 	
 	-- get default settings from the modules
-	defaults.modules = {}
+	self.defaults.modules = {}
 	for i = 1, table.getn(self.elements) do
 		local name = self.elements[i]:GetElementName()
-		defaults.modules[name] = self.elements[i]:GetDefaultSettings()	
+		self.defaults.modules[name] = self.elements[i]:GetDefaultSettings()	
 	end
 	
 	if (table.getn(self.elements) > 0) then
-		defaults.colors = self.elements[1].defaultColors
+		self.defaults.colors = self.elements[1].defaultColors
 	end
-	
-	
-	self:RegisterDefaults('account', defaults)
 end
 
 
 function IceCore.prototype:Enable()
-	self.settings = self.db.account
-
 	self:DrawFrame()
 	
 	for i = 1, table.getn(self.elements) do
@@ -100,6 +100,15 @@ function IceCore.prototype:Enable()
 	end
 	
 	self.enabled = true
+end
+
+
+function IceCore.prototype:ProfileChanged()
+	for i = 1, table.getn(self.elements) do
+		self.elements[i]:SetDatabase(self.settings)
+	end
+
+	self:Redraw()
 end
 
 

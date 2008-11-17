@@ -1,9 +1,10 @@
-IceHUD = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0")
+IceHUD = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDB-2.0", "FuBarPlugin-2.0")
 
 local waterfall = AceLibrary("Waterfall-1.0")
 local SML = AceLibrary("LibSharedMedia-3.0")
 
 IceHUD.CurrTagVersion = 3
+IceHUD.debugging = false
 
 IceHUD.WowVer = select(4, GetBuildInfo())
 
@@ -423,14 +424,14 @@ IceHUD.options =
 			args = {},
 			order = 42
 		},
-		
+
 		headerOtherBlank = { type = 'header', name = ' ', order = 90 },
 		headerOther = {
 			type = 'header',
 			name = 'Other',
 			order = 90
 		},
-		
+--[[
 		enabled = {
 			type = "toggle",
 			name = "|cff11aa11Enabled|r",
@@ -447,7 +448,7 @@ IceHUD.options =
 			end,
 			order = 91
 		},
-
+]]
 		debug = {
 			type = "toggle",
 			name = "Debugging",
@@ -556,32 +557,70 @@ StaticPopupDialogs["ICEHUD_RESET"] =
 function IceHUD:OnInitialize()
 	self:SetDebugging(false)
 	self:Debug("IceHUD:OnInitialize()")
+
+	self:RegisterDB("IceCoreDB")
 	
 	self.IceCore = IceCore:new()
+
+	if not self.db.account.settingsMoved then
+		self:RegisterDefaults('account', self.IceCore.defaults)	
+	end
+	self:RegisterDefaults('profile', self.IceCore.defaults)
 end
 
 
-function IceHUD:OnEnable()
+function IceHUD:OnEnable(isFirst)
 	self:Debug("IceHUD:OnEnable()")
-	
+
+	if not self.db.account.settingsMoved then
+		for k,v in pairs(self.db.account) do
+			self.db.profile[k] = v
+		end
+
+		self:ResetDB("account")
+		self.db.account.settingsMoved = true
+	end
+
+	self.IceCore.settings = self.db.profile
 	self.IceCore:Enable()
-	self:SetDebugging(self.IceCore:GetDebug())
-	self.debugFrame = ChatFrame2
-	
-	self.options.args.modules.args = self.IceCore:GetModuleOptions()
-	self.options.args.colors.args = self.IceCore:GetColorOptions()
-	
-	waterfall:Register("IceHUD", 'aceOptions', IceHUD.options)
 
-	-- Parnic - added /icehudcl to make rock config pick this up
-	self:RegisterChatCommand({"/icehudcl"}, IceHUD.options)
-	self:RegisterChatCommand({ "/icehud" }, IceHUD.slashMenu)
+	if isFirst then
+		self:SetDebugging(self.IceCore:GetDebug())
+		self.debugFrame = ChatFrame2
+
+		self.options.args.modules.args = self.IceCore:GetModuleOptions()
+		self.options.args.colors.args = self.IceCore:GetColorOptions()
+		
+		waterfall:Register("IceHUD", 'aceOptions', IceHUD.options)
+
+		-- Parnic - added /icehudcl to make rock config pick this up
+		self:RegisterChatCommand({"/icehudcl"}, IceHUD.options)
+		self:RegisterChatCommand({ "/icehud" }, IceHUD.slashMenu)
+	end
 end
 
-function IceHUD:Debug()
+-- fubar stuff
+IceHUD.OnMenuRequest = IceHUD.options
+IceHUD.hasIcon = "Interface\\Icons\\Spell_Frost_Frost"
+IceHUD.hideWithoutStandby = true
+function IceHUD.OnClick()
+	if not waterfall then return end
+
+	if waterfall:IsOpen("IceHUD") then
+		waterfall:Close("IceHUD")
+	else
+		waterfall:Open("IceHUD")
+	end
 end
 
-function IceHUD:SetDebugging()
+function IceHUD:Debug(msg)
+	if self.debugging then
+		self.debugFrame:AddMessage(msg)
+	end
+end
+
+function IceHUD:SetDebugging(bIsDebugging)
+	self.debugging = bIsDebugging
 end
 
 -- rounding stuff
@@ -612,4 +651,17 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine)
 	end
 
 	return 0
+end
+
+function IceHUD:OnDisable()
+	IceHUD.IceCore:Disable()
+end
+
+function IceHUD:OnProfileDisable()
+	self.IceCore:Disable()
+end
+
+function IceHUD:OnProfileEnable(oldName, oldData)
+	self.IceCore.settings = self.db.profile
+	self.IceCore:Enable()
 end
