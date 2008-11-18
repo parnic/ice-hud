@@ -228,22 +228,20 @@ function Runes.prototype:UpdateRunePower(rune, usable)
 --	DEFAULT_CHAT_FRAME:AddMessage("Runes.prototype:UpdateRunePower: rune="..rune.." usable="..(usable and "yes" or "no").." GetRuneType(rune)="..GetRuneType(rune));
 
 	if usable then
---		self.frame.graphical[rune]:Show()
 		if self.moduleSettings.cooldownMode == "Cooldown" then
 			self.frame.graphical[rune].cd:Hide()
-
-			local fadeInfo={
-				mode = "IN",
-				timeToFade = 0.5,
-				finishedFunc = function(rune) self:ShineFinished(rune) end,
-				finishedArg1 = rune
-			}
-			UIFrameFade(self.frame.graphical[rune].shine, fadeInfo);
 		elseif self.moduleSettings.cooldownMode == "Alpha" then
 			self.frame.graphical[rune]:SetAlpha(1)
 		end
+
+		local fadeInfo={
+			mode = "IN",
+			timeToFade = 0.5,
+			finishedFunc = function(rune) self:ShineFinished(rune) end,
+			finishedArg1 = rune
+		}
+		UIFrameFade(self.frame.graphical[rune].shine, fadeInfo);
 	else
---		self.frame.graphical[rune]:Hide()
 		if self.moduleSettings.cooldownMode == "Cooldown" then
 			self.frame.graphical[rune].cd:SetCooldown(GetRuneCooldown(rune))
 			self.frame.graphical[rune].cd:Show()
