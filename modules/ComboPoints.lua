@@ -292,7 +292,9 @@ function ComboPoints.prototype:UpdateComboPoints()
 	if IceHUD.IceCore:IsInConfigMode() then
 		points = 5
 	elseif IceHUD.WowVer >= 30000 then
-		points = GetComboPoints("player", "target")
+		-- Parnic: apparently some fights have combo points while the player is in a vehicle?
+		local isInVehicle = UnitInVehicle("player")
+		points = GetComboPoints(isInVehicle and "vehicle" or "player", "target")
 	else
 		points = GetComboPoints("target")
 	end
