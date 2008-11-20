@@ -35,6 +35,7 @@ function IHUD_Threat.prototype:GetDefaultSettings()
 	settings["enabled"] = false
 	settings["aggroAlpha"] = 0.7
 	settings["usesDogTagStrings"] = false
+	settings["onlyShowInGroups"] = true
 	return settings
 end
 
@@ -79,6 +80,23 @@ function IHUD_Threat.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 21
+	}
+
+	opts["onlyShowInGroups"] = {
+		type = 'toggle',
+		name = 'Only show in groups',
+		desc = 'Only show the threat bar if you are in a group or you have an active pet',
+		get = function()
+			return self.moduleSettings.onlyShowInGroups
+		end,
+		set = function(v)
+			self.moduleSettings.onlyShowInGroups = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 22
 	}
 
 	return opts
@@ -159,7 +177,13 @@ function IHUD_Threat.prototype:Update(unit)
 		unit = self.unit
 	end
 
-	if not UnitExists("target") or not UnitCanAttack("player", "target") or UnitIsDead("target") or UnitIsFriend("player", "target") or UnitPlayerControlled("target") then
+	if self.moduleSettings.onlyShowInGroups and (GetNumPartyMembers() == 0 and not UnitExists("pet")) then
+		self:Show(false)
+		return
+	end
+
+	if not UnitExists("target") or not UnitCanAttack("player", "target") or UnitIsDead("target")
+		or UnitIsFriend("player", "target") or UnitPlayerControlled("target") then
 		self:Show(false)
 		return
 	else
@@ -168,6 +192,11 @@ function IHUD_Threat.prototype:Update(unit)
 
 	local isTanking, threatState, scaledPercent, rawPercent = UnitDetailedThreatSituation("player", "target")
 	local scaledPercentZeroToOne
+
+	if not self.combat and scaledPercent == 0 then
+		self:Show(false)
+		return
+	end
 
 	if not threatState or not scaledPercent or not rawPercent then
 		scaledPercentZeroToOne = 0
