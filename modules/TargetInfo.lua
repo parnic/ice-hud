@@ -528,9 +528,11 @@ end
 
 function TargetInfo.prototype:CreateTextFrame()
 	self.frame.targetName = self:FontFactory(self.moduleSettings.fontSize+1, nil, self.frame.targetName)
+
 	self.frame.targetName:SetJustifyH("CENTER")
 	self.frame.targetName:SetJustifyV("TOP")
-	self.frame.targetName:SetAllPoints(self.frame)
+
+	self.frame.targetName:SetPoint("TOP", self.frame, "TOP")
 end
 
 
