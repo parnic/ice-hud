@@ -79,6 +79,9 @@ function SliceAndDice.prototype:GetDefaultSettings()
     settings["showAsPercentOfMax"] = true
     settings["durationAlpha"] = 0.6
     settings["usesDogTagStrings"] = false
+    settings["lockLowerFontAlpha"] = false
+    settings["lowerTextString"] = ""
+    settings["lowerTextVisible"] = false
 
     return settings
 end
@@ -86,14 +89,8 @@ end
 -- OVERRIDE
 function SliceAndDice.prototype:GetOptions()
     local opts = SliceAndDice.super.prototype.GetOptions(self)
-	
-    opts["shouldAnimate"] = nil
-    opts["desiredLerpTime"] = nil
-    opts["lowThreshold"] = nil
-    opts["textSettings"].args["lowerTextString"] = nil
-    opts["textSettings"].args["lowerTextVisible"] = nil
+
     opts["textSettings"].args["upperTextString"]["desc"] = "The text to display under this bar. # will be replaced with the number of Slice and Dice seconds remaining."
-    opts["textSettings"].args["lockLowerFontAlpha"] = nil
 
     opts["showAsPercentOfMax"] =
     {

@@ -53,3 +53,4 @@ modules\TargetOfTargetMana.lua
 modules\Threat.lua
 modules\RangeCheck.lua
 modules\MaelstromCount.lua
+modules\HungerForBlood.lua
