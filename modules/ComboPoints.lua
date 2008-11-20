@@ -172,6 +172,8 @@ function ComboPoints.prototype:Enable(core)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateComboPoints")
 	if IceHUD.WowVer >= 30000 then
 		self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
+		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateComboPoints")
+		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateComboPoints")
 	else
 		self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateComboPoints")
 	end
@@ -293,7 +295,7 @@ function ComboPoints.prototype:UpdateComboPoints()
 		points = 5
 	elseif IceHUD.WowVer >= 30000 then
 		-- Parnic: apparently some fights have combo points while the player is in a vehicle?
-		local isInVehicle = UnitInVehicle("player")
+		local isInVehicle = UnitHasVehicleUI("player")
 		points = GetComboPoints(isInVehicle and "vehicle" or "player", "target")
 	else
 		points = GetComboPoints("target")
