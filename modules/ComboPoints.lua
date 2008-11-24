@@ -337,7 +337,8 @@ end
 
 
 -- Load us up
-local _, unitClass = UnitClass("player")
-if (unitClass == "DRUID" or unitClass == "ROGUE") then
+-- Parnic: removed the rogue-/druid-only restriction since the Malygos fight needs combo points on the drakes
+--local _, unitClass = UnitClass("player")
+--if (unitClass == "DRUID" or unitClass == "ROGUE") then
 	IceHUD.ComboPoints = ComboPoints:new()
-end
+--end
