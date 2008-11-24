@@ -278,18 +278,28 @@ end
 
 
 function TargetOfTarget.prototype:CreateBarFrame()
+	if not self.frame.bg then
+		self.frame.bg = self.frame:CreateTexture(nil, "BACKGROUND")
+	end
 	if (not self.frame.bar) then
 		self.frame.bar = CreateFrame("StatusBar", nil, self.frame)
 	end
 
+	self.frame.bg:SetTexture(0,0,0)
+
 	self.frame.bar:SetFrameStrata("BACKGROUND")
 	if self.moduleSettings.sizeToGap then
+		self.frame.bg:SetWidth(self.settings.gap + 2)
 		self.frame.bar:SetWidth(self.settings.gap)
 	else
+		self.frame.bg:SetWidth(self.moduleSettings.totWidth + 2)
 		self.frame.bar:SetWidth(self.moduleSettings.totWidth)
 	end
+
+	self.frame.bg:SetHeight(self.height + 2)
 	self.frame.bar:SetHeight(self.height)
 
+	self.frame.bg:SetPoint("LEFT", self.frame.bar, "LEFT", -1, 0)
 	self.frame.bar:SetPoint("LEFT", self.frame, "LEFT", 0, 0)
 
 	if (not self.frame.bar.texture) then
@@ -324,7 +334,7 @@ function TargetOfTarget.prototype:CreateToTFrame()
 	end
 	self.frame.totName:SetHeight(self.height)
 	self.frame.totName:SetJustifyH("LEFT")
-	self.frame.totName:SetJustifyV("TOP")
+	self.frame.totName:SetJustifyV("CENTER")
 
 	self.frame.totName:SetPoint("LEFT", self.frame, "LEFT", 0, -1)
 	self.frame.totName:Show()
@@ -337,7 +347,7 @@ function TargetOfTarget.prototype:CreateToTHPFrame()
 	self.frame.totHealth:SetWidth(40)
 	self.frame.totHealth:SetHeight(self.height)
 	self.frame.totHealth:SetJustifyH("RIGHT")
-	self.frame.totHealth:SetJustifyV("TOP")
+	self.frame.totHealth:SetJustifyV("CENTER")
 
 	self.frame.totHealth:SetPoint("RIGHT", self.frame, "RIGHT", 0, 0)
 	self.frame.totHealth:Show()
@@ -458,10 +468,12 @@ function TargetOfTarget.prototype:Update()
 	local healthPercentage = math.floor( (health/maxHealth)*100 )
 
 	if IceHUD.WowVer >= 30000 then
-		self.frame.totName:SetTextColor(UnitSelectionColor(self.unit))
+--		self.frame.totName:SetTextColor(UnitSelectionColor(self.unit))
+		self.frame.totName:SetTextColor(1,1,1)
 		self.frame.totName:SetAlpha(0.9)
 
-		self.frame.totHealth:SetTextColor(UnitSelectionColor(self.unit))
+--		self.frame.totHealth:SetTextColor(UnitSelectionColor(self.unit))
+		self.frame.totHealth:SetTextColor(1,1,1)
 		self.frame.totHealth:SetAlpha(0.9)
 	else
 		local rColor = UnitReactionColor[reaction or 5]
@@ -472,7 +484,8 @@ function TargetOfTarget.prototype:Update()
 	self.frame.totName:SetText(name)
 	self.frame.totHealth:SetText(healthPercentage .. "%")
 
-	self.frame.bar.texture:SetVertexColor(self:GetColor(unitClass, 0.7))
+--	self.frame.bar.texture:SetVertexColor(self:GetColor(unitClass, 0.7))
+	self.frame.bar.texture:SetVertexColor(0,1,0)
 	self.frame.bar:SetMinMaxValues(0, maxHealth)
 	self.frame.bar:SetValue(health)
 
