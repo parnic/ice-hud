@@ -590,7 +590,7 @@ function PlayerHealth.prototype:Resting()
 			self.frame.statusIcon = self:DestroyTexFrame(self.frame.statusIcon)
 		end
 	else
-		if not self.combat and self.frame.statusIcon then
+		if not self.combat and not configMode and self.frame.statusIcon then
 			self.frame.statusIcon = self:DestroyTexFrame(self.frame.statusIcon)
 		end
 	end
@@ -767,12 +767,20 @@ end
 
 
 function PlayerHealth.prototype:SetTexLoc(texframe, xpos, ypos, anchorFrom, anchorTo)
+	if not texframe then
+		return
+	end
+
 	texframe:ClearAllPoints()
 	texframe:SetPoint(anchorFrom and anchorFrom or "TOPLEFT", self.frame, anchorTo and anchorTo or "TOPLEFT", xpos, ypos)
 end
 
 
 function PlayerHealth.prototype:SetTexScale(texframe, width, height, scale)
+	if not texframe then
+		return
+	end
+
 	texframe:SetWidth(width * scale)
 	texframe:SetHeight(height * scale)
 end
