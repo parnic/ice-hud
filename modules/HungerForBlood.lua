@@ -52,7 +52,7 @@ function HungerForBlood.prototype:GetDefaultSettings()
 
     settings["enabled"] = false
     settings["shouldAnimate"] = false
-    settings["desiredLerpTime"] = nil
+    settings["desiredLerpTime"] = 0
     settings["lowThreshold"] = 0
     settings["side"] = IceCore.Side.Right
     settings["offset"] = 8
