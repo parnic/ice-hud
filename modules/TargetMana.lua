@@ -2,6 +2,8 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 IceTargetMana = AceOO.Class(IceUnitBar)
 IceTargetMana.prototype.registerEvents = true
+IceTargetHealth.prototype.color = nil
+IceTargetMana.prototype.determineColor = true
 
 
 -- Constructor --
@@ -80,24 +82,27 @@ function IceTargetMana.prototype:Update(unit)
 		return
 	end
 
+	if self.determineColor then
+		self.color = "TargetMana"
 
-	local color = "TargetMana"
-	if (self.moduleSettings.scaleManaColor) then
-		color = "ScaledManaColor"
-	end
-	if (manaType == 1) then
-		color = "TargetRage"
-	elseif (manaType == 2) then
-		color = "TargetFocus"
-	elseif (manaType == 3) then
-		color = "TargetEnergy"
+		if (self.moduleSettings.scaleManaColor) then
+			self.color = "ScaledManaColor"
+		end
+
+		if (manaType == 1) then
+			self.color = "TargetRage"
+		elseif (manaType == 2) then
+			self.color = "TargetFocus"
+		elseif (manaType == 3) then
+			self.color = "TargetEnergy"
+		end
+
+		if (self.tapped) then
+			self.color = "Tapped"
+		end
 	end
 	
-	if (self.tapped) then
-		color = "Tapped"
-	end
-	
-	self:UpdateBar(self.manaPercentage, color)
+	self:UpdateBar(self.manaPercentage, self.color)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		self:SetBottomText1(math.floor(self.manaPercentage * 100))

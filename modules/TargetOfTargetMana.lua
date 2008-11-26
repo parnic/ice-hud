@@ -28,6 +28,8 @@ end
 
 function TargetTargetMana.prototype:Enable(core)
 	self.registerEvents = false
+	-- make sure the super class doesn't override our color selection
+	self.determineColor = false
 	TargetTargetMana.super.prototype.Enable(self, core)
 
 	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.1, self, "targettarget")
@@ -37,6 +39,30 @@ function TargetTargetMana.prototype:Disable(core)
 	TargetTargetMana.super.prototype.Disable(self, core)
 
 	self:CancelScheduledEvent(self.elementName)
+end
+
+function TargetTargetMana.prototype:Update(unit)
+	self.color = "TargetTargetMana"
+
+	local manaType = UnitPowerType(self.unit)
+
+	if (self.moduleSettings.scaleManaColor) then
+		self.color = "ScaledManaColor"
+	end
+
+	if (manaType == 1) then
+		self.color = "TargetTargetRage"
+	elseif (manaType == 2) then
+		self.color = "TargetTargetFocus"
+	elseif (manaType == 3) then
+		self.color = "TargetTargetEnergy"
+	end
+
+	if (self.tapped) then
+		self.color = "Tapped"
+	end
+
+	TargetTargetMana.super.prototype.Update(self, unit)
 end
 
 -- Load us up
