@@ -171,7 +171,7 @@ function IceElement.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 22
+		order = 27.5
 	}	
 
 	return opts

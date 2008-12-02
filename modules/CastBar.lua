@@ -78,7 +78,7 @@ function CastBar.prototype:GetOptions()
 	opts["lagAlpha"] = 
 	{
 		type = 'range',
-		name = 'Lag Indicator',
+		name = 'Lag Indicator alpha',
 		desc = 'Lag indicator alpha (0 is disabled)',
 		min = 0,
 		max = 1,

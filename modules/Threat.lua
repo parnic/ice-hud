@@ -64,7 +64,7 @@ function IHUD_Threat.prototype:GetOptions()
 	opts["aggroAlpha"] = 
 	{
 		type = 'range',
-		name = 'Aggro Indicator',
+		name = 'Aggro Indicator alpha',
 		desc = 'Aggro indicator alpha (0 is disabled)',
 		min = 0,
 		max = 1,
@@ -79,7 +79,7 @@ function IHUD_Threat.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 21
+		order = 27.5
 	}
 
 	opts["onlyShowInGroups"] = {
@@ -96,7 +96,7 @@ function IHUD_Threat.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 22
+		order = 27.6
 	}
 
 	return opts

@@ -29,6 +29,8 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["showStatusIcon"] = true
 	settings["statusIconOffset"] = {x=110, y=0}
 	settings["statusIconScale"] = 1
+	settings["showStatusCombat"] = true
+	settings["showStatusResting"] = true
 
 	settings["showLeaderIcon"] = true
 	settings["leaderIconOffset"] = {x=135, y=15}
@@ -209,10 +211,15 @@ function PlayerHealth.prototype:GetOptions()
 				order = 6
 			},
 
+			headerStatusIcon = {
+				type = 'header',
+				name = "Status icon",
+				order = 9.9
+			},
 			statusIcon = {
 				type = "toggle",
 				name = "Show status icon",
-				desc = "Whether or not to show the status icon (resting/combat) above this bar",
+				desc = "Whether or not to show the status icon (resting/combat) above this bar\n\nNote: You can configure resting/combat separately below, but disabling both resting and combat is the same as disabling the icon altogether",
 				get = function()
 					return self.moduleSettings.showStatusIcon
 				end,
@@ -225,6 +232,40 @@ function PlayerHealth.prototype:GetOptions()
 					return not self.moduleSettings.enabled
 				end,
 				order = 10
+			},
+			showStatusCombat = {
+				type = "toggle",
+				name = "Show combat status",
+				desc = "Whether or not to show the combat status portion of the status icon (for example, if you only care when you're resting, not when you're in combat)",
+				get = function()
+					return self.moduleSettings.showStatusCombat
+				end,
+				set = function(value)
+					self.moduleSettings.showStatusCombat = value
+					self:Resting()
+					self:CheckCombat()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.showStatusIcon
+				end,
+				order = 10.1
+			},
+			showStatusResting = {
+				type = "toggle",
+				name = "Show resting status",
+				desc = "Whether or not to show the resting status portion of the status icon (for example, if you only care when you're in combat, but not when you're resting)",
+				get = function()
+					return self.moduleSettings.showStatusResting
+				end,
+				set = function(value)
+					self.moduleSettings.showStatusResting = value
+					self:Resting()
+					self:CheckCombat()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.showStatusIcon
+				end,
+				order = 10.2
 			},
 			statusIconOffsetX = {
 				type = "range",
@@ -284,6 +325,11 @@ function PlayerHealth.prototype:GetOptions()
 				order = 13
 			},
 
+			headerLeaderIcon = {
+				type = 'header',
+				name = "Leader icon",
+				order = 19.9
+			},
 			leaderIcon = {
 				type = "toggle",
 				name = "Show leader icon",
@@ -358,6 +404,11 @@ function PlayerHealth.prototype:GetOptions()
 				order = 23
 			},
 
+			headerLootMasterIcon = {
+				type = 'header',
+				name = "Loot Master icon",
+				order = 29.9
+			},
 			lootMasterIcon = {
 				type = "toggle",
 				name = "Show loot master icon",
@@ -432,6 +483,11 @@ function PlayerHealth.prototype:GetOptions()
 				order = 33
 			},
 
+			headerPvPIcon = {
+				type = 'header',
+				name = "PvP icon",
+				order = 39.9
+			},
 			PvPIcon = {
 				type = "toggle",
 				name = "Show PvP icon",
@@ -582,11 +638,11 @@ function PlayerHealth.prototype:Resting()
 
 	-- moved icon logic above :Update so that it will trigger the alpha settings properly
 	if (self.resting) then
-		if self.moduleSettings.showStatusIcon and not self.frame.statusIcon then
+		if self.moduleSettings.showStatusIcon and self.moduleSettings.showStatusResting and not self.frame.statusIcon then
 			self.frame.statusIcon = self:CreateTexCoord(self.frame.statusIcon, "Interface\\CharacterFrame\\UI-StateIcon", 20, 20,
 						self.moduleSettings.statusIconScale, 0.0625, 0.4475, 0.0625, 0.4375)
 			self:SetTexLoc(self.frame.statusIcon, self.moduleSettings.statusIconOffset['x'], self.moduleSettings.statusIconOffset['y'])
-		elseif not self.moduleSettings.showStatusIcon and self.frame.statusIcon and not self.combat then
+		elseif (not self.moduleSettings.showStatusIcon or not self.moduleSettings.showStatusResting) and self.frame.statusIcon and not self.combat then
 			self.frame.statusIcon = self:DestroyTexFrame(self.frame.statusIcon)
 		end
 	else
@@ -613,11 +669,11 @@ function PlayerHealth.prototype:CheckCombat()
 	end
 
 	if self.combat or configMode then
-		if (configMode or self.moduleSettings.showStatusIcon) and not self.frame.statusIcon then
+		if (configMode or (self.moduleSettings.showStatusIcon and self.moduleSettings.showStatusCombat)) and not self.frame.statusIcon then
 			self.frame.statusIcon = self:CreateTexCoord(self.frame.statusIcon, "Interface\\CharacterFrame\\UI-StateIcon", 20, 20,
 						self.moduleSettings.statusIconScale, 0.5625, 0.9375, 0.0625, 0.4375)
 			self:SetTexLoc(self.frame.statusIcon, self.moduleSettings.statusIconOffset['x'], self.moduleSettings.statusIconOffset['y'])
-		elseif not configMode and not self.resting and not self.moduleSettings.showStatusIcon and self.frame.statusIcon then
+		elseif not configMode and not self.resting and (not self.moduleSettings.showStatusIcon or not self.moduleSettings.showStatusCombat) and self.frame.statusIcon then
 			self.frame.statusIcon = self:DestroyTexFrame(self.frame.statusIcon)
 		end
 	else

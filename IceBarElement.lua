@@ -88,7 +88,12 @@ end
 -- OVERRIDE
 function IceBarElement.prototype:GetOptions()
 	local opts = IceBarElement.super.prototype.GetOptions(self)
-	
+
+	opts["headerLookAndFeel"] = {
+		type = 'header',
+		name = 'Look and Feel',
+		order = 29.9
+	}
 	opts["side"] = 
 	{
 		type = 'text',
@@ -159,6 +164,11 @@ function IceBarElement.prototype:GetOptions()
 		order = 32
 	}
 
+	opts["headerVisibility"] = {
+		type = 'header',
+		name = 'Visibility settings',
+		order = 27
+	}
 	opts["barVisible"] = {
 		type = 'toggle',
 		name = 'Bar visible',
@@ -201,6 +211,11 @@ function IceBarElement.prototype:GetOptions()
 		order = 29
 	}
 
+	opts["headerAnimation"] = {
+		type = 'header',
+		name = 'Animation settings',
+		order = 110
+	}
 	opts["shouldAnimate"] =
 	{
 		type = 'toggle',
@@ -215,7 +230,8 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
-		end
+		end,
+		order = 111
 	}
 
 	opts["desiredLerpTime"] =
@@ -234,7 +250,8 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.shouldAnimate
-		end
+		end,
+		order = 112
 	}
 
 	opts["widthModifier"] = 
@@ -254,7 +271,8 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
-		end
+		end,
+		order = 33
 	}
 
 	opts["barVerticalOffset"] = 
@@ -274,7 +292,8 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
-		end
+		end,
+		order = 34
 	}
 
 	opts["textSettings"] =
