@@ -566,6 +566,17 @@ function IceHUD:OnInitialize()
 		self:RegisterDefaults('account', self.IceCore.defaults)	
 	end
 	self:RegisterDefaults('profile', self.IceCore.defaults)
+
+	self.IceCore.settings = self.db.profile
+	self.IceCore:SetModuleDatabases()
+	self.options.args.modules.args = self.IceCore:GetModuleOptions()
+	self.options.args.colors.args = self.IceCore:GetColorOptions()
+
+	waterfall:Register("IceHUD", 'aceOptions', IceHUD.options)
+
+	-- Parnic - added /icehudcl to make rock config pick this up
+	self:RegisterChatCommand({"/icehudcl"}, IceHUD.options)
+	self:RegisterChatCommand({ "/icehud" }, IceHUD.slashMenu)
 end
 
 
@@ -581,21 +592,11 @@ function IceHUD:OnEnable(isFirst)
 		self.db.account.settingsMoved = true
 	end
 
-	self.IceCore.settings = self.db.profile
 	self.IceCore:Enable()
 
 	if isFirst then
 		self:SetDebugging(self.IceCore:GetDebug())
 		self.debugFrame = ChatFrame2
-
-		self.options.args.modules.args = self.IceCore:GetModuleOptions()
-		self.options.args.colors.args = self.IceCore:GetColorOptions()
-		
-		waterfall:Register("IceHUD", 'aceOptions', IceHUD.options)
-
-		-- Parnic - added /icehudcl to make rock config pick this up
-		self:RegisterChatCommand({"/icehudcl"}, IceHUD.options)
-		self:RegisterChatCommand({ "/icehud" }, IceHUD.slashMenu)
 	end
 end
 

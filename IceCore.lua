@@ -92,7 +92,6 @@ function IceCore.prototype:Enable()
 	self:DrawFrame()
 	
 	for i = 1, table.getn(self.elements) do
-		self.elements[i]:SetDatabase(self.settings)
 		self.elements[i]:Create(self.IceHUDFrame)
 		if (self.elements[i]:IsEnabled()) then
 			self.elements[i]:Enable(true)
@@ -104,11 +103,16 @@ end
 
 
 function IceCore.prototype:ProfileChanged()
+	self:SetModuleDatabases()
+
+	self:Redraw()
+end
+
+
+function IceCore.prototype:SetModuleDatabases()
 	for i = 1, table.getn(self.elements) do
 		self.elements[i]:SetDatabase(self.settings)
 	end
-
-	self:Redraw()
 end
 
 
