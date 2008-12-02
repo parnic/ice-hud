@@ -665,5 +665,6 @@ end
 
 function IceHUD:OnProfileEnable(oldName, oldData)
 	self.IceCore.settings = self.db.profile
+	self.IceCore:SetModuleDatabases()
 	self.IceCore:Enable()
 end
