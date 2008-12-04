@@ -55,7 +55,8 @@ function PetMana.prototype:Enable(core)
 	self:RegisterEvent("PLAYER_PET_CHANGED", "CheckPet");
 	self:RegisterEvent("PET_BAR_CHANGED", "CheckPet");
 	self:RegisterEvent("UNIT_PET", "CheckPet");
-	
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "CheckPet")
+
 	self:RegisterEvent("UNIT_MANA", "Update")
 	self:RegisterEvent("UNIT_MAXMANA", "Update")
 	self:RegisterEvent("UNIT_RAGE", "Update")
@@ -73,8 +74,11 @@ end
 
 
 function PetMana.prototype:CheckPet()
+	self:CheckForVehicle()
+
 	if (UnitExists(self.unit)) then
 		self:Show(true)
+		self:ManaType(self.unit)
 		self:Update(self.unit)
 	else
 		self:Show(false)
@@ -92,19 +96,67 @@ function PetMana.prototype:ManaType(unit)
 end
 
 
+function PetMana.prototype:SetupOnUpdate(enable)
+	if enable then
+		self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
+	else
+		-- make sure the animation has a chance to finish filling up the bar before we cut it off completely
+		if self.CurrScale ~= self.DesiredScale then
+			self.frame:SetScript("OnUpdate", function() self:MyOnUpdate() end)
+		else
+			self.frame:SetScript("OnUpdate", nil)
+		end
+	end
+end
+
+
+function PetMana.prototype:MyOnUpdate()
+	PetMana.super.prototype.MyOnUpdate(self)
+
+	if self.CurrScale == self.DesiredScale then
+		self:SetupOnUpdate(false)
+	end
+end
+
+
+function PetMana.prototype:CheckForVehicle()
+	local lastUnit = self.unit
+
+	if UnitIsUnit("pet", "vehicle") or UnitHasVehicleUI("player") then
+		self.unit = "vehicle"
+	else
+		self.unit = "pet"
+	end
+
+	if self.unit ~= lastUnit then
+		self:ManaType(self.unit)
+	end
+end
+
+
 function PetMana.prototype:Update(unit)
+	self:CheckForVehicle()
+
 	PetMana.super.prototype.Update(self)
+
 	if (unit and (unit ~= self.unit)) then
 		return
 	end
-	
+
 	if ((not UnitExists(unit)) or (self.maxMana == 0)) then
 		self:Show(false)
 		return
-	else	
+	else
 		self:Show(true)
 	end
-	
+
+	if (self.manaPercentage == 1 and self.manaType ~= 1 and self.manaType ~= 6)
+		or (self.manaPercentage == 0 and (self.manaType == 1 or self.manaType == 6)) then
+		self:SetupOnUpdate(false)
+	elseif GetCVarBool("predictedPower") then
+		self:SetupOnUpdate(true)
+	end
+
 	local color = "PetMana"
 	if (self.moduleSettings.scaleManaColor) then
 		color = "ScaledManaColor"
@@ -120,7 +172,7 @@ function PetMana.prototype:Update(unit)
 			color = "PetEnergy"
 		end
 	end
-	
+
 	self:UpdateBar(self.mana/self.maxMana, color)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
