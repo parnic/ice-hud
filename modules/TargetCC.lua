@@ -42,7 +42,9 @@ local StunCCList = {
 	-- starfire stun
 	16922,
 	-- war stomp
-	20549
+	20549,
+	-- deep freeze
+	44572,
 }
 
 local IncapacitateCCList = {
