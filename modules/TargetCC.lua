@@ -45,6 +45,8 @@ local StunCCList = {
 	20549,
 	-- deep freeze
 	44572,
+	-- shockwave
+	46968,
 }
 
 local IncapacitateCCList = {
