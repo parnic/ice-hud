@@ -209,11 +209,6 @@ end
 -- Configuration methods                                                     --
 -------------------------------------------------------------------------------
 
-function IceCore.prototype:ResetSettings()
-	self:ResetDB()
-	ReloadUI()
-end
-
 function IceCore.prototype:GetVerticalPos()
 	return self.settings.verticalPos
 end

@@ -549,7 +549,7 @@ StaticPopupDialogs["ICEHUD_RESET"] =
 	whileDead = 1,
 	hideOnEscape = 1,
 	OnAccept = function()
-		IceHUD.IceCore:ResetSettings()
+		IceHUD:ResetSettings()
 	end
 }
 
@@ -598,6 +598,11 @@ function IceHUD:OnEnable(isFirst)
 		self:SetDebugging(self.IceCore:GetDebug())
 		self.debugFrame = ChatFrame2
 	end
+end
+
+function IceHUD:ResetSettings()
+	self:ResetDB()
+	ReloadUI()
 end
 
 -- fubar stuff
