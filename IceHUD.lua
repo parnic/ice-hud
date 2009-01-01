@@ -111,7 +111,7 @@ IceHUD.options =
 
 				alphaic = {
 					type = 'range',
-					name = 'Alpha IC',
+					name = 'Alpha in combat',
 					desc = 'Bar alpha In Combat',
 					get = function()
 						return IceHUD.IceCore:GetAlpha("IC")
@@ -128,7 +128,7 @@ IceHUD.options =
 
 				alphaooc = {
 					type = 'range',
-					name = 'Alpha OOC',
+					name = 'Alpha out of combat',
 					desc = 'Bar alpha Out Of Combat without target',
 					get = function()
 						return IceHUD.IceCore:GetAlpha("OOC")
@@ -171,7 +171,7 @@ IceHUD.options =
 
 				alphaicbg = {
 					type = 'range',
-					name = 'BG Alpha IC',
+					name = 'BG Alpha in combat',
 					desc = 'Background alpha for bars IC',
 					get = function()
 						return IceHUD.IceCore:GetAlphaBG("IC")
@@ -188,7 +188,7 @@ IceHUD.options =
 
 				alphaoocbg = {
 					type = 'range',
-					name = 'BG Alpha OOC',
+					name = 'BG Alpha out of combat',
 					desc = 'Background alpha for bars OOC without target',
 					get = function()
 						return IceHUD.IceCore:GetAlphaBG("OOC")

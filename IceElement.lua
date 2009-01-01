@@ -296,7 +296,12 @@ end
 
 function IceElement.prototype:GetClassColor(class)
 	class = string.upper(class)
-	return RAID_CLASS_COLORS[class].r, RAID_CLASS_COLORS[class].g, RAID_CLASS_COLORS[class].b
+	if RAID_CLASS_COLORS and RAID_CLASS_COLORS[class] then
+		return RAID_CLASS_COLORS[class].r, RAID_CLASS_COLORS[class].g, RAID_CLASS_COLORS[class].b
+	else
+		-- crazy talk...who the crap wouldn't have a blizzard-defined global defined?
+		return 1,1,1
+	end
 end
 
 
