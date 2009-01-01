@@ -42,7 +42,7 @@ function GlobalCoolDown.prototype:GetSpellName()
 	local defaultSpells;
 	if (IceHUD.WowVer >= 30000) then
 		defaultSpells = {
-			ROGUE=GetSpellInfo(1833), -- cheap shot
+			ROGUE=GetSpellInfo(1752), -- sinister strike
 			PRIEST=GetSpellInfo(139), -- renew
 			DRUID=GetSpellInfo(774), -- rejuvenation
 			WARRIOR=GetSpellInfo(6673), -- battle shout
@@ -55,7 +55,7 @@ function GlobalCoolDown.prototype:GetSpellName()
 		}
 	else
 		defaultSpells = {
-			ROGUE=GetSpellInfo(1833), -- cheap shot
+			ROGUE=GetSpellInfo(1752), -- sinister strike
 			PRIEST=GetSpellInfo(139), -- renew
 			DRUID=GetSpellInfo(774), -- rejuvenation
 			WARRIOR=GetSpellInfo(6673), -- battle shout
