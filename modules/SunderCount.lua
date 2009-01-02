@@ -1,6 +1,7 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local SunderCount = AceOO.Class(IceElement)
+local waterfall = AceLibrary("Waterfall-1.0")
 
 SunderCount.prototype.sunderSize = 20
 
@@ -72,12 +73,33 @@ function SunderCount.prototype:GetOptions()
 			self.moduleSettings.sunderMode = v
 			self:CreateSunderFrame(true)
 			self:Redraw()
+			waterfall:Refresh("IceHUD")
 		end,
 		validate = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
 		order = 33
+	}
+
+	opts["sunderGap"] = {
+		type = 'range',
+		name = 'Sunder gap',
+		desc = 'Spacing between each sunder count (only works for graphical mode)',
+		min = 0,
+		max = 100,
+		step = 1,
+		get = function()
+			return self.moduleSettings.sunderGap
+		end,
+		set = function(v)
+			self.moduleSettings.sunderGap = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or self.moduleSettings.sunderMode == "Numeric"
+		end,
+		order = 33.2
 	}
 
 	opts["gradient"] = {
@@ -110,6 +132,7 @@ function SunderCount.prototype:GetDefaultSettings()
 	defaults["gradient"] = false
 	defaults["usesDogTagStrings"] = false
 	defaults["alwaysFullAlpha"] = true
+	defaults["sunderGap"] = 0
 	return defaults
 end
 
@@ -194,7 +217,7 @@ function SunderCount.prototype:CreateSunderFrame(doTextureUpdate)
 		self.frame.graphicalBG[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphicalBG[i]:SetWidth(self.sunderSize)
 		self.frame.graphicalBG[i]:SetHeight(self.sunderSize)
-		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.sunderSize-5) + (i-1), 0)
+		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.sunderSize-5) + (i-1) + ((i-1) * self.moduleSettings.sunderGap), 0)
 		self.frame.graphicalBG[i]:SetAlpha(0.15)
 		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("SunderCount"))
 

@@ -1,6 +1,7 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local LacerateCount = AceOO.Class(IceElement)
+local waterfall = AceLibrary("Waterfall-1.0")
 
 LacerateCount.prototype.lacerateSize = 20
 
@@ -72,12 +73,33 @@ function LacerateCount.prototype:GetOptions()
 			self.moduleSettings.lacerateMode = v
 			self:CreateLacerateFrame(true)
 			self:Redraw()
+			waterfall:Refresh("IceHUD")
 		end,
 		validate = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
 		order = 33
+	}
+
+	opts["lacerateGap"] = {
+		type = 'range',
+		name = 'Lacerate gap',
+		desc = 'Spacing between each lacerate count (only works for graphical mode)',
+		min = 0,
+		max = 100,
+		step = 1,
+		get = function()
+			return self.moduleSettings.lacerateGap
+		end,
+		set = function(v)
+			self.moduleSettings.lacerateGap = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or self.moduleSettings.lacerateMode == "Numeric"
+		end,
+		order = 33.2
 	}
 
 	opts["gradient"] = {
@@ -110,6 +132,7 @@ function LacerateCount.prototype:GetDefaultSettings()
 	defaults["gradient"] = false
 	defaults["usesDogTagStrings"] = false
 	defaults["alwaysFullAlpha"] = true
+	defaults["lacerateGap"] = 0
 	return defaults
 end
 
@@ -194,7 +217,7 @@ function LacerateCount.prototype:CreateLacerateFrame(doTextureUpdate)
 		self.frame.graphicalBG[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphicalBG[i]:SetWidth(self.lacerateSize)
 		self.frame.graphicalBG[i]:SetHeight(self.lacerateSize)
-		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.lacerateSize-5) + (i-1), 0)
+		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.lacerateSize-5) + (i-1) + ((i-1) * self.moduleSettings.lacerateGap), 0)
 		self.frame.graphicalBG[i]:SetAlpha(0.15)
 		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("LacerateCount"))
 

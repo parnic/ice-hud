@@ -120,6 +120,26 @@ function ComboPoints.prototype:GetOptions()
 		order = 33.1
 	}
 
+	opts["comboGap"] = {
+		type = 'range',
+		name = 'Combo gap',
+		desc = 'Spacing between each combo point (only works for graphical mode)',
+		min = 0,
+		max = 100,
+		step = 1,
+		get = function()
+			return self.moduleSettings.comboGap
+		end,
+		set = function(v)
+			self.moduleSettings.comboGap = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or self.moduleSettings.comboMode == "Numeric"
+		end,
+		order = 33.2
+	}
+
 	opts["gradient"] = {
 		type = "toggle",
 		name = "Change color",
@@ -152,6 +172,7 @@ function ComboPoints.prototype:GetDefaultSettings()
 	defaults["usesDogTagStrings"] = false
 	defaults["alwaysFullAlpha"] = true
 	defaults["graphicalLayout"] = "Horizontal"
+	defaults["comboGap"] = 0
 	return defaults
 end
 
@@ -248,9 +269,9 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 		self.frame.graphicalBG[i]:SetWidth(self.comboSize)
 		self.frame.graphicalBG[i]:SetHeight(self.comboSize)
 		if self.moduleSettings.graphicalLayout == "Horizontal" then
-			self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.comboSize-5) + (i-1), 0)
+			self.frame.graphicalBG[i]:SetPoint("TOPLEFT", ((i-1) * (self.comboSize-5)) + (i-1) + ((i-1) * self.moduleSettings.comboGap), 0)
 		else
-			self.frame.graphicalBG[i]:SetPoint("TOPLEFT", 0, -1 * ((i-1) * (self.comboSize-5) + (i-1)))
+			self.frame.graphicalBG[i]:SetPoint("TOPLEFT", 0, -1 * (((i-1) * (self.comboSize-5)) + (i-1) + ((i-1) * self.moduleSettings.comboGap)))
 		end
 		self.frame.graphicalBG[i]:SetAlpha(0.15)
 		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("ComboPoints"))

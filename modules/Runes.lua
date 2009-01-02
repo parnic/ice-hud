@@ -177,6 +177,26 @@ function Runes.prototype:GetOptions()
 		order = 34
 	}
 ]]--
+	opts["runeGap"] = {
+		type = 'range',
+		name = 'Rune gap',
+		desc = 'Spacing between each rune (only works for graphical mode)',
+		min = 0,
+		max = 100,
+		step = 1,
+		get = function()
+			return self.moduleSettings.runeGap
+		end,
+		set = function(v)
+			self.moduleSettings.runeGap = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 34.1
+	}
+
 	return opts
 end
 
@@ -194,6 +214,7 @@ function Runes.prototype:GetDefaultSettings()
 	defaults["alwaysFullAlpha"] = false
 	defaults["displayMode"] = "Horizontal"
 	defaults["cooldownMode"] = "Cooldown"
+	defaults["runeGap"] = 0
 
 	return defaults
 end
@@ -346,9 +367,9 @@ function Runes.prototype:CreateRune(i, type, name)
 		runeSwapI = i
 	end
 	if self.moduleSettings.displayMode == "Horizontal" then
-		self.frame.graphical[i]:SetPoint("TOPLEFT", (runeSwapI-1) * (self.runeSize-5) + (runeSwapI-1), 0)
+		self.frame.graphical[i]:SetPoint("TOPLEFT", (runeSwapI-1) * (self.runeSize-5) + (runeSwapI-1) + ((runeSwapI-1) * self.moduleSettings.runeGap), 0)
 	else
-		self.frame.graphical[i]:SetPoint("TOPLEFT", 0, -1 * ((runeSwapI-1) * (self.runeSize-5) + (runeSwapI-1)))
+		self.frame.graphical[i]:SetPoint("TOPLEFT", 0, -1 * ((runeSwapI-1) * (self.runeSize-5) + (runeSwapI-1) + ((runeSwapI-1) * self.moduleSettings.runeGap)))
 	end
 
 	self.frame.graphical[i]:SetStatusBarColor(self:GetColor("Runes"..name))

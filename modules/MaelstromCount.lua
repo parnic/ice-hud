@@ -1,6 +1,7 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local MaelstromCount = AceOO.Class(IceElement)
+local waterfall = AceLibrary("Waterfall-1.0")
 
 MaelstromCount.prototype.maelstromSize = 20
 
@@ -72,12 +73,33 @@ function MaelstromCount.prototype:GetOptions()
 			self.moduleSettings.maelstromMode = v
 			self:CreateMaelstromFrame(true)
 			self:Redraw()
+			waterfall:Refresh("IceHUD")
 		end,
 		validate = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
 		order = 33
+	}
+
+	opts["maelstromGap"] = {
+		type = 'range',
+		name = 'Maelstrom gap',
+		desc = 'Spacing between each maelstromGap point (only works for graphical mode)',
+		min = 0,
+		max = 100,
+		step = 1,
+		get = function()
+			return self.moduleSettings.maelstromGap
+		end,
+		set = function(v)
+			self.moduleSettings.maelstromGap = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or self.moduleSettings.maelstromMode == "Numeric"
+		end,
+		order = 33.2
 	}
 
 	opts["gradient"] = {
@@ -110,6 +132,7 @@ function MaelstromCount.prototype:GetDefaultSettings()
 	defaults["gradient"] = false
 	defaults["usesDogTagStrings"] = false
 	defaults["alwaysFullAlpha"] = true
+	defaults["maelstromGap"] = 0
 	return defaults
 end
 
@@ -189,7 +212,7 @@ function MaelstromCount.prototype:CreateMaelstromFrame(doTextureUpdate)
 		self.frame.graphicalBG[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphicalBG[i]:SetWidth(self.maelstromSize)
 		self.frame.graphicalBG[i]:SetHeight(self.maelstromSize)
-		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.maelstromSize-5) + (i-1), 0)
+		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.maelstromSize-5) + (i-1) + ((i-1) * self.moduleSettings.maelstromGap), 0)
 		self.frame.graphicalBG[i]:SetAlpha(0.15)
 		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("MaelstromCount"))
 
