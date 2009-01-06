@@ -145,8 +145,8 @@ IceHUD.options =
 
 				alphaTarget = {
 					type = 'range',
-					name = 'Alpha OOC and Target or not Full',
-					desc = 'Bar alpha Out Of Combat with target accuired or bar not full',
+					name = 'Alpha OOC and Target',
+					desc = 'Bar alpha Out Of Combat with target accuired (takes precedence over Not Full)',
 					get = function()
 						return IceHUD.IceCore:GetAlpha("Target")
 					end,
@@ -158,6 +158,23 @@ IceHUD.options =
 					step = 0.05,
 					isPercent = true,
 					order = 13,
+				},
+
+				alphaNotFull = {
+					type = 'range',
+					name = 'Alpha OOC and not full',
+					desc = 'Bar alpha Out Of Combat with target accuired or bar not full (Target takes precedence over this)',
+					get = function()
+						return IceHUD.IceCore:GetAlpha("NotFull")
+					end,
+					set = function(v)
+						IceHUD.IceCore:SetAlpha("NotFull", v)
+					end,
+					min = 0,
+					max = 1,
+					step = 0.05,
+					isPercent = true,
+					order = 14,
 				},
 
 
@@ -205,8 +222,8 @@ IceHUD.options =
 
 				alphaTargetbg = {
 					type = 'range',
-					name = 'BG Alpha OOC and Target or not Full',
-					desc = 'Background alpha for bars OOC and target accuired or bar not full',
+					name = 'BG Alpha OOC and Target',
+					desc = 'Background alpha for bars OOC and target accuired (takes precedence over Not Full)',
 					get = function()
 						return IceHUD.IceCore:GetAlphaBG("Target")
 					end,
@@ -218,6 +235,23 @@ IceHUD.options =
 					step = 0.05,
 					isPercent = true,
 					order = 23,
+				},
+
+				alphaNotFullbg = {
+					type = 'range',
+					name = 'BG Alpha OOC and not Full',
+					desc = 'Background alpha for bars OOC and bar not full (Target takes precedence over this)',
+					get = function()
+						return IceHUD.IceCore:GetAlphaBG("NotFull")
+					end,
+					set = function(v)
+						IceHUD.IceCore:SetAlphaBG("NotFull", v)
+					end,
+					min = 0,
+					max = 1,
+					step = 0.05,
+					isPercent = true,
+					order = 24,
 				},
 
 
@@ -577,6 +611,8 @@ function IceHUD:OnInitialize()
 	-- Parnic - added /icehudcl to make rock config pick this up
 	self:RegisterChatCommand({"/icehudcl"}, IceHUD.options)
 	self:RegisterChatCommand({ "/icehud" }, IceHUD.slashMenu)
+
+	self:SyncSettingsVersions()
 end
 
 
@@ -603,6 +639,15 @@ end
 function IceHUD:ResetSettings()
 	self:ResetDB()
 	ReloadUI()
+end
+
+-- add settings changes/updates here so that existing users don't lose their settings
+function IceHUD:SyncSettingsVersions()
+	if not self.IceCore.settings.updatedOocNotFull then
+		self.IceCore.settings.updatedOocNotFull = true
+		self.IceCore.settings.alphaNotFull = self.IceCore.settings.alphaTarget
+		self.IceCore.settings.alphaNotFullbg = self.IceCore.settings.alphaTargetbg
+	end
 end
 
 -- fubar stuff

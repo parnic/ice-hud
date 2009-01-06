@@ -52,10 +52,12 @@ function IceCore.prototype:SetupDefaults()
 		alphaooc = 0.3,
 		alphaic = 0.6,
 		alphaTarget = 0.4,
+		alphaNotFull = 0.4,
 
 		alphaoocbg = 0.2,
 		alphaicbg = 0.3,
 		alphaTargetbg = 0.25,
+		alphaNotFullbg = 0.25,
 		
 		backgroundToggle = false,
 		backgroundColor = {r = 0.5, g = 0.5, b = 0.5},
@@ -253,6 +255,8 @@ function IceCore.prototype:GetAlpha(mode)
 		return self.settings.alphaic
 	elseif (mode == "Target") then
 		return self.settings.alphaTarget
+	elseif (mode == "NotFull") then
+		return self.settings.alphaNotFull
 	else
 		return self.settings.alphaooc
 	end
@@ -262,6 +266,8 @@ function IceCore.prototype:SetAlpha(mode, value)
 		self.settings.alphaic = value
 	elseif (mode == "Target") then
 		self.settings.alphaTarget = value
+	elseif (mode == "NotFull") then
+		self.settings.alphaNotFull = value
 	else
 		self.settings.alphaooc = value
 	end
@@ -274,6 +280,8 @@ function IceCore.prototype:GetAlphaBG(mode)
 		return self.settings.alphaicbg
 	elseif (mode == "Target") then
 		return self.settings.alphaTargetbg
+	elseif (mode == "NotFull") then
+		return self.settings.alphaNotFullbg
 	else
 		return self.settings.alphaoocbg
 	end
@@ -283,6 +291,8 @@ function IceCore.prototype:SetAlphaBG(mode, value)
 		self.settings.alphaicbg = value
 	elseif (mode == "Target") then
 		self.settings.alphaTargetbg = value
+	elseif (mode == "NotFull") then
+		self.settings.alphaNotFullbg = value
 	else
 		self.settings.alphaoocbg = value
 	end
