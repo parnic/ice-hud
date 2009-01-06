@@ -11,6 +11,8 @@ IceTargetHealth.prototype.classLeft = 0
 IceTargetHealth.prototype.classRight = 0.9375
 IceTargetHealth.prototype.classTop = 0
 IceTargetHealth.prototype.classBottom = 0.78125
+IceTargetHealth.prototype.raidIconWidth = 16
+IceTargetHealth.prototype.raidIconHeight = 16
 IceTargetHealth.prototype.EliteTexture = IceElement.TexturePath .. "Elite"
 IceTargetHealth.prototype.RareEliteTexture = IceElement.TexturePath .. "RareElite"
 IceTargetHealth.prototype.RareTexture = IceElement.TexturePath .. "Rare"
@@ -44,13 +46,17 @@ function IceTargetHealth.prototype:GetDefaultSettings()
 	settings["showRaidIcon"] = true
 	settings["raidIconXOffset"] = 12
 	settings["raidIconYOffset"] = 0
+	settings["raidIconScale"] = 1
 	settings["lockIconAlpha"] = false
 	settings["abbreviateHealth"] = true
 	settings["classIconOffset"] = {x=0, y=0}
 	settings["showClassificationIcon"] = false
+	settings["classIconOnTop"] = false
+	settings["classIconScale"] = 1
 	settings["showPvPIcon"] = true
 	settings["PvPIconOffset"] = {x=23, y=11}
 	settings["PvPIconScale"] = 1.0
+	settings["PvPIconOnTop"] = false
 
 	return settings
 end
@@ -172,6 +178,12 @@ end
 				order = 6
 			},
 
+			PvPHeader = {
+				type = 'header',
+				name = 'PvP icon',
+				order = 39.9
+			},
+
 			PvPIcon = {
 				type = "toggle",
 				name = "Show PvP icon",
@@ -188,6 +200,22 @@ end
 				end,
 				order = 40
 			},
+			PvPIconOnTop = {
+				type = "toggle",
+				name = "Draw PVP Icon on top",
+				desc = "Whether to draw the PvP icon in front of or behind this bar",
+				get = function()
+					return self.moduleSettings.PvPIconOnTop
+				end,
+				set = function(value)
+					self.moduleSettings.PvPIconOnTop = value
+					self:CheckPvP()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.showPvPIcon
+				end,
+				order = 40.1
+			},
 			PvPIconOffsetX = {
 				type = "range",
 				name = "PvP Icon Horizontal Offset",
@@ -200,7 +228,7 @@ end
 				end,
 				set = function(v)
 					self.moduleSettings.PvPIconOffset['x'] = v
-					self:SetTexLoc(self.frame.PvPIcon, self.moduleSettings.PvPIconOffset['x'], self.moduleSettings.PvPIconOffset['y'])
+					self:SetTexLoc(self.barFrame.PvPIcon, self.moduleSettings.PvPIconOffset['x'], self.moduleSettings.PvPIconOffset['y'])
 				end,
 				disabled = function()
 					return not self.moduleSettings.enabled or not self.moduleSettings.showPvPIcon
@@ -219,7 +247,7 @@ end
 				end,
 				set = function(v)
 					self.moduleSettings.PvPIconOffset['y'] = v
-					self:SetTexLoc(self.frame.PvPIcon, self.moduleSettings.PvPIconOffset['x'], self.moduleSettings.PvPIconOffset['y'])
+					self:SetTexLoc(self.barFrame.PvPIcon, self.moduleSettings.PvPIconOffset['x'], self.moduleSettings.PvPIconOffset['y'])
 				end,
 				disabled = function()
 					return not self.moduleSettings.enabled or not self.moduleSettings.showPvPIcon
@@ -238,12 +266,18 @@ end
 				end,
 				set = function(v)
 					self.moduleSettings.PvPIconScale = v
-					self:SetTexScale(self.frame.PvPIcon, 20, 20, v)
+					self:SetTexScale(self.barFrame.PvPIcon, 20, 20, v)
 				end,
 				disabled = function()
 					return not self.moduleSettings.enabled or not self.moduleSettings.showPvPIcon
 				end,
 				order = 43
+			},
+
+			RaidHeader = {
+				type = 'header',
+				name = 'Raid icon',
+				order = 49.9
 			},
 
 			showRaidIcon = {
@@ -296,7 +330,7 @@ end
 					self:Redraw()
 				end,
 				disabled = function()
-					return not self.moduleSettings.enabled
+					return not self.moduleSettings.enabled or not self.moduleSettings.showRaidIcon
 				end,
 				order = 53
 			},
@@ -317,9 +351,35 @@ end
 					self:Redraw()
 				end,
 				disabled = function()
-					return not self.moduleSettings.enabled
+					return not self.moduleSettings.enabled or not self.moduleSettings.showRaidIcon
 				end,
 				order = 54
+			},
+
+			raidIconScale = {
+				type = "range",
+				name = "Raid Icon Scale",
+				desc = "How much to scale the raid icon",
+				min = 0.05,
+				max = 2,
+				step = 0.05,
+				get = function()
+					return self.moduleSettings.raidIconScale
+				end,
+				set = function(v)
+					self.moduleSettings.raidIconScale = v
+					self:SetTexScale(self.frame.raidIcon, self.raidIconWidth, self.raidIconHeight, v)
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.showRaidIcon
+				end,
+				order = 55
+			},
+
+			ClassificationHeader = {
+				type = 'header',
+				name = 'Classification icon',
+				order = 59.9
 			},
 
 			showClassificationIcon = {
@@ -339,6 +399,23 @@ end
 				order = 60
 			},
 
+			classIconOnTop = {
+				type = "toggle",
+				name = "Draw Elite Icon On Top",
+				desc = "Whether to draw the elite icon in front of or behind this bar",
+				get = function()
+					return self.moduleSettings.classIconOnTop
+				end,
+				set = function(value)
+					self.moduleSettings.classIconOnTop = value
+					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.showClassificationIcon
+				end,
+				order = 60.1
+			},
+
 			classIconXOffset = {
 				type = "range",
 				name = "Elite Icon X Offset",
@@ -354,7 +431,7 @@ end
 					self:Redraw()
 				end,
 				disabled = function()
-					return not self.moduleSettings.enabled
+					return not self.moduleSettings.enabled or not self.moduleSettings.showClassificationIcon
 				end,
 				order = 61
 			},
@@ -374,10 +451,30 @@ end
 					self:Redraw()
 				end,
 				disabled = function()
-					return not self.moduleSettings.enabled
+					return not self.moduleSettings.enabled or not self.moduleSettings.showClassificationIcon
 				end,
 				order = 62
-			}
+			},
+
+			classIconScale = {
+				type = "range",
+				name = "Elite Icon Scale",
+				desc = "How much to scale the elite icon",
+				min = 0.05,
+				max = 2,
+				step = 0.05,
+				get = function()
+					return self.moduleSettings.classIconScale
+				end,
+				set = function(v)
+					self.moduleSettings.classIconScale = v
+					self:SetTexScale(self.barFrame.classIcon, self.texWidth, self.texHeight, self.moduleSettings.scale / 3.0 * self.moduleSettings.classIconScale)
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.showClassificationIcon
+				end,
+				order = 63
+			},
 		}
 	}
 
@@ -433,26 +530,32 @@ function IceTargetHealth.prototype:Update(unit)
 
 	local classification = UnitClassification(self.unit);
 	if not self.moduleSettings.showClassificationIcon then
-		self:DestroyTexFrame(self.frame.classIcon)
+		self:DestroyTexFrame(self.barFrame.classIcon)
 	else
-		if not self.frame.classIcon then
-			self.frame.classIcon = self:CreateTexCoord(self.frame.classIcon, self.EliteTexture, self.texWidth, self.texHeight,
-						self.moduleSettings.scale / 3.0, self.classLeft, self.classRight, self.classTop, self.classBottom)
+		if not self.barFrame.classIcon then
+			self.barFrame.classIcon = self:CreateTexCoord(self.barFrame.classIcon, self.EliteTexture, self.texWidth, self.texHeight,
+						self.moduleSettings.scale / 3.0 * self.moduleSettings.classIconScale, self.classLeft, self.classRight, self.classTop, self.classBottom)
 		end
 
-		self:SetTexLoc(self.frame.classIcon, self.moduleSettings.classIconOffset['x'], self.moduleSettings.classIconOffset['y'])
-		self.frame.classIcon:Show()
-		self.frame.classIcon:SetAlpha(self.alpha == 0 and 0 or math.min(1, self.alpha + 0.2))
+		if self.moduleSettings.classIconOnTop then
+			self.barFrame.classIcon:SetDrawLayer("OVERLAY")
+		else
+			self.barFrame.classIcon:SetDrawLayer("BACKGROUND")
+		end
+
+		self:SetTexLoc(self.barFrame.classIcon, self.moduleSettings.classIconOffset['x'], self.moduleSettings.classIconOffset['y'])
+		self.barFrame.classIcon:Show()
+		self.barFrame.classIcon:SetAlpha(self.alpha == 0 and 0 or math.min(1, self.alpha + 0.2))
 
 		if configMode or IceHUD.IceCore:IsInConfigMode() or classification == "worldboss" or classification == "elite" then
-			self.frame.classIcon:SetTexture(self.EliteTexture)
+			self.barFrame.classIcon:SetTexture(self.EliteTexture)
 		elseif classification == "rareelite" then
-			self.frame.classIcon:SetTexture(self.RareEliteTexture)
+			self.barFrame.classIcon:SetTexture(self.RareEliteTexture)
 		elseif classification == "rare" then
-			self.frame.classIcon:SetTexture(self.RareTexture)
+			self.barFrame.classIcon:SetTexture(self.RareTexture)
 		else
-			self:DestroyTexFrame(self.frame.classIcon)
-			self.frame.classIcon:Hide()
+			self:DestroyTexFrame(self.barFrame.classIcon)
+			self.barFrame.classIcon:Hide()
 		end
 	end
 
@@ -503,7 +606,7 @@ end
 
 function IceTargetHealth.prototype:CreateTexCoord(texframe, icon, width, height, scale, left, right, top, bottom)
 	if not texframe then
-		texframe = self.frame:CreateTexture(nil, "BACKGROUND")
+		texframe = self.barFrame:CreateTexture(nil, "BACKGROUND")
 	end
 
 	texframe:SetTexture(icon)
@@ -554,8 +657,7 @@ function IceTargetHealth.prototype:CreateRaidIconFrame()
 	end
 
 	self:SetRaidIconPlacement()
-	self.frame.raidIcon:SetWidth(16)
-	self.frame.raidIcon:SetHeight(16)
+	self:SetTexScale(self.frame.raidIcon, self.raidIconWidth, self.raidIconHeight, self.moduleSettings.raidIconScale)
 
 	self.frame.raidIcon.icon:SetAllPoints(self.frame.raidIcon)
 	SetRaidTargetIconTexture(self.frame.raidIcon.icon, 0)
@@ -626,22 +728,28 @@ function IceTargetHealth.prototype:CheckPvP()
 
 	if pvpMode then
 		if configMode or self.moduleSettings.showPvPIcon then
-			self.frame.PvPIcon = self:CreateTexCoord(self.frame.PvPIcon, "Interface\\TargetingFrame\\UI-PVP-"..pvpMode, 20, 20,
+			self.barFrame.PvPIcon = self:CreateTexCoord(self.barFrame.PvPIcon, "Interface\\TargetingFrame\\UI-PVP-"..pvpMode, 20, 20,
 						self.moduleSettings.PvPIconScale, minx, maxx, miny, maxy)
-			self:SetTexLoc(self.frame.PvPIcon, self.moduleSettings.PvPIconOffset['x'], self.moduleSettings.PvPIconOffset['y'])
-		elseif self.frame.PvPIcon and self.frame.PvPIcon:IsVisible() then
-			self.frame.PvPIcon = self:DestroyTexFrame(self.frame.PvPIcon)
+			self:SetTexLoc(self.barFrame.PvPIcon, self.moduleSettings.PvPIconOffset['x'], self.moduleSettings.PvPIconOffset['y'])
+
+			if self.moduleSettings.PvPIconOnTop then
+				self.barFrame.PvPIcon:SetDrawLayer("OVERLAY")
+			else
+				self.barFrame.PvPIcon:SetDrawLayer("BACKGROUND")
+			end
+		elseif self.barFrame.PvPIcon and self.barFrame.PvPIcon:IsVisible() then
+			self.barFrame.PvPIcon = self:DestroyTexFrame(self.barFrame.PvPIcon)
 		end
 	else
-		if self.frame.PvPIcon and self.frame.PvPIcon:IsVisible() then
-			self.frame.PvPIcon = self:DestroyTexFrame(self.frame.PvPIcon)
+		if self.barFrame.PvPIcon and self.barFrame.PvPIcon:IsVisible() then
+			self.barFrame.PvPIcon = self:DestroyTexFrame(self.barFrame.PvPIcon)
 		end
 	end
 end
 
 function IceTargetHealth.prototype:SetIconAlpha()
-	if self.frame.PvPIcon then
-		self.frame.PvPIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
+	if self.barFrame.PvPIcon then
+		self.barFrame.PvPIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
 	end
 end
 
