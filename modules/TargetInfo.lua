@@ -7,6 +7,8 @@ local DogTag = nil
 local target = "target"
 local internal = "internal"
 
+local ValidAnchors = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", "CENTER" }
+
 TargetInfo.prototype.buffSize = nil
 TargetInfo.prototype.ownBuffSize = nil
 TargetInfo.prototype.width = nil
@@ -87,6 +89,12 @@ end
 -- OVERRIDE
 function TargetInfo.prototype:GetOptions()
 	local opts = TargetInfo.super.prototype.GetOptions(self)
+
+	opts["targetInfoHeader"] = {
+		type = 'header',
+		name = 'Look and Feel',
+		order = 30.9
+	}
 
 	opts["vpos"] = {
 		type = "range",
@@ -188,7 +196,13 @@ function TargetInfo.prototype:GetOptions()
 		isPercent = true,
 		order = 33
 	}
-	
+
+	opts["buffHeader"] = {
+		type = 'header',
+		name = 'Buff/Debuff Settings',
+		order = 33.9
+	}
+
 	opts["buffSize"] = {
 		type = 'range',
 		name = 'Buff size',
@@ -266,6 +280,176 @@ function TargetInfo.prototype:GetOptions()
 		end,
 		order = 37
 	}
+
+	opts["buffLocHeader"] = {
+		type = 'header',
+		name = 'Buff placement settings',
+		order = 37.01
+	}
+
+	opts["buffGrowDirection"] = {
+		type = 'text',
+		name = 'Buff grow direction',
+		desc = 'Which direction the buffs should grow from the anchor point',
+		validate = { "Left", "Right" },
+		get = function()
+			return self.moduleSettings.buffGrowDirection
+		end,
+		set = function(v)
+			self.moduleSettings.buffGrowDirection = v
+			self:CreateBuffFrame()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 37.1
+	}
+
+	opts["buffAnchorTo"] = {
+		type = 'text',
+		name = 'Buff anchor to',
+		desc = 'The point on the TargetInfo frame that the buff frame gets connected to',
+		validate = ValidAnchors,
+		get = function()
+			return self.moduleSettings.buffAnchorTo
+		end,
+		set = function(v)
+			self.moduleSettings.buffAnchorTo = v
+			self:CreateBuffFrame()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 37.2
+	}
+
+	opts["buffXOffset"] = {
+		type = 'range',
+		name = 'Buff horizontal offset',
+		desc = 'How far horizontally the buff frame should be offset from the anchor',
+		min = -500,
+		max = 500,
+		step = 1,
+		get = function()
+			return self.moduleSettings.buffOffset['x']
+		end,
+		set = function(v)
+			self.moduleSettings.buffOffset['x'] = v
+			self:CreateBuffFrame()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 37.3
+	}
+
+	opts["buffYOffset"] = {
+		type = 'range',
+		name = 'Buff vertical offset',
+		desc = 'How far vertically the buff frame should be offset from the anchor',
+		min = -500,
+		max = 500,
+		step = 1,
+		get = function()
+			return self.moduleSettings.buffOffset['y']
+		end,
+		set = function(v)
+			self.moduleSettings.buffOffset['y'] = v
+			self:CreateBuffFrame()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 37.4
+	}
+
+	opts["debuffLocHeader"] = {
+		type = 'header',
+		name = 'Debuff placement settings',
+		order = 37.801
+	}
+
+	opts["debuffGrowDirection"] = {
+		type = 'text',
+		name = 'Debuff grow direction',
+		desc = 'Which direction the debuffs should grow from the anchor point',
+		validate = { "Left", "Right" },
+		get = function()
+			return self.moduleSettings.debuffGrowDirection
+		end,
+		set = function(v)
+			self.moduleSettings.debuffGrowDirection = v
+			self:CreateDebuffFrame()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 37.81
+	}
+
+	opts["debuffAnchorTo"] = {
+		type = 'text',
+		name = 'Debuff anchor to',
+		desc = 'The point on the TargetInfo frame that the debuff frame gets connected to',
+		validate = ValidAnchors,
+		get = function()
+			return self.moduleSettings.debuffAnchorTo
+		end,
+		set = function(v)
+			self.moduleSettings.debuffAnchorTo = v
+			self:CreateDebuffFrame()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 37.82
+	}
+
+	opts["debuffXOffset"] = {
+		type = 'range',
+		name = 'Debuff horizontal offset',
+		desc = 'How far horizontally the debuff frame should be offset from the anchor',
+		min = -500,
+		max = 500,
+		step = 1,
+		get = function()
+			return self.moduleSettings.debuffOffset['x']
+		end,
+		set = function(v)
+			self.moduleSettings.debuffOffset['x'] = v
+			self:CreateDebuffFrame()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 37.83
+	}
+
+	opts["debuffYOffset"] = {
+		type = 'range',
+		name = 'Debuff vertical offset',
+		desc = 'How far vertically the debuff frame should be offset from the anchor',
+		min = -500,
+		max = 500,
+		step = 1,
+		get = function()
+			return self.moduleSettings.debuffOffset['y']
+		end,
+		set = function(v)
+			self.moduleSettings.debuffOffset['y'] = v
+			self:CreateDebuffFrame()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 37.84
+	}
+
+	opts["mouseHeader"] = {
+		type = 'header',
+		name = 'Mouse settings',
+		order = 37.9
+	}
 	
 	opts["mouseTarget"] = {
 		type = 'toggle',
@@ -299,6 +483,12 @@ function TargetInfo.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 39
+	}
+
+	opts["textHeader"] = {
+		type = 'header',
+		name = 'Text Settings',
+		order = 39.01
 	}
 
 	opts["line1Tag"] = {
@@ -376,6 +566,12 @@ function TargetInfo.prototype:GetDefaultSettings()
 	defaults["zoom"] = 0.08
 	defaults["buffSize"] = 20
 	defaults["ownBuffSize"] = 20
+	defaults["buffOffset"] = {x=-10,y=0}
+	defaults["buffAnchorTo"] = "TOPLEFT"
+	defaults["buffGrowDirection"] = "Left"
+	defaults["debuffOffset"] = {x=10,y=0}
+	defaults["debuffAnchorTo"] = "TOPRIGHT"
+	defaults["debuffGrowDirection"] = "Right"
 	defaults["mouseTarget"] = true
 	defaults["mouseBuff"] = true
 	defaults["filter"] = "Never"
@@ -590,15 +786,17 @@ function TargetInfo.prototype:CreateBuffFrame(redraw)
 		self.frame.buffFrame:SetWidth(1)
 		self.frame.buffFrame:SetHeight(1)
 	
-		self.frame.buffFrame:ClearAllPoints()
-		self.frame.buffFrame:SetPoint("TOPRIGHT", self.frame, "TOPLEFT", -10, 0)
 		self.frame.buffFrame:Show()
 
 		self.frame.buffFrame.buffs = {}
 	end
+
+	self.frame.buffFrame:ClearAllPoints()
+	self.frame.buffFrame:SetPoint("TOPRIGHT", self.frame, self.moduleSettings.buffAnchorTo, self.moduleSettings.buffOffset['x'], self.moduleSettings.buffOffset['y'])
 	
 	if (not redraw) then
-		self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, -1, self.frame.buffFrame.buffs, "buff")
+		local direction = self.moduleSettings.buffGrowDirection == "Left" and -1 or 1
+		self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, direction, self.frame.buffFrame.buffs, "buff")
 	end
 end
 
@@ -611,15 +809,17 @@ function TargetInfo.prototype:CreateDebuffFrame(redraw)
 		self.frame.debuffFrame:SetWidth(1)
 		self.frame.debuffFrame:SetHeight(1)
 	
-		self.frame.debuffFrame:ClearAllPoints()
-		self.frame.debuffFrame:SetPoint("TOPLEFT", self.frame, "TOPRIGHT", 10, 0)
 		self.frame.debuffFrame:Show()
 
 		self.frame.debuffFrame.buffs = {}
 	end
+
+	self.frame.debuffFrame:ClearAllPoints()
+	self.frame.debuffFrame:SetPoint("TOPLEFT", self.frame, self.moduleSettings.debuffAnchorTo, self.moduleSettings.debuffOffset['x'], self.moduleSettings.debuffOffset['y'])
 	
 	if (not redraw) then
-		self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame, 1, self.frame.debuffFrame.buffs, "debuff")
+		local direction = self.moduleSettings.debuffGrowDirection == "Left" and -1 or 1
+		self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame, direction, self.frame.debuffFrame.buffs, "debuff")
 	end
 end
 
@@ -793,7 +993,8 @@ function TargetInfo.prototype:UpdateBuffs()
 		end
 	end
 
-	self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, -1, self.frame.buffFrame.buffs, "buff")
+	local direction = self.moduleSettings.buffGrowDirection == "Left" and -1 or 1
+	self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, direction, self.frame.buffFrame.buffs, "buff")
 
 	for i = 1, IceCore.BuffLimit do
 		local buffName, buffRank, buffTexture, buffApplications, debuffDispelType,
@@ -840,7 +1041,8 @@ function TargetInfo.prototype:UpdateBuffs()
 		end
 	end
 
-	self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame, 1, self.frame.debuffFrame.buffs, "debuff")
+	local direction = self.moduleSettings.debuffGrowDirection == "Left" and -1 or 1
+	self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame, direction, self.frame.debuffFrame.buffs, "debuff")
 end
 
 
