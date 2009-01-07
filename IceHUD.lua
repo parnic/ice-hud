@@ -677,6 +677,10 @@ end
 
 -- rounding stuff
 function IceHUD:MathRound(num, idp)
+	if not num then
+		return nil
+	end
+
 	local mult = 10^(idp or 0)
 	return math.floor(num  * mult + 0.5) / mult
 end

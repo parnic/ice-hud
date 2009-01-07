@@ -36,6 +36,7 @@ function IHUD_Threat.prototype:GetDefaultSettings()
 	settings["aggroAlpha"] = 0.7
 	settings["usesDogTagStrings"] = false
 	settings["onlyShowInGroups"] = true
+	settings["showScaledThreat"] = false
 	return settings
 end
 
@@ -97,6 +98,23 @@ function IHUD_Threat.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 27.6
+	}
+
+	opts["showScaledThreat"] = {
+		type = 'toggle',
+		name = 'Show scaled threat',
+		desc = 'Whether to show threat in scaled values or raw values. Scaled threat means that you will pull aggro when it hits 100%. Raw threat means you will pull aggro at either 110% (melee) or 130% (ranged). Omen uses raw threat which can cause this mod to disagree with Omen if it is in scaled mode.',
+		get = function()
+			return self.moduleSettings.showScaledThreat
+		end,
+		set = function(v)
+			self.moduleSettings.showScaledThreat = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 27.7
 	}
 
 	return opts
@@ -193,9 +211,19 @@ function IHUD_Threat.prototype:Update(unit)
 	local isTanking, threatState, scaledPercent, rawPercent = UnitDetailedThreatSituation("player", "target")
 	local scaledPercentZeroToOne
 
-	if not self.combat and scaledPercent == 0 then
+	if not self.combat and (scaledPercent == 0 or rawPercent == 0) then
 		self:Show(false)
 		return
+	end
+
+	if not rawPercent then
+		rawPercent = 0
+	end
+
+	if rawPercent < 0 then
+		rawPercent = 0
+	elseif isTanking then
+		rawPercent = 100
 	end
 
 	if not threatState or not scaledPercent or not rawPercent then
@@ -204,13 +232,17 @@ function IHUD_Threat.prototype:Update(unit)
 
 		IceHUD:Debug( "Threat: nil threat on valid target" )
 	else
-		scaledPercentZeroToOne = scaledPercent / 100
+		if self.moduleSettings.showScaledThreat then
+			scaledPercentZeroToOne = scaledPercent / 100
+		else
+			scaledPercentZeroToOne = rawPercent / 100
+		end
 
 		IceHUD:Debug( "isTanking="..(isTanking or "nil").." threatState="..(threatState or "nil").." scaledPercent="..(scaledPercent or "nil").." rawPercent="..(rawPercent or "nil") )
 	end
 	
 	-- set percentage text
-	self:SetBottomText1( IceHUD:MathRound(scaledPercent) .. "%" )
+	self:SetBottomText1( IceHUD:MathRound(self.moduleSettings.showScaledThreat and scaledPercent or rawPercent) .. "%" )
 	self:SetBottomText2()
 
 	-- Parnic: threat lib is no longer used in wotlk
