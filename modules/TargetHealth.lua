@@ -57,6 +57,7 @@ function IceTargetHealth.prototype:GetDefaultSettings()
 	settings["PvPIconOffset"] = {x=23, y=11}
 	settings["PvPIconScale"] = 1.0
 	settings["PvPIconOnTop"] = false
+	settings["allowMouseInteraction"] = false
 
 	return settings
 end
@@ -104,6 +105,24 @@ function IceTargetHealth.prototype:GetOptions()
 		order = 42
 	}
 
+	opts["allowClickTarget"] = {
+		type = 'toggle',
+		name = 'Allow click-targeting',
+		desc = 'Whether or not to allow click targeting/casting and the target drop-down menu for this bar (Note: does not work properly with HiBar, have to click near the base of the bar)',
+		get = function()
+			return self.moduleSettings.allowMouseInteraction
+		end,
+		set = function(v)
+			self.moduleSettings.allowMouseInteraction = v
+			self:CreateBackground(true)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		usage = '',
+		order = 43
+	}
+
 	opts["scaleHealthColor"] = {
 		type = "toggle",
 		name = "Color bar by health %",
@@ -118,7 +137,7 @@ function IceTargetHealth.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 43
+		order = 44
 	}
 
 if not IceHUD.IceCore:ShouldUseDogTags() then
@@ -503,13 +522,72 @@ function IceTargetHealth.prototype:Enable(core)
 	self:CreateRaidIconFrame()
 
 	self:Update(self.unit)
+
+	RegisterUnitWatch(self.frame)
 end
 
 
 function IceTargetHealth.prototype:Disable(core)
 	IceTargetHealth.super.prototype.Disable(self, core)
+
+	UnregisterUnitWatch(self.frame)
 end
 
+
+function IceTargetHealth.prototype:CreateBackground(redraw)
+	IceTargetHealth.super.prototype.CreateBackground(self)
+
+	if not self.frame.button then
+		self.frame.button = CreateFrame("Button", "IceHUD_TargetClickFrame", self.frame, "SecureUnitButtonTemplate")
+	end
+
+	self.frame.button:ClearAllPoints()
+	-- Parnic - kinda hacky, but in order to fit this region to multiple types of bars, we need to do this...
+	--          would be nice to define this somewhere in data, but for now...here we are
+	if self.settings.barTexture == "HiBar" then
+		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
+		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
+	else
+		if self.moduleSettings.side == IceCore.Side.Left then
+			self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", -6, 0)
+			self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth() / 3, 0)
+		else
+			self.frame.button:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 6, 0)
+			self.frame.button:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth() / 1.5, 0)
+		end
+	end
+
+	self.frame.button.menu = function()
+		ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor");
+	end
+
+	self:EnableClickTargeting(self.moduleSettings.allowMouseInteraction)
+end
+
+
+function IceTargetHealth.prototype:EnableClickTargeting(bEnable)
+	if bEnable then
+		self.frame.button:EnableMouse(true)
+		self.frame.button:RegisterForClicks("AnyUp")
+		self.frame.button:SetAttribute("type1", "target")
+		self.frame.button:SetAttribute("type2", "menu")
+		self.frame.button:SetAttribute("unit", self.unit)
+
+		-- set up click casting
+		ClickCastFrames = ClickCastFrames or {}
+		ClickCastFrames[self.frame.button] = true
+
+-- Parnic - debug code for showing the clickable region on this bar
+--		self.frame.button:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
+--						edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+--						tile = false,
+--						insets = { left = 0, right = 0, top = 0, bottom = 0 }});
+--		self.frame.button:SetBackdropColor(0,0,0,1);
+	else
+		self.frame.button:EnableMouse(false)
+		self.frame.button:RegisterForClicks()
+	end
+end
 
 
 function IceTargetHealth.prototype:Update(unit)
@@ -642,6 +720,14 @@ function IceTargetHealth.prototype:DestroyTexFrame(texframe)
 	texframe:ClearAllPoints()
 
 	return texframe
+end
+
+
+function IceTargetHealth.prototype:CreateFrame()
+	IceTargetHealth.super.prototype.CreateFrame(self)
+
+	-- for showing/hiding the frame based on unit visibility
+	self.frame:SetAttribute("unit", self.unit)
 end
 
 
