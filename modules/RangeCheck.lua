@@ -21,15 +21,20 @@ function RangeCheck.prototype:Enable(core)
 
 	if IceHUD.IceCore:ShouldUseDogTags() then
 		DogTag = AceLibrary("LibDogTag-3.0")
+		self:RegisterFontStrings()
+	else
+		self:ScheduleRepeatingEvent(self.elementName, self.UpdateRange, 0.1, self)
 	end
-
-	self:RegisterFontStrings()
 end
 
 function RangeCheck.prototype:Disable(core)
 	RangeCheck.super.prototype.Disable(self, core)
 
-	self:UnregisterFontStrings()
+	if DogTag then
+		self:UnregisterFontStrings()
+	else
+		self:CancelScheduledEvent(self.elementName)
+	end
 end
 
 function RangeCheck.prototype:GetDefaultSettings()
@@ -89,7 +94,7 @@ function RangeCheck.prototype:GetOptions()
 	opts["rangeString"] = {
 		type = 'text',
 		name = 'Range string',
-		desc = 'DogTag-formatted string to use for the range display\n\nType /dogtag for a list of available tags',
+		desc = 'DogTag-formatted string to use for the range display (only available if LibDogTag is being used)\n\nType /dogtag for a list of available tags',
 		get = function()
 			return self.moduleSettings.rangeString
 		end,
@@ -100,7 +105,7 @@ function RangeCheck.prototype:GetOptions()
 			self:Redraw()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not DogTag or not RangeCheck
+			return not self.moduleSettings.enabled or not DogTag or not LibRange
 		end,
 		usage = '',
 		order = 33
@@ -136,7 +141,7 @@ function RangeCheck.prototype:CreateFrame(redraw)
 end
 
 function RangeCheck.prototype:RegisterFontStrings()
-	if DogTag and RangeCheck then
+	if DogTag and LibRange then
 		DogTag:AddFontString(self.frame.rangeFontString, self.frame, self.moduleSettings.rangeString, "Unit", { unit = "target" })
 		DogTag:UpdateAllForFrame(self.frame)
 	end
@@ -145,6 +150,24 @@ end
 function RangeCheck.prototype:UnregisterFontStrings()
 	if DogTag then
 		DogTag:RemoveFontString(self.frame.rangeFontString)
+	end
+end
+
+-- this function is called every 0.1 seconds only if LibDogTag is not being used
+function RangeCheck.prototype:UpdateRange()
+	if LibRange and UnitExists("target") then
+		local min, max = LibRange:getRange("target")
+		if min then
+			if max then
+				self.frame.rangeFontString:SetText("Range: " .. min .. " - " .. max)
+			else
+				self.frame.rangeFontString:SetText("Range: " .. min .. "+")
+			end
+		else
+			self.frame.rangeFontString:SetText("Unknown")
+		end
+	else
+		self.frame.rangeFontString:SetText()
 	end
 end
 
