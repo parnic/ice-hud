@@ -30,7 +30,7 @@ function HungerForBlood.prototype:Enable(core)
 		self:RegisterEvent("PLAYER_AURAS_CHANGED", "UpdateHungerForBlood")
 	end
 
-	self:Show(false)
+	self:Show(true)
 
 	self:SetBottomText1("")
 	self:SetBottomText2("")
@@ -59,7 +59,6 @@ function HungerForBlood.prototype:GetDefaultSettings()
     settings["upperText"]="HfB:"
     settings["usesDogTagStrings"] = false
     settings["allowMouseInteraction"] = true
-    settings["allowMouseInteractionCombat"] = true
     settings["lockLowerFontAlpha"] = false
     settings["lowerTextString"] = ""
     settings["lowerTextVisible"] = false
@@ -82,38 +81,25 @@ function HungerForBlood.prototype:GetOptions()
 		end,
 		set = function(v)
 			self.moduleSettings.allowMouseInteraction = v
-			self:CreateBackground(true)
+			self:CreateFrame()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end
 	}
---[[
-	opts["allowClickCastCombat"] = {
-		type = 'toggle',
-		name = 'Allow click casting in combat',
-		desc = 'Whether or not to allow click casting of Hunger For Blood in combat',
-		get = function()
-			return self.moduleSettings.allowMouseInteractionCombat
-		end,
-		set = function(v)
-			self.moduleSettings.allowMouseInteractionCombat = v
-			self:CreateBackground(true)
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.allowMouseInteraction
-		end
-	}
-]]
+
     return opts
 end
 
 function HungerForBlood.prototype:CreateFrame()
 	HungerForBlood.super.prototype.CreateFrame(self)
+
 	if not self.frame.button then
 		self.frame.button = CreateFrame("Button", "IceHUD_HungerForBloodClickFrame", self.frame, "SecureActionButtonTemplate")
 	end
+
 	self.frame.button:ClearAllPoints()
+
 	if self.settings.barTexture == "HiBar" then
 		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
 		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
@@ -198,7 +184,7 @@ function HungerForBlood.prototype:UpdateHungerForBlood(unit, fromUpdate)
             self.frame:SetScript("OnUpdate", function() self:UpdateHungerForBlood(self.unit, true) end)
         end
 
-        self:Show(true)
+--        self:Show(true)
         if not remaining then
             remaining = hfbEndTime - now
         end
@@ -211,7 +197,8 @@ function HungerForBlood.prototype:UpdateHungerForBlood(unit, fromUpdate)
         formatString = self.moduleSettings.upperText or ''
     else
 		self:UpdateBar(0, "HungerForBlood")
-		self:Show(false)
+-- Parnic: removing this. frames can't be dynamically shown/hidden in combat unless they're tied directly to a unit
+--		self:Show(false)
     end
 
     -- somewhat redundant, but we also need to check potential remaining time
