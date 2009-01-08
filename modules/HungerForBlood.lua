@@ -203,15 +203,15 @@ function HungerForBlood.prototype:UpdateHungerForBlood(unit, fromUpdate)
 
     -- somewhat redundant, but we also need to check potential remaining time
     if (remaining ~= nil) then
-        self:SetBottomText1(self.moduleSettings.upperText .. tostring(floor(remaining or 0)) .. "s")
-		if (hfbBuffCount ~= nil) then
-			self:SetBottomText2("+" .. (hfbBuffCount * 3) .. "% dmg")
-		else
-			self:SetBottomText2("")
-		end
+	self:SetBottomText1(self.moduleSettings.upperText .. tostring(floor(remaining or 0)) .. "s")
+	if (hfbBuffCount ~= nil) then
+		self:SetBottomText2("+" .. (hfbBuffCount * 3) .. "% dmg")
 	else
+		self:SetBottomText2("")
+	end
+    else
 		hfbBuffCount = 0
-		self:SetBottomText1(self.moduleSettings.upperText .. "0s")
+		self:SetBottomText1("")
 		self:SetBottomText2("")
     end
 end
