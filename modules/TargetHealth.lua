@@ -598,10 +598,10 @@ function IceTargetHealth.prototype:Update(unit)
 	end
 
 	if unit and not (UnitExists(unit)) then
-		self:Show(false)
+--		self:Show(false)
 		return
 	else	
-		self:Show(true)
+--		self:Show(true)
 	end
 
 	self:UpdateRaidTargetIcon()
