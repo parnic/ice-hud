@@ -514,7 +514,7 @@ function TargetInfo.prototype:GetOptions()
 	opts["line2Tag"] = {
 		type = 'text',
 		name = 'Line 2 tag',
-		desc = 'DogTag-formatted string to use for the middle text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags',
+		desc = 'DogTag-formatted string to use for the second text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags',
 		get = function()
 			return self.moduleSettings.line2Tag
 		end,
@@ -534,7 +534,7 @@ function TargetInfo.prototype:GetOptions()
 	opts["line3Tag"] = {
 		type = 'text',
 		name = 'Line 3 tag',
-		desc = 'DogTag-formatted string to use for the bottom text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags',
+		desc = 'DogTag-formatted string to use for the third text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags',
 		get = function()
 			return self.moduleSettings.line3Tag
 		end,
@@ -549,6 +549,26 @@ function TargetInfo.prototype:GetOptions()
 		end,
 		usage = '',
 		order = 39.3
+	}
+
+	opts["line4Tag"] = {
+		type = 'text',
+		name = 'Line 4 tag',
+		desc = 'DogTag-formatted string to use for the bottom text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags',
+		get = function()
+			return self.moduleSettings.line4Tag
+		end,
+		set = function(v)
+			v = DogTag:CleanCode(v)
+			self.moduleSettings.line4Tag = v
+			self:RegisterFontStrings()
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or DogTag == nil
+		end,
+		usage = '',
+		order = 39.4
 	}
 
 	return opts
@@ -580,6 +600,7 @@ function TargetInfo.prototype:GetDefaultSettings()
 --	defaults["line2Tag"] = "[Level:DifficultyColor] [[IsPlayer ? Race ! CreatureType]:ClassColor] [[IsPlayer ? Class]:ClassColor] [[~PvP ? \"PvE\" ! \"PvP\"]:HostileColor] [IsLeader ? \"Leader\":Yellow] [InCombat ? \"Combat\":Red] [Classification]"
 	defaults["line2Tag"] = "[Level:DifficultyColor] [SmartRace:ClassColor] [SmartClass:ClassColor] [PvPIcon] [IsLeader ? 'Leader':Yellow] [InCombat ? 'Combat':Red] [Classification]"
 	defaults["line3Tag"] = "[Guild:Angle]"
+	defaults["line4Tag"] = ""
 	defaults["myTagVersion"] = 2
 	defaults["alwaysFullAlpha"] = true
 
@@ -610,6 +631,13 @@ function TargetInfo.prototype:RegisterFontStrings()
 				DogTag:RemoveFontString(self.frame.targetGuild)
 			end
 		end
+		if self.frame.targetExtra then
+			if self.moduleSettings.line4Tag ~= '' then
+				DogTag:AddFontString(self.frame.targetExtra, self.frame, self.moduleSettings.line4Tag, "Unit", { unit = target })
+			else
+				DogTag:RemoveFontString(self.frame.targetExtra)
+			end
+		end
 
 		self:TargetChanged()
 		DogTag:UpdateAllForFrame(self.frame)
@@ -621,6 +649,7 @@ function TargetInfo.prototype:UnregisterFontStrings()
 		DogTag:RemoveFontString(self.frame.targetName)
 		DogTag:RemoveFontString(self.frame.targetInfo)
 		DogTag:RemoveFontString(self.frame.targetGuild)
+		DogTag:RemoveFontString(self.frame.targetExtra)
 	end
 end
 
@@ -709,6 +738,7 @@ function TargetInfo.prototype:CreateFrame(redraw)
 	self:CreateTextFrame()
 	self:CreateInfoTextFrame()
 	self:CreateGuildTextFrame()
+	self:CreateExtraTextFrame()
 
 	self:CreateBuffFrame(redraw)
 	self:CreateDebuffFrame(redraw)
@@ -755,6 +785,18 @@ function TargetInfo.prototype:CreateGuildTextFrame()
 
 	self.frame.targetGuild:SetPoint("TOP", self.frame, "BOTTOM", 0, 0)
 	self.frame.targetGuild:Show()
+end
+
+
+function TargetInfo.prototype:CreateExtraTextFrame()
+	self.frame.targetExtra = self:FontFactory(self.moduleSettings.fontSize, nil, self.frame.targetExtra)
+
+	self.frame.targetExtra:SetHeight(14)
+	self.frame.targetExtra:SetJustifyH("CENTER")
+	self.frame.targetExtra:SetJustifyV("TOP")
+
+	self.frame.targetExtra:SetPoint("TOP", self.frame, "BOTTOM", 0, -16)
+	self.frame.targetExtra:Show()
 end
 
 
@@ -1081,6 +1123,7 @@ function TargetInfo.prototype:TargetChanged()
 		self.frame.targetName:SetText()
 		self.frame.targetInfo:SetText()
 		self.frame.targetGuild:SetText()
+		self.frame.targetExtra:SetText()
 
 		self:UpdateBuffs()
 		self:UpdateRaidTargetIcon()
@@ -1232,6 +1275,7 @@ function TargetInfo.prototype:Update(unit)
 		DogTag:UpdateFontString(self.frame.targetName)
 		DogTag:UpdateFontString(self.frame.targetInfo)
 		DogTag:UpdateFontString(self.frame.targetGuild)
+		DogTag:UpdateFontString(self.frame.targetExtra)
 	end
 
 	self:UpdateAlpha()
