@@ -58,6 +58,7 @@ function IceTargetHealth.prototype:GetDefaultSettings()
 	settings["PvPIconScale"] = 1.0
 	settings["PvPIconOnTop"] = false
 	settings["allowMouseInteraction"] = false
+	settings["npcHostilityColor"] = false
 
 	return settings
 end
@@ -70,7 +71,7 @@ function IceTargetHealth.prototype:GetOptions()
 	opts["classColor"] = {
 		type = "toggle",
 		name = "Class color bar",
-		desc = "Use class color as the bar color instead of reaction color",
+		desc = "Use class color as the bar color instead of reaction color\n\n(Note: The 'color bar by health %' setting overrides this)",
 		get = function()
 			return self.moduleSettings.classColor
 		end,
@@ -79,9 +80,26 @@ function IceTargetHealth.prototype:GetOptions()
 			self:Update(self.unit)
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or self.moduleSettings.scaleHealthColor
 		end,
 		order = 41
+	}
+
+	opts["npcHostilityColor"] = {
+		type = "toggle",
+		name = "Color NPC's by hostility",
+		desc = "If you are using the 'class color bar' setting above, then enabling this will color NPC's by their hostility toward you since NPC class isn't very helpful or applicable information.",
+		get = function()
+			return self.moduleSettings.npcHostilityColor
+		end,
+		set = function(v)
+			self.moduleSettings.npcHostilityColor = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not self.moduleSettings.classColor or self.moduleSettings.scaleHealthColor
+		end,
+		order = 41.5
 	}
 
 	opts["hideBlizz"] = {
@@ -126,7 +144,7 @@ function IceTargetHealth.prototype:GetOptions()
 	opts["scaleHealthColor"] = {
 		type = "toggle",
 		name = "Color bar by health %",
-		desc = "Colors the health bar from MaxHealthColor to MinHealthColor based on current health %",
+		desc = "Colors the health bar from MaxHealthColor to MinHealthColor based on current health %\n\n(Note: This overrides the 'class color bar' setting. Disable this to use class coloring)",
 		get = function()
 			return self.moduleSettings.scaleHealthColor
 		end,
@@ -647,7 +665,7 @@ function IceTargetHealth.prototype:Update(unit)
 			self.color = "TargetHealthHostile"
 		end
 	
-		if (self.moduleSettings.classColor) then
+		if (self.moduleSettings.classColor) and (not self.moduleSettings.npcHostilityColor or UnitPlayerControlled("target")) then
 			self.color = self.unitClass
 		end
 
