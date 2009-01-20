@@ -298,6 +298,15 @@ end
 
 
 function IceElement.prototype:GetClassColor(class)
+	if type(class) == "table" then
+		local r,g,b = class
+		if r and g and b then
+			return r, g, b
+		else
+			return RAID_CLASS_COLORS["WARRIOR"]
+		end
+	end
+
 	class = string.upper(class)
 	if RAID_CLASS_COLORS and RAID_CLASS_COLORS[class] then
 		return RAID_CLASS_COLORS[class].r, RAID_CLASS_COLORS[class].g, RAID_CLASS_COLORS[class].b
