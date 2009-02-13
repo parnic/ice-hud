@@ -341,7 +341,7 @@ function CastBar.prototype:CreateLagBar()
 		self.lagBar.bar = self.lagBar:CreateTexture(nil, "BACKGROUND")
 	end
 	
-	self.lagBar.bar:SetTexture(IceElement.TexturePath .. self.settings.barTexture .. "BG")
+	self.lagBar.bar:SetTexture(IceElement.TexturePath .. self.settings.barTexture)
 	self.lagBar.bar:SetAllPoints(self.lagBar)
 	
 	self.lagBar:SetStatusBarTexture(self.lagBar.bar)
