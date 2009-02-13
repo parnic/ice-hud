@@ -398,7 +398,7 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 	CastBar.super.prototype.SpellCastChannelStart(self, unit)
 	if (unit ~= self.unit) then return end
 	
-	local lag = GetTime() - self.spellCastSent
+	local lag = GetTime() - (self.spellCastSent or 0)
 	
 	local pos = lag / self.actionDuration
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
