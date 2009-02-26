@@ -68,7 +68,7 @@ function IceUnitBar.prototype:GetOptions()
 	{
 		type = 'range',
 		name =  '|cff22bb22Low Threshold|r',
-		desc = 'Threshold of pulsing the bar (0 means never) (for player applies only to mana, not rage/energy)',
+		desc = 'Threshold of pulsing the bar (0 means never) (for player applies only to mana, not rage/energy/runic power)',
 		get = function()
 			return self.moduleSettings.lowThreshold
 		end,

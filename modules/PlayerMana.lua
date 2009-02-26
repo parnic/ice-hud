@@ -13,6 +13,7 @@ function PlayerMana.prototype:init()
 	self:SetDefaultColor("PlayerMana", 62, 54, 152)
 	self:SetDefaultColor("PlayerRage", 171, 59, 59)
 	self:SetDefaultColor("PlayerEnergy", 218, 231, 31)
+	self:SetDefaultColor("PlayerRunicPower", 62, 54, 152)
 end
 
 
@@ -223,6 +224,8 @@ function PlayerMana.prototype:Update(unit)
 			color = "PlayerRage"
 		elseif (self.manaType == 3) then
 			color = "PlayerEnergy"
+		elseif (self.manaType == 6) then
+			color = "PlayerRunicPower"
 		end
 	end
 	
@@ -261,7 +264,7 @@ end
 
 -- OVERRIDE
 function PlayerMana.prototype:UpdateBar(scale, color, alpha)
-	self.noFlash = (self.manaType ~= 0 and self.manaType ~= 6)
+	self.noFlash = (self.manaType ~= 0)
 
 	PlayerMana.super.prototype.UpdateBar(self, scale, color, alpha)
 end

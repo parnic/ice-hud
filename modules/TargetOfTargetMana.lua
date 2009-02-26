@@ -10,6 +10,7 @@ function TargetTargetMana.prototype:init()
 	self:SetDefaultColor("TargetTargetRage", 235, 44, 26)
 	self:SetDefaultColor("TargetTargetEnergy", 228, 242, 31)
 	self:SetDefaultColor("TargetTargetFocus", 242, 149, 98)
+	self:SetDefaultColor("TargetTargetRunicPower", 52, 64, 221)
 end
 
 function TargetTargetMana.prototype:GetDefaultSettings()
@@ -56,6 +57,8 @@ function TargetTargetMana.prototype:Update(unit)
 		self.color = "TargetTargetFocus"
 	elseif (manaType == 3) then
 		self.color = "TargetTargetEnergy"
+	elseif (manaType == 6) then
+		self.color = "TargetTargetRunicPower"
 	end
 
 	if (self.tapped) then

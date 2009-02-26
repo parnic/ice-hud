@@ -18,6 +18,7 @@ function IceTargetMana.prototype:init(moduleName, unit)
 	self:SetDefaultColor("TargetRage", 235, 44, 26)
 	self:SetDefaultColor("TargetEnergy", 228, 242, 31)
 	self:SetDefaultColor("TargetFocus", 242, 149, 98)
+	self:SetDefaultColor("TargetRunicPower", 52, 64, 221)
 end
 
 
@@ -95,6 +96,8 @@ function IceTargetMana.prototype:Update(unit)
 			self.color = "TargetFocus"
 		elseif (manaType == 3) then
 			self.color = "TargetEnergy"
+		elseif (manaType == 6) then
+			self.color = "TargetRunicPower"
 		end
 
 		if (self.tapped) then
