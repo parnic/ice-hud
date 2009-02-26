@@ -133,7 +133,7 @@ function IceUnitBar.prototype:CreateFlashFrame()
 	end
 
 	self.flashFrame:SetFrameStrata("BACKGROUND")
-	self.flashFrame:SetWidth(self.settings.barWidth)
+	self.flashFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.flashFrame:SetHeight(self.settings.barHeight)
 
 
