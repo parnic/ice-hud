@@ -53,6 +53,8 @@ function IceUnitBar.prototype:GetDefaultSettings()
 	local settings = IceUnitBar.super.prototype.GetDefaultSettings(self)
 
 	settings["lowThreshold"] = 0
+	settings["lowThresholdFlash" ] = true
+	settings["lowThresholdColor"] = false
 	settings["scaleHealthColor"] = true
 	settings["scaleManaColor"] = true
 
@@ -84,6 +86,37 @@ function IceUnitBar.prototype:GetOptions()
 		step = 0.05,
 		isPercent = true,
 		order = 37
+	}
+	opts["lowThresholdFlash"] = {
+		type = 'toggle',
+		name = 'Flash bar below Low Threshold',
+		desc = 'Flashes the bar when it is below the Low Threshold specified above',
+		get = function()
+			return self.moduleSettings.lowThresholdFlash
+		end,
+		set = function(v)
+			self.moduleSettings.lowThresholdFlash = v
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 38
+	}
+	opts["lowThresholdColor"] = {
+		type = "toggle",
+		name = "Low Threshold color",
+		desc = "Colors the bar minColor when % is < lowThreshold (requires scaleColor to be enabled)",
+		get = function()
+			return self.moduleSettings.lowThresholdColor
+		end,
+		set = function(value)
+			self.moduleSettings.lowThresholdColor = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not (self.moduleSettings.scaleHealthColor and self.moduleSettings.scaleManaColor)
+		end,
+		order = 39
 	}
 	
 	return opts
@@ -197,6 +230,21 @@ function IceUnitBar.prototype:Update()
 
 		self.settings.colors["ScaledManaColor"] = self.scaleMPColorInst
 	end
+
+	-- This looks slightly quirky. Basically the easiest way for me to achieve this is to have lowThresholdColor override
+	-- the scaled color. You'll need to switch them both on to get things to work.
+	if( self.moduleSettings.lowThresholdColor ) then
+		if( self.healthPercentage < self.moduleSettings.lowThreshold ) then
+			self.settings.colors[ "ScaledHealthColor" ] = self.settings.colors[ "MinHealthColor" ]
+		else
+			self.settings.colors[ "ScaledHealthColor" ] = self.settings.colors[ "MaxHealthColor" ]
+		end
+		if( self.manaPercentage < self.moduleSettings.lowThreshold ) then
+			self.settings.colors[ "ScaledManaColor" ] = self.settings.colors[ "MinManaColor" ]
+		else
+			self.settings.colors[ "ScaledManaColor" ] = self.settings.colors[ "MaxManaColor" ]
+		end
+	end
 end
 
 
@@ -233,6 +281,7 @@ function IceUnitBar.prototype:UpdateBar(scale, color, alpha)
 	self.flashFrame:SetStatusBarColor(self:GetColor(color))
 	
 	if (self.moduleSettings.lowThreshold > 0 and 
+		self.moduleSettings.lowThresholdFlash and
 		self.moduleSettings.lowThreshold >= scale and self.alive and
 		not self.noFlash) then
 			self.flashFrame:SetScript("OnUpdate", function() self:OnFlashUpdate() end)
