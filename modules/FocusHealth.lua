@@ -267,6 +267,10 @@ function FocusHealth.prototype:Enable(core)
 	self:CreateRaidIconFrame()
 
 	self:Update(self.unit)
+
+	-- for showing/hiding the frame based on unit visibility
+	self.frame:SetAttribute("unit", self.unit)
+	RegisterUnitWatch(self.frame)
 end
 
 function FocusHealth.prototype:CreateBackground()
