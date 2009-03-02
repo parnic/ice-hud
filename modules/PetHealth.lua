@@ -109,8 +109,9 @@ function PetHealth.prototype:Update(unit)
 		color = "Dead"
 	end
 
-
-	self:UpdateBar(self.health/self.maxHealth, color)
+	if (self.maxHealth > 0) then
+		self:UpdateBar(self.health/self.maxHealth, color)
+	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
