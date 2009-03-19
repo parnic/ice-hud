@@ -5,6 +5,8 @@ local HungerForBlood = AceOO.Class(IceUnitBar)
 local hfbEndTime = 0
 local hfbDuration = 0
 local hfbBuffCount = 0
+local oldhfbBonusPerBuff = 5
+local hfbBonusPerBuff = 15
 
 -- Constructor --
 function HungerForBlood.prototype:init()
@@ -205,7 +207,12 @@ function HungerForBlood.prototype:UpdateHungerForBlood(unit, fromUpdate)
     if (remaining ~= nil) then
 	self:SetBottomText1(self.moduleSettings.upperText .. tostring(floor(remaining or 0)) .. "s")
 	if (hfbBuffCount ~= nil) then
-		self:SetBottomText2("+" .. (hfbBuffCount * 3) .. "% dmg")
+		-- pre-emptive fix for v3.1. HfB only stacks once at 15% instead of thrice at 5%
+		if IceHUD.WowVer < 30100 then
+			self:SetBottomText2("+" .. (hfbBuffCount * oldhfbBonusPerBuff) .. "% dmg")
+		else
+			self:SetBottomText2("+" .. (hfbBuffCount * hfbBonusPerBuff) .. "% dmg")
+		end
 	else
 		self:SetBottomText2("")
 	end
