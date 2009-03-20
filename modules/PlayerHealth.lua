@@ -5,12 +5,15 @@ local PlayerHealth = AceOO.Class(IceUnitBar)
 PlayerHealth.prototype.resting = nil
 
 local configMode = false
+local HealComm
+local incomingHealAmt = 0
 
 -- Constructor --
 function PlayerHealth.prototype:init()
 	PlayerHealth.super.prototype.init(self, "PlayerHealth", "player")
 	
 	self:SetDefaultColor("PlayerHealth", 37, 164, 30)
+	self:SetDefaultColor("PlayerHealthHealAmount", 37, 164, 30)
 end
 
 
@@ -24,6 +27,7 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["lowerText"] = "[FractionalHP:HPColor:Bracket]"
 	settings["allowMouseInteraction"] = false
 	settings["allowMouseInteractionCombat"] = false
+	settings["healAlpha"] = 0.6
 	settings["lockIconAlpha"] = false
 
 	settings["showStatusIcon"] = true
@@ -70,12 +74,34 @@ function PlayerHealth.prototype:Enable(core)
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "CheckPvP")
 	self:RegisterEvent("UNIT_FACTION", "CheckPvP")
 
+	if AceLibrary:HasInstance("LibHealComm-3.0") then
+		HealComm = AceLibrary("LibHealComm-3.0")
+		HealComm.RegisterCallback(self, "HealComm_DirectHealStart", function(event, healerName, healSize, endTime, ...) self:HealComm_DirectHealStart(event, healerName, healSize, endTime, ...) end)
+		HealComm.RegisterCallback(self, "HealComm_DirectHealStop", function(event, healerName, healSize, succeeded, ...) self:HealComm_DirectHealStop(event, healerName, healSize, succeeded, ...) end)
+		HealComm.RegisterCallback(self, "HealComm_HealModifierUpdate", function(event, unit, targetName, healModifier) self:HealComm_HealModifierUpdate(event, unit, targetName, healModifier) end)
+	end
+
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
 	end
 
 	self:Resting()
 	--self:Update(self.unit)
+end
+
+function PlayerHealth.prototype:HealComm_DirectHealStart(event, healerName, healSize, endTime, ...)
+	incomingHealAmt = healSize
+	self:Update()
+end
+
+function PlayerHealth.prototype:HealComm_DirectHealStop(event, healerName, healSize, succeeded, ...)
+	incomingHealAmt = 0
+	self:Update()
+end
+
+function PlayerHealth.prototype:HealComm_HealModifierUpdate(event, unit, targetName, healModifier)
+	incomingHealAmt = incomingHealAmt * healModifier
+	self:Update()
 end
 
 
@@ -172,6 +198,26 @@ function PlayerHealth.prototype:GetOptions()
 		end,
 		usage = '',
 		order = 43.5
+	}
+
+	opts["healAlpha"] =
+	{
+		type = "range",
+		name = "Incoming heal bar alpha",
+		desc = "What alpha value to use for the bar that displays how much health you'll have after an incoming heal (This gets multiplied by the bar's current alpha to stay in line with the bar on top of it)",
+		min = 0,
+		max = 100,
+		step = 5,
+		get = function()
+			return self.moduleSettings.healAlpha * 100
+		end,
+		set = function(v)
+			self.moduleSettings.healAlpha = v / 100.0
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end
 	}
 
 	opts["iconSettings"] =
@@ -568,6 +614,13 @@ function PlayerHealth.prototype:GetOptions()
 end
 
 
+function PlayerHealth.prototype:CreateFrame()
+	PlayerHealth.super.prototype.CreateFrame(self)
+
+	self:CreateHealBar()
+end
+
+
 function PlayerHealth.prototype:CreateBackground(redraw)
 	PlayerHealth.super.prototype.CreateBackground(self)
 
@@ -596,6 +649,32 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 	end
 
 	self:EnableClickTargeting(self.moduleSettings.allowMouseInteraction)
+end
+
+function PlayerHealth.prototype:CreateHealBar()
+	if not self.healFrame then
+		self.healFrame = CreateFrame("Statusbar", nil, self.frame)
+		self.CurrScale = 0
+	end
+
+	self.healFrame:SetFrameStrata("LOW")
+	self.healFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
+	self.healFrame:SetHeight(self.settings.barHeight)
+
+	if not self.healFrame.bar then
+		self.healFrame.bar = self.frame:CreateTexture(nil, "BACKGROUND")
+	end
+
+	self.healFrame.bar:SetTexture(IceElement.TexturePath .. self.settings.barTexture)
+	self.healFrame.bar:SetAllPoints(self.frame)
+
+	self.healFrame:SetStatusBarTexture(self.healFrame.bar)
+	self.healFrame:SetStatusBarColor(self:GetColor("PlayerHealthIncomingHeal", self.alpha * self.moduleSettings.healAlpha))
+
+	self:UpdateBar(1, "undef")
+
+	self.healFrame:ClearAllPoints()
+	self.healFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
 end
 
 
@@ -781,6 +860,15 @@ function PlayerHealth.prototype:Update(unit)
 	end
 
 	self:UpdateBar(self.health/self.maxHealth, color)
+
+	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
+	if self.healFrame and self.healFrame.bar and incomingHealAmt then
+		if (self.moduleSettings.side == IceCore.Side.Left) then
+			self.healFrame.bar:SetTexCoord(1, 0, 1-((self.health + incomingHealAmt) / self.maxHealth), 1)
+		else
+			self.healFrame.bar:SetTexCoord(0, 1, 1-((self.health + incomingHealAmt) / self.maxHealth), 1)
+		end
+	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))

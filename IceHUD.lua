@@ -613,6 +613,8 @@ function IceHUD:OnInitialize()
 	self:RegisterChatCommand({ "/icehud" }, IceHUD.slashMenu)
 
 	self:SyncSettingsVersions()
+
+	self:InitLDB()
 end
 
 
@@ -647,6 +649,26 @@ function IceHUD:SyncSettingsVersions()
 		self.IceCore.settings.updatedOocNotFull = true
 		self.IceCore.settings.alphaNotFull = self.IceCore.settings.alphaTarget
 		self.IceCore.settings.alphaNotFullbg = self.IceCore.settings.alphaTargetbg
+	end
+end
+
+
+function IceHUD:InitLDB()
+	local LDB = LibStub and LibStub("LibDataBroker-1.1", true)
+
+	if (LDB) then
+		local ldbButton = LDB:NewDataObject("IceHUD", {
+			type = "launcher",
+			text = "IceHUD",
+			icon = "Interface\\Icons\\Spell_Frost_Frost",
+			OnClick = function(_, msg)
+				if not (UnitAffectingCombat("player")) then
+					waterfall:Open("IceHUD")
+				else
+					DEFAULT_CHAT_FRAME:AddMessage("|cff8888ffIceHUD|r: Combat lockdown restriction. Leave combat and try again.")
+				end
+			end,
+		})
 	end
 end
 
