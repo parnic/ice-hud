@@ -57,6 +57,55 @@ function IceCastBar.prototype:Enable(core)
 	self:Show(false)
 end
 
+function IceCastBar.prototype:GetDefaultSettings()
+	local settings = IceCastBar.super.prototype.GetDefaultSettings(self)
+
+	settings["showSpellRank"] = true
+	settings["showCastTime"] = true
+
+	return settings
+end
+
+function IceCastBar.prototype:GetOptions()
+	local opts = IceCastBar.super.prototype.GetOptions(self)
+
+	opts["showCastTime"] =
+	{
+		type = 'toggle',
+		name = 'Show spell cast time',
+		desc = 'Whether or not to show the remaining cast time of a spell being cast.',
+		get = function()
+			return self.moduleSettings.showCastTime
+		end,
+		set = function(value)
+			self.moduleSettings.showCastTime = value
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 39.998
+	}
+
+	opts["showSpellRank"] =
+	{
+		type = 'toggle',
+		name = 'Show spell rank',
+		desc = 'Whether or not to show the rank of a spell being cast.',
+		get = function()
+			return self.moduleSettings.showSpellRank
+		end,
+		set = function(value)
+			self.moduleSettings.showSpellRank = value
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 39.999
+	}
+
+	return opts
+end
+
 
 -- 'Protected' methods --------------------------------------------------------
 
@@ -101,7 +150,8 @@ function IceCastBar.prototype:OnUpdate()
 		scale = scale < 0 and 0 or scale
 
 		self:UpdateBar(scale, "CastCasting")
-		self:SetBottomText1(string.format("%.1fs %s", remainingTime , self.actionMessage))
+		local timeString = self.moduleSettings.showCastTime and string.format("%.1fs ", remainingTime) or ""
+		self:SetBottomText1(timeString .. self.actionMessage)
 
 		return
 	end
@@ -177,7 +227,7 @@ function IceCastBar.prototype:StartBar(action, message)
 	end
 	
 	if not (message) then
-		self.actionMessage = spell .. self:GetShortRank(rank)
+		self.actionMessage = spell .. (self.moduleSettings.showSpellRank and self:GetShortRank(rank) or "")
 	end
 
 	self:Show(true)
