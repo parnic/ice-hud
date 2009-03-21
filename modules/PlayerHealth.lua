@@ -29,6 +29,7 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["allowMouseInteractionCombat"] = false
 	settings["healAlpha"] = 0.6
 	settings["lockIconAlpha"] = false
+	settings["showIncomingHeals"] = true
 
 	settings["showStatusIcon"] = true
 	settings["statusIconOffset"] = {x=110, y=0}
@@ -200,6 +201,33 @@ function PlayerHealth.prototype:GetOptions()
 		order = 43.5
 	}
 
+	opts["showIncomingHeals"] =
+	{
+		type = 'toggle',
+		name = 'Show incoming heals',
+		desc = 'Whether or not to show incoming heals as a lighter-colored bar on top of your current health (requires LibHealComm-3.0)',
+		get = function()
+			return self.moduleSettings.showIncomingHeals
+		end,
+		set = function(v)
+			if not v then
+				self.healFrame:Hide()
+			else
+				self.healFrame:Show()
+			end
+
+			self.moduleSettings.showIncomingHeals = v
+
+			incomingHealAmt = 0
+			self:Update()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not HealComm
+		end,
+		usage = '',
+		order = 43.6
+	}
+
 	opts["healAlpha"] =
 	{
 		type = "range",
@@ -216,8 +244,9 @@ function PlayerHealth.prototype:GetOptions()
 			self:Redraw()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
-		end
+			return not self.moduleSettings.enabled or not self.moduleSettings.showIncomingHeals
+		end,
+		order = 43.7
 	}
 
 	opts["iconSettings"] =
@@ -654,7 +683,6 @@ end
 function PlayerHealth.prototype:CreateHealBar()
 	if not self.healFrame then
 		self.healFrame = CreateFrame("Statusbar", nil, self.frame)
-		self.CurrScale = 0
 	end
 
 	self.healFrame:SetFrameStrata("LOW")
@@ -675,6 +703,10 @@ function PlayerHealth.prototype:CreateHealBar()
 
 	self.healFrame:ClearAllPoints()
 	self.healFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
+
+	if not self.moduleSettings.showIncomingHeals then
+		self.healFrame:Hide()
+	end
 end
 
 
@@ -862,11 +894,19 @@ function PlayerHealth.prototype:Update(unit)
 	self:UpdateBar(self.health/self.maxHealth, color)
 
 	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
-	if self.healFrame and self.healFrame.bar and incomingHealAmt then
-		if (self.moduleSettings.side == IceCore.Side.Left) then
-			self.healFrame.bar:SetTexCoord(1, 0, 1-((self.health + incomingHealAmt) / self.maxHealth), 1)
+	if self.moduleSettings.showIncomingHeals and self.healFrame and self.healFrame.bar and incomingHealAmt then
+		local barValue
+
+		if incomingHealAmt > 0 then
+			barValue = 1-((self.health + incomingHealAmt) / self.maxHealth)
 		else
-			self.healFrame.bar:SetTexCoord(0, 1, 1-((self.health + incomingHealAmt) / self.maxHealth), 1)
+			barValue = 1
+		end
+
+		if (self.moduleSettings.side == IceCore.Side.Left) then
+			self.healFrame.bar:SetTexCoord(1, 0, barValue, 1)
+		else
+			self.healFrame.bar:SetTexCoord(0, 1, barValue, 1)
 		end
 	end
 
