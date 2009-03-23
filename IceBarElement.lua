@@ -780,8 +780,9 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 
 	if DogTag ~= nil and self.moduleSettings.usesDogTagStrings then
 		DogTag:UpdateAllForFrame(self.frame)
-		self:SetTextAlpha()
 	end
+
+	self:SetTextAlpha()
 end
 
 
