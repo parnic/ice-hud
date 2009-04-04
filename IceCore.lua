@@ -71,7 +71,7 @@ function IceCore.prototype:SetupDefaults()
 
 		bShouldUseDogTags = true
 	}
-	
+
 	self:LoadPresets()
 	for k, v in pairs(self.presets[defaultPreset]) do
 		self.defaults[k] = v
@@ -92,15 +92,71 @@ end
 
 function IceCore.prototype:Enable()
 	self:DrawFrame()
-	
+
 	for i = 1, table.getn(self.elements) do
 		self.elements[i]:Create(self.IceHUDFrame)
 		if (self.elements[i]:IsEnabled()) then
 			self.elements[i]:Enable(true)
 		end
 	end
-	
+
+	for k,v in pairs(self.settings.modules) do
+		if self.settings.modules[k].isCustomBar then
+			local newBar
+			newBar = IceCustomBar:new()
+			newBar.elementName = k
+			self:AddNewDynamicModule(newBar, true)
+		end
+	end
+
 	self.enabled = true
+end
+
+
+function IceCore.prototype:AddNewDynamicModule(module, hasSettings)
+	self:Register(module)
+	if not hasSettings then
+		self.settings.modules[module.elementName] = module:GetDefaultSettings()
+	end
+
+	module:SetDatabase(self.settings)
+
+	module:Create(self.IceHUDFrame)
+	if (module:IsEnabled()) then
+		module:Enable(true)
+	end
+
+	IceHUD:GenerateModuleOptions()
+end
+
+
+function IceCore.prototype:DeleteDynamicModule(module)
+	if module:IsEnabled() then
+		module:Disable()
+	end
+
+	local ndx
+	for i = 0,table.getn(self.elements) do
+		if (self.elements[i] == module) then
+			ndx = i
+			break
+		end
+	end
+
+	table.remove(self.elements,ndx)
+	self.settings.modules[module.elementName] = nil
+
+	IceHUD:GenerateModuleOptions()
+end
+
+
+function IceCore.prototype:RenameDynamicModule(module, newName)
+	self.settings.modules[newName] = self.settings.modules[module.elementName]
+	self.settings.modules[module.elementName] = nil
+
+	module.elementName = newName
+
+	IceHUD:GenerateModuleOptions()
 end
 
 

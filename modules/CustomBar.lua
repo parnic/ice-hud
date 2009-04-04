@@ -1,0 +1,253 @@
+local AceOO = AceLibrary("AceOO-2.0")
+
+IceCustomBar = AceOO.Class(IceUnitBar)
+
+local validUnits = {"player", "target"}
+local buffOrDebuff = {"buff", "debuff"}
+
+local auraDuration = 0
+local auraCount = 0
+local auraEndTime = 0
+
+-- Constructor --
+function IceCustomBar.prototype:init()
+	IceCustomBar.super.prototype.init(self, "MyCustomBar", "player")
+end
+
+-- 'Public' methods -----------------------------------------------------------
+
+-- OVERRIDE
+function IceCustomBar.prototype:Enable(core)
+	IceCustomBar.super.prototype.Enable(self, core)
+
+	self:RegisterEvent("UNIT_AURA", "Update")
+
+	self:Show(true)
+
+	self:SetBottomText1("")
+	self:SetBottomText2("")
+
+	self.unit = self.moduleSettings.myUnit
+end
+
+function IceCustomBar.prototype:TargetChanged()
+	self:Update(self.unit)
+end
+
+function IceCustomBar.prototype:Disable(core)
+	IceCustomBar.super.prototype.Disable(self, core)
+
+	self:CancelScheduledEvent(self.elementName)
+end
+
+-- OVERRIDE
+function IceCustomBar.prototype:GetDefaultSettings()
+	local settings = IceCustomBar.super.prototype.GetDefaultSettings(self)
+
+	settings["enabled"] = true
+	settings["shouldAnimate"] = false
+	settings["desiredLerpTime"] = 0
+	settings["lowThreshold"] = 0
+	settings["side"] = IceCore.Side.Right
+	settings["offset"] = 8
+	settings["upperText"]=""
+	settings["usesDogTagStrings"] = false
+	settings["lockLowerFontAlpha"] = false
+	settings["lowerTextString"] = ""
+	settings["lowerTextVisible"] = false
+	settings["isCustomBar"] = true
+	settings["buffToTrack"] = ""
+	settings["myUnit"] = "player"
+	settings["buffOrDebuff"] = "buff"
+	settings["barColor"] = {r=1, g=0, b=0, a=1}
+
+	return settings
+end
+
+-- OVERRIDE
+function IceCustomBar.prototype:GetOptions()
+	local opts = IceCustomBar.super.prototype.GetOptions(self)
+
+	opts.textSettings.args.upperTextString.hidden = false
+	opts.textSettings.args.lowerTextString.hidden = false
+
+	opts.headerAnimation.hidden = true
+	opts.shouldAnimate.hidden = true
+	opts.desiredLerpTime.hidden = true
+
+	opts["deleteme"] = {
+		type = 'execute',
+		name = 'Delete me',
+		desc = 'Deletes me',
+		func = function()
+			-- need to add a confirmation box here
+			IceHUD.IceCore:DeleteDynamicModule(self)
+		end,
+		order = 20.1
+	}
+
+	opts["name"] = {
+		type = 'text',
+		name = 'Bar name',
+		desc = 'The name of this bar (must be unique!)',
+		get = function()
+			return self.elementName
+		end,
+		set = function(v)
+			IceHUD.IceCore:RenameDynamicModule(self, v)
+		end,
+		order = 20.2
+	}
+
+	opts["unitToTrack"] = {
+		type = 'text',
+		validate = validUnits,
+		name = 'Unit to track',
+		desc = 'Select which unit that this bar should be looking for buffs/debuffs on',
+		get = function()
+			return self.moduleSettings.myUnit
+		end,
+		set = function(v)
+			self.moduleSettings.myUnit = v
+			self.unit = v
+			self:Redraw()
+		end,
+		order = 40
+	}
+
+	opts["buffOrDebuff"] = {
+		type = 'text',
+		validate = buffOrDebuff,
+		name = 'Buff or debuff?',
+		desc = 'Whether we are tracking a buff or debuff',
+		get = function()
+			return self.moduleSettings.buffOrDebuff
+		end,
+		set = function(v)
+			self.moduleSettings.buffOrDebuff = v
+			self:Redraw()
+		end,
+		order = 41,
+	}
+
+	opts["buffToTrack"] = {
+		type = 'text',
+		name = "Aura to track",
+		desc = "Which buff/debuff this bar will be tracking",
+		get = function()
+			return self.moduleSettings.buffToTrack
+		end,
+		set = function(v)
+			self.moduleSettings.buffToTrack = v
+			self:Redraw()
+		end,
+		order = 42,
+	}
+
+	opts["barColor"] = {
+		type = 'color',
+		name = 'Bar color',
+		desc = 'The color for this bar',
+		get = function()
+			return self:GetBarColor()
+		end,
+		set = function(r,g,b)
+			self.moduleSettings.barColor.r = r
+			self.moduleSettings.barColor.g = g
+			self.moduleSettings.barColor.b = b
+			self.barFrame:SetStatusBarColor(self.moduleSettings.barColor)
+		end,
+		order = 43,
+	}
+
+	return opts
+end
+
+function IceCustomBar.prototype:GetBarColor()
+	return self.moduleSettings.barColor.r, self.moduleSettings.barColor.g, self.moduleSettings.barColor.b
+end
+
+function IceCustomBar.prototype:CreateFrame()
+	IceCustomBar.super.prototype.CreateFrame(self)
+end
+
+-- 'Protected' methods --------------------------------------------------------
+
+function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
+	local i = 1
+	local remaining
+	local isBuff = self.moduleSettings.buffOrDebuff == "buff" and true or false
+	local buffFilter = (isBuff and "HELPFUL" or "HARMFUL") .. (unitName == "player" and "|PLAYER" or "")
+	local buff, rank, texture, count, type, duration, endTime, isMine = UnitAura(unitName, i, buffFilter)
+
+	while buff do
+		if (buff == buffName) then
+			if endTime and not remaining then
+				remaining = endTime - GetTime()
+			end
+			return duration, remaining, count
+		end
+
+		i = i + 1;
+
+		buff, rank, texture, count, type, duration, endTime, isMine = UnitAura(unitName, i, buffFilter)
+	end
+
+	return nil, nil, nil
+end
+
+function IceCustomBar.prototype:Update(unit, fromUpdate)
+	if unit and unit ~= self.unit then
+		return
+	end
+
+	IceCustomBar.super.prototype.Update(self, unit)
+
+	local now = GetTime()
+	local remaining = nil
+
+	if not fromUpdate then
+		auraDuration, remaining, auraCount =
+			self:GetAuraDuration(self.unit, self.moduleSettings.buffToTrack)
+
+		if not remaining then
+			auraEndTime = 0
+			auraCount = 0
+		else
+			auraEndTime = remaining + now
+		end
+	end
+
+	if auraEndTime and auraEndTime >= now then
+		if not fromUpdate then
+			self.frame:SetScript("OnUpdate", function() self:Update(self.unit, true) end)
+		end
+
+		self:Show(true)
+
+		if not remaining then
+			remaining = auraEndTime - now
+		end
+
+		self:UpdateBar(remaining / auraDuration, "undef")
+	else
+		self:UpdateBar(0, "undef")
+		self:Show(false)
+	end
+
+	if (remaining ~= nil) then
+		self:SetBottomText1(self.moduleSettings.upperText .. " " .. tostring(ceil(remaining or 0)) .. "s")
+	else
+		auraBuffCount = 0
+		self:SetBottomText1("")
+		self:SetBottomText2("")
+	end
+
+	self.barFrame:SetStatusBarColor(self:GetBarColor())
+end
+
+function IceCustomBar.prototype:OutCombat()
+	IceCustomBar.super.prototype.OutCombat(self)
+
+	self:Update(self.unit)
+end

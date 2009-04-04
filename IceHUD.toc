@@ -54,3 +54,4 @@ modules\Threat.lua
 modules\RangeCheck.lua
 modules\MaelstromCount.lua
 modules\HungerForBlood.lua
+modules\CustomBar.lua

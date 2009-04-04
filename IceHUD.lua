@@ -516,6 +516,17 @@ IceHUD.options =
 			order = 94
 		},
 
+		customBar = {
+			type = 'execute',
+			name = 'Create custom bar',
+			desc = 'Creates a new customized bar',
+			func = function()
+				IceHUD.IceCore:AddNewDynamicModule(IceCustomBar:new())
+				-- need to add a dialog box encouraging user to rename the bar first
+			end,
+			order = 94.5
+		},
+
 		configMode = {
 			type = 'toggle',
 			name = '|cffff0000Configuration Mode|r',
@@ -603,7 +614,7 @@ function IceHUD:OnInitialize()
 
 	self.IceCore.settings = self.db.profile
 	self.IceCore:SetModuleDatabases()
-	self.options.args.modules.args = self.IceCore:GetModuleOptions()
+	self:GenerateModuleOptions(true)
 	self.options.args.colors.args = self.IceCore:GetColorOptions()
 
 	waterfall:Register("IceHUD", 'aceOptions', IceHUD.options)
@@ -615,6 +626,14 @@ function IceHUD:OnInitialize()
 	self:SyncSettingsVersions()
 
 	self:InitLDB()
+end
+
+
+function IceHUD:GenerateModuleOptions(firstLoad)
+	self.options.args.modules.args = self.IceCore:GetModuleOptions()
+	if not firstLoad then
+		waterfall:Refresh("IceHUD")
+	end
 end
 
 
