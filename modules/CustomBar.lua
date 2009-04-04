@@ -28,6 +28,8 @@ function IceCustomBar.prototype:Enable(core)
 	self:SetBottomText2("")
 
 	self.unit = self.moduleSettings.myUnit
+
+	self:Update(self.unit)
 end
 
 function IceCustomBar.prototype:TargetChanged()
@@ -53,7 +55,7 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["upperText"]=""
 	settings["usesDogTagStrings"] = false
 	settings["lockLowerFontAlpha"] = false
-	settings["lowerTextString"] = ""
+	settings["lowerText"] = ""
 	settings["lowerTextVisible"] = false
 	settings["isCustomBar"] = true
 	settings["buffToTrack"] = ""
@@ -78,10 +80,12 @@ function IceCustomBar.prototype:GetOptions()
 	opts["deleteme"] = {
 		type = 'execute',
 		name = 'Delete me',
-		desc = 'Deletes me',
+		desc = 'Deletes this custom module and all associated settings. Cannot be undone!',
 		func = function()
-			-- need to add a confirmation box here
-			IceHUD.IceCore:DeleteDynamicModule(self)
+			local dialog = StaticPopup_Show("ICEHUD_DELETE_CUSTOM_MODULE")
+			if dialog then
+				dialog.data = self
+			end
 		end,
 		order = 20.1
 	}
@@ -138,6 +142,9 @@ function IceCustomBar.prototype:GetOptions()
 			return self.moduleSettings.buffToTrack
 		end,
 		set = function(v)
+			if self.moduleSettings.buffToTrack == self.moduleSettings.upperText then
+				self.moduleSettings.upperText = v
+			end
 			self.moduleSettings.buffToTrack = v
 			self:Redraw()
 		end,
@@ -155,7 +162,7 @@ function IceCustomBar.prototype:GetOptions()
 			self.moduleSettings.barColor.r = r
 			self.moduleSettings.barColor.g = g
 			self.moduleSettings.barColor.b = b
-			self.barFrame:SetStatusBarColor(self.moduleSettings.barColor)
+			self.barFrame:SetStatusBarColor(self:GetBarColor())
 		end,
 		order = 43,
 	}

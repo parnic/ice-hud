@@ -522,7 +522,7 @@ IceHUD.options =
 			desc = 'Creates a new customized bar',
 			func = function()
 				IceHUD.IceCore:AddNewDynamicModule(IceCustomBar:new())
-				-- need to add a dialog box encouraging user to rename the bar first
+				StaticPopup_Show("ICEHUD_CUSTOM_BAR_CREATED")
 			end,
 			order = 94.5
 		},
@@ -588,14 +588,36 @@ IceHUD.slashMenu =
 StaticPopupDialogs["ICEHUD_RESET"] = 
 {
 	text = "Are you sure you want to reset IceHUD settings?",
-	button1 = "Okay",
-	button2 = "Cancel",
+	button1 = OKAY,
+	button2 = CANCEL,
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 1,
 	OnAccept = function()
 		IceHUD:ResetSettings()
 	end
+}
+
+StaticPopupDialogs["ICEHUD_CUSTOM_BAR_CREATED"] =
+{
+	text = "A custom bar has been created and can be configured through Module Settings => MyCustomBar. It is highly recommended that you change the bar name of this module ASAP because creating two custom bars with the same name is bad.",
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 0,
+}
+
+StaticPopupDialogs["ICEHUD_DELETE_CUSTOM_MODULE"] =
+{
+	text = "Are you sure you want to delete this module? This will remove all settings associated with this bar and cannot be un-done.",
+	button1 = "Yes",
+	button2 = "No",
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 0,
+	OnAccept = function(self)
+		IceHUD.IceCore:DeleteDynamicModule(self.data)
+	end,
 }
 
 
