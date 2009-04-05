@@ -600,7 +600,7 @@ StaticPopupDialogs["ICEHUD_RESET"] =
 
 StaticPopupDialogs["ICEHUD_CUSTOM_BAR_CREATED"] =
 {
-	text = "A custom bar has been created and can be configured through Module Settings => MyCustomBar. It is highly recommended that you change the bar name of this module ASAP because creating two custom bars with the same name is bad.",
+	text = "A custom bar has been created and can be configured through Module Settings => MyCustomBar. It is highly recommended that you change the bar name of this module so that it's easier to identify.",
 	button1 = OKAY,
 	timeout = 0,
 	whileDead = 1,

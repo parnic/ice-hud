@@ -115,11 +115,17 @@ end
 
 function IceCore.prototype:AddNewDynamicModule(module, hasSettings)
 	self:Register(module)
+
 	if not hasSettings then
 		self.settings.modules[module.elementName] = module:GetDefaultSettings()
 	end
 
 	module:SetDatabase(self.settings)
+
+	if not hasSettings then
+		local numExisting = self:GetNumCustomModules(module, true)
+		self:RenameDynamicModule(module, "MyCustomBar"..(numExisting+1))
+	end
 
 	module:Create(self.IceHUDFrame)
 	if (module:IsEnabled()) then
@@ -127,6 +133,25 @@ function IceCore.prototype:AddNewDynamicModule(module, hasSettings)
 	end
 
 	IceHUD:GenerateModuleOptions()
+end
+
+
+function IceCore.prototype:GetNumCustomModules(exceptMe)
+	local num = 0
+	local foundNum = 0
+
+	for i=0,table.getn(self.elements) do
+		if (self.elements[i] and self.elements[i] ~= exceptMe and self.elements[i].moduleSettings.isCustomBar) then
+			local str = self.elements[i].elementName:match("MyCustomBar%d+")
+			if str then
+				foundNum = str:match("%d+")
+			end
+
+			num = max(num, foundNum)
+		end
+	end
+
+	return num
 end
 
 
