@@ -78,6 +78,12 @@ function IceCustomBar.prototype:GetOptions()
 	opts.shouldAnimate.hidden = true
 	opts.desiredLerpTime.hidden = true
 
+	opts["customHeader"] = {
+		type = 'header',
+		name = "Custom bar settings",
+		order = 20.1,
+	}
+
 	opts["deleteme"] = {
 		type = 'execute',
 		name = 'Delete me',
@@ -88,7 +94,7 @@ function IceCustomBar.prototype:GetOptions()
 				dialog.data = self
 			end
 		end,
-		order = 20.1
+		order = 20.2,
 	}
 
 	opts["name"] = {
@@ -101,7 +107,10 @@ function IceCustomBar.prototype:GetOptions()
 		set = function(v)
 			IceHUD.IceCore:RenameDynamicModule(self, v)
 		end,
-		order = 20.2
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 20.3,
 	}
 
 	opts["unitToTrack"] = {
@@ -117,7 +126,10 @@ function IceCustomBar.prototype:GetOptions()
 			self.unit = v
 			self:Redraw()
 		end,
-		order = 40
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 20.4,
 	}
 
 	opts["buffOrDebuff"] = {
@@ -132,7 +144,10 @@ function IceCustomBar.prototype:GetOptions()
 			self.moduleSettings.buffOrDebuff = v
 			self:Redraw()
 		end,
-		order = 41,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 20.5,
 	}
 
 	opts["buffToTrack"] = {
@@ -149,7 +164,10 @@ function IceCustomBar.prototype:GetOptions()
 			self.moduleSettings.buffToTrack = v
 			self:Redraw()
 		end,
-		order = 42,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 20.6,
 	}
 
 	opts["trackOnlyMine"] = {
@@ -163,7 +181,10 @@ function IceCustomBar.prototype:GetOptions()
 			self.moduleSettings.trackOnlyMine = v
 			self:Redraw()
 		end,
-		order = 43
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 20.7,
 	}
 
 	opts["barColor"] = {
@@ -179,7 +200,10 @@ function IceCustomBar.prototype:GetOptions()
 			self.moduleSettings.barColor.b = b
 			self.barFrame:SetStatusBarColor(self:GetBarColor())
 		end,
-		order = 44,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 20.8,
 	}
 
 	return opts
