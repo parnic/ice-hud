@@ -62,6 +62,7 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["myUnit"] = "player"
 	settings["buffOrDebuff"] = "buff"
 	settings["barColor"] = {r=1, g=0, b=0, a=1}
+	settings["trackOnlyMine"] = true
 
 	return settings
 end
@@ -151,6 +152,20 @@ function IceCustomBar.prototype:GetOptions()
 		order = 42,
 	}
 
+	opts["trackOnlyMine"] = {
+		type = 'toggle',
+		name = 'Only track auras by me',
+		desc = 'Checking this means that only buffs or debuffs that the player applied will trigger this bar',
+		get = function()
+			return self.moduleSettings.trackOnlyMine
+		end,
+		set = function(v)
+			self.moduleSettings.trackOnlyMine = v
+			self:Redraw()
+		end,
+		order = 43
+	}
+
 	opts["barColor"] = {
 		type = 'color',
 		name = 'Bar color',
@@ -164,7 +179,7 @@ function IceCustomBar.prototype:GetOptions()
 			self.moduleSettings.barColor.b = b
 			self.barFrame:SetStatusBarColor(self:GetBarColor())
 		end,
-		order = 43,
+		order = 44,
 	}
 
 	return opts
@@ -188,7 +203,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 	local buff, rank, texture, count, type, duration, endTime, isMine = UnitAura(unitName, i, buffFilter)
 
 	while buff do
-		if (buff == buffName) then
+		if (buff == buffName and (not self.moduleSettings.trackOnlyMine or isMine)) then
 			if endTime and not remaining then
 				remaining = endTime - GetTime()
 			end
