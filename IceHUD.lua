@@ -527,6 +527,17 @@ IceHUD.options =
 			order = 94.5
 		},
 
+		customCount = {
+			type = 'execute',
+			name = 'Create custom counter',
+			desc = 'Creates a new customized counter',
+			func = function()
+				IceHUD.IceCore:AddNewDynamicModule(IceCustomCount:new())
+				StaticPopup_Show("ICEHUD_CUSTOM_COUNTER_CREATED")
+			end,
+			order = 94.6
+		},
+
 		configMode = {
 			type = 'toggle',
 			name = '|cffff0000Configuration Mode|r',
@@ -607,9 +618,18 @@ StaticPopupDialogs["ICEHUD_CUSTOM_BAR_CREATED"] =
 	hideOnEscape = 0,
 }
 
+StaticPopupDialogs["ICEHUD_CUSTOM_COUNTER_CREATED"] =
+{
+	text = "A custom counter has been created and can be configured through Module Settings => MyCustomCounter. It is highly recommended that you change the bar name of this module so that it's easier to identify.",
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 0,
+}
+
 StaticPopupDialogs["ICEHUD_DELETE_CUSTOM_MODULE"] =
 {
-	text = "Are you sure you want to delete this module? This will remove all settings associated with this bar and cannot be un-done.",
+	text = "Are you sure you want to delete this module? This will remove all settings associated with it and cannot be un-done.",
 	button1 = "Yes",
 	button2 = "No",
 	timeout = 0,
@@ -748,23 +768,23 @@ function IceHUD:MathRound(num, idp)
 	return math.floor(num  * mult + 0.5) / mult
 end
 
-function IceHUD:GetBuffCount(unit, ability, onlyMine)
-	return IceHUD:GetAuraCount("HELPFUL"..(onlyMine and "|PLAYER" or ""), unit, ability)
+function IceHUD:GetBuffCount(unit, ability, onlyMine, matchByName)
+	return IceHUD:GetAuraCount("HELPFUL", unit, ability, onlyMine, matchByName)
 end
 
-function IceHUD:GetDebuffCount(unit, ability, onlyMine)
-	return IceHUD:GetAuraCount("HARMFUL"..(onlyMine and "|PLAYER" or ""), unit, ability)
+function IceHUD:GetDebuffCount(unit, ability, onlyMine, matchByName)
+	return IceHUD:GetAuraCount("HARMFUL", unit, ability, onlyMine, matchByName)
 end
 
-function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine)
+function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 	for i = 1, 40 do
-		local _, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+		local name, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
 
-		if not texture then
+		if (not matchByName and not texture) or (matchByName and not name) then
 			break
 		end
 
-		if string.match(texture, ability) then
+		if (not matchByName and string.match(texture, ability)) or (matchByName and string.match(name, ability)) then
 			return applications
 		end
 	end

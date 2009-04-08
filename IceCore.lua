@@ -106,6 +106,11 @@ function IceCore.prototype:Enable()
 			newBar = IceCustomBar:new()
 			newBar.elementName = k
 			self:AddNewDynamicModule(newBar, true)
+		elseif self.settings.modules[k].isCustomCounter then
+			local newCounter
+			newCounter = IceCustomCount:new()
+			newCounter.elementName = k
+			self:AddNewDynamicModule(newCounter, true)
 		end
 	end
 
@@ -123,8 +128,12 @@ function IceCore.prototype:AddNewDynamicModule(module, hasSettings)
 	module:SetDatabase(self.settings)
 
 	if not hasSettings then
-		local numExisting = self:GetNumCustomModules(module, true)
-		self:RenameDynamicModule(module, "MyCustomBar"..(numExisting+1))
+		local numExisting = self:GetNumCustomModules(module, true, module:GetDefaultSettings().isCustomBar)
+		if module:GetDefaultSettings().isCustomBar then
+			self:RenameDynamicModule(module, "MyCustomBar"..(numExisting+1))
+		elseif module:GetDefaultSettings().isCustomCounter then
+			self:RenameDynamicModule(module, "MyCustomCounter"..(numExisting+1))
+		end
 	end
 
 	module:Create(self.IceHUDFrame)
@@ -136,13 +145,14 @@ function IceCore.prototype:AddNewDynamicModule(module, hasSettings)
 end
 
 
-function IceCore.prototype:GetNumCustomModules(exceptMe)
+function IceCore.prototype:GetNumCustomModules(exceptMe, findBars)
 	local num = 0
 	local foundNum = 0
 
 	for i=0,table.getn(self.elements) do
-		if (self.elements[i] and self.elements[i] ~= exceptMe and self.elements[i].moduleSettings.isCustomBar) then
-			local str = self.elements[i].elementName:match("MyCustomBar%d+")
+		if (self.elements[i] and self.elements[i] ~= exceptMe and
+			(findBars and self.elements[i].moduleSettings.isCustomBar or self.elements[i].moduleSettings.isCustomCounter)) then
+			local str = self.elements[i].elementName:match("MyCustom"..(findBars and "Bar" or "Counter").."%d+")
 			if str then
 				foundNum = str:match("%d+")
 			end
