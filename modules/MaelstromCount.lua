@@ -85,7 +85,7 @@ function MaelstromCount.prototype:GetOptions()
 	opts["maelstromGap"] = {
 		type = 'range',
 		name = 'Maelstrom gap',
-		desc = 'Spacing between each maelstromGap point (only works for graphical mode)',
+		desc = 'Spacing between each maelstrom point (only works for graphical mode)',
 		min = 0,
 		max = 100,
 		step = 1,

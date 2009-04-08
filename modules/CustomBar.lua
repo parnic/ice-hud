@@ -213,10 +213,6 @@ function IceCustomBar.prototype:GetBarColor()
 	return self.moduleSettings.barColor.r, self.moduleSettings.barColor.g, self.moduleSettings.barColor.b
 end
 
-function IceCustomBar.prototype:CreateFrame()
-	IceCustomBar.super.prototype.CreateFrame(self)
-end
-
 -- 'Protected' methods --------------------------------------------------------
 
 function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)

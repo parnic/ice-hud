@@ -280,8 +280,8 @@ function IceBarElement.prototype:GetOptions()
 		type='range',
 		name = '|c' .. self.configColor .. 'Bar vertical offset|r',
 		desc = 'Adjust the vertical placement of this bar',
-		min = -100,
-		max = 100,
+		min = -400,
+		max = 400,
 		step = 1,
 		get = function()
 			return self.moduleSettings.barVerticalOffset
