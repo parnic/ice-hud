@@ -329,11 +329,11 @@ function IceCustomCount.prototype:GetOptions()
 end
 
 function IceCustomCount.prototype:GetCustomColor()
-	return self.moduleSettings.countColor.r, self.moduleSettings.countColor.g, self.moduleSettings.countColor.b, self.moduleSettings.countColor.a
+	return self.moduleSettings.countColor.r, self.moduleSettings.countColor.g, self.moduleSettings.countColor.b, self.alpha
 end
 
 function IceCustomCount.prototype:GetCustomMinColor()
-	return self.moduleSettings.countMinColor.r, self.moduleSettings.countMinColor.g, self.moduleSettings.countMinColor.b, self.moduleSettings.countMinColor.a
+	return self.moduleSettings.countMinColor.r, self.moduleSettings.countMinColor.g, self.moduleSettings.countMinColor.b, self.alpha
 end
 
 

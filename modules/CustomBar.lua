@@ -5,9 +5,9 @@ IceCustomBar = AceOO.Class(IceUnitBar)
 local validUnits = {"player", "target"}
 local buffOrDebuff = {"buff", "debuff"}
 
-local auraDuration = 0
-local auraCount = 0
-local auraEndTime = 0
+IceCustomBar.prototype.auraDuration = 0
+IceCustomBar.prototype.auraCount = 0
+IceCustomBar.prototype.auraEndTime = 0
 
 -- Constructor --
 function IceCustomBar.prototype:init()
@@ -20,7 +20,7 @@ end
 function IceCustomBar.prototype:Enable(core)
 	IceCustomBar.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("UNIT_AURA", "Update")
+	self:RegisterEvent("UNIT_AURA", "UpdateCustomBar")
 
 	self:Show(true)
 
@@ -29,11 +29,11 @@ function IceCustomBar.prototype:Enable(core)
 
 	self.unit = self.moduleSettings.myUnit
 
-	self:Update(self.unit)
+	self:UpdateCustomBar(self.unit)
 end
 
 function IceCustomBar.prototype:TargetChanged()
-	self:Update(self.unit)
+	self:UpdateCustomBar(self.unit)
 end
 
 function IceCustomBar.prototype:Disable(core)
@@ -210,7 +210,7 @@ function IceCustomBar.prototype:GetOptions()
 end
 
 function IceCustomBar.prototype:GetBarColor()
-	return self.moduleSettings.barColor.r, self.moduleSettings.barColor.g, self.moduleSettings.barColor.b
+	return self.moduleSettings.barColor.r, self.moduleSettings.barColor.g, self.moduleSettings.barColor.b, self.alpha
 end
 
 -- 'Protected' methods --------------------------------------------------------
@@ -238,40 +238,38 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 	return nil, nil, nil
 end
 
-function IceCustomBar.prototype:Update(unit, fromUpdate)
+function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 	if unit and unit ~= self.unit then
 		return
 	end
-
-	IceCustomBar.super.prototype.Update(self, unit)
 
 	local now = GetTime()
 	local remaining = nil
 
 	if not fromUpdate then
-		auraDuration, remaining, auraCount =
+		self.auraDuration, remaining, self.auraCount =
 			self:GetAuraDuration(self.unit, self.moduleSettings.buffToTrack)
 
 		if not remaining then
-			auraEndTime = 0
-			auraCount = 0
+			self.auraEndTime = 0
+			self.auraCount = 0
 		else
-			auraEndTime = remaining + now
+			self.auraEndTime = remaining + now
 		end
 	end
 
-	if auraEndTime and auraEndTime >= now then
+	if self.auraEndTime and self.auraEndTime >= now then
 		if not fromUpdate then
-			self.frame:SetScript("OnUpdate", function() self:Update(self.unit, true) end)
+			self.frame:SetScript("OnUpdate", function() self:UpdateCustomBar(self.unit, true) end)
 		end
 
 		self:Show(true)
 
 		if not remaining then
-			remaining = auraEndTime - now
+			remaining = self.auraEndTime - now
 		end
 
-		self:UpdateBar(remaining / auraDuration, "undef")
+		self:UpdateBar(remaining / self.auraDuration, "undef")
 	else
 		self:UpdateBar(0, "undef")
 		self:Show(false)
@@ -280,7 +278,7 @@ function IceCustomBar.prototype:Update(unit, fromUpdate)
 	if (remaining ~= nil) then
 		self:SetBottomText1(self.moduleSettings.upperText .. " " .. tostring(ceil(remaining or 0)) .. "s")
 	else
-		auraBuffCount = 0
+		self.auraBuffCount = 0
 		self:SetBottomText1("")
 		self:SetBottomText2("")
 	end
@@ -291,5 +289,5 @@ end
 function IceCustomBar.prototype:OutCombat()
 	IceCustomBar.super.prototype.OutCombat(self)
 
-	self:Update(self.unit)
+	self:UpdateCustomBar(self.unit)
 end

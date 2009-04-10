@@ -522,7 +522,8 @@ function IceBarElement.prototype:CreateFrame()
 	-- never register the OnUpdate for the mirror bar since it's handled internally
 	-- in addition, do not register OnUpdate if predictedPower is set and this is the player mana or target mana bar
 	if not string.find(self.elementName, "MirrorBar")
-		and ((IceHUD.WowVer < 30000 or not GetCVarBool("predictedPower")) or (not string.find(self.elementName, "PlayerMana"))) then
+		and ((IceHUD.WowVer < 30000 or not GetCVarBool("predictedPower")) or (not string.find(self.elementName, "PlayerMana")))
+		and not self.moduleSettings.isCustomBar then
 		self.frame:SetScript("OnUpdate", function() self:MyOnUpdate() end)
 	end
 end
