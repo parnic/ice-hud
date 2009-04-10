@@ -56,3 +56,5 @@ modules\MaelstromCount.lua
 modules\HungerForBlood.lua
 modules\CustomBar.lua
 modules\CustomCount.lua
+# - make sure PlayerInfo loads after TargetInfo since it inherits
+modules\PlayerInfo.lua

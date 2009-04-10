@@ -1,38 +1,45 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-local TargetInfo = AceOO.Class(IceElement)
+IceTargetInfo = AceOO.Class(IceElement)
 
 local DogTag = nil
 
-local target = "target"
 local internal = "internal"
 
 local ValidAnchors = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", "CENTER" }
 
-TargetInfo.prototype.buffSize = nil
-TargetInfo.prototype.ownBuffSize = nil
-TargetInfo.prototype.width = nil
+IceTargetInfo.prototype.unit = "target"
 
-TargetInfo.prototype.name = nil
-TargetInfo.prototype.guild = nil
-TargetInfo.prototype.realm = nil
-TargetInfo.prototype.classLocale = nil
-TargetInfo.prototype.classEnglish = nil
-TargetInfo.prototype.leader = nil
+IceTargetInfo.prototype.buffSize = nil
+IceTargetInfo.prototype.ownBuffSize = nil
+IceTargetInfo.prototype.width = nil
 
-TargetInfo.prototype.targetCombat = nil
-TargetInfo.prototype.pvp = nil
-TargetInfo.prototype.level = nil
-TargetInfo.prototype.classification = nil
-TargetInfo.prototype.reaction = nil
-TargetInfo.prototype.tapped = nil
+IceTargetInfo.prototype.name = nil
+IceTargetInfo.prototype.guild = nil
+IceTargetInfo.prototype.realm = nil
+IceTargetInfo.prototype.classLocale = nil
+IceTargetInfo.prototype.classEnglish = nil
+IceTargetInfo.prototype.leader = nil
 
-TargetInfo.prototype.isPlayer = nil
+IceTargetInfo.prototype.targetCombat = nil
+IceTargetInfo.prototype.pvp = nil
+IceTargetInfo.prototype.level = nil
+IceTargetInfo.prototype.classification = nil
+IceTargetInfo.prototype.reaction = nil
+IceTargetInfo.prototype.tapped = nil
+
+IceTargetInfo.prototype.isPlayer = nil
 
 
 -- Constructor --
-function TargetInfo.prototype:init()
-	TargetInfo.super.prototype.init(self, "TargetInfo")
+function IceTargetInfo.prototype:init(moduleName, unit)
+	self.unit = unit or "target"
+
+	if not moduleName or not unit then
+		IceTargetInfo.super.prototype.init(self, "TargetInfo")
+	else
+		IceTargetInfo.super.prototype.init(self, moduleName)
+	end
 	
 	self.scalingEnabled = true
 end
@@ -42,8 +49,8 @@ end
 -- 'Public' methods -----------------------------------------------------------
 
 -- OVERRIDE
-function TargetInfo.prototype:Enable(core)
-	TargetInfo.super.prototype.Enable(self, core)
+function IceTargetInfo.prototype:Enable(core)
+	IceTargetInfo.super.prototype.Enable(self, core)
 
 	if IceHUD.IceCore:ShouldUseDogTags() then
 		DogTag = AceLibrary("LibDogTag-3.0")
@@ -77,8 +84,8 @@ end
 
 
 -- OVERRIDE
-function TargetInfo.prototype:Disable(core)
-	TargetInfo.super.prototype.Disable(self, core)
+function IceTargetInfo.prototype:Disable(core)
+	IceTargetInfo.super.prototype.Disable(self, core)
 	
 	UnregisterUnitWatch(self.frame)
 
@@ -87,8 +94,8 @@ end
 
 
 -- OVERRIDE
-function TargetInfo.prototype:GetOptions()
-	local opts = TargetInfo.super.prototype.GetOptions(self)
+function IceTargetInfo.prototype:GetOptions()
+	local opts = IceTargetInfo.super.prototype.GetOptions(self)
 
 	opts["targetInfoHeader"] = {
 		type = 'header',
@@ -576,8 +583,8 @@ end
 
 
 -- OVERRIDE
-function TargetInfo.prototype:GetDefaultSettings()
-	local defaults =  TargetInfo.super.prototype.GetDefaultSettings(self)
+function IceTargetInfo.prototype:GetDefaultSettings()
+	local defaults =  IceTargetInfo.super.prototype.GetDefaultSettings(self)
 
 	defaults["fontSize"] = 13
 	defaults["stackFontSize"] = 11
@@ -608,32 +615,32 @@ function TargetInfo.prototype:GetDefaultSettings()
 end
 
 
-function TargetInfo.prototype:RegisterFontStrings()
+function IceTargetInfo.prototype:RegisterFontStrings()
 	if DogTag ~= nil then
 		if self.frame.targetName then
 			if self.moduleSettings.line1Tag ~= '' then
-				DogTag:AddFontString(self.frame.targetName, self.frame, self.moduleSettings.line1Tag, "Unit", { unit = target })
+				DogTag:AddFontString(self.frame.targetName, self.frame, self.moduleSettings.line1Tag, "Unit", { unit = self.unit })
 			else
 				DogTag:RemoveFontString(self.frame.targetName)
 			end
 		end
 		if self.frame.targetInfo then
 			if self.moduleSettings.line2Tag ~= '' then
-				DogTag:AddFontString(self.frame.targetInfo, self.frame, self.moduleSettings.line2Tag, "Unit", { unit = target })
+				DogTag:AddFontString(self.frame.targetInfo, self.frame, self.moduleSettings.line2Tag, "Unit", { unit = self.unit })
 			else
 				DogTag:RemoveFontString(self.frame.targetInfo)
 			end
 		end
 		if self.frame.targetGuild then
 			if self.moduleSettings.line3Tag ~= '' then
-				DogTag:AddFontString(self.frame.targetGuild, self.frame, self.moduleSettings.line3Tag, "Unit", { unit = target })
+				DogTag:AddFontString(self.frame.targetGuild, self.frame, self.moduleSettings.line3Tag, "Unit", { unit = self.unit })
 			else
 				DogTag:RemoveFontString(self.frame.targetGuild)
 			end
 		end
 		if self.frame.targetExtra then
 			if self.moduleSettings.line4Tag ~= '' then
-				DogTag:AddFontString(self.frame.targetExtra, self.frame, self.moduleSettings.line4Tag, "Unit", { unit = target })
+				DogTag:AddFontString(self.frame.targetExtra, self.frame, self.moduleSettings.line4Tag, "Unit", { unit = self.unit })
 			else
 				DogTag:RemoveFontString(self.frame.targetExtra)
 			end
@@ -644,7 +651,7 @@ function TargetInfo.prototype:RegisterFontStrings()
 	end
 end
 
-function TargetInfo.prototype:UnregisterFontStrings()
+function IceTargetInfo.prototype:UnregisterFontStrings()
 	if DogTag ~= nil then
 		DogTag:RemoveFontString(self.frame.targetName)
 		DogTag:RemoveFontString(self.frame.targetInfo)
@@ -655,8 +662,8 @@ end
 
 
 -- OVERRIDE
-function TargetInfo.prototype:Redraw()
-	TargetInfo.super.prototype.Redraw(self)
+function IceTargetInfo.prototype:Redraw()
+	IceTargetInfo.super.prototype.Redraw(self)
 
 	if (self.moduleSettings.enabled) then
 		self:CreateFrame(true)
@@ -665,7 +672,7 @@ function TargetInfo.prototype:Redraw()
 end
 
 
-function TargetInfo.prototype:RedrawBuffs()
+function IceTargetInfo.prototype:RedrawBuffs()
 	if (self.moduleSettings.enabled) then
 		self:CreateBuffFrame(false)
 		self:CreateDebuffFrame(false)
@@ -679,7 +686,7 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 -- OVERRIDE
-function TargetInfo.prototype:CreateFrame(redraw)
+function IceTargetInfo.prototype:CreateFrame(redraw)
 	if not (self.frame) then
 		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.parent, "SecureUnitButtonTemplate")
 	end
@@ -688,9 +695,6 @@ function TargetInfo.prototype:CreateFrame(redraw)
 	self.width = math.max(200, self.settings.gap + 50)
 
 	self.frame:SetScale(self.moduleSettings.scale)
-	
-	-- set showing/hiding the frame depending on current target
-	self.frame:SetAttribute("unit", target)
 
 	self.frame:SetFrameStrata("BACKGROUND")
 	self.frame:SetWidth(self.width)
@@ -698,7 +702,7 @@ function TargetInfo.prototype:CreateFrame(redraw)
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
 	self.frame:SetScale(self.moduleSettings.scale)
-	
+
 	if (self.moduleSettings.mouseTarget) then
 		self.frame:EnableMouse(true)
 		self.frame:RegisterForClicks("AnyUp")
@@ -710,19 +714,19 @@ function TargetInfo.prototype:CreateFrame(redraw)
 		self.frame:SetScript("OnEnter", nil)
 		self.frame:SetScript("OnLeave", nil)
 	end
-	self.frame.unit = target
-	
-	
+
+	self.frame.unit = self.unit
+
 	-- set up stuff for clicking
 	self.frame:SetAttribute("type1", "target")
 	self.frame:SetAttribute("type2", "menu")
-	self.frame:SetAttribute("unit", target)
+	self.frame:SetAttribute("unit", self.unit)
 
 	self.frame.menu = function()
 		ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor")
 	end
 
-	
+
 	-- create a fancy highlight frame for mouse over
 	if (not self.frame.highLight) then
 		self.frame.highLight = self.frame:CreateTexture(nil, "OVERLAY")
@@ -744,15 +748,15 @@ function TargetInfo.prototype:CreateFrame(redraw)
 	self:CreateDebuffFrame(redraw)
 
 	self:CreateRaidIconFrame()
-	
-	
+
+
 	-- set up click casting
 	ClickCastFrames = ClickCastFrames or {}
 	ClickCastFrames[self.frame] = true
 end
 
 
-function TargetInfo.prototype:CreateTextFrame()
+function IceTargetInfo.prototype:CreateTextFrame()
 	self.frame.targetName = self:FontFactory(self.moduleSettings.fontSize+1, nil, self.frame.targetName)
 
 	self.frame.targetName:SetJustifyH("CENTER")
@@ -762,7 +766,7 @@ function TargetInfo.prototype:CreateTextFrame()
 end
 
 
-function TargetInfo.prototype:CreateInfoTextFrame()
+function IceTargetInfo.prototype:CreateInfoTextFrame()
 	self.frame.targetInfo = self:FontFactory(self.moduleSettings.fontSize, nil, self.frame.targetInfo)
 
 --	self.frame.targetInfo:SetWidth(self.width)
@@ -775,7 +779,7 @@ function TargetInfo.prototype:CreateInfoTextFrame()
 end
 
 
-function TargetInfo.prototype:CreateGuildTextFrame()
+function IceTargetInfo.prototype:CreateGuildTextFrame()
 	self.frame.targetGuild = self:FontFactory(self.moduleSettings.fontSize, nil, self.frame.targetGuild)
 
 --	self.frame.targetInfo:SetWidth(self.width)
@@ -788,7 +792,7 @@ function TargetInfo.prototype:CreateGuildTextFrame()
 end
 
 
-function TargetInfo.prototype:CreateExtraTextFrame()
+function IceTargetInfo.prototype:CreateExtraTextFrame()
 	self.frame.targetExtra = self:FontFactory(self.moduleSettings.fontSize, nil, self.frame.targetExtra)
 
 	self.frame.targetExtra:SetHeight(14)
@@ -800,7 +804,7 @@ function TargetInfo.prototype:CreateExtraTextFrame()
 end
 
 
-function TargetInfo.prototype:CreateRaidIconFrame()
+function IceTargetInfo.prototype:CreateRaidIconFrame()
 	if (not self.frame.raidIcon) then
 		self.frame.raidIcon = CreateFrame("Frame", nil, self.frame)
 	end
@@ -820,7 +824,7 @@ function TargetInfo.prototype:CreateRaidIconFrame()
 end
 
 
-function TargetInfo.prototype:CreateBuffFrame(redraw)
+function IceTargetInfo.prototype:CreateBuffFrame(redraw)
 	if (not self.frame.buffFrame) then
 		self.frame.buffFrame = CreateFrame("Frame", nil, self.frame)
 
@@ -843,7 +847,7 @@ function TargetInfo.prototype:CreateBuffFrame(redraw)
 end
 
 
-function TargetInfo.prototype:CreateDebuffFrame(redraw)
+function IceTargetInfo.prototype:CreateDebuffFrame(redraw)
 	if (not self.frame.debuffFrame) then
 		self.frame.debuffFrame = CreateFrame("Frame", nil, self.frame)
 
@@ -866,7 +870,7 @@ function TargetInfo.prototype:CreateDebuffFrame(redraw)
 end
 
 
-function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
+function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 	local lastX = 0
 	local lastBuffSize = 0
 
@@ -966,11 +970,11 @@ function TargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 	return buffs
 end
 
-function TargetInfo.prototype:SetBuffSize(buff)
+function IceTargetInfo.prototype:SetBuffSize(buff)
 	
 end
 
-function TargetInfo.prototype:UpdateBuffs()
+function IceTargetInfo.prototype:UpdateBuffs()
 	local zoom = self.moduleSettings.zoom
 	local filter = false
 
@@ -982,17 +986,17 @@ function TargetInfo.prototype:UpdateBuffs()
 		end
 	end
 
-	local hostile = UnitCanAttack("player", "target")
+	local hostile = UnitCanAttack("player", self.unit)
 
 
 	for i = 1, IceCore.BuffLimit do
 		local buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe;
 		if IceHUD.WowVer >= 30000 then
 			buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe
-				= UnitAura("target", i, "HELPFUL" .. (filter and "|PLAYER" or "")) --UnitBuff("target", i, filter and not hostile)
+				= UnitAura(self.unit, i, "HELPFUL" .. (filter and "|PLAYER" or "")) --UnitBuff(self.unit, i, filter and not hostile)
 		else
 			buffName, buffRank, buffTexture, buffApplications, buffDuration, buffTimeLeft
-				= UnitBuff("target", i, filter and not hostile)
+				= UnitBuff(self.unit, i, filter and not hostile)
 
 			isFromMe = buffDuration and buffTimeLeft
 		end
@@ -1040,7 +1044,7 @@ function TargetInfo.prototype:UpdateBuffs()
 
 	for i = 1, IceCore.BuffLimit do
 		local buffName, buffRank, buffTexture, buffApplications, debuffDispelType,
-			debuffDuration, debuffTimeLeft, isFromMe = UnitAura("target", i, "HARMFUL" .. (filter and "|PLAYER" or "")) --UnitDebuff("target", i, filter and not hostile)
+			debuffDuration, debuffTimeLeft, isFromMe = UnitAura(self.unit, i, "HARMFUL" .. (filter and "|PLAYER" or "")) --UnitDebuff(self.unit, i, filter and not hostile)
 
 		if (buffTexture and (not hostile or not filter or (filter and debuffDuration))) then
 
@@ -1089,20 +1093,20 @@ end
 
 
 
-function TargetInfo.prototype:AuraChanged(unit)
-	if (unit == target) then
+function IceTargetInfo.prototype:AuraChanged(unit)
+	if (unit == self.unit) then
 		self:UpdateBuffs()
 	end
 end
 
 
-function TargetInfo.prototype:UpdateRaidTargetIcon()
-	if not (UnitExists(target)) then
+function IceTargetInfo.prototype:UpdateRaidTargetIcon()
+	if not (UnitExists(self.unit)) then
 		self.frame.raidIcon:Hide()
 		return
 	end
 
-	local index = GetRaidTargetIndex(target);
+	local index = GetRaidTargetIndex(self.unit);
 
 	if (index and (index > 0)) then
 		SetRaidTargetIconTexture(self.frame.raidIcon.icon, index)
@@ -1113,10 +1117,10 @@ function TargetInfo.prototype:UpdateRaidTargetIcon()
 end
 
 
-function TargetInfo.prototype:TargetChanged()
-	TargetInfo.super.prototype.TargetChanged(self)
+function IceTargetInfo.prototype:TargetChanged()
+	IceTargetInfo.super.prototype.TargetChanged(self)
 
-	if (not UnitExists(target)) then
+	if (not UnitExists(self.unit)) then
 		--self.frame:Hide()
 		--self.frame.target:Hide()
 		
@@ -1144,18 +1148,18 @@ function TargetInfo.prototype:TargetChanged()
 	self:UpdateBuffs()
 	self:UpdateRaidTargetIcon()
 
-	self:Update(target)
+	self:Update(self.unit)
 end
 
 
-function TargetInfo.prototype:TargetName(unit)
-	if (unit == target or unit == internal) then
-		self.name, self.realm = UnitName(target)
-		self.classLocale, self.classEnglish = UnitClass(target)
-		self.isPlayer = UnitIsPlayer(target)
+function IceTargetInfo.prototype:TargetName(unit)
+	if (unit == self.unit or unit == internal) then
+		self.name, self.realm = UnitName(self.unit)
+		self.classLocale, self.classEnglish = UnitClass(self.unit)
+		self.isPlayer = UnitIsPlayer(self.unit)
 
 
-		local classification = UnitClassification(target) or ""
+		local classification = UnitClassification(self.unit) or ""
 		if (string.find(classification, "boss")) then
 			self.classification = " |cffcc1111Boss|r"
 		elseif(string.find(classification, "rare")) then
@@ -1165,31 +1169,31 @@ function TargetInfo.prototype:TargetName(unit)
 		end
 
 
-		local guildName, guildRankName, guildRankIndex = GetGuildInfo(target);
+		local guildName, guildRankName, guildRankIndex = GetGuildInfo(self.unit);
 		self.guild = guildName and "<" .. guildName .. ">" or ""
 
 
 		if (self.classLocale and self.isPlayer) then
 			self.classLocale = "|c" .. self:GetHexColor(self.classEnglish) ..  self.classLocale .. "|r"
 		else
-			self.classLocale = UnitCreatureType(target)
+			self.classLocale = UnitCreatureType(self.unit)
 		end
 
 
-		self.leader = UnitIsPartyLeader(target) and " |cffcccc11Leader|r" or ""
+		self.leader = UnitIsPartyLeader(self.unit) and " |cffcccc11Leader|r" or ""
 		self:Update(unit)
 	end
 end
 
 
-function TargetInfo.prototype:TargetLevel(unit)
-	if (unit == target or unit == internal) then
-		self.level = UnitLevel(target)
+function IceTargetInfo.prototype:TargetLevel(unit)
+	if (unit == self.unit or unit == internal) then
+		self.level = UnitLevel(self.unit)
 		
 		local color = GetDifficultyColor((self.level > 0) and self.level or 100)
 
 		if (self.level > 0) then
-			if (UnitClassification(target) == "elite") then
+			if (UnitClassification(self.unit) == "elite") then
 				self.level = self.level .. "+"
 			end
 		else
@@ -1203,9 +1207,9 @@ function TargetInfo.prototype:TargetLevel(unit)
 end
 
 
-function TargetInfo.prototype:TargetReaction(unit)
-	if (unit == target or unit == internal) then
-		self.reaction = UnitReaction(target, "player")
+function IceTargetInfo.prototype:TargetReaction(unit)
+	if (unit == self.unit or unit == internal) then
+		self.reaction = UnitReaction(self.unit, "player")
 		
 		-- if we don't get reaction, unit is out of range - has to be friendly
 		-- to be targettable (party/raid)
@@ -1218,12 +1222,12 @@ end
 
 
 -- PVP status
-function TargetInfo.prototype:TargetFaction(unit)
-	if (unit == target or unit == internal) then
+function IceTargetInfo.prototype:TargetFaction(unit)
+	if (unit == self.unit or unit == internal) then
 		if (self.isPlayer) then
-			if (UnitIsPVP(target)) then
+			if (UnitIsPVP(self.unit)) then
 				local color = "ff10ff10" -- friendly
-				if (UnitFactionGroup(target) ~= UnitFactionGroup("player")) then
+				if (UnitFactionGroup(self.unit) ~= UnitFactionGroup("player")) then
 					color = "ffff1010" -- hostile
 				end
 				self.pvp = " |c" .. color .. "PvP|r"
@@ -1240,24 +1244,24 @@ function TargetInfo.prototype:TargetFaction(unit)
 end
 
 
-function TargetInfo.prototype:TargetFlags(unit)
-	if (unit == target or unit == internal) then
-		self.tapped = UnitIsTapped(target) and (not UnitIsTappedByPlayer(target))
-		self.targetCombat = UnitAffectingCombat(target) and " |cffee4030Combat|r" or ""
+function IceTargetInfo.prototype:TargetFlags(unit)
+	if (unit == self.unit or unit == internal) then
+		self.tapped = UnitIsTapped(self.unit) and (not UnitIsTappedByPlayer(self.unit))
+		self.targetCombat = UnitAffectingCombat(self.unit) and " |cffee4030Combat|r" or ""
 		self:UpdateBuffs()
 		self:Update(unit)
 	end
 end
 
 
-function TargetInfo.prototype:Update(unit)
-	if (unit ~= target) then
+function IceTargetInfo.prototype:Update(unit)
+	if (unit ~= self.unit) then
 		return
 	end
 
 	if DogTag == nil then
 		self.frame.targetName:SetText(self.name or '')
-		self.frame.targetName:SetVertexColor(UnitSelectionColor("target"))
+		self.frame.targetName:SetVertexColor(UnitSelectionColor(self.unit))
 
 		local line2 = string.format("%s %s%s%s%s%s",
 			self.level or '', self.classLocale or '', self.pvp or '', self.leader or '', self.classification or '', self.targetCombat or '')
@@ -1282,31 +1286,31 @@ function TargetInfo.prototype:Update(unit)
 end
 
 
-function TargetInfo.prototype:OnEnter(frame)
+function IceTargetInfo.prototype:OnEnter(frame)
 	UnitFrame_OnEnter(frame)
 	self.frame.highLight:Show()
 end
 
 
-function TargetInfo.prototype:OnLeave(frame)
+function IceTargetInfo.prototype:OnLeave(frame)
 	UnitFrame_OnLeave(frame)
 	self.frame.highLight:Hide()
 end
 
 
-function TargetInfo.prototype:BuffOnEnter(type)
+function IceTargetInfo.prototype:BuffOnEnter(type)
 	if (not this:IsVisible()) then
 		return
 	end
 
 	GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT")
 	if (type == "buff") then
-		GameTooltip:SetUnitBuff(target, this.id)
+		GameTooltip:SetUnitBuff(self.unit, this.id)
 	else
-		GameTooltip:SetUnitDebuff(target, this.id)
+		GameTooltip:SetUnitDebuff(self.unit, this.id)
 	end
 end
 
 
 -- Load us up
-IceHUD.TargetInfo = TargetInfo:new()
+IceHUD.TargetInfo = IceTargetInfo:new()
