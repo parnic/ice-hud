@@ -207,15 +207,18 @@ end
 
 
 function IceCastBar.prototype:StartBar(action, message)
-	self.action = action
-	self.actionStartTime = GetTime()
-	self.actionMessage = message
-	
 	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill = UnitCastingInfo(self.unit)
 	if not (spell) then
 		spell, rank, displayName, icon, startTime, endTime = UnitChannelInfo(self.unit)
 	end
-	
+
+	if not spell then
+		return
+	end
+
+	self.action = action
+	self.actionStartTime = GetTime()
+	self.actionMessage = message
 	
 	if (startTime and endTime) then
 		self.actionDuration = (endTime - startTime) / 1000

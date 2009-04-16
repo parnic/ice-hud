@@ -380,7 +380,7 @@ function CastBar.prototype:SpellCastStart(unit, spell, rank)
 
 	local lag = GetTime() - (self.spellCastSent or 0)
 	
-	local pos = lag / self.actionDuration
+	local pos = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
 	
 	if (self.moduleSettings.side == IceCore.Side.Left) then
@@ -400,9 +400,9 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 	
 	local lag = GetTime() - (self.spellCastSent or 0)
 	
-	local pos = lag / self.actionDuration
+	local pos = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
-	
+
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.lagBar.bar:SetTexCoord(1, 0, 1-pos, 1)
 	else

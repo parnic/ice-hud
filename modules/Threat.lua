@@ -271,7 +271,7 @@ function IHUD_Threat.prototype:Update(unit)
 	if ( self.aggroBarMulti ~= threatMulti ) then
 		self.aggroBarMulti = threatMulti
 
-		local pos = 1 - (1 / threatMulti)
+		local pos = IceHUD:Clamp(1 - (1 / threatMulti), 0, 1)
 		local y = self.settings.barHeight - ( pos * self.settings.barHeight )
 
 		if ( self.moduleSettings.side == IceCore.Side.Left ) then

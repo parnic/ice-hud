@@ -805,3 +805,13 @@ function IceHUD:OnProfileEnable(oldName, oldData)
 	self.IceCore:SetModuleDatabases()
 	self.IceCore:Enable()
 end
+
+function IceHUD:Clamp(value, min, max)
+	if value < min then
+		value = min
+	elseif value > max then
+		value = max
+	end
+
+	return value
+end

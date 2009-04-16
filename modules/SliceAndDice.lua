@@ -275,7 +275,7 @@ function SliceAndDice.prototype:UpdateDurationBar(unit)
 	PotentialSnDDuration = self:GetMaxBuffTime(points)
 
 	-- compute the scale from the current number of combo points
-	scale = PotentialSnDDuration / CurrMaxSnDDuration
+	scale = IceHUD:Clamp(PotentialSnDDuration / CurrMaxSnDDuration, 0, 1)
 
 	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
 	if (self.moduleSettings.side == IceCore.Side.Left) then

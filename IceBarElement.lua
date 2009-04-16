@@ -695,6 +695,8 @@ end
 function IceBarElement.prototype:SetScale(texture, scale)
 	local oldScale = self.CurrScale
 
+	scale = IceHUD:Clamp(scale, 0, 1)
+
 	self.CurrScale = self:LerpScale(scale)
 
 	if oldScale ~= self.CurrScale then

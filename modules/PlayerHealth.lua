@@ -903,6 +903,8 @@ function PlayerHealth.prototype:Update(unit)
 			barValue = 1
 		end
 
+		barValue = IceHUD:Clamp(barValue, 0, 1)
+
 		if (self.moduleSettings.side == IceCore.Side.Left) then
 			self.healFrame.bar:SetTexCoord(1, 0, barValue, 1)
 		else
