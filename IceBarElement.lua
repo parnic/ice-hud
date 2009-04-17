@@ -723,7 +723,7 @@ function IceBarElement.prototype:LerpScale(scale)
 	end
 
 	if self.CurrLerpTime < self.moduleSettings.desiredLerpTime then
-		return self.LastScale + ((self.DesiredScale - self.LastScale) * (self.CurrLerpTime / self.moduleSettings.desiredLerpTime))
+		return IceHUD:Clamp(self.LastScale + ((self.DesiredScale - self.LastScale) * (self.CurrLerpTime / self.moduleSettings.desiredLerpTime)), 0, 1)
 	else
 		return scale
 	end
