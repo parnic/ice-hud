@@ -222,7 +222,8 @@ end
 
 function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 	local i = 1
-	local debuff, rank, texture, count, debuffType, duration, endTime, isMine = UnitAura(unitName, i, "HARMFUL")
+	local debuff, rank, texture, count, debuffType, duration, endTime, unitCaster = UnitAura(unitName, i, "HARMFUL")
+	local isMine = unitCaster == "player"
 	local result = {nil, nil, nil}
 	local remaining
 
@@ -241,7 +242,8 @@ function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 
 		i = i + 1;
 
-		debuff, rank, texture, count, debuffType, duration, endTime, isMine = UnitAura(unitName, i, "HARMFUL")
+		debuff, rank, texture, count, debuffType, duration, endTime, unitCaster = UnitAura(unitName, i, "HARMFUL")
+		isMine = unitCaster == "player"
 	end
 
 	return unpack(result)

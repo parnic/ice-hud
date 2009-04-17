@@ -125,6 +125,7 @@ function IceCustomBar.prototype:GetOptions()
 			self.moduleSettings.myUnit = v
 			self.unit = v
 			self:Redraw()
+			self:UpdateCustomBar(self.unit)
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -143,6 +144,7 @@ function IceCustomBar.prototype:GetOptions()
 		set = function(v)
 			self.moduleSettings.buffOrDebuff = v
 			self:Redraw()
+			self:UpdateCustomBar(self.unit)
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -163,6 +165,7 @@ function IceCustomBar.prototype:GetOptions()
 			end
 			self.moduleSettings.buffToTrack = v
 			self:Redraw()
+			self:UpdateCustomBar(self.unit)
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -180,6 +183,7 @@ function IceCustomBar.prototype:GetOptions()
 		set = function(v)
 			self.moduleSettings.trackOnlyMine = v
 			self:Redraw()
+			self:UpdateCustomBar(self.unit)
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -220,7 +224,8 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 	local remaining
 	local isBuff = self.moduleSettings.buffOrDebuff == "buff" and true or false
 	local buffFilter = (isBuff and "HELPFUL" or "HARMFUL") .. (unitName == "player" and "|PLAYER" or "")
-	local buff, rank, texture, count, type, duration, endTime, isMine = UnitAura(unitName, i, buffFilter)
+	local buff, rank, texture, count, type, duration, endTime, unitCaster = UnitAura(unitName, i, buffFilter)
+	local isMine = unitCaster == "player"
 
 	while buff do
 		if (buff == buffName and (not self.moduleSettings.trackOnlyMine or isMine)) then
@@ -232,7 +237,8 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 
 		i = i + 1;
 
-		buff, rank, texture, count, type, duration, endTime, isMine = UnitAura(unitName, i, buffFilter)
+		buff, rank, texture, count, type, duration, endTime, unitCaster = UnitAura(unitName, i, buffFilter)
+		isMine = unitCaster == "player"
 	end
 
 	return nil, nil, nil

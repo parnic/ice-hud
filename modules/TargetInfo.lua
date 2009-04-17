@@ -990,10 +990,12 @@ function IceTargetInfo.prototype:UpdateBuffs()
 
 
 	for i = 1, IceCore.BuffLimit do
-		local buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe;
+		local buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe, unitCaster;
 		if IceHUD.WowVer >= 30000 then
-			buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe
+			buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, unitCaster
 				= UnitAura(self.unit, i, "HELPFUL" .. (filter and "|PLAYER" or "")) --UnitBuff(self.unit, i, filter and not hostile)
+
+			isFromMe = (unitCaster == "player")
 		else
 			buffName, buffRank, buffTexture, buffApplications, buffDuration, buffTimeLeft
 				= UnitBuff(self.unit, i, filter and not hostile)
@@ -1044,7 +1046,9 @@ function IceTargetInfo.prototype:UpdateBuffs()
 
 	for i = 1, IceCore.BuffLimit do
 		local buffName, buffRank, buffTexture, buffApplications, debuffDispelType,
-			debuffDuration, debuffTimeLeft, isFromMe = UnitAura(self.unit, i, "HARMFUL" .. (filter and "|PLAYER" or "")) --UnitDebuff(self.unit, i, filter and not hostile)
+			debuffDuration, debuffTimeLeft, unitCaster = UnitAura(self.unit, i, "HARMFUL" .. (filter and "|PLAYER" or "")) --UnitDebuff(self.unit, i, filter and not hostile)
+
+		local isFromMe = (unitCaster == "player")
 
 		if (buffTexture and (not hostile or not filter or (filter and debuffDuration))) then
 
