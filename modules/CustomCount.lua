@@ -5,7 +5,7 @@ local waterfall = AceLibrary("Waterfall-1.0")
 
 IceCustomCount.prototype.countSize = 20
 
-local validUnits = {"player", "target"}
+local validUnits = {"player", "target", "focus", "pet", "vehicle", "targettarget"}
 local buffOrDebuff = {"buff", "debuff"}
 
 -- Constructor --
@@ -375,6 +375,9 @@ function IceCustomCount.prototype:Enable(core)
 	IceCustomCount.super.prototype.Enable(self, core)
 	
 	self:RegisterEvent("UNIT_AURA", "UpdateCustomCount")
+	self:RegisterEvent("UNIT_PET", "UpdateCustomCount")
+	self:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomCount")
+	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomCount")
 
 	self.unit = self.moduleSettings.auraTarget
 

@@ -2,7 +2,7 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 IceCustomBar = AceOO.Class(IceUnitBar)
 
-local validUnits = {"player", "target"}
+local validUnits = {"player", "target", "focus", "pet", "vehicle", "targettarget"}
 local buffOrDebuff = {"buff", "debuff"}
 
 IceCustomBar.prototype.auraDuration = 0
@@ -21,6 +21,9 @@ function IceCustomBar.prototype:Enable(core)
 	IceCustomBar.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_AURA", "UpdateCustomBar")
+	self:RegisterEvent("UNIT_PET", "UpdateCustomBar")
+	self:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomBar")
+	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomBar")
 
 	self:Show(true)
 
