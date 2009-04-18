@@ -695,9 +695,7 @@ end
 function IceBarElement.prototype:SetScale(texture, scale)
 	local oldScale = self.CurrScale
 
-	scale = IceHUD:Clamp(scale, 0, 1)
-
-	self.CurrScale = self:LerpScale(scale)
+	self.CurrScale = IceHUD:Clamp(self:LerpScale(scale), 0, 1)
 
 	if oldScale ~= self.CurrScale then
 		if (self.moduleSettings.side == IceCore.Side.Left) then
@@ -723,7 +721,7 @@ function IceBarElement.prototype:LerpScale(scale)
 	end
 
 	if self.CurrLerpTime < self.moduleSettings.desiredLerpTime then
-		return IceHUD:Clamp(self.LastScale + ((self.DesiredScale - self.LastScale) * (self.CurrLerpTime / self.moduleSettings.desiredLerpTime)), 0, 1)
+		return self.LastScale + ((self.DesiredScale - self.LastScale) * (self.CurrLerpTime / self.moduleSettings.desiredLerpTime))
 	else
 		return scale
 	end
