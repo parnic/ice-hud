@@ -293,8 +293,8 @@ function TargetCC.prototype:UpdateTargetDebuffs(unit, isUpdate)
 	if (name ~= nil) then
 		self:Show(true)
 
-		if (duration ~= nil) then
-			self:UpdateBar(remaining / duration, "CC:" .. self.debuffList[name])
+		if (duration ~= nil and duration > 0) then
+			self:UpdateBar(duration > 0 and remaining / duration or 0, "CC:" .. self.debuffList[name])
 			self:SetBottomText2(floor(remaining * 10) / 10)
 		else
 			self:UpdateBar(0, "CC:" .. self.debuffList[name])

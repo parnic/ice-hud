@@ -174,7 +174,7 @@ function PetMana.prototype:Update(unit)
 	end
 
 	if self.maxMana > 0 then
-		self:UpdateBar(self.mana/self.maxMana, color)
+		self:UpdateBar(self.manaPercentage, color)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then

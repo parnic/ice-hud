@@ -697,6 +697,10 @@ function IceBarElement.prototype:SetScale(texture, scale)
 
 	self.CurrScale = IceHUD:Clamp(self:LerpScale(scale), 0, 1)
 
+	if not self.currScale or self.currScale == (1/0) or self.currScale == (0/0) then
+		self.currScale = 0
+	end
+
 	if oldScale ~= self.CurrScale then
 		if (self.moduleSettings.side == IceCore.Side.Left) then
 			texture:SetTexCoord(1, 0, 1-self.CurrScale, 1)

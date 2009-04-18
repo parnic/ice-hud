@@ -191,9 +191,9 @@ function HungerForBlood.prototype:UpdateHungerForBlood(unit, fromUpdate)
             remaining = hfbEndTime - now
         end
 		if (hfbBuffCount ~= nil and hfbBuffCount > 2) then
-			self:UpdateBar(remaining / hfbDuration, "HungerForBloodMax")
+			self:UpdateBar(hfbDuration > 0 and remaining / hfbDuration or 0, "HungerForBloodMax")
 		else
-			self:UpdateBar(remaining / hfbDuration, "HungerForBlood")
+			self:UpdateBar(hfbDuration > 0 and remaining / hfbDuration or 0, "HungerForBlood")
 		end
 
         formatString = self.moduleSettings.upperText or ''

@@ -59,7 +59,7 @@ function DruidMana.prototype:Update()
 		self:Show(true)
 	end
 
-	self:UpdateBar(self.druidMana / self.druidManaMax, "DruidMana")
+	self:UpdateBar(self.druidManaMax > 0 and self.druidMana / self.druidManaMax or 0, "DruidMana")
 end
 
 

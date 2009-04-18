@@ -110,7 +110,7 @@ function PetHealth.prototype:Update(unit)
 	end
 
 	if (self.maxHealth > 0) then
-		self:UpdateBar(self.health/self.maxHealth, color)
+		self:UpdateBar(self.healthPercentage, color)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then

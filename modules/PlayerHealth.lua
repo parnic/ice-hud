@@ -891,7 +891,7 @@ function PlayerHealth.prototype:Update(unit)
 		textColor = "Text"
 	end
 
-	self:UpdateBar(self.health/self.maxHealth, color)
+	self:UpdateBar(self.healthPercentage, color)
 
 	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
 	if self.moduleSettings.showIncomingHeals and self.healFrame and self.healFrame.bar and incomingHealAmt then

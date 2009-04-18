@@ -368,7 +368,7 @@ function FocusHealth.prototype:Update(unit)
 		self.color = "Tapped"
 	end
 
-	self:UpdateBar(self.health/self.maxHealth, self.color)
+	self:UpdateBar(self.healthPercentage, self.color)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
