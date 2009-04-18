@@ -196,14 +196,6 @@ function PlayerMana.prototype:Update(unit)
 		return
 	end
 
-	local powerType = UnitPowerType(self.unit)
-	if (self.manaPercentage == 1 and powerType ~= 1 and powerType ~= 6)
-		or (self.manaPercentage == 0 and (powerType == 1 or powerType == 6)) then
-		self:SetupOnUpdate(false)
-	elseif GetCVarBool("predictedPower") then
-		self:SetupOnUpdate(true)
-	end
-
 	-- the user can toggle the predictedPower cvar at any time and the addon will not get notified. handle it.
 	if not self.tickerFrame and self:ShouldUseTicker() then
 		self:CreateTickerFrame()
@@ -230,6 +222,14 @@ function PlayerMana.prototype:Update(unit)
 	end
 	
 	self:UpdateBar(self.manaPercentage, color)
+
+	local powerType = UnitPowerType(self.unit)
+	if (self.manaPercentage == 1 and powerType ~= 1 and powerType ~= 6)
+		or (self.manaPercentage == 0 and (powerType == 1 or powerType == 6)) then
+		self:SetupOnUpdate(false)
+	elseif GetCVarBool("predictedPower") then
+		self:SetupOnUpdate(true)
+	end
 
 	if self:ShouldUseTicker() then
 		-- hide ticker if rest of the bar is not visible
