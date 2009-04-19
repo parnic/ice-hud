@@ -161,7 +161,7 @@ function GlobalCoolDown.prototype:UpdateGlobalCoolDown()
 
 			self:Show(false)
 		else
-			self:UpdateBar(1 - (self.duration > 0 and remaining / self.duration or 0), "GlobalCoolDown", 0.8)
+			self:UpdateBar(1 - (self.duration ~= 0 and remaining / self.duration or 0), "GlobalCoolDown", 0.8)
 		end
 	else
 		self:Show(false)

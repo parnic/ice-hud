@@ -135,10 +135,10 @@ function IceCastBar.prototype:OnUpdate()
 	-- handle casting and channeling
 	if (self.action == IceCastBar.Actions.Cast or self.action == IceCastBar.Actions.Channel) then
 		local remainingTime = self.actionStartTime + self.actionDuration - time
-		local scale = 1 - (self.actionDuration > 0 and remainingTime / self.actionDuration or 0)
+		local scale = 1 - (self.actionDuration ~= 0 and remainingTime / self.actionDuration or 0)
 
 		if (self.action == IceCastBar.Actions.Channel) then
-			scale = self.actionDuration > 0 and remainingTime / self.actionDuration or 0
+			scale = self.actionDuration ~= 0 and remainingTime / self.actionDuration or 0
 		end
 
 		if (remainingTime < 0) then

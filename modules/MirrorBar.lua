@@ -73,7 +73,7 @@ function MirrorBar.prototype:OnUpdate(elapsed)
 
 	self.value = self.value + (self.timerScale * elapsed * 1000)
 
-	scale = self.maxValue > 0 and self.value / self.maxValue or 0
+	scale = self.maxValue ~= 0 and self.value / self.maxValue or 0
 
 	if (scale < 0) then -- lag compensation
 		scale = 0

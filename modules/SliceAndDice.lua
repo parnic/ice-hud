@@ -225,8 +225,8 @@ function SliceAndDice.prototype:UpdateSliceAndDice(unit, fromUpdate)
         if not remaining then
             remaining = sndEndTime - now
         end
-	local denominator = (self.moduleSettings.showAsPercentOfMax and CurrMaxSnDDuration or sndDuration)
-        self:UpdateBar(denominator > 0 and remaining / denominator or 0, "SliceAndDice")
+        local denominator = (self.moduleSettings.showAsPercentOfMax and CurrMaxSnDDuration or sndDuration)
+        self:UpdateBar(denominator ~= 0 and remaining / denominator or 0, "SliceAndDice")
 
         formatString = self.moduleSettings.upperText or ''
     else

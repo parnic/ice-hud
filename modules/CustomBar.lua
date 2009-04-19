@@ -278,7 +278,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 			remaining = self.auraEndTime - now
 		end
 
-		self:UpdateBar(self.auraDuration > 0 and remaining / self.auraDuration or 0, "undef")
+		self:UpdateBar(self.auraDuration ~= 0 and remaining / self.auraDuration or 0, "undef")
 	else
 		self:UpdateBar(0, "undef")
 		self:Show(false)
