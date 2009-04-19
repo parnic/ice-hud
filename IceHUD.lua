@@ -811,6 +811,8 @@ function IceHUD:Clamp(value, min, max)
 		value = min
 	elseif value > max then
 		value = max
+	elseif not (value >= min and value <= max) then
+		value = min
 	end
 
 	return value
