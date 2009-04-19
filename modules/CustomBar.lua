@@ -103,7 +103,7 @@ function IceCustomBar.prototype:GetOptions()
 	opts["name"] = {
 		type = 'text',
 		name = 'Bar name',
-		desc = 'The name of this bar (must be unique!)',
+		desc = 'The name of this bar (must be unique!).\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.',
 		get = function()
 			return self.elementName
 		end,
@@ -158,7 +158,7 @@ function IceCustomBar.prototype:GetOptions()
 	opts["buffToTrack"] = {
 		type = 'text',
 		name = "Aura to track",
-		desc = "Which buff/debuff this bar will be tracking",
+		desc = "Which buff/debuff this bar will be tracking.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
 		get = function()
 			return self.moduleSettings.buffToTrack
 		end,

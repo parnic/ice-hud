@@ -234,14 +234,21 @@ function Runes.prototype:Enable(core)
 
 	self:RegisterEvent("RUNE_POWER_UPDATE", "UpdateRunePower");
 	self:RegisterEvent("RUNE_TYPE_UPDATE", "UpdateRuneType");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ResetRuneAvailability");
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
 	end
 end
 
+function Runes.prototype:ResetRuneAvailability()
+	for i=1, self.numRunes do
+		self:UpdateRunePower(i, true, true)
+	end
+end
+
 -- simply shows/hides the foreground rune when it becomes usable/unusable. this allows the background transparent rune to show only
-function Runes.prototype:UpdateRunePower(rune, usable)
+function Runes.prototype:UpdateRunePower(rune, usable, dontFlash)
 	if not rune or not self.frame.graphical or #self.frame.graphical < rune then
 		return
 	end
@@ -255,13 +262,15 @@ function Runes.prototype:UpdateRunePower(rune, usable)
 			self.frame.graphical[rune]:SetAlpha(1)
 		end
 
-		local fadeInfo={
-			mode = "IN",
-			timeToFade = 0.5,
-			finishedFunc = function(rune) self:ShineFinished(rune) end,
-			finishedArg1 = rune
-		}
-		UIFrameFade(self.frame.graphical[rune].shine, fadeInfo);
+		if not dontFlash then
+			local fadeInfo={
+				mode = "IN",
+				timeToFade = 0.5,
+				finishedFunc = function(rune) self:ShineFinished(rune) end,
+				finishedArg1 = rune
+			}
+			UIFrameFade(self.frame.graphical[rune].shine, fadeInfo);
+		end
 	else
 		if self.moduleSettings.cooldownMode == "Cooldown" then
 			self.frame.graphical[rune].cd:SetCooldown(GetRuneCooldown(rune))

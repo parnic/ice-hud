@@ -42,7 +42,7 @@ function IceCustomCount.prototype:GetOptions()
 	opts["name"] = {
 		type = 'text',
 		name = 'Counter name',
-		desc = 'The name of this counter (must be unique!)',
+		desc = 'The name of this counter (must be unique!). \n\nRemember to press ENTER after filling out this box with the name you want or it will not save.',
 		get = function()
 			return self.elementName
 		end,
@@ -95,7 +95,7 @@ function IceCustomCount.prototype:GetOptions()
 	opts["auraName"] = {
 		type = 'text',
 		name = "Aura to track",
-		desc = "Which buff/debuff this counter will be tracking",
+		desc = "Which buff/debuff this counter will be tracking. \n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
 		get = function()
 			return self.moduleSettings.auraName
 		end,
@@ -167,7 +167,7 @@ function IceCustomCount.prototype:GetOptions()
 	opts["maxCount"] = {
 		type = 'text',
 		name = "Maximum applications",
-		desc = "How many total applications of this buff/debuff can be applied. For example, only 5 sunders can ever be on a target, so this would be set to 5 for tracking Sunder.",
+		desc = "How many total applications of this buff/debuff can be applied. For example, only 5 sunders can ever be on a target, so this would be set to 5 for tracking Sunder.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
 		get = function()
 			return self.moduleSettings.maxCount
 		end,
