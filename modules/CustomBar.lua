@@ -226,7 +226,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 	local i = 1
 	local remaining
 	local isBuff = self.moduleSettings.buffOrDebuff == "buff" and true or false
-	local buffFilter = (isBuff and "HELPFUL" or "HARMFUL") .. (unitName == "player" and "|PLAYER" or "")
+	local buffFilter = (isBuff and "HELPFUL" or "HARMFUL") .. (self.moduleSettings.trackOnlyMine and "|PLAYER" or "")
 	local buff, rank, texture, count, type, duration, endTime, unitCaster = UnitAura(unitName, i, buffFilter)
 	local isMine = unitCaster == "player"
 
