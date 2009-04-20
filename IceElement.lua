@@ -207,6 +207,7 @@ end
 
 function IceElement.prototype:UpdateAlpha()
 	if self.moduleSettings.alwaysFullAlpha then
+		self.alpha = 1
 		self.frame:SetAlpha(1)
 		return
 	end
