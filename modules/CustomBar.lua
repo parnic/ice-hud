@@ -2,11 +2,10 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 IceCustomBar = AceOO.Class(IceUnitBar)
 
-local validUnits = {"player", "target", "focus", "pet", "vehicle", "targettarget"}
+local validUnits = {"player", "target", "focus", "pet", "vehicle", "targettarget", "main hand weapon", "off hand weapon"}
 local buffOrDebuff = {"buff", "debuff"}
 
 IceCustomBar.prototype.auraDuration = 0
-IceCustomBar.prototype.auraCount = 0
 IceCustomBar.prototype.auraEndTime = 0
 
 -- Constructor --
@@ -129,6 +128,7 @@ function IceCustomBar.prototype:GetOptions()
 			self.unit = v
 			self:Redraw()
 			self:UpdateCustomBar(self.unit)
+			AceLibrary("Waterfall-1.0"):Refresh("IceHUD")
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -150,7 +150,7 @@ function IceCustomBar.prototype:GetOptions()
 			self:UpdateCustomBar(self.unit)
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
 		order = 20.5,
 	}
@@ -171,7 +171,7 @@ function IceCustomBar.prototype:GetOptions()
 			self:UpdateCustomBar(self.unit)
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
 		order = 20.6,
 	}
@@ -189,7 +189,7 @@ function IceCustomBar.prototype:GetOptions()
 			self:UpdateCustomBar(self.unit)
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
 		order = 20.7,
 	}
@@ -223,6 +223,19 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
+	if unitName == "main hand weapon" or unitName == "off hand weapon" then
+		local hasMainHandEnchant, mainHandExpiration, mainHandCharges, hasOffHandEnchant, offHandExpiration, offHandCharges
+			= GetWeaponEnchantInfo()
+
+		if unitName == "main hand weapon" and hasMainHandEnchant then
+			return mainHandExpiration/1000, mainHandExpiration/1000, mainHandCharges
+		elseif unitName == "off hand weapon" and hasOffHandEnchant then
+			return offHandExpiration/1000, offHandExpiration/1000, offHandCharges
+		end
+
+		return nil, nil, nil
+	end
+
 	local i = 1
 	local remaining
 	local isBuff = self.moduleSettings.buffOrDebuff == "buff" and true or false
@@ -248,7 +261,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 end
 
 function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
-	if unit and unit ~= self.unit then
+	if unit and unit ~= self.unit and not (self.unit == "main hand weapon" or self.unit == "off hand weapon") then
 		return
 	end
 
@@ -256,12 +269,11 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 	local remaining = nil
 
 	if not fromUpdate then
-		self.auraDuration, remaining, self.auraCount =
+		self.auraDuration, remaining =
 			self:GetAuraDuration(self.unit, self.moduleSettings.buffToTrack)
 
 		if not remaining then
 			self.auraEndTime = 0
-			self.auraCount = 0
 		else
 			self.auraEndTime = remaining + now
 		end
