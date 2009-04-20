@@ -5,7 +5,7 @@ local waterfall = AceLibrary("Waterfall-1.0")
 
 IceCustomCount.prototype.countSize = 20
 
-local validUnits = {"player", "target", "focus", "pet", "vehicle", "targettarget"}
+local validUnits = {"player", "target", "focus", "pet", "vehicle", "targettarget", "main hand weapon", "off hand weapon"}
 local buffOrDebuff = {"buff", "debuff"}
 
 -- Constructor --
@@ -67,6 +67,7 @@ function IceCustomCount.prototype:GetOptions()
 			self.moduleSettings.auraTarget = v
 			self.unit = v
 			self:Redraw()
+			AceLibrary("Waterfall-1.0"):Refresh("IceHUD")
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -87,7 +88,7 @@ function IceCustomCount.prototype:GetOptions()
 			self:Redraw()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
 		order = 20.5,
 	}
@@ -104,7 +105,7 @@ function IceCustomCount.prototype:GetOptions()
 			self:Redraw()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
 		order = 20.6,
 	}
@@ -121,7 +122,7 @@ function IceCustomCount.prototype:GetOptions()
 			self:Redraw()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
 		order = 20.7,
 	}
@@ -524,7 +525,7 @@ end
 
 
 function IceCustomCount.prototype:UpdateCustomCount(unit)
-	if unit and unit ~= self.unit then
+	if unit and unit ~= self.unit and self.unit ~= "main hand weapon" and self.unit ~= "off hand weapon" then
 		return
 	end
 
