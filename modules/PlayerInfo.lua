@@ -11,8 +11,36 @@ function PlayerInfo.prototype:GetDefaultSettings()
 
 	settings["enabled"] = false
 	settings["vpos"] = -100
+	settings["hideBlizz"] = false
 
 	return settings
+end
+
+function PlayerInfo.prototype:GetOptions()
+	local opts = PlayerInfo.super.prototype.GetOptions(self)
+
+	opts["hideBlizz"] = {
+		type = "toggle",
+		name = "Hide Blizzard Buff Frame",
+		desc = "Hides Blizzard buffs frame and disables all events related to it",
+		get = function()
+			return self.moduleSettings.hideBlizz
+		end,
+		set = function(value)
+			self.moduleSettings.hideBlizz = value
+			if (value) then
+				self:HideBlizz()
+			else
+				self:ShowBlizz()
+			end
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 41
+	}
+
+	return opts
 end
 
 function PlayerInfo.prototype:CreateFrame(redraw)
@@ -37,6 +65,27 @@ function PlayerInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 	end
 
 	return buffs
+end
+
+function PlayerInfo.prototype:Enable(core)
+	PlayerInfo.super.prototype.Enable(self, core)
+
+	if (self.moduleSettings.hideBlizz) then
+		self:HideBlizz()
+	end
+end
+
+function PlayerInfo.prototype:ShowBlizz()
+	BuffFrame:Show()
+
+	BuffFrame:RegisterEvent("UNIT_AURA");
+end
+
+
+function PlayerInfo.prototype:HideBlizz()
+	BuffFrame:Hide()
+
+	BuffFrame:UnregisterAllEvents()
 end
 
 -- Load us up
