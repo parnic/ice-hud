@@ -80,6 +80,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["usesDogTagStrings"] = true
 	settings["barVerticalOffset"] = 0
 	settings["forceJustifyText"] = "NONE"
+	settings["shouldUseOverride"] = false
 
 	return settings
 end
@@ -294,6 +295,44 @@ function IceBarElement.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 34
+	}
+
+	opts["shouldUseOverride"] =
+	{
+		type = 'toggle',
+		name = 'Override global texture',
+		desc = 'This will override the global bar texture setting for this bar with the one specified below.',
+		get = function()
+			return self.moduleSettings.shouldUseOverride
+		end,
+		set = function(value)
+			self.moduleSettings.shouldUseOverride = value
+			AceLibrary("Waterfall-1.0"):Refresh("IceHUD")
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self:IsEnabled()
+		end,
+		order = 35
+	}
+
+	opts["barTextureOverride"] =
+	{
+		type = 'text',
+		name = 'Bar Texture Override',
+		desc = 'This will override the global bar texture setting for this bar.',
+		get = function()
+			return self.moduleSettings.barTextureOverride
+		end,
+		set = function(value)
+			self.moduleSettings.barTextureOverride = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self:IsEnabled() or not self.moduleSettings.shouldUseOverride
+		end,
+		validate = IceHUD.validBarList,
+		order = 36
 	}
 
 	opts["textSettings"] =
@@ -543,7 +582,7 @@ function IceBarElement.prototype:CreateBackground()
 		self.frame.bg = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
 	
-	self.frame.bg:SetTexture(IceElement.TexturePath .. self.settings.barTexture.."BG")
+	self.frame.bg:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture() .."BG")
 	self.frame.bg:SetBlendMode(self.settings.barBgBlendMode)
 	self.frame.bg:ClearAllPoints()
 	self.frame.bg:SetAllPoints(self.frame)
@@ -589,7 +628,7 @@ function IceBarElement.prototype:CreateBar()
 		self.barFrame.bar = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
 	
-	self.barFrame.bar:SetTexture(IceElement.TexturePath .. self.settings.barTexture)
+	self.barFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	self.barFrame.bar:SetBlendMode(self.settings.barBlendMode)
 	self.barFrame.bar:SetAllPoints(self.frame)
 
@@ -605,6 +644,15 @@ function IceBarElement.prototype:CreateBar()
 	
 	self.barFrame:ClearAllPoints()
 	self.barFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
+end
+
+
+function IceBarElement.prototype:GetMyBarTexture()
+	if self.moduleSettings.shouldUseOverride and self.moduleSettings.barTextureOverride then
+		return self.moduleSettings.barTextureOverride
+	else
+		return self.settings.barTexture
+	end
 end
 
 

@@ -8,6 +8,8 @@ IceHUD.debugging = false
 
 IceHUD.WowVer = select(4, GetBuildInfo())
 
+IceHUD.validBarList = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc", "BloodGlaives", "ArcHUD" }
+
 IceHUD.Location = "Interface\\AddOns\\IceHUD"
 IceHUD.options =
 {
@@ -321,7 +323,7 @@ IceHUD.options =
 					set = function(value)
 						IceHUD.IceCore:SetBarPreset(value)
 					end,
-					validate = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc", "BloodGlaives", "ArcHUD" },
+					validate = IceHUD.validBarList,
 					order = 9
 				},
 
@@ -343,7 +345,7 @@ IceHUD.options =
 					set = function(value)
 						IceHUD.IceCore:SetBarTexture(value)
 					end,
-					validate = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc", "BloodGlaives", "FangRune", "RuneBar", "RuneColor", "ArcHUD" },		
+					validate = IceHUD.validBarList,
 					order = 11
 				},
 
