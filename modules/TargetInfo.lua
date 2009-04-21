@@ -501,7 +501,7 @@ function IceTargetInfo.prototype:GetOptions()
 	opts["line1Tag"] = {
 		type = 'text',
 		name = 'Line 1 tag',
-		desc = 'DogTag-formatted string to use for the top text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags',
+		desc = 'DogTag-formatted string to use for the top text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press ENTER after filling out this box or it will not save.',
 		get = function()
 			return self.moduleSettings.line1Tag
 		end,
@@ -521,7 +521,7 @@ function IceTargetInfo.prototype:GetOptions()
 	opts["line2Tag"] = {
 		type = 'text',
 		name = 'Line 2 tag',
-		desc = 'DogTag-formatted string to use for the second text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags',
+		desc = 'DogTag-formatted string to use for the second text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press ENTER after filling out this box or it will not save.',
 		get = function()
 			return self.moduleSettings.line2Tag
 		end,
@@ -541,7 +541,7 @@ function IceTargetInfo.prototype:GetOptions()
 	opts["line3Tag"] = {
 		type = 'text',
 		name = 'Line 3 tag',
-		desc = 'DogTag-formatted string to use for the third text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags',
+		desc = 'DogTag-formatted string to use for the third text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press ENTER after filling out this box or it will not save.',
 		get = function()
 			return self.moduleSettings.line3Tag
 		end,
@@ -561,7 +561,7 @@ function IceTargetInfo.prototype:GetOptions()
 	opts["line4Tag"] = {
 		type = 'text',
 		name = 'Line 4 tag',
-		desc = 'DogTag-formatted string to use for the bottom text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags',
+		desc = 'DogTag-formatted string to use for the bottom text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press ENTER after filling out this box or it will not save.',
 		get = function()
 			return self.moduleSettings.line4Tag
 		end,

@@ -382,7 +382,7 @@ function IceBarElement.prototype:GetOptions()
 			upperTextString = {
 				type = 'text',
 				name = 'Upper Text',
-				desc = 'The upper text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info',
+				desc = 'The upper text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info.\n\nRemember to press ENTER after filling out this box or it will not save.',
 				hidden = function()
 					return DogTag == nil or not self.moduleSettings.usesDogTagStrings
 				end,
@@ -404,7 +404,7 @@ function IceBarElement.prototype:GetOptions()
 			lowerTextString = {
 				type = 'text',
 				name = 'Lower Text',
-				desc = 'The lower text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info',
+				desc = 'The lower text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info.\n\nRemember to press ENTER after filling out this box or it will not save.',
 				hidden = function()
 					return DogTag == nil or not self.moduleSettings.usesDogTagStrings
 				end,
