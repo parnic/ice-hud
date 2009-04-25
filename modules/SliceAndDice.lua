@@ -82,6 +82,7 @@ function SliceAndDice.prototype:GetDefaultSettings()
     settings["lockLowerFontAlpha"] = false
     settings["lowerTextString"] = ""
     settings["lowerTextVisible"] = false
+    settings["hideAnimationSettings"] = true
 
     return settings
 end

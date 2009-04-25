@@ -211,7 +211,7 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		order = 29
 	}
-
+if not self.moduleSettings.hideAnimationSettings then
 	opts["headerAnimation"] = {
 		type = 'header',
 		name = 'Animation settings',
@@ -254,6 +254,7 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		order = 112
 	}
+end
 
 	opts["widthModifier"] = 
 	{
