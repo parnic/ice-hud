@@ -4,6 +4,7 @@ IceCustomBar = AceOO.Class(IceUnitBar)
 
 local validUnits = {"player", "target", "focus", "pet", "vehicle", "targettarget", "main hand weapon", "off hand weapon"}
 local buffOrDebuff = {"buff", "debuff"}
+local validBuffTimers = {"none", "seconds", "minutes:seconds", "minutes"}
 
 IceCustomBar.prototype.auraDuration = 0
 IceCustomBar.prototype.auraEndTime = 0
@@ -64,6 +65,7 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["trackOnlyMine"] = true
 	settings["displayWhenEmpty"] = false
 	settings["hideAnimationSettings"] = true
+	settings["buffTimerDisplay"] = "minutes"
 
 	return settings
 end
@@ -225,6 +227,24 @@ function IceCustomBar.prototype:GetOptions()
 		order = 20.9
 	}
 
+	opts["buffTimerDisplay"] = {
+		type = 'text',
+		name = 'Buff timer display',
+		desc = 'How to display the buff timer next to the name of the buff on the bar',
+		get = function()
+			return self.moduleSettings.buffTimerDisplay
+		end,
+		set = function(v)
+			self.moduleSettings.buffTimerDisplay = v
+			self:UpdateCustomBar()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		validate = validBuffTimers,
+		order = 21
+	}
+
 	return opts
 end
 
@@ -309,7 +329,24 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 	end
 
 	if (remaining ~= nil) then
-		self:SetBottomText1(self.moduleSettings.upperText .. " " .. tostring(ceil(remaining or 0)) .. "s")
+		local buffString = ""
+		if self.moduleSettings.buffTimerDisplay == "seconds" then
+			buffString = tostring(ceil(remaining or 0)) .. "s"
+		else
+			local seconds = ceil(remaining)%60
+			local minutes = ceil(remaining)/60
+
+			if self.moduleSettings.buffTimerDisplay == "minutes:seconds" then
+				buffString = floor(minutes) .. ":" .. string.format("%02d", seconds)
+			elseif self.moduleSettings.buffTimerDisplay == "minutes" then
+				if minutes > 1 then
+					buffString = ceil(minutes) .. "m"
+				else
+					buffString = ceil(remaining) .. "s"
+				end
+			end
+		end
+		self:SetBottomText1(self.moduleSettings.upperText .. " " .. buffString)
 	else
 		self.auraBuffCount = 0
 		self:SetBottomText1(self.moduleSettings.upperText)
