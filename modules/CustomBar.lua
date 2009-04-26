@@ -26,9 +26,6 @@ function IceCustomBar.prototype:Enable(core)
 
 	self:Show(true)
 
-	self:SetBottomText1("")
-	self:SetBottomText2("")
-
 	self.unit = self.moduleSettings.myUnit
 
 	self:UpdateCustomBar(self.unit)
@@ -65,6 +62,8 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["buffOrDebuff"] = "buff"
 	settings["barColor"] = {r=1, g=0, b=0, a=1}
 	settings["trackOnlyMine"] = true
+	settings["displayWhenEmpty"] = false
+	settings["hideAnimationSettings"] = true
 
 	return settings
 end
@@ -75,10 +74,6 @@ function IceCustomBar.prototype:GetOptions()
 
 	opts.textSettings.args.upperTextString.hidden = false
 	opts.textSettings.args.lowerTextString.hidden = false
-
-	opts.headerAnimation.hidden = true
-	opts.shouldAnimate.hidden = true
-	opts.desiredLerpTime.hidden = true
 
 	opts["customHeader"] = {
 		type = 'header',
@@ -213,6 +208,23 @@ function IceCustomBar.prototype:GetOptions()
 		order = 20.8,
 	}
 
+	opts["displayWhenEmpty"] = {
+		type = 'toggle',
+		name = 'Display when empty',
+		desc = 'Whether or not to display this bar even if the buff/debuff specified is not present.',
+		get = function()
+			return self.moduleSettings.displayWhenEmpty
+		end,
+		set = function(v)
+			self.moduleSettings.displayWhenEmpty = v
+			self:UpdateCustomBar()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 20.9
+	}
+
 	return opts
 end
 
@@ -300,8 +312,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 		self:SetBottomText1(self.moduleSettings.upperText .. " " .. tostring(ceil(remaining or 0)) .. "s")
 	else
 		self.auraBuffCount = 0
-		self:SetBottomText1("")
-		self:SetBottomText2("")
+		self:SetBottomText1(self.moduleSettings.upperText)
 	end
 
 	self.barFrame:SetStatusBarColor(self:GetBarColor())
@@ -311,4 +322,14 @@ function IceCustomBar.prototype:OutCombat()
 	IceCustomBar.super.prototype.OutCombat(self)
 
 	self:UpdateCustomBar(self.unit)
+end
+
+function IceCustomBar.prototype:Show(bShouldShow)
+	if self.moduleSettings.displayWhenEmpty then
+		if not self.bIsVisible then
+			IceCustomBar.super.prototype.Show(self, true)
+		end
+	else
+		IceCustomBar.super.prototype.Show(self, bShouldShow)
+	end
 end
