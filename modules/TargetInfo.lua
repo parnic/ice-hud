@@ -958,7 +958,7 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 		buffs[i].id = i
 		if (self.moduleSettings.mouseBuff) then
 			buffs[i]:EnableMouse(true)
-			buffs[i]:SetScript("OnEnter", function() self:BuffOnEnter(type) end)
+			buffs[i]:SetScript("OnEnter", function() self:BuffOnEnter(buffs[i].type or type) end)
 			buffs[i]:SetScript("OnLeave", function() GameTooltip:Hide() end)
 		else
 			buffs[i]:EnableMouse(false)
@@ -1004,38 +1004,7 @@ function IceTargetInfo.prototype:UpdateBuffs()
 		end
 
 		if (buffTexture) then
-			self.frame.buffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
-			self.frame.buffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
-
-			local alpha = buffTexture and 0.5 or 0
-			self.frame.buffFrame.buffs[i].texture:SetTexture(0, 0, 0, alpha)
-
-			-- cooldown frame
-			if (buffDuration and buffDuration > 0 and
-				buffTimeLeft and buffTimeLeft > 0) then
-				local start
-				if IceHUD.WowVer >= 30000 then
-					-- in wotlk, the "bufftimeleft" parameter is actually the ending time for the buff
-					start = buffTimeLeft - buffDuration
-				else
-					start = GetTime() - buffDuration + buffTimeLeft
-				end
-				self.frame.buffFrame.buffs[i].cd:SetCooldown(start, buffDuration)
-				self.frame.buffFrame.buffs[i].cd:Show()
-			else
-				self.frame.buffFrame.buffs[i].cd:Hide()
-			end
-
-			self.frame.buffFrame.buffs[i].fromPlayer = isFromMe
-
-			if (buffApplications and (buffApplications > 1)) then
-				self.frame.buffFrame.buffs[i].icon.stack:SetText(buffApplications)
-			else
-				self.frame.buffFrame.buffs[i].icon.stack:SetText(nil)
-			end
-
-
-			self.frame.buffFrame.buffs[i]:Show()
+			self:SetUpBuff(i, buffTexture, buffDuration, buffTimeLeft, isFromMe, buffApplications)
 		else
 			self.frame.buffFrame.buffs[i]:Hide()
 		end
@@ -1093,6 +1062,38 @@ function IceTargetInfo.prototype:UpdateBuffs()
 
 	local direction = self.moduleSettings.debuffGrowDirection == "Left" and -1 or 1
 	self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame, direction, self.frame.debuffFrame.buffs, "debuff")
+end
+
+
+function IceTargetInfo.prototype:SetUpBuff(i, buffTexture, buffDuration, buffTimeLeft, isFromMe, buffApplications, buffType)
+	local zoom = self.moduleSettings.zoom
+
+	self.frame.buffFrame.buffs[i].type = buffType
+	self.frame.buffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
+	self.frame.buffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
+
+	local alpha = buffTexture and 0.5 or 0
+	self.frame.buffFrame.buffs[i].texture:SetTexture(0, 0, 0, alpha)
+
+	-- cooldown frame
+	if (buffDuration and buffDuration > 0 and
+		buffTimeLeft and buffTimeLeft > 0) then
+		local start = buffTimeLeft - buffDuration
+		self.frame.buffFrame.buffs[i].cd:SetCooldown(start, buffDuration)
+		self.frame.buffFrame.buffs[i].cd:Show()
+	else
+		self.frame.buffFrame.buffs[i].cd:Hide()
+	end
+
+	self.frame.buffFrame.buffs[i].fromPlayer = isFromMe
+
+	if (buffApplications and (buffApplications > 1)) then
+		self.frame.buffFrame.buffs[i].icon.stack:SetText(buffApplications)
+	else
+		self.frame.buffFrame.buffs[i].icon.stack:SetText(nil)
+	end
+
+	self.frame.buffFrame.buffs[i]:Show()
 end
 
 
@@ -1310,6 +1311,8 @@ function IceTargetInfo.prototype:BuffOnEnter(type)
 	GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT")
 	if (type == "buff") then
 		GameTooltip:SetUnitBuff(self.unit, this.id)
+	elseif (type == "mh" or type == "oh") then
+		GameTooltip:SetInventoryItem("player", type == "mh" and GetInventorySlotInfo("MainHandSlot") or GetInventorySlotInfo("SecondaryHandSlot"))
 	else
 		GameTooltip:SetUnitDebuff(self.unit, this.id)
 	end

@@ -1,6 +1,13 @@
 local AceOO = AceLibrary("AceOO-2.0")
 local PlayerInfo = AceOO.Class(IceTargetInfo)
 
+local EPSILON = 0.5
+
+PlayerInfo.prototype.mainHandEnchantTimeSet = 0
+PlayerInfo.prototype.mainHandEnchantEndTime = 0
+PlayerInfo.prototype.offHandEnchantTimeSet = 0
+PlayerInfo.prototype.offHandEnchantEndTime = 0
+
 -- Constructor --
 function PlayerInfo.prototype:init()
 	PlayerInfo.super.prototype.init(self, "PlayerInfo", "player")
@@ -73,6 +80,8 @@ function PlayerInfo.prototype:Enable(core)
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
 	end
+
+	self:ScheduleRepeatingEvent(self.elementName, self.UpdateBuffs, 1, self, self.unit, true)
 end
 
 function PlayerInfo.prototype:ShowBlizz()
@@ -86,6 +95,74 @@ function PlayerInfo.prototype:HideBlizz()
 	BuffFrame:Hide()
 
 	BuffFrame:UnregisterAllEvents()
+end
+
+function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
+	if unit and unit ~= self.unit then
+		return
+	end
+
+	if not fromRepeated then
+		PlayerInfo.super.prototype.UpdateBuffs(self)
+	end
+
+	local startingNum = 0
+
+	for i=1, IceCore.BuffLimit do
+		if not self.frame.buffFrame.buffs[i]:IsVisible()
+			or self.frame.buffFrame.buffs[i].type == "mh"
+			or self.frame.buffFrame.buffs[i].type == "oh" then
+			startingNum = i
+			break
+		end
+	end
+
+	local hasMainHandEnchant, mainHandExpiration, mainHandCharges,
+		hasOffHandEnchant, offHandExpiration, offHandCharges
+		= GetWeaponEnchantInfo()
+
+	if hasMainHandEnchant or hasOffHandEnchant then
+		local CurrTime = GetTime()
+
+		if hasMainHandEnchant then
+			if self.mainHandEnchantEndTime == 0 or
+				abs(self.mainHandEnchantEndTime - (mainHandExpiration/1000)) > CurrTime - self.mainHandEnchantTimeSet + EPSILON then
+				self.mainHandEnchantEndTime = mainHandExpiration/1000
+				self.mainHandEnchantTimeSet = CurrTime
+			end
+
+			self:SetUpBuff(startingNum,
+				GetInventoryItemTexture(self.unit, GetInventorySlotInfo("MainHandSlot")),
+				self.mainHandEnchantEndTime,
+				CurrTime + (mainHandExpiration/1000),
+				true,
+				mainHandCharges,
+				"mh")
+
+			startingNum = startingNum + 1
+		end
+
+		if hasOffHandEnchant then
+			if self.offHandEnchantEndTime == 0 or
+				abs(self.offHandEnchantEndTime - (offHandExpiration/1000)) > abs(CurrTime - self.offHandEnchantTimeSet) + EPSILON then
+				self.offHandEnchantEndTime = offHandExpiration/1000
+				self.offHandEnchantTimeSet = CurrTime
+			end
+
+			self:SetUpBuff(startingNum,
+				GetInventoryItemTexture(self.unit, GetInventorySlotInfo("SecondaryHandSlot")),
+				self.offHandEnchantEndTime,
+				CurrTime + (offHandExpiration/1000),
+				true,
+				offHandCharges,
+				"oh")
+
+			startingNum = startingNum + 1
+		end
+
+		local direction = self.moduleSettings.buffGrowDirection == "Left" and -1 or 1
+		self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, direction, self.frame.buffFrame.buffs, "buff")
+	end
 end
 
 -- Load us up
