@@ -651,9 +651,6 @@ function IceHUD:OnInitialize()
 	
 	self.IceCore = IceCore:new()
 
-	if not self.db.account.settingsMoved then
-		self:RegisterDefaults('account', self.IceCore.defaults)	
-	end
 	self:RegisterDefaults('profile', self.IceCore.defaults)
 
 	self.IceCore.settings = self.db.profile
@@ -683,15 +680,6 @@ end
 
 function IceHUD:OnEnable(isFirst)
 	self:Debug("IceHUD:OnEnable()")
-
-	if not self.db.account.settingsMoved then
-		for k,v in pairs(self.db.account) do
-			self.db.profile[k] = v
-		end
-
-		self:ResetDB("account")
-		self.db.account.settingsMoved = true
-	end
 
 	self.IceCore:Enable()
 
