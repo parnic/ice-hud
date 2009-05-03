@@ -674,5 +674,15 @@ function IceCore.prototype:LoadPresets()
 		barBlendMode = "BLEND",
 		barBgBlendMode = "BLEND",
 	}
+
+	self.presets["FangRune"] = {
+		barTexture = "FangRune",
+		barWidth = 155,
+		barHeight = 220,
+		barProportion = 0.14,
+		barSpace = 1,
+		barBlendMode = "BLEND",
+		barBgBlendMode = "BLEND",
+	}
 end
 
