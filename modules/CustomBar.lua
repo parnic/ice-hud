@@ -57,7 +57,7 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["lockLowerFontAlpha"] = false
 	settings["lowerText"] = ""
 	settings["lowerTextVisible"] = false
-	settings["isCustomBar"] = true
+	settings["customBarType"] = "Bar"
 	settings["buffToTrack"] = ""
 	settings["myUnit"] = "player"
 	settings["buffOrDebuff"] = "buff"

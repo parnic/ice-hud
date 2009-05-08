@@ -540,6 +540,17 @@ IceHUD.options =
 			order = 94.6
 		},
 
+		customCD = {
+			type = 'execute',
+			name = 'Create cooldown bar',
+			desc = 'Creates a new customized ability cooldown bar',
+			func = function()
+				IceHUD.IceCore:AddNewDynamicModule(IceCustomCDBar:new())
+				StaticPopup_Show("ICEHUD_CUSTOM_CD_CREATED")
+			end,
+			order = 94.7
+		},
+
 		configMode = {
 			type = 'toggle',
 			name = '|cffff0000Configuration Mode|r',
@@ -623,6 +634,15 @@ StaticPopupDialogs["ICEHUD_CUSTOM_BAR_CREATED"] =
 StaticPopupDialogs["ICEHUD_CUSTOM_COUNTER_CREATED"] =
 {
 	text = "A custom counter has been created and can be configured through Module Settings => MyCustomCounter. It is highly recommended that you change the bar name of this module so that it's easier to identify.",
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 0,
+}
+
+StaticPopupDialogs["ICEHUD_CUSTOM_CD_CREATED"] =
+{
+	text = "A custom cooldown bar has been created and can be configured through Module Settings => MyCustomCD. It is highly recommended that you change the bar name of this module so that it's easier to identify.",
 	button1 = OKAY,
 	timeout = 0,
 	whileDead = 1,

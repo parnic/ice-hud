@@ -101,16 +101,21 @@ function IceCore.prototype:Enable()
 	end
 
 	for k,v in pairs(self.settings.modules) do
-		if self.settings.modules[k].isCustomBar then
+		if self.settings.modules[k].customBarType == "Bar" then
 			local newBar
 			newBar = IceCustomBar:new()
 			newBar.elementName = k
 			self:AddNewDynamicModule(newBar, true)
-		elseif self.settings.modules[k].isCustomCounter then
+		elseif self.settings.modules[k].customBarType == "Counter" then
 			local newCounter
 			newCounter = IceCustomCount:new()
 			newCounter.elementName = k
 			self:AddNewDynamicModule(newCounter, true)
+		elseif self.settings.modules[k].customBarType == "CD" then
+			local newCD
+			newCD = IceCustomCDBar:new()
+			newCD.elementName = k
+			self:AddNewDynamicModule(newCD, true)
 		end
 	end
 
@@ -128,12 +133,8 @@ function IceCore.prototype:AddNewDynamicModule(module, hasSettings)
 	module:SetDatabase(self.settings)
 
 	if not hasSettings then
-		local numExisting = self:GetNumCustomModules(module, true, module:GetDefaultSettings().isCustomBar)
-		if module:GetDefaultSettings().isCustomBar then
-			self:RenameDynamicModule(module, "MyCustomBar"..(numExisting+1))
-		elseif module:GetDefaultSettings().isCustomCounter then
-			self:RenameDynamicModule(module, "MyCustomCounter"..(numExisting+1))
-		end
+		local numExisting = self:GetNumCustomModules(module, module:GetDefaultSettings().customBarType)
+		self:RenameDynamicModule(module, "MyCustom"..module:GetDefaultSettings().customBarType..(numExisting+1))
 	end
 
 	module:Create(self.IceHUDFrame)
@@ -145,14 +146,14 @@ function IceCore.prototype:AddNewDynamicModule(module, hasSettings)
 end
 
 
-function IceCore.prototype:GetNumCustomModules(exceptMe, findBars)
+function IceCore.prototype:GetNumCustomModules(exceptMe, customBarType)
 	local num = 0
 	local foundNum = 0
 
 	for i=0,table.getn(self.elements) do
 		if (self.elements[i] and self.elements[i] ~= exceptMe and
-			(findBars and self.elements[i].moduleSettings.isCustomBar or self.elements[i].moduleSettings.isCustomCounter)) then
-			local str = self.elements[i].elementName:match("MyCustom"..(findBars and "Bar" or "Counter").."%d+")
+			customBarType == self.elements[i].moduleSettings.customBarType) then
+			local str = self.elements[i].elementName:match("MyCustom"..(customBarType).."%d+")
 			if str then
 				foundNum = str:match("%d+")
 			end

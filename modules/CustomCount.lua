@@ -354,7 +354,7 @@ function IceCustomCount.prototype:GetDefaultSettings()
 	defaults["auraTarget"] = "player"
 	defaults["auraName"] = ""
 	defaults["onlyMine"] = true
-	defaults["isCustomCounter"] = true
+	defaults["customBarType"] = "Counter"
 	defaults["countMinColor"] = {r=1, g=1, b=0, a=1}
 	defaults["countColor"] = {r=1, g=0, b=0, a=1}
 	defaults["auraType"] = "buff"

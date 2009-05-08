@@ -59,3 +59,4 @@ modules\CustomCount.lua
 # - make sure PlayerInfo loads after TargetInfo since it inherits
 modules\PlayerInfo.lua
 modules\TargetOfTargetCast.lua
+modules\CustomCDBar.lua
