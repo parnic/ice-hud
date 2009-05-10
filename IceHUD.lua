@@ -758,6 +758,17 @@ function IceHUD.OnClick()
 	end
 end
 
+-- blizzard interface options
+local blizOptionsPanel = CreateFrame("FRAME", "IceHUDConfigPanel", UIParent)
+blizOptionsPanel.name = "IceHUD"
+blizOptionsPanel.button = CreateFrame("BUTTON", "IceHUDOpenConfigButton", blizOptionsPanel, "UIPanelButtonTemplate2")
+blizOptionsPanel.button:SetText("Open IceHUD configuration")
+blizOptionsPanel.button:SetWidth(240)
+blizOptionsPanel.button:SetHeight(30)
+blizOptionsPanel.button:SetScript("OnClick", function(self) HideUIPanel(InterfaceOptionsFrame) HideUIPanel(GameMenuFrame) waterfall:Open("IceHUD") end)
+blizOptionsPanel.button:SetPoint('TOPLEFT', blizOptionsPanel, 'TOPLEFT', 20, -20)
+InterfaceOptions_AddCategory(blizOptionsPanel)
+
 function IceHUD:Debug(msg)
 	if self.debugging then
 		self.debugFrame:AddMessage(msg)
