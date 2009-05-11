@@ -521,7 +521,7 @@ IceHUD.options =
 		customBar = {
 			type = 'execute',
 			name = 'Create custom bar',
-			desc = 'Creates a new customized bar',
+			desc = 'Creates a new customized bar. This bar allows you to specify a buff or debuff to track on a variety of targets. Once that buff/debuff is applied, you will be able to watch it count down on the bar. You can create as many of these as you like.',
 			func = function()
 				IceHUD.IceCore:AddNewDynamicModule(IceCustomBar:new())
 				StaticPopup_Show("ICEHUD_CUSTOM_BAR_CREATED")
@@ -532,7 +532,7 @@ IceHUD.options =
 		customCount = {
 			type = 'execute',
 			name = 'Create custom counter',
-			desc = 'Creates a new customized counter',
+			desc = 'Creates a new customized counter. This counter allows you to specify a stacking buff or debuff to track on a variety of targets. A number or graphic (whichever you choose) will count the number of applications of the specified buff/debuff. You can create as many of these as you like.',
 			func = function()
 				IceHUD.IceCore:AddNewDynamicModule(IceCustomCount:new())
 				StaticPopup_Show("ICEHUD_CUSTOM_COUNTER_CREATED")
@@ -543,7 +543,7 @@ IceHUD.options =
 		customCD = {
 			type = 'execute',
 			name = 'Create cooldown bar',
-			desc = 'Creates a new customized ability cooldown bar',
+			desc = 'Creates a new customized ability cooldown bar. This bar will monitor the cooldown of the specified skill/spell so you know when it is available to be used again. You can create as many of these as you like.',
 			func = function()
 				IceHUD.IceCore:AddNewDynamicModule(IceCustomCDBar:new())
 				StaticPopup_Show("ICEHUD_CUSTOM_CD_CREATED")
