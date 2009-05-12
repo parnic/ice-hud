@@ -28,15 +28,10 @@ end
 
 
 -- OVERRIDE
-function TargetCast.prototype:Enable(core)
-	TargetCast.super.prototype.Enable(self, core)
-	
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
-end
-
-
 function TargetCast.prototype:TargetChanged(unit)
-	if not (UnitExists(self.unit)) then
+	TargetCast.super.prototype.TargetChanged(self, unit)
+
+	if not (self.target) then
 		self:StopBar()
 		return
 	end
