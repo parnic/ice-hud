@@ -75,6 +75,11 @@ function PlayerHealth.prototype:Enable(core)
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "CheckPvP")
 	self:RegisterEvent("UNIT_FACTION", "CheckPvP")
 
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
+	self:RegisterEvent("UNIT_ENTERING_VEHICLE", "EnteringVehicle")
+	self:RegisterEvent("UNIT_EXITING_VEHICLE", "ExitingVehicle")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+
 	if AceLibrary:HasInstance("LibHealComm-3.0") then
 		HealComm = AceLibrary("LibHealComm-3.0")
 		HealComm.RegisterCallback(self, "HealComm_DirectHealStart", function(event, healerName, healSize, endTime, ...) self:HealComm_DirectHealStart(event, healerName, healSize, endTime, ...) end)
@@ -640,6 +645,20 @@ function PlayerHealth.prototype:GetOptions()
 	}
 	
 	return opts
+end
+
+
+function PlayerHealth.prototype:EnteringVehicle()
+	self.unit = "vehicle"
+	self:RegisterFontStrings()
+	self:Update(self.unit)
+end
+
+
+function PlayerHealth.prototype:ExitingVehicle()
+	self.unit = "player"
+	self:RegisterFontStrings()
+	self:Update(self.unit)
 end
 
 

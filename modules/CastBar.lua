@@ -283,9 +283,26 @@ end
 function CastBar.prototype:Enable(core)
 	CastBar.super.prototype.Enable(self, core)
 
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
+	self:RegisterEvent("UNIT_ENTERING_VEHICLE", "EnteringVehicle")
+	self:RegisterEvent("UNIT_EXITING_VEHICLE", "ExitingVehicle")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+
 	if self.moduleSettings.enabled and not self.moduleSettings.showBlizzCast then
 		self:ToggleBlizzCast(false)
 	end
+end
+
+
+function CastBar.prototype:EnteringVehicle()
+	self.unit = "vehicle"
+	self:Update(self.unit)
+end
+
+
+function CastBar.prototype:ExitingVehicle()
+	self.unit = "player"
+	self:Update(self.unit)
 end
 
 
@@ -381,6 +398,9 @@ function CastBar.prototype:SpellCastStart(unit, spell, rank)
 	local lag = GetTime() - (self.spellCastSent or 0)
 	
 	local pos = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
+	if self.unit == "vehicle" then
+		pos = 0
+	end
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
 	
 	if (self.moduleSettings.side == IceCore.Side.Left) then
@@ -401,6 +421,9 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 	local lag = GetTime() - (self.spellCastSent or 0)
 	
 	local pos = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
+	if self.unit == "vehicle" then
+		pos = 0
+	end
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
 
 	if (self.moduleSettings.side == IceCore.Side.Left) then

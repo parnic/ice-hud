@@ -111,6 +111,11 @@ function PlayerMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_ENERGY", "UpdateEnergy")
 	self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
 
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
+	self:RegisterEvent("UNIT_ENTERING_VEHICLE", "EnteringVehicle")
+	self:RegisterEvent("UNIT_EXITING_VEHICLE", "ExitingVehicle")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+
 	-- allow new 'predicted power' stuff to show the power updates constantly instead of ticking
 	if GetCVarBool("predictedPower") then
 		self:SetupOnUpdate(true)
@@ -136,6 +141,20 @@ function PlayerMana.prototype:SetupOnUpdate(enable)
 			self.frame:SetScript("OnUpdate", nil)
 		end
 	end
+end
+
+
+function PlayerMana.prototype:EnteringVehicle()
+	self.unit = "vehicle"
+	self:RegisterFontStrings()
+	self:Update(self.unit)
+end
+
+
+function PlayerMana.prototype:ExitingVehicle()
+	self.unit = "player"
+	self:RegisterFontStrings()
+	self:Update(self.unit)
 end
 
 
@@ -192,8 +211,15 @@ end
 
 function PlayerMana.prototype:Update(unit)
 	PlayerMana.super.prototype.Update(self)
-	if (unit and (unit ~= "player")) then
+	if (unit and (unit ~= self.unit)) then
 		return
+	end
+
+	if self.unit == "vehicle" and ((not UnitExists(unit)) or (self.maxMana == 0)) then
+		self:Show(false)
+		return
+	else	
+		self:Show(true)
 	end
 
 	-- the user can toggle the predictedPower cvar at any time and the addon will not get notified. handle it.
@@ -272,7 +298,7 @@ end
 
 
 function PlayerMana.prototype:UpdateEnergy(unit)
-	if (unit and (unit ~= "player")) then
+	if (unit and (unit ~= self.unit)) then
 		return
 	end
 
