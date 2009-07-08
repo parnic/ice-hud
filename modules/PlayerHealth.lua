@@ -151,7 +151,28 @@ function PlayerHealth.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 41
-	}
+	}	
+	
+	opts["hideBlizzParty"] = {
+			type = "toggle",
+			name = "Hide Blizzard Party Frame",
+			desc = "Hides Blizzard Party frame and disables all events related to it",
+			get = function()
+				return self.moduleSettings.hideBlizzParty
+			end,
+			set = function(value)
+				self.moduleSettings.hideBlizzParty = value
+				if (value) then
+					self:HideBlizzParty()
+				else
+					self:ShowBlizzParty()
+				end
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 41
+		}
 
 	opts["scaleHealthColor"] = {
 		type = "toggle",
@@ -649,7 +670,7 @@ end
 
 
 function PlayerHealth.prototype:EnteringVehicle()
-	self.unit = "vehicle"
+    self.unit = "vehicle"
 	self:RegisterFontStrings()
 	self:Update(self.unit)
 end
@@ -1031,7 +1052,52 @@ function PlayerHealth.prototype:HideBlizz()
 	PlayerFrame:UnregisterAllEvents()
 end
 
+function PlayerHealth.prototype:HideBlizzParty()
+	
+	for i = 1, MAX_PARTY_MEMBERS do
+		local party = _G['PartyMemberFrame'..i]
+		party:UnregisterAllEvents()
+		party:Hide()
+		party.Show = function() end
+	end
+	UIParent:UnregisterEvent('RAID_ROSTER_UPDATE')
+	
+	HidePartyFrame(); -- Sometimes, if the party composition changes, the above won't work so we call the Blizzard method too.
+end
 
+function PlayerHealth.prototype:ShowBlizzParty()
+	-- This loop exists because we need to unregister for events in case the party composition changes.
+	for i = 1, MAX_PARTY_MEMBERS do
+		local party = _G['PartyMemberFrame'..i]
+		party.Show = nil
+		party:RegisterEvent('PARTY_MEMBERS_CHANGED')
+		party:RegisterEvent('PARTY_LEADER_CHANGED')
+		party:RegisterEvent('PARTY_MEMBER_ENABLE')
+		party:RegisterEvent('PARTY_MEMBER_DISABLE')
+		party:RegisterEvent('PARTY_LOOT_METHOD_CHANGED')
+		party:RegisterEvent('MUTELIST_UPDATE')
+		party:RegisterEvent('IGNORELIST_UPDATE')
+		party:RegisterEvent('UNIT_PVP_UPDATE')
+		party:RegisterEvent('UNIT_AURA')
+		party:RegisterEvent('UNIT_PET')
+		party:RegisterEvent('VARIABLES_LOADED')
+		party:RegisterEvent('UNIT_NAME_UPDATE')
+		party:RegisterEvent('UNIT_PORTRAIT_UPDATE')
+		party:RegisterEvent('UNIT_DISPLAYPOWER')
+		party:RegisterEvent('UNIT_ENTERED_VEHICLE')
+		party:RegisterEvent('UNIT_EXITED_VEHICLE')
+		party:RegisterEvent('VOICE_START')
+		party:RegisterEvent('VOICE_STOP')
+		party:RegisterEvent('VOICE_STATUS_UPDATE')
+		party:RegisterEvent('READY_CHECK')
+		party:RegisterEvent('READY_CHECK_CONFIRM')
+		party:RegisterEvent('READY_CHECK_FINISHED')
+		UnitFrame_OnEvent('PARTY_MEMBERS_CHANGED')
+	end
+	UIParent:RegisterEvent('RAID_ROSTER_UPDATE')
+	
+	ShowPartyFrame(); -- Just call Blizzard default method
+end
 
 -- Load us up
 IceHUD.PlayerHealth = PlayerHealth:new()
