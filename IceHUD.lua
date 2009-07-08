@@ -818,7 +818,7 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 			break
 		end
 
-		if (not matchByName and string.match(texture, ability)) or (matchByName and string.match(name, ability)) then
+		if (not matchByName and string.match(texture:upper(), ability:upper())) or (matchByName and string.match(name:upper(), ability:upper())) then
 			return applications
 		end
 	end
