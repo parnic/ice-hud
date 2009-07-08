@@ -51,6 +51,7 @@ modules\Runes.lua
 modules\TargetOfTargetHealth.lua
 modules\TargetOfTargetMana.lua
 modules\Threat.lua
+modules\FocusThreat.lua
 modules\RangeCheck.lua
 modules\MaelstromCount.lua
 modules\HungerForBlood.lua

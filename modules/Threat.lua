@@ -1,5 +1,5 @@
 --[[
-Name: IHUD_Threat
+Name: IceThreat
 Version: 1.2
 Author: Caryna/Turalyon EU (Alliance) (updated for Threat-2.0 by 'acapela' of WoWI and merged into IceHUD by Parnic)
 Description: adds a threat bar to IceHUD
@@ -7,15 +7,19 @@ Description: adds a threat bar to IceHUD
 
 local AceOO = AceLibrary("AceOO-2.0")
 
-local IHUD_Threat = AceOO.Class(IceUnitBar)
+IceThreat = AceOO.Class(IceUnitBar)
 
-IHUD_Threat.prototype.color = nil
-IHUD_Threat.aggroBar = nil
-IHUD_Threat.aggroBarMulti = nil
+IceThreat.prototype.color = nil
+IceThreat.aggroBar = nil
+IceThreat.aggroBarMulti = nil
 
 -- constructor
-function IHUD_Threat.prototype:init()
-	IHUD_Threat.super.prototype.init(self, "Threat", "target")
+function IceThreat.prototype:init(name, unit)
+	if not name or not unit then
+		IceThreat.super.prototype.init(self, "Threat", "target")
+	else
+		IceThreat.super.prototype.init(self, name, unit)
+	end
 
 	self:SetDefaultColor("ThreatLow", 102, 204, 51)
 	self:SetDefaultColor("ThreatMedium", 0, 204, 204)
@@ -28,8 +32,8 @@ function IHUD_Threat.prototype:init()
 end
 
 -- default settings
-function IHUD_Threat.prototype:GetDefaultSettings()
-	local settings = IHUD_Threat.super.prototype.GetDefaultSettings(self)
+function IceThreat.prototype:GetDefaultSettings()
+	local settings = IceThreat.super.prototype.GetDefaultSettings(self)
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 4
 	settings["enabled"] = false
@@ -41,8 +45,8 @@ function IHUD_Threat.prototype:GetDefaultSettings()
 end
 
 -- options stuff
-function IHUD_Threat.prototype:GetOptions()
-	local opts = IHUD_Threat.super.prototype.GetOptions(self)
+function IceThreat.prototype:GetOptions()
+	local opts = IceThreat.super.prototype.GetOptions(self)
 
 	opts["enabled"] = {
 		type = "toggle",
@@ -121,8 +125,8 @@ function IHUD_Threat.prototype:GetOptions()
 end
 
 -- enable plugin
-function IHUD_Threat.prototype:Enable(core)
-	IHUD_Threat.super.prototype.Enable(self, core)
+function IceThreat.prototype:Enable(core)
+	IceThreat.super.prototype.Enable(self, core)
 
 	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.2, self)
 
@@ -130,26 +134,26 @@ function IHUD_Threat.prototype:Enable(core)
 end
 
 -- disable plugin
-function IHUD_Threat.prototype:Disable(core)
-	IHUD_Threat.super.prototype.Disable(self, core)
+function IceThreat.prototype:Disable(core)
+	IceThreat.super.prototype.Disable(self, core)
 
 	self:CancelScheduledEvent(self.elementName)
 end
 
 -- OVERRIDE
-function IHUD_Threat.prototype:CreateFrame()
-	IHUD_Threat.super.prototype.CreateFrame(self)
+function IceThreat.prototype:CreateFrame()
+	IceThreat.super.prototype.CreateFrame(self)
 	
 	self:CreateAggroBar()
 end
 
 -- needs to be inverted for threat bar
-function IHUD_Threat.prototype:UseTargetAlpha(scale)
+function IceThreat.prototype:UseTargetAlpha(scale)
 	return (scale and (scale > 0))
 end
 
 -- create the aggro range indicator bar
-function IHUD_Threat.prototype:CreateAggroBar()
+function IceThreat.prototype:CreateAggroBar()
 	if not (self.aggroBar) then
 		self.aggroBar = CreateFrame("StatusBar", nil, self.frame)
 	end
@@ -184,8 +188,8 @@ function IHUD_Threat.prototype:CreateAggroBar()
 end
 
 -- bar stuff
-function IHUD_Threat.prototype:Update(unit)
-	IHUD_Threat.super.prototype.Update(self)
+function IceThreat.prototype:Update(unit)
+	IceThreat.super.prototype.Update(self)
 
 	if (unit and (unit ~= self.unit)) then
 		return
@@ -200,15 +204,15 @@ function IHUD_Threat.prototype:Update(unit)
 		return
 	end
 
-	if not UnitExists("target") or not UnitCanAttack("player", "target") or UnitIsDead("target")
-		or UnitIsFriend("player", "target") or UnitPlayerControlled("target") then
+	if not UnitExists(self.unit) or not UnitCanAttack("player", self.unit) or UnitIsDead(self.unit)
+		or UnitIsFriend("player", self.unit) or UnitPlayerControlled(self.unit) then
 		self:Show(false)
 		return
 	else
 		self:Show(true)
 	end
 
-	local isTanking, threatState, scaledPercent, rawPercent = UnitDetailedThreatSituation("player", "target")
+	local isTanking, threatState, scaledPercent, rawPercent = UnitDetailedThreatSituation("player", self.unit)
 	local scaledPercentZeroToOne
 
 	if not self.combat and (scaledPercent == 0 or rawPercent == 0) then
@@ -288,4 +292,4 @@ end
 
 
 -- Load us up
-IceHUD.IHUD_Threat = IHUD_Threat:new()
+IceHUD.IceThreat = IceThreat:new()
