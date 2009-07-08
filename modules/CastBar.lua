@@ -259,8 +259,8 @@ function CastBar.prototype:GetOptions()
 				type = 'range',
 				name = '|c' .. self.configColor .. 'Text Horizontal Offset|r',
 				desc = 'Offset of the text from the bar horizontally',
-				min = -50,
-				max = 50,
+				min = -350,
+				max = 350,
 				step = 1,
 				get = function()
 					return self.moduleSettings.textHorizontalOffset
@@ -272,6 +272,23 @@ function CastBar.prototype:GetOptions()
 				disabled = function()
 					return not self.moduleSettings.enabled
 				end
+			},
+
+			forceJustifyText = {
+				type = 'text',
+				name =  'Force Text Justification',
+				desc = 'This sets the alignment for the text on this bar',
+				get = function()
+					return self.moduleSettings.forceJustifyText
+				end,
+				set = function(value)
+					self.moduleSettings.forceJustifyText = value
+					self:Redraw()
+				end,
+				validate = { NONE = "None", LEFT = "Left", RIGHT = "Right" },
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
 			}
 		}
 	}

@@ -503,8 +503,8 @@ end
 				type = 'range',
 				name = '|c' .. self.configColor .. 'Text Horizontal Offset|r',
 				desc = 'Offset of the text from the bar horizontally',
-				min = -150,
-				max = 150,
+				min = -350,
+				max = 350,
 				step = 1,
 				get = function()
 					return self.moduleSettings.textHorizontalOffset
