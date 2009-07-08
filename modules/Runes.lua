@@ -123,7 +123,7 @@ function Runes.prototype:GetOptions()
 	opts["cooldownMode"] = {
 		type = 'text',
 		name = 'Rune cooldown mode',
-		desc = 'Choose whether the runes use a cooldown-style wipe or simply an alpha fade to show availability.',
+		desc = 'Choose whether the runes use a cooldown-style wipe, simply an alpha fade to show availability or both.',
 		get = function()
 			return self.moduleSettings.cooldownMode
 		end,
@@ -131,7 +131,7 @@ function Runes.prototype:GetOptions()
 			self.moduleSettings.cooldownMode = v
 			self:Redraw()
 		end,
-		validate = { "Cooldown", "Alpha" },
+		validate = { "Cooldown", "Alpha", "Both" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -260,6 +260,9 @@ function Runes.prototype:UpdateRunePower(rune, usable, dontFlash)
 			self.frame.graphical[rune].cd:Hide()
 		elseif self.moduleSettings.cooldownMode == "Alpha" then
 			self.frame.graphical[rune]:SetAlpha(1)
+		elseif self.moduleSettings.cooldownMode == "Both" then
+			self.frame.graphical[rune].cd:Hide()
+			self.frame.graphical[rune]:SetAlpha(1)
 		end
 
 		if not dontFlash then
@@ -276,6 +279,10 @@ function Runes.prototype:UpdateRunePower(rune, usable, dontFlash)
 			self.frame.graphical[rune].cd:SetCooldown(GetRuneCooldown(rune))
 			self.frame.graphical[rune].cd:Show()
 		elseif self.moduleSettings.cooldownMode == "Alpha" then
+			self.frame.graphical[rune]:SetAlpha(0.2)
+     	elseif self.moduleSettings.cooldownMode == "Both" then
+			self.frame.graphical[rune].cd:SetCooldown(GetRuneCooldown(rune))
+			self.frame.graphical[rune].cd:Show()
 			self.frame.graphical[rune]:SetAlpha(0.2)
 		end
 	end
