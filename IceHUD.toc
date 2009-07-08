@@ -61,3 +61,4 @@ modules\CustomCount.lua
 modules\PlayerInfo.lua
 modules\TargetOfTargetCast.lua
 modules\CustomCDBar.lua
+modules\Totems.lua
