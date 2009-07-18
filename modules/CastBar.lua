@@ -346,9 +346,12 @@ function CastBar.prototype:ToggleBlizzCast(on)
 		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START");
 		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
 		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
+
+		PetCastingBarFrame:RegisterEvent("UNIT_PET");
 	else
 		-- remove blizz cast bar
 		CastingBarFrame:UnregisterAllEvents()
+		PetCastingBarFrame:UnregisterAllEvents()
 	end
 end
 
