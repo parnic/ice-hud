@@ -86,6 +86,7 @@ end
 
 function PlayerInfo.prototype:ShowBlizz()
 	BuffFrame:Show()
+	TemporaryEnchantFrame:Show()
 
 	BuffFrame:RegisterEvent("UNIT_AURA");
 end
@@ -93,6 +94,7 @@ end
 
 function PlayerInfo.prototype:HideBlizz()
 	BuffFrame:Hide()
+	TemporaryEnchantFrame:Hide()
 
 	BuffFrame:UnregisterAllEvents()
 end
