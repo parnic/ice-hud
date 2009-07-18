@@ -112,8 +112,6 @@ function PlayerMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
 
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
-	self:RegisterEvent("UNIT_ENTERING_VEHICLE", "EnteringVehicle")
-	self:RegisterEvent("UNIT_EXITING_VEHICLE", "ExitingVehicle")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
 
 	-- allow new 'predicted power' stuff to show the power updates constantly instead of ticking
@@ -144,17 +142,21 @@ function PlayerMana.prototype:SetupOnUpdate(enable)
 end
 
 
-function PlayerMana.prototype:EnteringVehicle()
-	self.unit = "vehicle"
-	self:RegisterFontStrings()
-	self:Update(self.unit)
+function PlayerMana.prototype:EnteringVehicle(unit)
+	if (unit == "player") then
+		self.unit = "vehicle"
+		self:RegisterFontStrings()
+		self:Update(self.unit)
+	end
 end
 
 
-function PlayerMana.prototype:ExitingVehicle()
-	self.unit = "player"
-	self:RegisterFontStrings()
-	self:Update(self.unit)
+function PlayerMana.prototype:ExitingVehicle(unit)
+	if (unit == "player") then
+		self.unit = "player"
+		self:RegisterFontStrings()
+		self:Update(self.unit)
+	end
 end
 
 
