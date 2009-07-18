@@ -1194,8 +1194,9 @@ end
 function IceTargetInfo.prototype:TargetLevel(unit)
 	if (unit == self.unit or unit == internal) then
 		self.level = UnitLevel(self.unit)
-		
-		local color = GetQuestDifficultyColor((self.level > 0) and self.level or 100)
+
+		local colorFunc = GetQuestDifficultyColor or GetDifficultyColor
+		local color = colorFunc((self.level > 0) and self.level or 100)
 
 		if (self.level > 0) then
 			if (UnitClassification(self.unit) == "elite") then
