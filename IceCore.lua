@@ -105,7 +105,7 @@ function IceCore.prototype:Enable()
 
 	-- go through the list of loaded elements that don't have associated settings and dump them
 	toRemove = {}
-	for i = 1, table.getn(self.elements) do
+	for i = #self.elements, 1, -1 do
 		if not self.settings.modules[self.elements[i]:GetElementName()] then
 			toRemove[#toRemove + 1] = i
 		end
