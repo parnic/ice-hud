@@ -94,10 +94,24 @@ function IceCore.prototype:Enable()
 	self:DrawFrame()
 
 	for i = 1, table.getn(self.elements) do
-		self.elements[i]:Create(self.IceHUDFrame)
-		if (self.elements[i]:IsEnabled()) then
-			self.elements[i]:Enable(true)
+		-- make sure there are settings for this bar (might not if we make a new profile with existing custom bars)
+		if self.settings.modules[self.elements[i].elementName] then
+			self.elements[i]:Create(self.IceHUDFrame)
+			if (self.elements[i]:IsEnabled()) then
+				self.elements[i]:Enable(true)
+			end
 		end
+	end
+
+	-- go through the list of loaded elements that don't have associated settings and dump them
+	toRemove = {}
+	for i = 1, table.getn(self.elements) do
+		if not self.settings.modules[self.elements[i]:GetElementName()] then
+			toRemove[#toRemove + 1] = i
+		end
+	end
+	for i=1,#toRemove do
+		table.remove(self.elements, toRemove[i])
 	end
 
 	for k,v in pairs(self.settings.modules) do
@@ -118,6 +132,10 @@ function IceCore.prototype:Enable()
 			self:AddNewDynamicModule(newCD, true)
 		end
 	end
+
+
+	-- make sure the module options are re-generated. if we switched profiles, we don't want the old elements hanging around
+	IceHUD:GenerateModuleOptions()
 
 	self.enabled = true
 end
