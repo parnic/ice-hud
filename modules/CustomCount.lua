@@ -531,7 +531,7 @@ function IceCustomCount.prototype:UpdateCustomCount(unit)
 
 	local points
 	if IceHUD.IceCore:IsInConfigMode() then
-		points = self.moduleSettings.maxCount
+		points = tonumber(self.moduleSettings.maxCount)
 	else
 		points = IceHUD:GetAuraCount(self.moduleSettings.auraType == "buff" and "HELPFUL" or "HARMFUL",
 			self.unit, self.moduleSettings.auraName, self.moduleSettings.onlyMine, true)
