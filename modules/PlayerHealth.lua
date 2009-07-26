@@ -23,6 +23,7 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 1
 	settings["hideBlizz"] = false
+	settings["hideBlizzParty"] = false
 	settings["upperText"] = "[PercentHP:Round]"
 	settings["lowerText"] = "[FractionalHP:HPColor:Bracket]"
 	settings["allowMouseInteraction"] = false
@@ -68,6 +69,8 @@ function PlayerHealth.prototype:Enable(core)
 
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "CheckLeader")
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckLeader")
+	
+	--self:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckPartyFrameStatus")
 
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "CheckLootMaster")
 
@@ -89,6 +92,9 @@ function PlayerHealth.prototype:Enable(core)
 		self:HideBlizz()
 	end
 
+	if (self.moduleSettings.hideBlizzParty) then
+		self:HideBlizzardParty()
+	end
 	self:Resting()
 	--self:Update(self.unit)
 end
@@ -161,15 +167,15 @@ function PlayerHealth.prototype:GetOptions()
 			set = function(value)
 				self.moduleSettings.hideBlizzParty = value
 				if (value) then
-					self:HideBlizzParty()
+					self:HideBlizzardParty()
 				else
-					self:ShowBlizzParty()
+					self:ShowBlizzardParty()
 				end
 			end,
 			disabled = function()
 				return not self.moduleSettings.enabled
 			end,
-			order = 41
+			order = 41.1
 		}
 
 	opts["scaleHealthColor"] = {
@@ -871,8 +877,18 @@ function PlayerHealth.prototype:CheckLootMaster()
 			self.frame.lootMasterIcon = self:DestroyTexFrame(self.frame.lootMasterIcon)
 		end
 	end
+	
+	self:CheckPartyFrameStatus()
+	
 end
 
+function PlayerHealth.prototype:CheckPartyFrameStatus()
+	if (configMode or self.moduleSettings.hideBlizzParty == false) then
+		self:ShowBlizzardParty()
+	else
+		self:HideBlizzardParty()
+	end
+end
 
 function PlayerHealth.prototype:CheckPvP()
 	local pvpMode = nil
@@ -1054,7 +1070,7 @@ function PlayerHealth.prototype:HideBlizz()
 	PlayerFrame:UnregisterAllEvents()
 end
 
-function PlayerHealth.prototype:HideBlizzParty()
+function PlayerHealth.prototype:HideBlizzardParty()
 	
 	for i = 1, MAX_PARTY_MEMBERS do
 		local party = _G['PartyMemberFrame'..i]
@@ -1064,42 +1080,55 @@ function PlayerHealth.prototype:HideBlizzParty()
 	end
 	UIParent:UnregisterEvent('RAID_ROSTER_UPDATE')
 	
-	HidePartyFrame(); -- Sometimes, if the party composition changes, the above won't work so we call the Blizzard method too.
+	--HidePartyFrame(); -- Sometimes, if the party composition changes, the above won't work so we call the Blizzard method too.
 end
 
-function PlayerHealth.prototype:ShowBlizzParty()
-	-- This loop exists because we need to unregister for events in case the party composition changes.
-	for i = 1, MAX_PARTY_MEMBERS do
-		local party = _G['PartyMemberFrame'..i]
-		party.Show = nil
-		party:RegisterEvent('PARTY_MEMBERS_CHANGED')
-		party:RegisterEvent('PARTY_LEADER_CHANGED')
-		party:RegisterEvent('PARTY_MEMBER_ENABLE')
-		party:RegisterEvent('PARTY_MEMBER_DISABLE')
-		party:RegisterEvent('PARTY_LOOT_METHOD_CHANGED')
-		party:RegisterEvent('MUTELIST_UPDATE')
-		party:RegisterEvent('IGNORELIST_UPDATE')
-		party:RegisterEvent('UNIT_PVP_UPDATE')
-		party:RegisterEvent('UNIT_AURA')
-		party:RegisterEvent('UNIT_PET')
-		party:RegisterEvent('VARIABLES_LOADED')
-		party:RegisterEvent('UNIT_NAME_UPDATE')
-		party:RegisterEvent('UNIT_PORTRAIT_UPDATE')
-		party:RegisterEvent('UNIT_DISPLAYPOWER')
-		party:RegisterEvent('UNIT_ENTERED_VEHICLE')
-		party:RegisterEvent('UNIT_EXITED_VEHICLE')
-		party:RegisterEvent('VOICE_START')
-		party:RegisterEvent('VOICE_STOP')
-		party:RegisterEvent('VOICE_STATUS_UPDATE')
-		party:RegisterEvent('READY_CHECK')
-		party:RegisterEvent('READY_CHECK_CONFIRM')
-		party:RegisterEvent('READY_CHECK_FINISHED')
-		UnitFrame_OnEvent('PARTY_MEMBERS_CHANGED')
-	end
-	UIParent:RegisterEvent('RAID_ROSTER_UPDATE')
+
+function PlayerHealth.prototype:ShowBlizzardParty()
+	for i = 1, 4 do
+		local frame = _G["PartyMemberFrame"..i]
+		frame.Show = nil
+		frame:GetScript("OnLoad")(frame)
+		frame:GetScript("OnEvent")(frame, "PARTY_MEMBERS_CHANGED")
 	
-	ShowPartyFrame(); -- Just call Blizzard default method
+		PartyMemberFrame_UpdateMember(frame)
+	end
 end
+
+UIParent:RegisterEvent("RAID_ROSTER_UPDATE")
+--function PlayerHealth.prototype:ShowBlizzParty()
+	-- This loop exists because we need to unregister for events in case the party composition changes.
+--	for i = 1, MAX_PARTY_MEMBERS do
+--		local party = _G['PartyMemberFrame'..i]
+--		party.Show = nil
+--		party:RegisterEvent('PARTY_MEMBERS_CHANGED')
+--		party:RegisterEvent('PARTY_LEADER_CHANGED')
+--		party:RegisterEvent('PARTY_MEMBER_ENABLE')
+--		party:RegisterEvent('PARTY_MEMBER_DISABLE')
+--		party:RegisterEvent('PARTY_LOOT_METHOD_CHANGED')
+--		party:RegisterEvent('MUTELIST_UPDATE')
+--		party:RegisterEvent('IGNORELIST_UPDATE')
+--		party:RegisterEvent('UNIT_PVP_UPDATE')
+--		party:RegisterEvent('UNIT_AURA')
+--		party:RegisterEvent('UNIT_PET')
+--		party:RegisterEvent('VARIABLES_LOADED')
+--		party:RegisterEvent('UNIT_NAME_UPDATE')
+--		party:RegisterEvent('UNIT_PORTRAIT_UPDATE')
+--		party:RegisterEvent('UNIT_DISPLAYPOWER')
+--		party:RegisterEvent('UNIT_ENTERED_VEHICLE')
+--		party:RegisterEvent('UNIT_EXITED_VEHICLE')
+--		party:RegisterEvent('VOICE_START')
+--		party:RegisterEvent('VOICE_STOP')
+--		party:RegisterEvent('VOICE_STATUS_UPDATE')
+--		party:RegisterEvent('READY_CHECK')
+--		party:RegisterEvent('READY_CHECK_CONFIRM')
+--		party:RegisterEvent('READY_CHECK_FINISHED')
+--		UnitFrame_OnEvent('PARTY_MEMBERS_CHANGED')
+--	end
+--	UIParent:RegisterEvent('RAID_ROSTER_UPDATE')
+--	
+--	ShowPartyFrame(); -- Just call Blizzard default method
+--end
 
 -- Load us up
 IceHUD.PlayerHealth = PlayerHealth:new()
