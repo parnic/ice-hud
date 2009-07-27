@@ -174,7 +174,7 @@ function IceUnitBar.prototype:CreateFlashFrame()
 		self.flashFrame.flash = self.flashFrame:CreateTexture(nil, "BACKGROUND")
 	end
 
-	self.flashFrame.flash:SetTexture(IceElement.TexturePath .. self.settings.barTexture)
+	self.flashFrame.flash:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	self.flashFrame.flash:SetBlendMode("ADD")
 	self.flashFrame.flash:SetAllPoints(self.flashFrame)
 
