@@ -708,7 +708,7 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 	self.frame.button:ClearAllPoints()
 	-- Parnic - kinda hacky, but in order to fit this region to multiple types of bars, we need to do this...
 	--          would be nice to define this somewhere in data, but for now...here we are
-	if self.settings.barTexture == "HiBar" then
+	if self:GetMyBarTexture() == "HiBar" then
 		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
 		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
 	else
@@ -741,7 +741,7 @@ function PlayerHealth.prototype:CreateHealBar()
 		self.healFrame.bar = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
 
-	self.healFrame.bar:SetTexture(IceElement.TexturePath .. self.settings.barTexture)
+	self.healFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	self.healFrame.bar:SetAllPoints(self.frame)
 
 	self.healFrame:SetStatusBarTexture(self.healFrame.bar)

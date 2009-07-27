@@ -166,7 +166,7 @@ function IceThreat.prototype:CreateAggroBar()
 		self.aggroBar.bar = self.aggroBar:CreateTexture(nil, "BACKGROUND")
 	end
 	
-	self.aggroBar.bar:SetTexture(IceElement.TexturePath .. self.settings.barTexture .. "BG")
+	self.aggroBar.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture() .. "BG")
 	self.aggroBar.bar:SetAllPoints(self.aggroBar)
 	
 	self.aggroBar:SetStatusBarTexture(self.aggroBar.bar)

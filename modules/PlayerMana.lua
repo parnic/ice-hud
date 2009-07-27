@@ -364,7 +364,7 @@ function PlayerMana.prototype:CreateTickerFrame()
 		self.tickerFrame:Hide()
 	end
 	
-	self.tickerFrame.spark:SetTexture(IceElement.TexturePath .. self.settings.barTexture)
+	self.tickerFrame.spark:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	self.tickerFrame.spark:SetBlendMode("ADD")
 	self.tickerFrame.spark:ClearAllPoints()
 	self.tickerFrame.spark:SetAllPoints(self.tickerFrame)

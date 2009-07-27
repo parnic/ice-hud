@@ -102,7 +102,7 @@ function HungerForBlood.prototype:CreateFrame()
 
 	self.frame.button:ClearAllPoints()
 
-	if self.settings.barTexture == "HiBar" then
+	if self:GetMyBarTexture() == "HiBar" then
 		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
 		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
 	else

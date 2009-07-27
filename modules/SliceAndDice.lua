@@ -152,7 +152,7 @@ function SliceAndDice.prototype:CreateDurationBar()
 		self.durationFrame.bar = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
 
-	self.durationFrame.bar:SetTexture(IceElement.TexturePath .. self.settings.barTexture)
+	self.durationFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	self.durationFrame.bar:SetAllPoints(self.frame)
 
 	self.durationFrame:SetStatusBarTexture(self.durationFrame.bar)
