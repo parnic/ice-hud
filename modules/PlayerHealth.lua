@@ -708,7 +708,7 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 	self.frame.button:ClearAllPoints()
 	-- Parnic - kinda hacky, but in order to fit this region to multiple types of bars, we need to do this...
 	--          would be nice to define this somewhere in data, but for now...here we are
-	if self:GetMyBarTexture() == "HiBar" then
+	if self.settings.barTexture == "HiBar" then
 		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
 		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
 	else
@@ -741,7 +741,7 @@ function PlayerHealth.prototype:CreateHealBar()
 		self.healFrame.bar = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
 
-	self.healFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+	self.healFrame.bar:SetTexture(IceElement.TexturePath .. self.settings.barTexture)
 	self.healFrame.bar:SetAllPoints(self.frame)
 
 	self.healFrame:SetStatusBarTexture(self.healFrame.bar)
@@ -883,9 +883,7 @@ function PlayerHealth.prototype:CheckLootMaster()
 end
 
 function PlayerHealth.prototype:CheckPartyFrameStatus()
-	if (configMode or self.moduleSettings.hideBlizzParty == false) then
-		self:ShowBlizzardParty()
-	else
+	if (self.moduleSettings.hideBlizzParty) then
 		self:HideBlizzardParty()
 	end
 end
@@ -1071,20 +1069,21 @@ function PlayerHealth.prototype:HideBlizz()
 end
 
 function PlayerHealth.prototype:HideBlizzardParty()
-	
+	-- Both Pitbull 4 and Xperl use these exact code, so we use it too.
 	for i = 1, MAX_PARTY_MEMBERS do
 		local party = _G['PartyMemberFrame'..i]
 		party:UnregisterAllEvents()
 		party:Hide()
 		party.Show = function() end
 	end
+
 	UIParent:UnregisterEvent('RAID_ROSTER_UPDATE')
-	
-	--HidePartyFrame(); -- Sometimes, if the party composition changes, the above won't work so we call the Blizzard method too.
+
 end
 
 
 function PlayerHealth.prototype:ShowBlizzardParty()
+	-- Both Pitbull 4 and Xperl use these exact code, so we use it too.
 	for i = 1, 4 do
 		local frame = _G["PartyMemberFrame"..i]
 		frame.Show = nil
@@ -1093,6 +1092,7 @@ function PlayerHealth.prototype:ShowBlizzardParty()
 	
 		PartyMemberFrame_UpdateMember(frame)
 	end
+
 end
 
 UIParent:RegisterEvent("RAID_ROSTER_UPDATE")
