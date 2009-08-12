@@ -673,8 +673,8 @@ function PlayerHealth.prototype:GetOptions()
 end
 
 
-function PlayerHealth.prototype:EnteringVehicle(unit)
-	if (unit == "player") then
+function PlayerHealth.prototype:EnteringVehicle(unit, arg2)
+	if (self.unit == "player" and IceHUD:ShouldSwapToVehicle(unit, arg2)) then
 		self.unit = "vehicle"
 		self:RegisterFontStrings()
 		self:Update(self.unit)
@@ -683,7 +683,7 @@ end
 
 
 function PlayerHealth.prototype:ExitingVehicle(unit)
-	if (unit == "player") then
+	if (unit == "player" and self.unit == "vehicle") then
 		self.unit = "player"
 		self:RegisterFontStrings()
 		self:Update(self.unit)

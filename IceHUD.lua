@@ -851,3 +851,17 @@ function IceHUD:Clamp(value, min, max)
 
 	return value
 end
+
+function IceHUD:ShouldSwapToVehicle(...)
+	local arg1, arg2 = ...
+
+	if (arg1 == "player") then
+		if (arg2) then
+			return true
+		end
+	end
+
+	if (UnitHasVehicleUI("player")) then
+		return true
+	end
+end

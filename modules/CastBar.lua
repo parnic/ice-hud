@@ -309,8 +309,8 @@ function CastBar.prototype:Enable(core)
 end
 
 
-function CastBar.prototype:EnteringVehicle(unit)
-	if (unit == "player") then
+function CastBar.prototype:EnteringVehicle(unit, arg2)
+	if (self.unit == "player" and IceHUD:ShouldSwapToVehicle(unit, arg2)) then
 		self.unit = "vehicle"
 		self:Update(self.unit)
 	end
@@ -318,7 +318,7 @@ end
 
 
 function CastBar.prototype:ExitingVehicle(unit)
-	if (unit == "player") then
+	if (unit == "player" and self.unit == "vehicle") then
 		self.unit = "player"
 		self:Update(self.unit)
 	end
