@@ -100,6 +100,7 @@ function IceCustomCDBar.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
+		usage = "<a name for this bar>",
 		order = 20.3,
 	}
 
@@ -121,6 +122,7 @@ function IceCustomCDBar.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
+		usage = "<which spell to track>",
 		order = 20.6,
 	}
 

@@ -52,6 +52,7 @@ function IceCustomCount.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
+		usage = "<a name for this bar>",
 		order = 20.3,
 	}
 
@@ -107,6 +108,7 @@ function IceCustomCount.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
+		usage = "<which aura to track>",
 		order = 20.6,
 	}
 
@@ -182,6 +184,7 @@ function IceCustomCount.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
+		usage = "<the maximum number of valid applications>",
 		order = 20.9,
 	}
 
