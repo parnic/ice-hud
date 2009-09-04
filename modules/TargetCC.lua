@@ -87,7 +87,9 @@ local IncapacitateCCList = {
 	-- Chains of Ice
 	45524,
 	-- Hungering Cold
-	49203
+	49203,
+	-- Hex
+	51514
 }
 
 local FearCCList = {
