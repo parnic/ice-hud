@@ -39,8 +39,8 @@ function TargetOfTarget.prototype:GetOptions()
 			self.moduleSettings.vpos = v
 			self:Redraw()
 		end,
-		min = -300,
-		max = 300,
+		min = -600,
+		max = 600,
 		step = 10,
 		disabled = function()
 			return not self.moduleSettings.enabled
