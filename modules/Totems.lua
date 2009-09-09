@@ -344,12 +344,14 @@ function Totems.prototype:CreateTotem(i, name)
 		return
 	end
 	local haveTotem, name, startTime, duration, icon = GetTotemInfo(i)
+	local bWasNewFrame = false
 	if (not self.frame.graphical[i]) then
 		self.frame.graphical[i] = CreateFrame("StatusBar", nil, self.frame)
 		self.frame.graphical[i].cd = CreateFrame("Cooldown", nil, self.frame.graphical[i], "CooldownFrameTemplate")
 		self.frame.graphical[i].shine = self.frame.graphical[i]:CreateTexture(nil, "OVERLAY")
 
 		self.frame.graphical[i]:SetStatusBarTexture(icon)
+		bWasNewFrame = true
 	end
 
 	self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
@@ -387,11 +389,14 @@ function Totems.prototype:CreateTotem(i, name)
 	self.frame.graphical[i].slot = i;
 	self.frame.graphical[i]:SetScript("OnEnter", function(button) GameTooltip:SetOwner(button); GameTooltip:SetTotem(button.slot) end)
 	self.frame.graphical[i]:SetScript("OnLeave", function() GameTooltip:Hide() end)
-	self.frame.graphical[i]:HookScript("OnMouseUp", function (self, mouseButton)
-		if ( mouseButton == "RightButton" ) then
-			DestroyTotem(self.slot);
-		end
-	end)
+	-- it looks like HookScript will continue to add handlers every time instead of replacing them like SetScript
+	if (bWasNewFrame) then
+		self.frame.graphical[i]:HookScript("OnMouseUp", function (self, mouseButton)
+			if ( mouseButton == "RightButton" ) then
+				DestroyTotem(self.slot);
+			end
+		end)
+	end
 
 end
 
