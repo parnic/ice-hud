@@ -11,6 +11,7 @@ function CastBar.prototype:init()
 	CastBar.super.prototype.init(self, "CastBar")
 
 	self:SetDefaultColor("CastLag", 255, 0, 0)
+	self:SetDefaultColor("CastNotInRange", 200, 200, 200)
 
 	self.unit = "player"
 end
@@ -30,6 +31,7 @@ function CastBar.prototype:GetDefaultSettings()
 	settings["showBlizzCast"] = false
 	settings["shouldAnimate"] = false
 	settings["usesDogTagStrings"] = false
+	settings["rangeColor"] = true
 
 	return settings
 end
@@ -179,6 +181,22 @@ function CastBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 29
+	}
+
+	opts["rangeColor"] = {
+		type = 'toggle',
+		name = 'Change color when not in range',
+		desc = 'Changes the bar color to the CastNotInRange color when the target goes out of range for the current spell.',
+		get = function()
+			return self.moduleSettings.rangeColor
+		end,
+		set = function(v)
+			self.moduleSettings.rangeColor = v
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 30
 	}
 
 	opts["textSettings"] =
@@ -455,6 +473,27 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 	end
 	
 	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
+end
+
+
+function CastBar.prototype:UpdateBar(scale, color, alpha)
+	local bCheckRange = true
+	local inRange
+
+	if not self.moduleSettings.rangeColor or not self.current or not self.action or not UnitExists("target") then
+		bCheckRange = false
+	else
+		inRange = IsSpellInRange(self.current, "target")
+		if inRange == nil then
+			bCheckRange = false
+		end
+	end
+
+	if bCheckRange and inRange == 0 then
+		color = "CastNotInRange"
+	end
+
+	CastBar.super.prototype.UpdateBar(self, scale, color, alpha)
 end
 
 -------------------------------------------------------------------------------
