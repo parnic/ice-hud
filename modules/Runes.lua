@@ -306,6 +306,9 @@ function Runes.prototype:UpdateRuneType(rune)
 end
 
 function Runes.prototype:GetRuneTexture(runeName)
+	if not runeName then
+		return ""
+	end
 	return "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-"..runeName
 end
 
