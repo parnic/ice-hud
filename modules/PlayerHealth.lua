@@ -745,7 +745,7 @@ function PlayerHealth.prototype:CreateHealBar()
 	self.healFrame.bar:SetAllPoints(self.frame)
 
 	self.healFrame:SetStatusBarTexture(self.healFrame.bar)
-	self.healFrame:SetStatusBarColor(self:GetColor("PlayerHealthIncomingHeal", self.alpha * self.moduleSettings.healAlpha))
+	self.healFrame:SetStatusBarColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
 
 	self:UpdateBar(1, "undef")
 
