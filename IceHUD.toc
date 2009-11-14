@@ -5,7 +5,7 @@
 ## Notes: Another HUD addon
 ## Version: @project-version@ (Revision: @project-revision@)
 ## SavedVariables: IceCoreDB
-## OptionalDeps: Ace2, LibSharedMedia-3.0, Waterfall-1.0, Deformat, DewdropLib, LibDogTag-3.0, LibDogTag-Unit-3.0, FuBarPlugin-2.0, LibDruidMana-1.0, LibRangeCheck-2.0, LibHealComm-3.0
+## OptionalDeps: Ace2, LibSharedMedia-3.0, Waterfall-1.0, Deformat, DewdropLib, LibDogTag-3.0, LibDogTag-Unit-3.0, FuBarPlugin-2.0, LibDruidMana-1.0, LibRangeCheck-2.0, LibHealComm-4.0
 ## X-Category: HUDs
 ## X-Website: http://www.wowace.com/projects/ice-hud/
 

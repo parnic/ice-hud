@@ -81,11 +81,13 @@ function PlayerHealth.prototype:Enable(core)
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
 
-	if AceLibrary:HasInstance("LibHealComm-3.0") then
-		HealComm = AceLibrary("LibHealComm-3.0")
-		HealComm.RegisterCallback(self, "HealComm_DirectHealStart", function(event, healerName, healSize, endTime, ...) self:HealComm_DirectHealStart(event, healerName, healSize, endTime, ...) end)
-		HealComm.RegisterCallback(self, "HealComm_DirectHealStop", function(event, healerName, healSize, succeeded, ...) self:HealComm_DirectHealStop(event, healerName, healSize, succeeded, ...) end)
-		HealComm.RegisterCallback(self, "HealComm_HealModifierUpdate", function(event, unit, targetName, healModifier) self:HealComm_HealModifierUpdate(event, unit, targetName, healModifier) end)
+	if AceLibrary:HasInstance("LibHealComm-4.0") then
+		HealComm = AceLibrary("LibHealComm-4.0")
+		HealComm.RegisterCallback(self, "HealComm_HealStarted", function(event, casterGUID, spellID, spellType, endTime, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...) end)
+		HealComm.RegisterCallback(self, "HealComm_HealUpdated", function(event, casterGUID, spellID, spellType, endTime, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...) end)
+		HealComm.RegisterCallback(self, "HealComm_HealDelayed", function(event, casterGUID, spellID, spellType, endTime, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...) end)
+		HealComm.RegisterCallback(self, "HealComm_HealStopped", function(event, casterGUID, spellID, spellType, interrupted, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, interrupted, ...) end)
+		HealComm.RegisterCallback(self, "HealComm_ModifierChanged", function(event, guid) self:HealComm_ModifierChanged(event, guid) end)
 	end
 
 	if (self.moduleSettings.hideBlizz) then
@@ -99,19 +101,31 @@ function PlayerHealth.prototype:Enable(core)
 	--self:Update(self.unit)
 end
 
-function PlayerHealth.prototype:HealComm_DirectHealStart(event, healerName, healSize, endTime, ...)
-	incomingHealAmt = healSize
+function PlayerHealth.prototype:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...)
+	local bFoundMe = false
+	for i=1, select("#", ...) do
+		if select(i, ...) == UnitGUID("player") then
+			bFoundMe = true
+			break
+		end
+	end
+
+	if not bFoundMe then
+		return
+	end
+
+	incomingHealAmt = HealComm:GetHealAmount(UnitGUID("player"), HealComm.ALL_HEALS)
+	if incomingHealAmt == nil then
+		incomingHealAmt = 0
+	end
 	self:Update()
 end
 
-function PlayerHealth.prototype:HealComm_DirectHealStop(event, healerName, healSize, succeeded, ...)
-	incomingHealAmt = 0
-	self:Update()
-end
-
-function PlayerHealth.prototype:HealComm_HealModifierUpdate(event, unit, targetName, healModifier)
-	incomingHealAmt = incomingHealAmt * healModifier
-	self:Update()
+function PlayerHealth.prototype:HealComm_ModifierChanged(event, guid)
+	if guid == UnitGUID("player") then
+		incomingHealAmt = incomingHealAmt * HealComm:GetHealModifier(guid)
+		self:Update()
+	end
 end
 
 

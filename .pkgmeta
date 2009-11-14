@@ -21,4 +21,4 @@ optional-dependencies:
     - libdogtag-3-0
     - libdogtag-unit-3-0
     - librangecheck-2-0
-    - libhealcomm-3-0
+    - libhealcomm-4-0
