@@ -47,6 +47,8 @@ local StunCCList = {
 	44572,
 	-- shockwave
 	46968,
+	-- Entangling Roots (more of a snare than a stun, but we don't have a snare category)
+	19975,
 }
 
 local IncapacitateCCList = {
@@ -89,7 +91,7 @@ local IncapacitateCCList = {
 	-- Hungering Cold
 	49203,
 	-- Hex
-	51514
+	51514,
 }
 
 local FearCCList = {
@@ -98,7 +100,9 @@ local FearCCList = {
 	-- Fear
 	5782,
 	-- Howl of Terror
-	5484
+	5484,
+	-- Intimidating Shout
+	5246,
 }
 
 -- Constructor --
