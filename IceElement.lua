@@ -304,12 +304,14 @@ function IceElement.prototype:GetClassColor(class)
 		if r and g and b then
 			return r, g, b
 		else
-			return RAID_CLASS_COLORS["WARRIOR"]
+			return CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS["WARRIOR"] or RAID_CLASS_COLORS["WARRIOR"]
 		end
 	end
 
-	class = string.upper(class)
-	if RAID_CLASS_COLORS and RAID_CLASS_COLORS[class] then
+	class = class:upper()
+	if CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] then
+		return CUSTOM_CLASS_COLORS[class].r, CUSTOM_CLASS_COLORS[class].g, CUSTOM_CLASS_COLORS[class].b
+	elseif RAID_CLASS_COLORS and RAID_CLASS_COLORS[class] then
 		return RAID_CLASS_COLORS[class].r, RAID_CLASS_COLORS[class].g, RAID_CLASS_COLORS[class].b
 	else
 		-- crazy talk...who the crap wouldn't have a blizzard-defined global defined?
