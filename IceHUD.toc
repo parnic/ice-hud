@@ -63,3 +63,8 @@ modules\PetInfo.lua
 modules\TargetOfTargetCast.lua
 modules\CustomCDBar.lua
 modules\Totems.lua
+# - PlayerCC must be after TargetCC
+modules\PlayerCC.lua
+modules\TargetInvuln.lua
+# - PlayerInvuln must be after TargetInvuln
+modules\PlayerInvuln.lua

@@ -35,6 +35,8 @@ local StunCCList = {
 	12809,
 	-- bash
 	5211,
+	-- Maim
+	22570,
 	-- pounce
 	9005,
 	-- improved concussive shot
@@ -47,8 +49,10 @@ local StunCCList = {
 	44572,
 	-- shockwave
 	46968,
-	-- Entangling Roots (more of a snare than a stun, but we don't have a snare category)
-	19975,
+	-- Gnaw
+	47481,
+	-- stun proc
+	20170,
 }
 
 local IncapacitateCCList = {
@@ -78,20 +82,22 @@ local IncapacitateCCList = {
 	3355,
 	-- Chastise
 	44041,
-	-- Maim
-	22570,
 	-- Banish
 	710,
 	-- Shackle Undead
 	9484,
 	-- Cyclone
 	33786,
-	-- Chains of Ice
-	45524,
 	-- Hungering Cold
 	49203,
-	-- Hex
-	51514,
+	-- Seduction
+	6358,
+	-- Freezing Arrow
+	60210,
+	-- Shackle
+	10955,
+	-- Turn Evil
+	10326,
 }
 
 local FearCCList = {
@@ -101,9 +107,81 @@ local FearCCList = {
 	5782,
 	-- Howl of Terror
 	5484,
+	-- Death Coil
+	47860,
 	-- Intimidating Shout
 	5246,
+	-- Hex
+	51514,
+	-- Scare Beast
+	14327,
 }
+
+local SilenceCCList = {
+	-- Shield of the Templar
+	63529,
+	-- Silence
+	15487,
+	-- Silencing Shot
+	34490,
+	-- Spell Lock
+	19647,
+	-- Gag Order
+	18498,
+	-- Arcane Torrent
+	50613,
+	-- Arcane Torrent
+	28730,
+	-- Arcane Torrent	
+	25046,
+	-- Improved Kick
+	13867,
+	-- Improved Counterspell
+	55021,
+	-- Strangulate
+	47476,
+	-- Garotte - Silence
+	1330,
+	-- Disarm
+	676,
+	-- Dismantle
+	51722,
+	-- Psychic Horror
+	64058,
+	-- Chimera Shot - Scorpid
+	53359,
+}
+
+local RootCCList = {
+	-- Entangling Roots
+	53308,
+	-- Entangling Roots - Nature's Grasp
+	53313,
+	-- Frost Nova
+	42917,
+	-- Earthbind Effect
+	64695,
+	-- Shattered Barrier
+	55080,
+	-- Imp Hamstring
+	23694,
+	-- Freeze
+	33395,
+	-- Frostbite
+	12494,
+	-- Entrapment
+	64804,
+	-- Web
+	4167,
+	-- Pin
+	53548,
+	-- Venom Web Spray
+	55509,
+	-- Chains of Ice
+	45524,
+}
+
+
 
 -- Constructor --
 function TargetCC.prototype:init(moduleName, unit)
@@ -121,11 +199,15 @@ function TargetCC.prototype:init(moduleName, unit)
 	self:SetDefaultColor("CC:Stun", 0.85, 0.55, 0.2)
 	self:SetDefaultColor("CC:Incapacitate", 0.90, 0.6, 0.2)
 	self:SetDefaultColor("CC:Fear", 0.85, 0.2, 0.65)
+	self:SetDefaultColor("CC:Silence", 1, 0.5, 0.04)
+	self:SetDefaultColor("CC:Root", .1, 0.5, 1)
 
 	self.debuffList = {}
 	self:PopulateSpellList(self.debuffList, StunCCList, "Stun")
 	self:PopulateSpellList(self.debuffList, IncapacitateCCList, "Incapacitate")
 	self:PopulateSpellList(self.debuffList, FearCCList, "Fear")
+	self:PopulateSpellList(self.debuffList, SilenceCCList, "Silence")
+	self:PopulateSpellList(self.debuffList, RootCCList, "Root")
 
 	self.previousDebuff = nil
 	self.previousDebuffTarget = nil
