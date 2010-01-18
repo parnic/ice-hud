@@ -599,7 +599,9 @@ IceHUD.slashMenu =
 {
 	type = 'execute',
 	func = function()
-		if not (UnitAffectingCombat("player")) then
+		if waterfall:IsOpen("IceHUD") then
+			waterfall:Close("IceHUD")
+		elseif not (UnitAffectingCombat("player")) then
 			waterfall:Open("IceHUD")
 		else
 			DEFAULT_CHAT_FRAME:AddMessage("|cff8888ffIceHUD|r: Combat lockdown restriction." ..
