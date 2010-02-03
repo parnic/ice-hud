@@ -186,6 +186,7 @@ function MirrorBarHandler.prototype:GetDefaultSettings()
 	settings["barVisible"] = {bg = true, bar = true}
 	settings["myTagVersion"] = 2
 	settings["usesDogTagStrings"] = false
+	settings["barVerticalOffset"] = 0
 
 	return settings
 end
@@ -269,6 +270,27 @@ function MirrorBarHandler.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 29
+	}
+
+	opts["barVerticalOffset"] = 
+	{
+		type='range',
+		name = '|c' .. self.configColor .. 'Bar vertical offset|r',
+		desc = 'Adjust the vertical placement of this bar',
+		min = -400,
+		max = 400,
+		step = 1,
+		get = function()
+			return self.moduleSettings.barVerticalOffset
+		end,
+		set = function(v)
+			self.moduleSettings.barVerticalOffset = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 34
 	}
 
 	opts["textSettings"] =
@@ -489,6 +511,7 @@ function MirrorBarHandler.prototype:SetSettings(bar)
 	bar.moduleSettings.textVerticalOffset = self.moduleSettings.textVerticalOffset
 	bar.moduleSettings.textHorizontalOffset = self.moduleSettings.textHorizontalOffset
 	bar.moduleSettings.barVisible = self.moduleSettings.barVisible
+	bar.moduleSettings.barVerticalOffset = self.moduleSettings.barVerticalOffset
 end
 
 
