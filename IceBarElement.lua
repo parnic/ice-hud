@@ -64,6 +64,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 1
 	settings["scale"] = 1
+	settings["reverse"] = false
 	settings["barFontSize"] = 12
 	settings["lockUpperTextAlpha"] = true
 	settings["lockLowerTextAlpha"] = false
@@ -161,6 +162,21 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
+		end,
+		order = 32
+	}
+
+	opts["reverse"] = 
+	{
+		type = 'toggle',
+		name = 'Reverse direction',
+		desc = 'Direction of bar movement',
+		get = function()
+			return self.moduleSettings.reverse
+		end,
+		set = function(value)
+			self.moduleSettings.reverse = value
+			self:Redraw()
 		end,
 		order = 32
 	}
@@ -631,7 +647,7 @@ function IceBarElement.prototype:CreateBar()
 	
 	self.barFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	self.barFrame.bar:SetBlendMode(self.settings.barBlendMode)
-	self.barFrame.bar:SetAllPoints(self.frame)
+	self.barFrame.bar:SetAllPoints(self.barFrame)
 
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.barFrame.bar:SetTexCoord(1, 0, 1-self.CurrScale, 1)
@@ -743,14 +759,29 @@ end
 
 function IceBarElement.prototype:SetScale(texture, scale)
 	local oldScale = self.CurrScale
+	local min_y, max_y;
 
 	self.CurrScale = IceHUD:Clamp(self:LerpScale(scale), 0, 1)
 
 	if oldScale ~= self.CurrScale then
+		if (texture == self.barFrame.bar) then
+	        if (self.moduleSettings.reverse) then
+				self.barFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, (self.settings.barHeight - (self.CurrScale * self.settings.barHeight)))
+
+				min_y = 0;
+				max_y = self.CurrScale;
+			else
+				self.barFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
+
+				min_y = 1-self.CurrScale;
+				max_y = 1;
+			end
+		end
+
 		if (self.moduleSettings.side == IceCore.Side.Left) then
-			texture:SetTexCoord(1, 0, 1-self.CurrScale, 1)
+			texture:SetTexCoord(1, 0, min_y, max_y)
 		else
-			texture:SetTexCoord(0, 1, 1-self.CurrScale, 1)
+			texture:SetTexCoord(0, 1, min_y, max_y)
 		end
 	end
 end

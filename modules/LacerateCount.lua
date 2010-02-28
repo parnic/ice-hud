@@ -42,6 +42,26 @@ function LacerateCount.prototype:GetOptions()
 		order = 31
 	}
 
+	opts["hpos"] = {
+		type = "range",
+		name = "Horizontal Position",
+		desc = "Horizontal Position",
+		get = function()
+			return self.moduleSettings.hpos
+		end,
+		set = function(v)
+			self.moduleSettings.hpos = v
+			self:Redraw()
+		end,
+		min = -700,
+		max = 700,
+		step = 10,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 31
+	}
+
 	opts["lacerateFontSize"] = {
 		type = "range",
 		name = "Lacerate Count Font Size",
@@ -127,6 +147,7 @@ end
 function LacerateCount.prototype:GetDefaultSettings()
 	local defaults =  LacerateCount.super.prototype.GetDefaultSettings(self)
 	defaults["vpos"] = -20
+	defaults["hpos"] = 0
 	defaults["lacerateFontSize"] = 20
 	defaults["lacerateMode"] = "Numeric"
 	defaults["gradient"] = false
@@ -172,7 +193,7 @@ function LacerateCount.prototype:CreateFrame()
 	self.frame:SetWidth(self.lacerateSize*5)
 	self.frame:SetHeight(1)
 	self.frame:ClearAllPoints()
-	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
+	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
 	
 	self:Show(true)
 
