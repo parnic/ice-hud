@@ -212,8 +212,16 @@ function IceThreat.prototype:Update(unit)
 		self:Show(true)
 	end
 
-	local isTanking, threatState, scaledPercent, rawPercent = UnitDetailedThreatSituation("player", self.unit)
-	local scaledPercentZeroToOne
+	local isTanking, threatState, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("player", self.unit)
+	local _, _, _, _, tankThreat = UnitDetailedThreatSituation("targettarget", self.unit) -- highest threat target of target (i.e. the tank)
+	local scaledPercentZeroToOne, rangeMulti -- for melee and caster range threat values (1.1 or 1.3)
+
+	if threatValue and threatValue < 0 then
+		threatValue = threatValue + 410065408 -- the corrected threat while under MI or Fade
+		if isTanking then
+			tankThreat = threatValue
+		end
+	end	
 
 	if not self.combat and (scaledPercent == 0 or rawPercent == 0) then
 		self:Show(false)
@@ -224,10 +232,22 @@ function IceThreat.prototype:Update(unit)
 		rawPercent = 0
 	end
 
+	if threatValue and tankThreat then -- Corrects rawPercent and scaledPercent while under MI or Fade
+		rawPercent = ((threatValue / tankThreat) * 100)
+
+		if GetItemInfo(37727) then -- 5 yards for melee range (Ruby Acorn - http://www.wowhead.com/?item=37727)
+			rangeMulti = tankThreat * (IsItemInRange(37727, "target") == 1 and 1.1 or 1.3)
+		else -- 9 yards compromise
+			rangeMulti = tankThreat * (CheckInteractDistance("target", 3) and 1.1 or 1.3)
+		end
+		scaledPercent = ((threatValue / rangeMulti) * 100)
+	end
+
 	if rawPercent < 0 then
 		rawPercent = 0
 	elseif isTanking then
 		rawPercent = 100
+		scaledPercent = 100
 	end
 
 	if not threatState or not scaledPercent or not rawPercent then
@@ -249,16 +269,13 @@ function IceThreat.prototype:Update(unit)
 	self:SetBottomText1( IceHUD:MathRound(self.moduleSettings.showScaledThreat and scaledPercent or rawPercent) .. "%" )
 	self:SetBottomText2()
 
-	-- Parnic: threat lib is no longer used in wotlk
-	--         ...assuming a 1.1 threat multi if not tanking for the time being unless we decide to switch it back to 1.3/1.1 based on ranged/melee status later
-	local threatMulti = 1.1
 	if ( isTanking ) then
-		threatMulti = 1
+		rangeMulti = 1
 	end
 
 	-- Parnic: this should probably be switched to use the new api colors for threat...
 	-- set bar color
-	if( threatMulti == 1 ) then
+	if( isTanking == 1 ) then
 		self.color = "ThreatDanger"
 	elseif( scaledPercent < 50 ) then
 		self.color = "ThreatLow"
@@ -272,10 +289,10 @@ function IceThreat.prototype:Update(unit)
 	self:UpdateBar( scaledPercentZeroToOne, self.color )
 
 	-- do the aggro indicator bar stuff, but only if it has changed
-	if ( self.aggroBarMulti ~= threatMulti ) then
-		self.aggroBarMulti = threatMulti
+	if ( self.aggroBarMulti ~= rangeMulti ) then
+		self.aggroBarMulti = rangeMulti
 
-		local pos = IceHUD:Clamp(1 - (1 / threatMulti), 0, 1)
+		local pos = IceHUD:Clamp(1 - (1 / rangeMulti), 0, 1)
 		local y = self.settings.barHeight - ( pos * self.settings.barHeight )
 
 		if ( self.moduleSettings.side == IceCore.Side.Left ) then
