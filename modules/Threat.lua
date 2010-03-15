@@ -214,12 +214,24 @@ function IceThreat.prototype:Update(unit)
 
 	local isTanking, threatState, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("player", self.unit)
 	local _, _, _, _, tankThreat = UnitDetailedThreatSituation("targettarget", self.unit) -- highest threat target of target (i.e. the tank)
-	local scaledPercentZeroToOne, rangeMulti -- for melee and caster range threat values (1.1 or 1.3)
+	local rangeMulti = 1.1
+	local scaledPercentZeroToOne
 
 	if threatValue and threatValue < 0 then
 		threatValue = threatValue + 410065408 -- the corrected threat while under MI or Fade
 		if isTanking then
 			tankThreat = threatValue
+		end
+
+		if threatValue and tankThreat then -- Corrects rawPercent and scaledPercent while under MI or Fade
+			rawPercent = ((threatValue / tankThreat) * 100)
+
+			if GetItemInfo(37727) then -- 5 yards for melee range (Ruby Acorn - http://www.wowhead.com/?item=37727)
+				rangeMulti = tankThreat * (IsItemInRange(37727, "target") == 1 and 1.1 or 1.3)
+			else -- 9 yards compromise
+				rangeMulti = tankThreat * (CheckInteractDistance("target", 3) and 1.1 or 1.3)
+			end
+			scaledPercent = ((threatValue / rangeMulti) * 100)
 		end
 	end	
 
@@ -230,17 +242,6 @@ function IceThreat.prototype:Update(unit)
 
 	if not rawPercent then
 		rawPercent = 0
-	end
-
-	if threatValue and tankThreat then -- Corrects rawPercent and scaledPercent while under MI or Fade
-		rawPercent = ((threatValue / tankThreat) * 100)
-
-		if GetItemInfo(37727) then -- 5 yards for melee range (Ruby Acorn - http://www.wowhead.com/?item=37727)
-			rangeMulti = tankThreat * (IsItemInRange(37727, "target") == 1 and 1.1 or 1.3)
-		else -- 9 yards compromise
-			rangeMulti = tankThreat * (CheckInteractDistance("target", 3) and 1.1 or 1.3)
-		end
-		scaledPercent = ((threatValue / rangeMulti) * 100)
 	end
 
 	if rawPercent < 0 then
