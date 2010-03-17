@@ -435,6 +435,10 @@ function CastBar.prototype:SpellCastStart(unit, spell, rank)
 	CastBar.super.prototype.SpellCastStart(self, unit, spell, rank)
 	if (unit ~= self.unit) then return end
 
+	if not self:IsVisible() or not self.actionDuration then
+		return
+	end
+
 	local lag = GetTime() - (self.spellCastSent or 0)
 	
 	local pos = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
@@ -457,6 +461,10 @@ end
 function CastBar.prototype:SpellCastChannelStart(unit)
 	CastBar.super.prototype.SpellCastChannelStart(self, unit)
 	if (unit ~= self.unit) then return end
+
+	if not self:IsVisible() or not self.actionDuration then
+		return
+	end
 	
 	local lag = GetTime() - (self.spellCastSent or 0)
 	
