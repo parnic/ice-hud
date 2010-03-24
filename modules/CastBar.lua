@@ -446,7 +446,7 @@ function CastBar.prototype:SpellCastStart(unit, spell, rank)
 		pos = 0
 	end
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
-	
+--[[
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.lagBar.bar:SetTexCoord(1, 0, 0, pos)
 	else
@@ -454,6 +454,7 @@ function CastBar.prototype:SpellCastStart(unit, spell, rank)
 	end
 	
 	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, y)
+]]--
 end
 
 
@@ -473,7 +474,7 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 		pos = 0
 	end
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
-
+--[[
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.lagBar.bar:SetTexCoord(1, 0, 1-pos, 1)
 	else
@@ -481,6 +482,7 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 	end
 	
 	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
+]]--
 end
 
 

@@ -599,7 +599,7 @@ function IceBarElement.prototype:CreateBackground()
 		self.frame.bg = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
 	
-	self.frame.bg:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture() .."BG")
+	self.frame.bg:SetTexture(IceElement.TexturePath .. "RivetBarBG")--self:GetMyBarTexture() .."BG")
 	self.frame.bg:SetBlendMode(self.settings.barBgBlendMode)
 	self.frame.bg:ClearAllPoints()
 	self.frame.bg:SetAllPoints(self.frame)
@@ -610,7 +610,7 @@ function IceBarElement.prototype:CreateBackground()
 		self.frame.bg:SetTexCoord(0, 1, 0, 1)
 	end
 	
-	self.frame:SetStatusBarTexture(self.frame.bg)
+	--self.frame:SetStatusBarTexture(self.frame.bg)
 	self.frame:SetStatusBarColor(self:GetColor("undef", self.settings.alphabg))
 	
 	local ownPoint = "LEFT"
@@ -642,10 +642,12 @@ function IceBarElement.prototype:CreateBar()
 	
 	
 	if not (self.barFrame.bar) then
-		self.barFrame.bar = self.frame:CreateTexture(nil, "BACKGROUND")
+		self.barFrame.bar = self.frame:CreateTexture(nil, "LOW")
+		--self.barFrame.bar:SetHorizTile(true)
+		--self.barFrame.bar:SetVertTile(true)
 	end
 	
-	self.barFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+	self.barFrame.bar:SetTexture(IceElement.TexturePath .. "RivetBar")--self:GetMyBarTexture())
 	self.barFrame.bar:SetBlendMode(self.settings.barBlendMode)
 	self.barFrame.bar:SetAllPoints(self.barFrame)
 
@@ -654,13 +656,15 @@ function IceBarElement.prototype:CreateBar()
 	else
 		self.barFrame.bar:SetTexCoord(0, 1, 1-self.CurrScale, 1)
 	end
-	
-	self.barFrame:SetStatusBarTexture(self.barFrame.bar)
+
+	--self.barFrame:SetStatusBarTexture(self.barFrame.bar)
 	
 	self:UpdateBar(1, "undef")
 	
 	self.barFrame:ClearAllPoints()
 	self.barFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
+
+	--self.barFrame.bar:SetPoint("BOTTOM", self.barFrame, "BOTTOM", 0, 0)
 end
 
 
@@ -777,12 +781,14 @@ function IceBarElement.prototype:SetScale(texture, scale)
 				max_y = 1;
 			end
 		end
-
+--[[
 		if (self.moduleSettings.side == IceCore.Side.Left) then
 			texture:SetTexCoord(1, 0, min_y, max_y)
 		else
 			texture:SetTexCoord(0, 1, min_y, max_y)
 		end
+]]--
+		self.barFrame:SetHeight(self.settings.barHeight * self.CurrScale)
 	end
 end
 
@@ -837,7 +843,8 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	end
 
 	self.frame:SetStatusBarColor(r, g, b, self.backgroundAlpha)
-	self.barFrame:SetStatusBarColor(self:GetColor(color))
+	--self.barFrame:SetStatusBarColor(self:GetColor(color))
+	self.barFrame.bar:SetVertexColor(self:GetColor(color))
 
 	if self.DesiredScale ~= scale then
 		self.DesiredScale = scale

@@ -288,7 +288,7 @@ function IceThreat.prototype:Update(unit)
 
 	-- set the bar value
 	self:UpdateBar( scaledPercentZeroToOne, self.color )
-
+--[[
 	-- do the aggro indicator bar stuff, but only if it has changed
 	if ( self.aggroBarMulti ~= rangeMulti ) then
 		self.aggroBarMulti = rangeMulti
@@ -304,7 +304,7 @@ function IceThreat.prototype:Update(unit)
 
 		self.aggroBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, y)
 	end
-
+]]--
 	self:UpdateAlpha()
 end
 
