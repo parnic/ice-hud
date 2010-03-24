@@ -162,7 +162,7 @@ end
 -- Creates the low amount warning frame
 function IceUnitBar.prototype:CreateFlashFrame()
 	if not (self.flashFrame) then
-		self.flashFrame = CreateFrame("StatusBar", nil, self.frame)
+		self.flashFrame = CreateFrame("Frame", nil, self.frame)
 	end
 
 	self.flashFrame:SetFrameStrata("BACKGROUND")
@@ -177,9 +177,6 @@ function IceUnitBar.prototype:CreateFlashFrame()
 	self.flashFrame.flash:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	self.flashFrame.flash:SetBlendMode("ADD")
 	self.flashFrame.flash:SetAllPoints(self.flashFrame)
-
-	self.flashFrame:SetStatusBarTexture(self.flashFrame.flash)
-
 
 	self:SetScale(self.flashFrame.flash, 1)
 	self.flashFrame:SetAlpha(0)
@@ -277,8 +274,8 @@ function IceUnitBar.prototype:UpdateBar(scale, color, alpha)
 		-- skip if flashFrame hasn't been created yet
 		return
 	end
-	
-	self.flashFrame:SetStatusBarColor(self:GetColor(color))
+
+	self.flashFrame.flash:SetVertexColor(self:GetColor(color))
 	
 	if (self.moduleSettings.lowThreshold > 0 and 
 		self.moduleSettings.lowThresholdFlash and

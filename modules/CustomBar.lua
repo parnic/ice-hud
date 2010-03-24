@@ -354,7 +354,6 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 		self:SetBottomText1(self.moduleSettings.upperText)
 	end
 
-	--self.barFrame:SetStatusBarColor(self:GetBarColor())
 	self.barFrame.bar:SetVertexColor(self:GetBarColor())
 end
 

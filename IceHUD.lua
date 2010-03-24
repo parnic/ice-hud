@@ -324,7 +324,6 @@ IceHUD.options =
 						IceHUD.IceCore:SetBarPreset(value)
 					end,
 					validate = IceHUD.validBarList,
-					disabled = true,
 					order = 9
 				},
 
@@ -347,7 +346,6 @@ IceHUD.options =
 						IceHUD.IceCore:SetBarTexture(value)
 					end,
 					validate = IceHUD.validBarList,
-					disabled = true,
 					order = 11
 				},
 

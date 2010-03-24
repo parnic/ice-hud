@@ -155,7 +155,7 @@ end
 -- create the aggro range indicator bar
 function IceThreat.prototype:CreateAggroBar()
 	if not (self.aggroBar) then
-		self.aggroBar = CreateFrame("StatusBar", nil, self.frame)
+		self.aggroBar = CreateFrame("Frame", nil, self.frame)
 	end
 	
 	self.aggroBar:SetFrameStrata("BACKGROUND")
@@ -167,21 +167,21 @@ function IceThreat.prototype:CreateAggroBar()
 	end
 	
 	self.aggroBar.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture() .. "BG")
-	self.aggroBar.bar:SetAllPoints(self.aggroBar)
-	
-	self.aggroBar:SetStatusBarTexture(self.aggroBar.bar)
+	self.aggroBar.bar:SetPoint("BOTTOMLEFT",self.aggroBar,"BOTTOMLEFT")
+	self.aggroBar.bar:SetPoint("BOTTOMRIGHT",self.aggroBar,"BOTTOMRIGHT")
 	
 	local r, g, b = self:GetColor("ThreatPullAggro")
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor("CastCasting")
 	end
-	self.aggroBar:SetStatusBarColor(r, g, b, self.moduleSettings.aggroAlpha)
+	self.aggroBar.bar:SetVertexColor(r, g, b, self.moduleSettings.aggroAlpha)
 	
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.aggroBar.bar:SetTexCoord(1, 0, 0, 0)
 	else
 		self.aggroBar.bar:SetTexCoord(0, 1, 0, 0)
 	end
+	self.aggroBar.bar:SetHeight(0)
 	
 	self.aggroBar:ClearAllPoints()
 	self.aggroBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
@@ -288,7 +288,7 @@ function IceThreat.prototype:Update(unit)
 
 	-- set the bar value
 	self:UpdateBar( scaledPercentZeroToOne, self.color )
---[[
+
 	-- do the aggro indicator bar stuff, but only if it has changed
 	if ( self.aggroBarMulti ~= rangeMulti ) then
 		self.aggroBarMulti = rangeMulti
@@ -301,10 +301,11 @@ function IceThreat.prototype:Update(unit)
 		else
 			self.aggroBar.bar:SetTexCoord(0, 1, 0, pos)
 		end
+		self.aggroBar.bar:SetHeight(self.settings.barHeight * pos)
 
 		self.aggroBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, y)
 	end
-]]--
+
 	self:UpdateAlpha()
 end
 

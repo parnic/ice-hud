@@ -198,8 +198,8 @@ function IceCastBar.prototype:FlashBar(color, alpha, text, textColor)
 		r, g, b = self:GetColor(color)
 	end
 
-	self.frame:SetStatusBarColor(r, g, b, 0.3)
-	self.barFrame:SetStatusBarColor(self:GetColor(color, 0.8))
+	self.frame.bg:SetVertexColor(r, g, b, 0.3)
+	self.barFrame.bar:SetVertexColor(self:GetColor(color, 0.8))
 
 	self:SetScale(self.barFrame.bar, 1)
 	self:SetBottomText1(text, textColor or "Text")

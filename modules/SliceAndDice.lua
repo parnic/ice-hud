@@ -153,10 +153,10 @@ function SliceAndDice.prototype:CreateDurationBar()
 	end
 
 	self.durationFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	self.durationFrame.bar:SetAllPoints(self.frame)
+	self.durationFrame.bar:SetPoint("BOTTOMLEFT",self.frame,"BOTTOMLEFT")
+	self.durationFrame.bar:SetPoint("BOTTOMRIGHT",self.frame,"BOTTOMRIGHT")
 
-	self.durationFrame:SetStatusBarTexture(self.durationFrame.bar)
-	self.durationFrame:SetStatusBarColor(self:GetColor("SliceAndDicePotential", self.alpha * self.moduleSettings.durationAlpha))
+	self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.alpha * self.moduleSettings.durationAlpha))
 
 	self:UpdateBar(1, "undef")
 
@@ -285,6 +285,7 @@ function SliceAndDice.prototype:UpdateDurationBar(unit)
 	else
 		self.durationFrame.bar:SetTexCoord(0, 1, 1-scale, 1)
 	end
+	self.durationFrame.bar:SetHeight(self.settings.barHeight * scale)
 
 	if sndEndTime < GetTime() then
 		self:SetBottomText1(self.moduleSettings.upperText .. "0 (" .. PotentialSnDDuration .. ")")

@@ -386,7 +386,7 @@ end
 
 function CastBar.prototype:CreateLagBar()
 	if not (self.lagBar) then
-		self.lagBar = CreateFrame("StatusBar", nil, self.frame)
+		self.lagBar = CreateFrame("Frame", nil, self.frame)
 	end
 	
 	self.lagBar:SetFrameStrata("BACKGROUND")
@@ -399,15 +399,14 @@ function CastBar.prototype:CreateLagBar()
 	end
 	
 	self.lagBar.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	self.lagBar.bar:SetAllPoints(self.lagBar)
-	
-	self.lagBar:SetStatusBarTexture(self.lagBar.bar)
+	self.lagBar.bar:SetPoint("BOTTOMLEFT",self.lagBar,"BOTTOMLEFT")
+	self.lagBar.bar:SetPoint("BOTTOMRIGHT",self.lagBar,"BOTTOMRIGHT")
 	
 	local r, g, b = self:GetColor("CastLag")
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor("CastCasting")
 	end
-	self.lagBar:SetStatusBarColor(r, g, b, self.moduleSettings.lagAlpha)
+	self.lagBar.bar:SetVertexColor(r, g, b, self.moduleSettings.lagAlpha)
 	
 
 	if (self.moduleSettings.side == IceCore.Side.Left) then
@@ -415,6 +414,7 @@ function CastBar.prototype:CreateLagBar()
 	else
 		self.lagBar.bar:SetTexCoord(0, 1, 0, 0)
 	end
+	self.lagBar.bar:SetHeight(0)
 	
 	self.lagBar:ClearAllPoints()
 	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
@@ -446,15 +446,16 @@ function CastBar.prototype:SpellCastStart(unit, spell, rank)
 		pos = 0
 	end
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
---[[
+
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.lagBar.bar:SetTexCoord(1, 0, 0, pos)
 	else
 		self.lagBar.bar:SetTexCoord(0, 1, 0, pos)
 	end
-	
-	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, y)
-]]--
+	self.lagBar.bar:SetHeight(self.settings.barHeight * pos)
+
+	self.lagBar:ClearAllPoints()
+ 	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, y)
 end
 
 
@@ -474,15 +475,15 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 		pos = 0
 	end
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
---[[
+
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.lagBar.bar:SetTexCoord(1, 0, 1-pos, 1)
 	else
 		self.lagBar.bar:SetTexCoord(0, 1, 1-pos, 1)
 	end
+	self.lagBar.bar:SetHeight(self.settings.barHeight * pos)
 	
 	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
-]]--
 end
 
 

@@ -67,7 +67,7 @@ if self:ShouldUseTicker() then
 		end,
 		set = function(value)
 			self.moduleSettings.tickerAlpha = value
-			self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
+			self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -262,9 +262,9 @@ function PlayerMana.prototype:Update(unit)
 	if self:ShouldUseTicker() then
 		-- hide ticker if rest of the bar is not visible
 		if (self.alpha == 0) then
-	 		self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", 0))
+	 		self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", 0))
 	 	else
-	 		self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
+	 		self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
 	 	end
 	end
 
@@ -341,6 +341,7 @@ function PlayerMana.prototype:EnergyTick()
 	else
 		self.tickerFrame.spark:SetTexCoord(0, 1, 1-pos-0.01, 1-pos)
 	end
+	self.tickerFrame.spark:SetHeight(self.settings.barHeight * 0.01)
 	
 	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", 0, y)
 end
@@ -352,7 +353,7 @@ function PlayerMana.prototype:CreateTickerFrame()
 	end
 
 	if not (self.tickerFrame) then
-		self.tickerFrame = CreateFrame("StatusBar", nil, self.barFrame)
+		self.tickerFrame = CreateFrame("Frame", nil, self.barFrame)
 	end
 	
 	self.tickerFrame:SetFrameStrata("BACKGROUND")
@@ -367,10 +368,11 @@ function PlayerMana.prototype:CreateTickerFrame()
 	self.tickerFrame.spark:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	self.tickerFrame.spark:SetBlendMode("ADD")
 	self.tickerFrame.spark:ClearAllPoints()
-	self.tickerFrame.spark:SetAllPoints(self.tickerFrame)
-	
-	self.tickerFrame:SetStatusBarTexture(self.tickerFrame.spark)
-	self.tickerFrame:SetStatusBarColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
+	self.tickerFrame.spark:SetPoint("BOTTOMLEFT",self.tickerFrame,"BOTTOMLEFT")
+	self.tickerFrame.spark:SetPoint("BOTTOMRIGHT",self.tickerFrame,"BOTTOMRIGHT")
+	self.tickerFrame.spark:SetHeight(0)
+
+	self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
 	
 	self.tickerFrame:ClearAllPoints()
 	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", 0, 0)
