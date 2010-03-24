@@ -309,7 +309,7 @@ function PlayerMana.prototype:UpdateEnergy(unit)
 
 	if self:ShouldUseTicker() and
 		((not (self.previousEnergy) or (self.previousEnergy <= UnitMana(self.unit))) and
-		(self.moduleSettings.tickerEnabled)) then
+		(self.moduleSettings.tickerEnabled) and self.manaType == 3) then
 			self.tickStart = GetTime()
 			self.tickerFrame:Show()
 	end
