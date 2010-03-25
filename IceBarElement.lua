@@ -644,7 +644,7 @@ function IceBarElement.prototype:CreateBar()
 	
 	
 	if not (self.barFrame.bar) then
-		self.barFrame.bar = self.frame:CreateTexture(nil, "LOW")
+		self.barFrame.bar = self.barFrame:CreateTexture(nil, "LOW")
 	end
 	
 	self.barFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
