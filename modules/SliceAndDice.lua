@@ -157,6 +157,7 @@ function SliceAndDice.prototype:CreateDurationBar()
 	self.durationFrame.bar:SetPoint("BOTTOMRIGHT",self.frame,"BOTTOMRIGHT")
 
 	self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.alpha * self.moduleSettings.durationAlpha))
+	self.durationFrame.bar:SetHeight(0)
 
 	self:UpdateBar(1, "undef")
 
