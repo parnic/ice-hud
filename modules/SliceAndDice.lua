@@ -140,16 +140,16 @@ end
 
 function SliceAndDice.prototype:CreateDurationBar()
 	if not self.durationFrame then
-		self.durationFrame = CreateFrame("Statusbar", nil, self.frame)
+		self.durationFrame = CreateFrame("Frame", nil, self.frame)
 		self.CurrScale = 0
 	end
 
-	self.durationFrame:SetFrameStrata("LOW")
+	self.durationFrame:SetFrameStrata("BACKGROUND")
 	self.durationFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.durationFrame:SetHeight(self.settings.barHeight)
 
 	if not self.durationFrame.bar then
-		self.durationFrame.bar = self.frame:CreateTexture(nil, "BACKGROUND")
+		self.durationFrame.bar = self.frame:CreateTexture(nil, "LOW")
 	end
 
 	self.durationFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())

@@ -644,7 +644,7 @@ function IceBarElement.prototype:CreateBar()
 	
 	
 	if not (self.barFrame.bar) then
-		self.barFrame.bar = self.frame:CreateTexture(nil, "BACKGROUND")
+		self.barFrame.bar = self.frame:CreateTexture(nil, "LOW")
 	end
 	
 	self.barFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
@@ -839,7 +839,7 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 		self.alpha = 1
 	end
 
-	self.frame.bg:SetVertexColor(r, g, b, self.backGroundAlpha)
+	self.frame.bg:SetVertexColor(r, g, b, self.backgroundAlpha)
 	self.barFrame.bar:SetVertexColor(self:GetColor(color))
 
 	if self.DesiredScale ~= scale then

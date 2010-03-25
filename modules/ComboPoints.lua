@@ -303,7 +303,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 			end
 		end
 
-		self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
+		self.frame.graphical[i]:SetFrameStrata("LOW")
 		self.frame.graphical[i]:SetAllPoints(self.frame.graphicalBG[i])
 
 		local r, g, b = self:GetColor("ComboPoints")

@@ -163,10 +163,10 @@ function IceThreat.prototype:CreateAggroBar()
 	self.aggroBar:SetHeight(self.settings.barHeight)
 	
 	if not (self.aggroBar.bar) then
-		self.aggroBar.bar = self.aggroBar:CreateTexture(nil, "BACKGROUND")
+		self.aggroBar.bar = self.aggroBar:CreateTexture(nil, "LOW")
 	end
 	
-	self.aggroBar.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture() .. "BG")
+	self.aggroBar.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	self.aggroBar.bar:SetPoint("BOTTOMLEFT",self.aggroBar,"BOTTOMLEFT")
 	self.aggroBar.bar:SetPoint("BOTTOMRIGHT",self.aggroBar,"BOTTOMRIGHT")
 	
