@@ -786,6 +786,12 @@ function IceBarElement.prototype:SetScale(texture, scale)
 			texture:SetTexCoord(0, 1, min_y, max_y)
 		end
 		self.barFrame.bar:SetHeight(self.settings.barHeight * self.CurrScale)
+
+		if self.CurrScale == 0 then
+			self.barFrame.bar:Hide()
+		else
+			self.barFrame.bar:Show()
+		end
 	end
 end
 

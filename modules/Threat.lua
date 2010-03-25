@@ -302,6 +302,12 @@ function IceThreat.prototype:Update(unit)
 			self.aggroBar.bar:SetTexCoord(0, 1, 0, pos)
 		end
 		self.aggroBar.bar:SetHeight(self.settings.barHeight * pos)
+		
+		if pos == 0 then
+			self.aggroBar.bar:Hide()
+		else
+			self.aggroBar.bar:Show()
+		end
 
 		self.aggroBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, y)
 	end

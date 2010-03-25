@@ -991,6 +991,12 @@ function PlayerHealth.prototype:Update(unit)
 			self.healFrame.bar:SetTexCoord(0, 1, barValue, 1)
 		end
 		self.healFrame.bar:SetHeight(self.settings.barHeight * percent)
+		
+		if percent == 0 then
+			self.healFrame.bar:Hide()
+		else
+			self.healFrame.bar:Show()
+		end
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then

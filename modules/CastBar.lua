@@ -415,6 +415,7 @@ function CastBar.prototype:CreateLagBar()
 		self.lagBar.bar:SetTexCoord(0, 1, 0, 0)
 	end
 	self.lagBar.bar:SetHeight(0)
+	self.lagBar.bar:Hide()
 	
 	self.lagBar:ClearAllPoints()
 	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
@@ -453,6 +454,12 @@ function CastBar.prototype:SpellCastStart(unit, spell, rank)
 		self.lagBar.bar:SetTexCoord(0, 1, 0, pos)
 	end
 	self.lagBar.bar:SetHeight(self.settings.barHeight * pos)
+	
+	if pos == 0 then
+		self.lagBar.bar:Hide()
+	else
+		self.lagBar.bar:Show()
+	end
 
 	self.lagBar:ClearAllPoints()
  	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, y)
@@ -482,6 +489,12 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 		self.lagBar.bar:SetTexCoord(0, 1, 1-pos, 1)
 	end
 	self.lagBar.bar:SetHeight(self.settings.barHeight * pos)
+	
+	if pos == 0 then
+		self.lagBar.bar:Hide()
+	else
+		self.lagBar.bar:Show()
+	end
 	
 	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
 end

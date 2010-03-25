@@ -289,6 +289,12 @@ function SliceAndDice.prototype:UpdateDurationBar(unit)
 		self.durationFrame.bar:SetTexCoord(0, 1, 1-scale, 1)
 	end
 	self.durationFrame.bar:SetHeight(self.settings.barHeight * scale)
+	
+	if scale == 0 then
+		self.durationFrame.bar:Hide()
+	else
+		self.durationFrame.bar:Show()
+	end
 
 	if sndEndTime < GetTime() then
 		self:SetBottomText1(self.moduleSettings.upperText .. "0 (" .. PotentialSnDDuration .. ")")
