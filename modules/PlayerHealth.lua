@@ -773,7 +773,7 @@ function PlayerHealth.prototype:CreateHealBar()
 
 	self:UpdateBar(1, "undef")
 
-	if not self.moduleSettings.showIncomingHeals then
+	if not self.moduleSettings.showIncomingHeals or not HealComm then
 		self.healFrame.bar:Hide()
 	end
 end
