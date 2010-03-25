@@ -255,9 +255,9 @@ function PlayerHealth.prototype:GetOptions()
 		end,
 		set = function(v)
 			if not v then
-				self.healFrame:Hide()
+				self.healFrame.bar:Hide()
 			else
-				self.healFrame:Show()
+				self.healFrame.bar:Show()
 			end
 
 			self.moduleSettings.showIncomingHeals = v
@@ -760,14 +760,21 @@ function PlayerHealth.prototype:CreateHealBar()
 	self.healFrame.bar:SetPoint("BOTTOMRIGHT",self.frame,"BOTTOMRIGHT")
 
 	self.healFrame.bar:SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
+	
+	self.healFrame:ClearAllPoints()
+	self.healFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
+	
+	if (self.moduleSettings.side == IceCore.Side.Left) then
+		self.healFrame.bar:SetTexCoord(1, 0, 0, 1)
+	else
+		self.healFrame.bar:SetTexCoord(0, 1, 0, 1)
+	end
+	self.healFrame.bar:SetHeight(0)
 
 	self:UpdateBar(1, "undef")
 
-	self.healFrame:ClearAllPoints()
-	self.healFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
-
 	if not self.moduleSettings.showIncomingHeals then
-		self.healFrame:Hide()
+		self.healFrame.bar:Hide()
 	end
 end
 
