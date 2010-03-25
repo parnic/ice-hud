@@ -204,7 +204,7 @@ function IceCustomBar.prototype:GetOptions()
 			self.moduleSettings.barColor.r = r
 			self.moduleSettings.barColor.g = g
 			self.moduleSettings.barColor.b = b
-			self.barFrame:SetStatusBarColor(self:GetBarColor())
+			self.barFrame.bar:SetVertexColor(self:GetBarColor())
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
