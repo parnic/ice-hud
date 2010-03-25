@@ -66,6 +66,7 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["displayWhenEmpty"] = false
 	settings["hideAnimationSettings"] = true
 	settings["buffTimerDisplay"] = "minutes"
+	settings["maxDuration"] = 0
 
 	return settings
 end
@@ -247,6 +248,27 @@ function IceCustomBar.prototype:GetOptions()
 		order = 21
 	}
 
+	opts["maxDuration"] = {
+		type = 'text',
+		name = "Maximum duration",
+		desc = "Maximum Duration for the bar (the bar will remained full if it has longer than maximum remaining).  Leave 0 for spell duration.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
+		get = function()
+			return self.moduleSettings.maxDuration
+		end,
+		set = function(v)
+			if not v or not tonumber(v) then
+				v = 0
+			end
+			self.moduleSettings.maxDuration = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		usage = "<the maximum duration for a bar>",
+		order = 21.1,
+	}
+
 	return opts
 end
 
@@ -276,6 +298,10 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 	local buffFilter = (isBuff and "HELPFUL" or "HARMFUL") .. (self.moduleSettings.trackOnlyMine and "|PLAYER" or "")
 	local buff, rank, texture, count, type, duration, endTime, unitCaster = UnitAura(unitName, i, buffFilter)
 	local isMine = unitCaster == "player"
+
+	if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
+		duration = self.moduleSettings.maxDuration
+	end
 
 	while buff do
 		if (string.match(buff:upper(), buffName:upper()) and (not self.moduleSettings.trackOnlyMine or isMine)) then
