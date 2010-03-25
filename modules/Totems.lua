@@ -255,7 +255,7 @@ function Totems.prototype:UpdateTotem(totem, ...)
 	local thisTotemName = self.totemNames[TOTEM_PRIORITIES[totem]]
 	local haveTotem, name, startTime, duration, icon = GetTotemInfo(totem);
 	if duration > 0 then
-		self.frame.graphical[totem]:SetStatusBarTexture(icon)
+		self.frame.graphical[totem].totem:SetTexture(icon)
 		self.frame.graphical[totem].cd:SetCooldown(startTime, duration)
 		self.frame.graphical[totem].cd:Show()
 		self.frame.graphical[totem]:Show()
@@ -346,11 +346,13 @@ function Totems.prototype:CreateTotem(i, name)
 	local haveTotem, name, startTime, duration, icon = GetTotemInfo(i)
 	local bWasNewFrame = false
 	if (not self.frame.graphical[i]) then
-		self.frame.graphical[i] = CreateFrame("StatusBar", nil, self.frame)
+		self.frame.graphical[i] = CreateFrame("Frame", nil, self.frame)
+		self.frame.graphical[i].totem = self.frame.graphical[i]:CreateTexture(nil, "LOW")
 		self.frame.graphical[i].cd = CreateFrame("Cooldown", nil, self.frame.graphical[i], "CooldownFrameTemplate")
 		self.frame.graphical[i].shine = self.frame.graphical[i]:CreateTexture(nil, "OVERLAY")
 
-		self.frame.graphical[i]:SetStatusBarTexture(icon)
+		self.frame.graphical[i].totem:SetTexture(icon)
+		self.frame.graphical[i].totem:SetAllPoints(self.frame.graphical[i])
 		bWasNewFrame = true
 	end
 
