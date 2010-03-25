@@ -222,7 +222,7 @@ function SunderCount.prototype:CreateSunderFrame(doTextureUpdate)
 		self.frame.graphicalBG[i]:SetHeight(self.sunderSize)
 		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.sunderSize-5) + (i-1) + ((i-1) * self.moduleSettings.sunderGap), 0)
 		self.frame.graphicalBG[i]:SetAlpha(0.15)
-		self.frame.graphicalBG[i].texture:SetColor(self:GetColor("SunderCount"))
+		self.frame.graphicalBG[i].texture:SetVertexColor(self:GetColor("SunderCount"))
 
 		self.frame.graphicalBG[i]:Hide()
 	end
