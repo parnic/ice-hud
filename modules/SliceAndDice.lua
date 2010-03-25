@@ -149,7 +149,7 @@ function SliceAndDice.prototype:CreateDurationBar()
 	self.durationFrame:SetHeight(self.settings.barHeight)
 
 	if not self.durationFrame.bar then
-		self.durationFrame.bar = self.frame:CreateTexture(nil, "LOW")
+		self.durationFrame.bar = self.durationFrame:CreateTexture(nil, "LOW")
 	end
 
 	self.durationFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
@@ -267,8 +267,10 @@ function SliceAndDice.prototype:UpdateDurationBar(unit)
 
 	-- player doesn't want to show the percent of max or the alpha is zeroed out, so don't bother with the duration bar
 	if not self.moduleSettings.showAsPercentOfMax or self.moduleSettings.durationAlpha == 0 then
+		self.durationFrame:Hide()
 		return
 	end
+	self.durationFrame:Show()
 
 	-- if we have combo points and a target selected, go ahead and show the bar so the duration bar can be seen
 	if points > 0 and UnitExists("target") then
