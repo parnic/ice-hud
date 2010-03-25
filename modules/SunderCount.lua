@@ -199,18 +199,21 @@ function SunderCount.prototype:CreateSunderFrame(doTextureUpdate)
 	-- create backgrounds
 	for i = 1, 5 do
 		if (not self.frame.graphicalBG[i]) then
-			self.frame.graphicalBG[i] = CreateFrame("StatusBar", nil, self.frame)
+			local frame = CreateFrame("Frame", nil, self.frame)
+			self.frame.graphicalBG[i] = frame
+			frame.texture = frame:CreateTexture()
+			frame.texture:SetAllPoints(frame)
 		end
 
 		if doTextureUpdate then
 			if self.moduleSettings.sunderMode == "Graphical Bar" then
-				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboBG")
+				self.frame.graphicalBG[i].texture:SetTexture(IceElement.TexturePath .. "ComboBG")
 			elseif self.moduleSettings.sunderMode == "Graphical Circle" then
-				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRoundBG")
+				self.frame.graphicalBG[i].texture:SetTexture(IceElement.TexturePath .. "ComboRoundBG")
 			elseif self.moduleSettings.sunderMode == "Graphical Glow" then
-				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboGlowBG")
+				self.frame.graphicalBG[i].texture:SetTexture(IceElement.TexturePath .. "ComboGlowBG")
 			elseif self.moduleSettings.sunderMode == "Graphical Clean Circle" then
-				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboCleanCurvesBG")
+				self.frame.graphicalBG[i].texture:SetTexture(IceElement.TexturePath .. "ComboCleanCurvesBG")
 			end
 		end
 
@@ -219,7 +222,7 @@ function SunderCount.prototype:CreateSunderFrame(doTextureUpdate)
 		self.frame.graphicalBG[i]:SetHeight(self.sunderSize)
 		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.sunderSize-5) + (i-1) + ((i-1) * self.moduleSettings.sunderGap), 0)
 		self.frame.graphicalBG[i]:SetAlpha(0.15)
-		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("SunderCount"))
+		self.frame.graphicalBG[i].texture:SetColor(self:GetColor("SunderCount"))
 
 		self.frame.graphicalBG[i]:Hide()
 	end
@@ -227,18 +230,21 @@ function SunderCount.prototype:CreateSunderFrame(doTextureUpdate)
 	-- create sunders
 	for i = 1, 5 do
 		if (not self.frame.graphical[i]) then
-			self.frame.graphical[i] = CreateFrame("StatusBar", nil, self.frame)
+			local frame = CreateFrame("Frame", nil, self.frame)
+			self.frame.graphical[i] = frame
+			frame.texture = frame:CreateTexture()
+			frame.texture:SetAllPoints(frame)
 		end
 
 		if doTextureUpdate then
 			if self.moduleSettings.sunderMode == "Graphical Bar" then
-				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "Combo")
+				self.frame.graphical[i].texture:SetTexture(IceElement.TexturePath .. "Combo")
 			elseif self.moduleSettings.sunderMode == "Graphical Circle" then
-				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRound")
+				self.frame.graphical[i].texture:SetTexture(IceElement.TexturePath .. "ComboRound")
 			elseif self.moduleSettings.sunderMode == "Graphical Glow" then
-				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboGlow")
+				self.frame.graphical[i].texture:SetTexture(IceElement.TexturePath .. "ComboGlow")
 			elseif self.moduleSettings.sunderMode == "Graphical Clean Circle" then
-				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboCleanCurves")
+				self.frame.graphical[i].texture:SetTexture(IceElement.TexturePath .. "ComboCleanCurves")
 			end
 		end
 
@@ -249,7 +255,7 @@ function SunderCount.prototype:CreateSunderFrame(doTextureUpdate)
 		if (self.moduleSettings.gradient) then
 			g = g - (0.15*i)
 		end
-		self.frame.graphical[i]:SetStatusBarColor(r, g, b)
+		self.frame.graphical[i].texture:SetVertexColor(r, g, b)
 
 		self.frame.graphical[i]:Hide()
 	end

@@ -220,18 +220,21 @@ function LacerateCount.prototype:CreateLacerateFrame(doTextureUpdate)
 	-- create backgrounds
 	for i = 1, 5 do
 		if (not self.frame.graphicalBG[i]) then
-			self.frame.graphicalBG[i] = CreateFrame("StatusBar", nil, self.frame)
+			local frame = CreateFrame("Frame", nil, self.frame)
+			self.frame.graphicalBG[i] = frame
+			frame.texture = frame:CreateTexture()
+			frame.texture:SetAllPoints(frame)
 		end
 
 		if doTextureUpdate then
 			if self.moduleSettings.lacerateMode == "Graphical Bar" then
-				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboBG")
+				self.frame.graphicalBG[i].texture:SetTexture(IceElement.TexturePath .. "ComboBG")
 			elseif self.moduleSettings.lacerateMode == "Graphical Circle" then
-				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRoundBG")
+				self.frame.graphicalBG[i].texture:SetTexture(IceElement.TexturePath .. "ComboRoundBG")
 			elseif self.moduleSettings.lacerateMode == "Graphical Glow" then
-				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboGlowBG")
+				self.frame.graphicalBG[i].texture:SetTexture(IceElement.TexturePath .. "ComboGlowBG")
 			elseif self.moduleSettings.lacerateMode == "Graphical Clean Circle" then
-				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboCleanCurvesBG")
+				self.frame.graphicalBG[i].texture:SetTexture(IceElement.TexturePath .. "ComboCleanCurvesBG")
 			end
 		end
 
@@ -240,7 +243,7 @@ function LacerateCount.prototype:CreateLacerateFrame(doTextureUpdate)
 		self.frame.graphicalBG[i]:SetHeight(self.lacerateSize)
 		self.frame.graphicalBG[i]:SetPoint("TOPLEFT", (i-1) * (self.lacerateSize-5) + (i-1) + ((i-1) * self.moduleSettings.lacerateGap), 0)
 		self.frame.graphicalBG[i]:SetAlpha(0.15)
-		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("LacerateCount"))
+		self.frame.graphicalBG[i].texture:SetVertexColor(self:GetColor("LacerateCount"))
 
 		self.frame.graphicalBG[i]:Hide()
 	end
@@ -248,18 +251,21 @@ function LacerateCount.prototype:CreateLacerateFrame(doTextureUpdate)
 	-- create lacerates
 	for i = 1, 5 do
 		if (not self.frame.graphical[i]) then
-			self.frame.graphical[i] = CreateFrame("StatusBar", nil, self.frame)
+			local frame = CreateFrame("Frame", nil, self.frame)
+			self.frame.graphical[i] = frame
+			frame.texture = frame:CreateTexture()
+			frame.texture:SetAllPoints(frame)
 		end
 
 		if doTextureUpdate then
 			if self.moduleSettings.lacerateMode == "Graphical Bar" then
-				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "Combo")
+				self.frame.graphical[i].texture:SetTexture(IceElement.TexturePath .. "Combo")
 			elseif self.moduleSettings.lacerateMode == "Graphical Circle" then
-				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRound")
+				self.frame.graphical[i].texture:SetTexture(IceElement.TexturePath .. "ComboRound")
 			elseif self.moduleSettings.lacerateMode == "Graphical Glow" then
-				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboGlow")
+				self.frame.graphical[i].texture:SetTexture(IceElement.TexturePath .. "ComboGlow")
 			elseif self.moduleSettings.lacerateMode == "Graphical Clean Circle" then
-				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboCleanCurves")
+				self.frame.graphical[i].texture:SetTexture(IceElement.TexturePath .. "ComboCleanCurves")
 			end
 		end
 
@@ -270,7 +276,7 @@ function LacerateCount.prototype:CreateLacerateFrame(doTextureUpdate)
 		if (self.moduleSettings.gradient) then
 			g = g - (0.15*i)
 		end
-		self.frame.graphical[i]:SetStatusBarColor(r, g, b)
+		self.frame.graphical[i].texture:SetVertexColor(r, g, b)
 
 		self.frame.graphical[i]:Hide()
 	end

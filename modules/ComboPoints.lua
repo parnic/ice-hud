@@ -250,18 +250,21 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 	-- create backgrounds
 	for i = 1, 5 do
 		if (not self.frame.graphicalBG[i]) then
-			self.frame.graphicalBG[i] = CreateFrame("StatusBar", nil, self.frame)
+			local frame = CreateFrame("Frame", nil, self.frame)
+			self.frame.graphicalBG[i] = frame
+			frame.texture = frame:CreateTexture()
+			frame.texture:SetAllPoints(frame)
 		end
 
 		if forceTextureUpdate then
 			if self.moduleSettings.comboMode == "Graphical Bar" then
-				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboBG")
+				self.frame.graphicalBG[i].texture:SetTexture(IceElement.TexturePath .. "ComboBG")
 			elseif self.moduleSettings.comboMode == "Graphical Circle" then
-				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRoundBG")
+				self.frame.graphicalBG[i].texture:SetTexture(IceElement.TexturePath .. "ComboRoundBG")
 			elseif self.moduleSettings.comboMode == "Graphical Glow" then
-				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboGlowBG")
+				self.frame.graphicalBG[i].texture:SetTexture(IceElement.TexturePath .. "ComboGlowBG")
 			elseif self.moduleSettings.comboMode == "Graphical Clean Circle" then
-				self.frame.graphicalBG[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboCleanCurvesBG")
+				self.frame.graphicalBG[i].texture:SetTexture(IceElement.TexturePath .. "ComboCleanCurvesBG")
 			end
 		end
 
@@ -274,7 +277,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 			self.frame.graphicalBG[i]:SetPoint("TOPLEFT", 0, -1 * (((i-1) * (self.comboSize-5)) + (i-1) + ((i-1) * self.moduleSettings.comboGap)))
 		end
 		self.frame.graphicalBG[i]:SetAlpha(0.15)
-		self.frame.graphicalBG[i]:SetStatusBarColor(self:GetColor("ComboPoints"))
+		self.frame.graphicalBG[i].texture:SetVertexColor(self:GetColor("ComboPoints"))
 
 		self.frame.graphicalBG[i]:Hide()
 	end
@@ -282,18 +285,21 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 	-- create combo points
 	for i = 1, 5 do
 		if (not self.frame.graphical[i]) then
-			self.frame.graphical[i] = CreateFrame("StatusBar", nil, self.frame)
+			local frame = CreateFrame("Frame", nil, self.frame)
+			self.frame.graphical[i] = frame
+			frame.texture = frame:CreateTexture()
+			frame.texture:SetAllPoints(frame)
 		end
 
 		if forceTextureUpdate then
 			if self.moduleSettings.comboMode == "Graphical Bar" then
-				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "Combo")
+				self.frame.graphical[i].texture:SetTexture(IceElement.TexturePath .. "Combo")
 			elseif self.moduleSettings.comboMode == "Graphical Circle" then
-				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboRound")
+				self.frame.graphical[i].texture:SetTexture(IceElement.TexturePath .. "ComboRound")
 			elseif self.moduleSettings.comboMode == "Graphical Glow" then
-				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboGlow")
+				self.frame.graphical[i].texture:SetTexture(IceElement.TexturePath .. "ComboGlow")
 			elseif self.moduleSettings.comboMode == "Graphical Clean Circle" then
-				self.frame.graphical[i]:SetStatusBarTexture(IceElement.TexturePath .. "ComboCleanCurves")
+				self.frame.graphical[i].texture:SetTexture(IceElement.TexturePath .. "ComboCleanCurves")
 			end
 		end
 
@@ -304,7 +310,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 		if (self.moduleSettings.gradient) then
 			g = g - (0.15*i)
 		end
-		self.frame.graphical[i]:SetStatusBarColor(r, g, b)
+		self.frame.graphical[i].texture:SetVertexColor(r, g, b)
 
 		self.frame.graphical[i]:Hide()
 	end
