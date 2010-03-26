@@ -299,11 +299,11 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 	local buff, rank, texture, count, type, duration, endTime, unitCaster = UnitAura(unitName, i, buffFilter)
 	local isMine = unitCaster == "player"
 
-	if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
-		duration = self.moduleSettings.maxDuration
-	end
-
 	while buff do
+		if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
+			duration = self.moduleSettings.maxDuration
+		end
+		
 		if (string.match(buff:upper(), buffName:upper()) and (not self.moduleSettings.trackOnlyMine or isMine)) then
 			if endTime and not remaining then
 				remaining = endTime - GetTime()
