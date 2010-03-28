@@ -57,6 +57,7 @@ function IceCustomCDBar.prototype:GetDefaultSettings()
 	settings["hideAnimationSettings"] = true
 	settings["cooldownTimerDisplay"] = "minutes"
 	settings["customBarType"] = "CD"
+	settings["maxDuration"] = 0
 
 	return settings
 end
@@ -179,6 +180,27 @@ function IceCustomCDBar.prototype:GetOptions()
 		validate = validBuffTimers,
 		order = 21
 	}
+	
+	opts["maxDuration"] = {
+		type = 'text',
+		name = "Maximum duration",
+		desc = "Maximum Duration for the bar (the bar will remained full if it has longer than maximum remaining).  Leave 0 for spell duration.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
+		get = function()
+			return self.moduleSettings.maxDuration
+		end,
+		set = function(v)
+			if not v or not tonumber(v) then
+				v = 0
+			end
+			self.moduleSettings.maxDuration = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		usage = "<the maximum duration for a bar>",
+		order = 21.1,
+	}
 
 	return opts
 end
@@ -202,6 +224,10 @@ function IceCustomCDBar.prototype:GetCooldownDuration(buffName)
 			else
 			    localRemaining = localRemaining + (localStart - now)
 			    localDuration = (now - localStart) + localRemaining
+			end
+			
+			if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
+				localDuration = tonumber(self.moduleSettings.maxDuration)
 			end
 
 			if localDuration > 1.5  then
