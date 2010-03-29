@@ -2,11 +2,41 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 local TargetCast = AceOO.Class(IceCastBar)
 
+TargetCast.prototype.notInterruptible = false
+
 -- Constructor --
 function TargetCast.prototype:init()
 	TargetCast.super.prototype.init(self, "TargetCast")
 
+	self:SetDefaultColor("CastNotInterruptible", 1, 0, 0)
+
 	self.unit = "target"
+end
+
+function TargetCast.prototype:Enable(core)
+	TargetCast.super.prototype.Enable(self, core)
+
+	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE", "SpellCastInterruptible")
+	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "SpellCastNotInterruptible")
+end
+
+
+function TargetCast.prototype:SpellCastInterruptible()
+	self.notInterruptible = false
+	self:Redraw()
+end
+
+function TargetCast.prototype:SpellCastNotInterruptible()
+	self.notInterruptible = true
+	self:Redraw()
+end
+
+function TargetCast.prototype:UpdateBar(scale, color, alpha)
+	TargetCast.super.prototype.UpdateBar(self, scale, color, alpha)
+
+	if self.moduleSettings.displayNonInterruptible and self.notInterruptible then
+		self.barFrame.bar:SetVertexColor(self:GetColor("CastNotInterruptible"))
+	end
 end
 
 
@@ -22,6 +52,7 @@ function TargetCast.prototype:GetDefaultSettings()
 	settings["flashFailures"] = "Never"
 	settings["shouldAnimate"] = false
 	settings["usesDogTagStrings"] = false
+	settings["displayNonInterruptible"] = true
 
 	return settings
 end
@@ -35,19 +66,21 @@ function TargetCast.prototype:TargetChanged(unit)
 		self:StopBar()
 		return
 	end
-	
-	local spell = UnitCastingInfo(self.unit)
+
+	local spell _, _, _, _, _, _, _, notInterruptibleCast = UnitCastingInfo(self.unit)
 	if (spell) then
+		self.notInterruptible = notInterruptibleCast
 		self:StartBar(IceCastBar.Actions.Cast)
 		return
 	end
-	
-	local channel = UnitChannelInfo(self.unit)
+
+	local channel, _, _, _, _, _, _, notInterruptibleChannel = UnitChannelInfo(self.unit)
 	if (channel) then
+		self.notInterruptible = notInterruptibleChannel
 		self:StartBar(IceCastBar.Actions.Channel)
 		return
 	end
-	
+
 	self:StopBar()
 end
 
@@ -121,8 +154,40 @@ function TargetCast.prototype:GetOptions()
 		end,
 		order = 29
 	}
+	
+	opts["displayNonInterruptible"] = {
+		type = 'toggle',
+		name = 'Display non-interruptible color',
+		desc = 'Toggles whether or not to show the CastNonInterruptible color for this bar when a cast is non-interruptible',
+		get = function()
+			return self.moduleSettings.displayNonInterruptible
+		end,
+		set = function(v)
+			self.moduleSettings.displayNonInterruptible = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 30
+	}
 
 	return opts
+end
+
+function TargetCast.prototype:StartBar(action, message)
+	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill, castId, notInterruptible = UnitCastingInfo(self.unit)
+	if not (spell) then
+		spell, rank, displayName, icon, startTime, endTime, isTradeSkill, notInterruptible = UnitChannelInfo(self.unit)
+	end
+
+	if not spell then
+		return
+	end
+
+	self.notInterruptible = notInterruptible
+
+	TargetCast.super.prototype.StartBar(self, action, message)
 end
 
 -------------------------------------------------------------------------------
