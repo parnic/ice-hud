@@ -178,6 +178,9 @@ function IceBarElement.prototype:GetOptions()
 			self.moduleSettings.reverse = value
 			self:Redraw()
 		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 		order = 32
 	}
 
