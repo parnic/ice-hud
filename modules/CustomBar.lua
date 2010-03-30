@@ -105,7 +105,9 @@ function IceCustomBar.prototype:GetOptions()
 			return self.elementName
 		end,
 		set = function(v)
-			IceHUD.IceCore:RenameDynamicModule(self, v)
+			if v~= "" then
+				IceHUD.IceCore:RenameDynamicModule(self, v)
+			end
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
