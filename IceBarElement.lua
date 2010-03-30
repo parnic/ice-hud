@@ -176,6 +176,12 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		set = function(value)
 			self.moduleSettings.reverse = value
+			self.barFrame:ClearAllPoints()
+			if (self.moduleSettings.reverse) then
+			    self.barFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
+			else
+			    self.barFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
+			end
 			self:Redraw()
 		end,
 		disabled = function()
@@ -642,31 +648,36 @@ function IceBarElement.prototype:CreateBar()
 	end
 	
 	self.barFrame:SetFrameStrata("LOW")
+	self.barFrame:ClearAllPoints()
+	if (self.moduleSettings.reverse) then
+		self.barFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
+	else
+		self.barFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
+	end
 	self.barFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.barFrame:SetHeight(self.settings.barHeight)
-	
-	
+
 	if not (self.barFrame.bar) then
 		self.barFrame.bar = self.barFrame:CreateTexture(nil, "LOW")
 	end
 	
 	self.barFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	self.barFrame.bar:SetBlendMode(self.settings.barBlendMode)
-	self.barFrame.bar:ClearAllPoints()
-	self.barFrame.bar:SetPoint("BOTTOMLEFT",self.barFrame,"BOTTOMLEFT")
-	self.barFrame.bar:SetPoint("BOTTOMRIGHT",self.barFrame,"BOTTOMRIGHT")
-
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.barFrame.bar:SetTexCoord(1, 0, 1-self.CurrScale, 1)
+	self.barFrame.bar:SetAllPoints(self.barFrame)
+	if (self.moduleSettings.reverse) then
+		min_y = 0;
+		max_y = self.CurrScale;
 	else
-		self.barFrame.bar:SetTexCoord(0, 1, 1-self.CurrScale, 1)
+		min_y = 1-self.CurrScale;
+		max_y = 1;
 	end
-	self.barFrame.bar:SetHeight(self.settings.barHeight*self.CurrScale)
+	if (self.moduleSettings.side == IceCore.Side.Left) then
+		self.barFrame.bar:SetTexCoord(1, 0, min_y, max_y)
+	else
+		self.barFrame.bar:SetTexCoord(0, 1, min_y, max_y)
+	end
 
 	self:UpdateBar(1, "undef")
-	
-	self.barFrame:ClearAllPoints()
-	self.barFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
 end
 
 
@@ -771,14 +782,10 @@ function IceBarElement.prototype:SetScale(texture, scale)
 
 	if oldScale ~= self.CurrScale then
 		if (texture == self.barFrame.bar) then
-	        if (self.moduleSettings.reverse) then
-				self.barFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, (self.settings.barHeight - (self.CurrScale * self.settings.barHeight)))
-
+			if (self.moduleSettings.reverse) then
 				min_y = 0;
 				max_y = self.CurrScale;
 			else
-				self.barFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
-
 				min_y = 1-self.CurrScale;
 				max_y = 1;
 			end
@@ -788,7 +795,8 @@ function IceBarElement.prototype:SetScale(texture, scale)
 		else
 			texture:SetTexCoord(0, 1, min_y, max_y)
 		end
-		self.barFrame.bar:SetHeight(self.settings.barHeight * self.CurrScale)
+
+		self.barFrame:SetHeight(self.settings.barHeight * self.CurrScale)
 
 		if self.CurrScale == 0 then
 			self.barFrame.bar:Hide()
