@@ -30,6 +30,13 @@ function IceCustomBar.prototype:Enable(core)
 	self.unit = self.moduleSettings.myUnit
 
 	self:UpdateCustomBar(self.unit)
+	
+	if self.moduleSettings.auraIconXOffset == nil then
+		self.moduleSettings.auraIconXOffset = 40
+	end
+	if self.moduleSettings.auraIconYOffset == nil then
+		self.moduleSettings.auraIconYOffset = 0
+	end
 end
 
 function IceCustomBar.prototype:TargetChanged()
@@ -67,8 +74,41 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["hideAnimationSettings"] = true
 	settings["buffTimerDisplay"] = "minutes"
 	settings["maxDuration"] = 0
+	settings["displayAuraIcon"] = false
+	settings["auraIconXOffset"] = 40
+	settings["auraIconYOffset"] = 0
 
 	return settings
+end
+
+function IceCustomBar.prototype:CreateBar()
+	IceCustomBar.super.prototype.CreateBar(self)
+	
+	if not self.barFrame.icon then
+		self.barFrame.icon = self.barFrame:CreateTexture(nil, "LOW")
+		-- default texture so that 'config mode' can work without activating the bar first
+		self.barFrame.icon:SetTexture("Interface\\Icons\\Spell_Frost_Frost")
+		self.barFrame.icon:SetWidth(20)
+		self.barFrame.icon:SetHeight(20)
+		-- this cuts off the border around the buff icon
+		self.barFrame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+	end
+	self:PositionIcons()
+end
+
+function IceCustomBar.prototype:PositionIcons()
+	if not self.barFrame or not self.barFrame.icon then
+		return
+	end
+
+	self.barFrame.icon:ClearAllPoints()
+	self.barFrame.icon:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.moduleSettings.auraIconXOffset, self.moduleSettings.auraIconYOffset)
+end
+
+function IceCustomBar.prototype:Redraw()
+	IceCustomBar.super.prototype.Redraw(self)
+	
+	self:UpdateCustomBar(self.unit)
 end
 
 -- OVERRIDE
@@ -270,7 +310,79 @@ function IceCustomBar.prototype:GetOptions()
 		usage = "<the maximum duration for a bar>",
 		order = 21.1,
 	}
+	
+	opts["headerIcons"] = {
+		type = 'header',
+		name = 'Icons',
+		order = 40
+	}
+	
+	opts["displayAuraIcon"] = {
+		type = 'toggle',
+		name = "Display aura icon",
+		desc = "Whether or not to display an icon for the aura that this bar is tracking",
+		get = function()
+			return self.moduleSettings.displayAuraIcon
+		end,
+		set = function(v)
+			self.moduleSettings.displayAuraIcon = v
+			if self.barFrame.icon then
+				if v then
+					self.barFrame.icon:Show()
+				else
+					self.barFrame.icon:Hide()
+				end
+			end
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		usage = "<whether or not to display an icon for this bar's tracked spell>",
+		order = 40.1,
+	}
+	
+	opts["auraIconXOffset"] = {
+		type = 'range',
+		min = -250,
+		max = 250,
+		step = 1,
+		name = "Aura icon horizontal offset",
+		desc = "Adjust the horizontal position of the aura icon",
+		get = function()
+			return self.moduleSettings.auraIconXOffset
+		end,
+		set = function(v)
+			self.moduleSettings.auraIconXOffset = v
+			self:PositionIcons()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+		end,
+		usage = "<adjusts the spell icon's horizontal position>",
+		order = 40.2,
+	}
 
+	opts["auraIconYOffset"] = {
+		type = 'range',
+		min = -250,
+		max = 250,
+		step = 1,
+		name = "Aura icon vertical offset",
+		desc = "Adjust the vertical position of the aura icon",
+		get = function()
+			return self.moduleSettings.auraIconYOffset
+		end,
+		set = function(v)
+			self.moduleSettings.auraIconYOffset = v
+			self:PositionIcons()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+		end,
+		usage = "<adjusts the spell icon's vertical position>",
+		order = 40.3,
+	}
+	
 	return opts
 end
 
@@ -310,7 +422,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 			if endTime and not remaining then
 				remaining = endTime - GetTime()
 			end
-			return duration, remaining, count
+			return duration, remaining, count, texture
 		end
 
 		i = i + 1;
@@ -319,7 +431,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 		isMine = unitCaster == "player"
 	end
 
-	return nil, nil, nil
+	return nil, nil, nil, nil
 end
 
 function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
@@ -329,15 +441,27 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 
 	local now = GetTime()
 	local remaining = nil
+	local count = 0
+	local auraIcon = nil
 
 	if not fromUpdate then
-		self.auraDuration, remaining =
+		self.auraDuration, remaining, count, auraIcon =
 			self:GetAuraDuration(self.unit, self.moduleSettings.buffToTrack)
 
 		if not remaining then
 			self.auraEndTime = 0
 		else
 			self.auraEndTime = remaining + now
+		end
+
+		if auraIcon ~= nil then
+			self.barFrame.icon:SetTexture(auraIcon)
+		end
+
+		if IceHUD.IceCore:IsInConfigMode() or self.moduleSettings.displayAuraIcon then
+			self.barFrame.icon:Show()
+		else
+			self.barFrame.icon:Hide()
 		end
 	end
 
