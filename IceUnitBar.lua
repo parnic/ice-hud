@@ -178,7 +178,7 @@ function IceUnitBar.prototype:CreateFlashFrame()
 	self.flashFrame.flash:SetBlendMode("ADD")
 	self.flashFrame.flash:SetAllPoints(self.flashFrame)
 
-	self:SetScale(self.flashFrame.flash, 1)
+	--self:SetScale(self.flashFrame.flash, 1)
 	self.flashFrame:SetAlpha(0)
 
 	self.flashFrame:ClearAllPoints()

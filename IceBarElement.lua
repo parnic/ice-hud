@@ -176,12 +176,7 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		set = function(value)
 			self.moduleSettings.reverse = value
-			self.barFrame:ClearAllPoints()
-			if (self.moduleSettings.reverse) then
-			    self.barFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
-			else
-			    self.barFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
-			end
+			self:SetBarFramePoints()
 			self:Redraw()
 		end,
 		disabled = function()
@@ -548,6 +543,14 @@ end
 	return opts
 end
 
+function IceBarElement.prototype:SetBarFramePoints()
+	self.barFrame:ClearAllPoints()
+	if (self.moduleSettings.reverse) then
+		self.barFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
+	else
+		self.barFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
+	end
+end
 
 
 -- OVERRIDE
@@ -648,12 +651,7 @@ function IceBarElement.prototype:CreateBar()
 	end
 	
 	self.barFrame:SetFrameStrata("LOW")
-	self.barFrame:ClearAllPoints()
-	if (self.moduleSettings.reverse) then
-		self.barFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
-	else
-		self.barFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
-	end
+	self:SetBarFramePoints()
 	self.barFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.barFrame:SetHeight(self.settings.barHeight)
 
@@ -664,18 +662,7 @@ function IceBarElement.prototype:CreateBar()
 	self.barFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	self.barFrame.bar:SetBlendMode(self.settings.barBlendMode)
 	self.barFrame.bar:SetAllPoints(self.barFrame)
-	if (self.moduleSettings.reverse) then
-		min_y = 0;
-		max_y = self.CurrScale;
-	else
-		min_y = 1-self.CurrScale;
-		max_y = 1;
-	end
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.barFrame.bar:SetTexCoord(1, 0, min_y, max_y)
-	else
-		self.barFrame.bar:SetTexCoord(0, 1, min_y, max_y)
-	end
+	self:SetScale(self.CurrScale, true)
 
 	self:UpdateBar(1, "undef")
 end
@@ -774,26 +761,24 @@ function IceBarElement.prototype:Flip(side)
 end
 
 
-function IceBarElement.prototype:SetScale(texture, scale)
+function IceBarElement.prototype:SetScale(scale, force)
 	local oldScale = self.CurrScale
 	local min_y, max_y;
 
 	self.CurrScale = IceHUD:Clamp(self:LerpScale(scale), 0, 1)
 
-	if oldScale ~= self.CurrScale then
-		if (texture == self.barFrame.bar) then
-			if (self.moduleSettings.reverse) then
-				min_y = 0;
-				max_y = self.CurrScale;
-			else
-				min_y = 1-self.CurrScale;
-				max_y = 1;
-			end
+	if force or oldScale ~= self.CurrScale then
+		if (self.moduleSettings.reverse) then
+			min_y = 0;
+			max_y = self.CurrScale;
+		else
+			min_y = 1-self.CurrScale;
+			max_y = 1;
 		end
 		if (self.moduleSettings.side == IceCore.Side.Left) then
-			texture:SetTexCoord(1, 0, min_y, max_y)
+			self.barFrame.bar:SetTexCoord(1, 0, min_y, max_y)
 		else
-			texture:SetTexCoord(0, 1, min_y, max_y)
+			self.barFrame.bar:SetTexCoord(0, 1, min_y, max_y)
 		end
 
 		self.barFrame:SetHeight(self.settings.barHeight * self.CurrScale)
@@ -865,7 +850,7 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 		self.LastScale = self.CurrScale
 	end
 
-	self:SetScale(self.barFrame.bar, self.DesiredScale)
+	self:SetScale(self.DesiredScale)
 
 	if not self.moduleSettings.barVisible['bg'] then
 		self.frame.bg:Hide()
@@ -984,5 +969,5 @@ function IceBarElement.prototype:Update()
 end
 
 function IceBarElement.prototype:MyOnUpdate()
-	self:SetScale(self.barFrame.bar, self.DesiredScale)
+	self:SetScale(self.DesiredScale)
 end
