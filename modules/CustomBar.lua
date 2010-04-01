@@ -30,7 +30,7 @@ function IceCustomBar.prototype:Enable(core)
 	self.unit = self.moduleSettings.myUnit
 
 	self:UpdateCustomBar(self.unit)
-	
+
 	if self.moduleSettings.auraIconXOffset == nil then
 		self.moduleSettings.auraIconXOffset = 40
 	end
@@ -40,6 +40,8 @@ function IceCustomBar.prototype:Enable(core)
 end
 
 function IceCustomBar.prototype:TargetChanged()
+	IceCustomBar.super.prototype.TargetChanged(self)
+
 	self:UpdateCustomBar(self.unit)
 end
 
@@ -83,7 +85,7 @@ end
 
 function IceCustomBar.prototype:CreateBar()
 	IceCustomBar.super.prototype.CreateBar(self)
-	
+
 	if not self.barFrame.icon then
 		self.barFrame.icon = self.barFrame:CreateTexture(nil, "LOW")
 		-- default texture so that 'config mode' can work without activating the bar first
@@ -92,6 +94,7 @@ function IceCustomBar.prototype:CreateBar()
 		self.barFrame.icon:SetHeight(20)
 		-- this cuts off the border around the buff icon
 		self.barFrame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+		self.barFrame.icon:SetDrawLayer("OVERLAY")
 	end
 	self:PositionIcons()
 end
@@ -107,7 +110,7 @@ end
 
 function IceCustomBar.prototype:Redraw()
 	IceCustomBar.super.prototype.Redraw(self)
-	
+
 	self:UpdateCustomBar(self.unit)
 end
 
@@ -398,12 +401,14 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 			= GetWeaponEnchantInfo()
 
 		if unitName == "main hand weapon" and hasMainHandEnchant then
-			return mainHandExpiration/1000, mainHandExpiration/1000, mainHandCharges
+			local slotId, mainHandTexture = GetInventorySlotInfo("MainHandSlot")
+			return mainHandExpiration/1000, mainHandExpiration/1000, mainHandCharges, GetInventoryItemTexture("player", slotId)
 		elseif unitName == "off hand weapon" and hasOffHandEnchant then
-			return offHandExpiration/1000, offHandExpiration/1000, offHandCharges
+			local slotId, offHandTexture = GetInventorySlotInfo("SecondaryHandSlot")
+			return offHandExpiration/1000, offHandExpiration/1000, offHandCharges, GetInventoryItemTexture("player", slotId)
 		end
 
-		return nil, nil, nil
+		return nil, nil, nil, nil
 	end
 
 	local i = 1
