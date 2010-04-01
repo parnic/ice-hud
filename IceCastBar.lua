@@ -247,6 +247,14 @@ function IceCastBar.prototype:StopBar()
 	self.frame:SetScript("OnUpdate", nil)
 end
 
+-- make sure that our custom OnUpdate is restored whenever a Redraw happens
+function IceCastBar.prototype:Redraw()
+	IceCastBar.super.prototype.Redraw(self)
+
+	if self.action ~= IceCastBar.Actions.None then
+		self.frame:SetScript("OnUpdate", function() self:OnUpdate() end)
+	end
+end
 
 function IceCastBar.prototype:GetShortRank(rank)
 	if (rank) then
