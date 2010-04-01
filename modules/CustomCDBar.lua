@@ -26,6 +26,13 @@ function IceCustomCDBar.prototype:Enable(core)
 	self:Show(true)
 
 	self:UpdateCustomBar()
+	
+	if self.moduleSettings.auraIconXOffset == nil then
+		self.moduleSettings.auraIconXOffset = 40
+	end
+	if self.moduleSettings.auraIconYOffset == nil then
+		self.moduleSettings.auraIconYOffset = 0
+	end
 end
 
 
@@ -58,8 +65,42 @@ function IceCustomCDBar.prototype:GetDefaultSettings()
 	settings["cooldownTimerDisplay"] = "minutes"
 	settings["customBarType"] = "CD"
 	settings["maxDuration"] = 0
+	settings["displayAuraIcon"] = false
+	settings["auraIconXOffset"] = 40
+	settings["auraIconYOffset"] = 0
 
 	return settings
+end
+
+function IceCustomCDBar.prototype:CreateBar()
+	IceCustomCDBar.super.prototype.CreateBar(self)
+
+	if not self.barFrame.icon then
+		self.barFrame.icon = self.barFrame:CreateTexture(nil, "LOW")
+		-- default texture so that 'config mode' can work without activating the bar first
+		self.barFrame.icon:SetTexture("Interface\\Icons\\Spell_Frost_Frost")
+		self.barFrame.icon:SetWidth(20)
+		self.barFrame.icon:SetHeight(20)
+		-- this cuts off the border around the buff icon
+		self.barFrame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+		self.barFrame.icon:SetDrawLayer("OVERLAY")
+	end
+	self:PositionIcons()
+end
+
+function IceCustomCDBar.prototype:PositionIcons()
+	if not self.barFrame or not self.barFrame.icon then
+		return
+	end
+
+	self.barFrame.icon:ClearAllPoints()
+	self.barFrame.icon:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.moduleSettings.auraIconXOffset, self.moduleSettings.auraIconYOffset)
+end
+
+function IceCustomCDBar.prototype:Redraw()
+	IceCustomCDBar.super.prototype.Redraw(self)
+
+	self:UpdateCustomBar()
 end
 
 -- OVERRIDE
@@ -120,7 +161,7 @@ function IceCustomCDBar.prototype:GetOptions()
 			end
 			self.moduleSettings.cooldownToTrack = v
 			self:Redraw()
-			self:UpdateCustomBar(self.unit)
+			self:UpdateCustomBar()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -203,6 +244,78 @@ function IceCustomCDBar.prototype:GetOptions()
 		usage = "<the maximum duration for a bar>",
 		order = 21.1,
 	}
+	
+	opts["headerIcons"] = {
+		type = 'header',
+		name = 'Icons',
+		order = 40
+	}
+	
+	opts["displayAuraIcon"] = {
+		type = 'toggle',
+		name = "Display aura icon",
+		desc = "Whether or not to display an icon for the aura that this bar is tracking",
+		get = function()
+			return self.moduleSettings.displayAuraIcon
+		end,
+		set = function(v)
+			self.moduleSettings.displayAuraIcon = v
+			if self.barFrame.icon then
+				if v then
+					self.barFrame.icon:Show()
+				else
+					self.barFrame.icon:Hide()
+				end
+			end
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		usage = "<whether or not to display an icon for this bar's tracked spell>",
+		order = 40.1,
+	}
+	
+	opts["auraIconXOffset"] = {
+		type = 'range',
+		min = -250,
+		max = 250,
+		step = 1,
+		name = "Aura icon horizontal offset",
+		desc = "Adjust the horizontal position of the aura icon",
+		get = function()
+			return self.moduleSettings.auraIconXOffset
+		end,
+		set = function(v)
+			self.moduleSettings.auraIconXOffset = v
+			self:PositionIcons()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+		end,
+		usage = "<adjusts the spell icon's horizontal position>",
+		order = 40.2,
+	}
+
+	opts["auraIconYOffset"] = {
+		type = 'range',
+		min = -250,
+		max = 250,
+		step = 1,
+		name = "Aura icon vertical offset",
+		desc = "Adjust the vertical position of the aura icon",
+		get = function()
+			return self.moduleSettings.auraIconYOffset
+		end,
+		set = function(v)
+			self.moduleSettings.auraIconYOffset = v
+			self:PositionIcons()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+		end,
+		usage = "<adjusts the spell icon's vertical position>",
+		order = 40.3,
+	}
 
 	return opts
 end
@@ -231,19 +344,21 @@ function IceCustomCDBar.prototype:GetCooldownDuration(buffName)
 			if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
 				localDuration = tonumber(self.moduleSettings.maxDuration)
 			end
+			
+			local name, rank, icon = GetSpellInfo(self.moduleSettings.cooldownToTrack)
 
 			if localDuration > 1.5  then
-				return localDuration, localRemaining
+				return localDuration, localRemaining, icon
 			else
 				localRemaining = self.cooldownEndTime - now
 				if localRemaining > 0 then
-					return self.cooldownDuration, localRemaining
+					return self.cooldownDuration, localRemaining, icon
 				else
-					return nil, nil
+					return nil, nil, nil
 				end
 			end
 		else
-			return nil, nil
+			return nil, nil, nil
 		end
 end
 
@@ -251,15 +366,26 @@ end
 function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
 	local now = GetTime()
 	local remaining = nil
+	local auraIcon = nil
 
 	if not fromUpdate then
-		self.cooldownDuration, remaining =
+		self.cooldownDuration, remaining, auraIcon =
 			self:GetCooldownDuration(self.moduleSettings.cooldownToTrack)
 
 		if not remaining then
 			self.cooldownEndTime = 0
 		else
 			self.cooldownEndTime = remaining + now
+		end
+
+		if auraIcon ~= nil then
+			self.barFrame.icon:SetTexture(auraIcon)
+		end
+
+		if IceHUD.IceCore:IsInConfigMode() or self.moduleSettings.displayAuraIcon then
+			self.barFrame.icon:Show()
+		else
+			self.barFrame.icon:Hide()
 		end
 	end
 
@@ -278,6 +404,7 @@ function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
 	else
 		self:UpdateBar(0, "undef")
 		self:Show(false)
+		self.frame:SetScript("OnUpdate", nil)
 	end
 
 	if (remaining ~= nil) then
@@ -310,7 +437,7 @@ end
 function IceCustomCDBar.prototype:OutCombat()
 	IceCustomCDBar.super.prototype.OutCombat(self)
 
-	self:UpdateCustomBar(self.unit)
+	self:UpdateCustomBar()
 end
 
 function IceCustomCDBar.prototype:Show(bShouldShow)

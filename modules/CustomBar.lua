@@ -485,6 +485,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 	else
 		self:UpdateBar(0, "undef")
 		self:Show(false)
+		self.frame:SetScript("OnUpdate", nil)
 	end
 
 	if (remaining ~= nil) then
