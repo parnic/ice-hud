@@ -67,7 +67,7 @@ function TargetCast.prototype:TargetChanged(unit)
 		return
 	end
 
-	local spell _, _, _, _, _, _, _, notInterruptibleCast = UnitCastingInfo(self.unit)
+	local spell, _, _, _, _, _, _, notInterruptibleCast = UnitCastingInfo(self.unit)
 	if (spell) then
 		self.notInterruptible = notInterruptibleCast
 		self:StartBar(IceCastBar.Actions.Cast)
