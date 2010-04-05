@@ -245,13 +245,6 @@ function IceUnitBar.prototype:Update()
 end
 
 
-function IceUnitBar.prototype:SetScaledColor(colorVar, percent, maxColor, minColor)
-	colorVar.r = ((maxColor.r - minColor.r) * percent) + minColor.r
-	colorVar.g = ((maxColor.g - minColor.g) * percent) + minColor.g
-	colorVar.b = ((maxColor.b - minColor.b) * percent) + minColor.b
-end
-
-
 function IceUnitBar.prototype:Alive()
 	-- instead of maintaining a state for 3 different things
 	-- (dead, dead/ghost, alive) just afford the extra function call here

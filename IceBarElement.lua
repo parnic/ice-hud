@@ -963,6 +963,11 @@ function IceBarElement.prototype:GetFormattedText(value1, value2)
 	return string.format("|c%s%s|r%s|c%s/|r%s|c%s%s|r", color, bLeft, value1, color, value2, color, bRight)
 end
 
+function IceBarElement.prototype:SetScaledColor(colorVar, percent, maxColor, minColor)
+	colorVar.r = ((maxColor.r - minColor.r) * percent) + minColor.r
+	colorVar.g = ((maxColor.g - minColor.g) * percent) + minColor.g
+	colorVar.b = ((maxColor.b - minColor.b) * percent) + minColor.b
+end
 
 -- To be overridden
 function IceBarElement.prototype:Update()
