@@ -591,6 +591,22 @@ IceHUD.options =
 			end,
 			order = 96
 		},
+
+		updatePeriod = {
+			type = 'range',
+			name = 'Update Period',
+			desc = 'Time between display updates in seconds',
+			get = function()
+				return IceHUD.IceCore:UpdatePeriod()
+			end,
+			set = function(v)
+				IceHUD.IceCore:SetUpdatePeriod(v)
+			end,
+			min = 0.01,
+			max = 1.0,
+			step = 0.01,
+			order = 97
+		},
 	}
 }
 

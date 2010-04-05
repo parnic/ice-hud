@@ -3,6 +3,7 @@ local AceOO = AceLibrary("AceOO-2.0")
 IceCustomCDBar = AceOO.Class(IceUnitBar)
 
 
+local validDisplayModes = {"Always", "When ready", "When cooling down"}
 local validBuffTimers = {"none", "seconds", "minutes:seconds", "minutes"}
 
 IceCustomCDBar.prototype.cooldownDuration = 0
@@ -22,16 +23,27 @@ function IceCustomCDBar.prototype:Enable(core)
 	IceCustomCDBar.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN", "UpdateCustomBar")
+	self:RegisterEvent("SPELL_UPDATE_USEABLE", "UpdateCustomBar")
 
 	self:Show(true)
 
 	self:UpdateCustomBar()
+	self:UpdateIcon()
 	
 	if self.moduleSettings.auraIconXOffset == nil then
 		self.moduleSettings.auraIconXOffset = 40
 	end
 	if self.moduleSettings.auraIconYOffset == nil then
 		self.moduleSettings.auraIconYOffset = 0
+	end
+
+	if self.moduleSettings.displayMode == nil then
+		if self.moduleSettings.displayWhenEmpty then
+			self.moduleSettings.displayMode = "Always"
+		else
+			self.moduleSettings.displayMode = "When cooling down"
+		end
+		self.moduleSettings.displayWhenEmpty = nil
 	end
 end
 
@@ -60,7 +72,7 @@ function IceCustomCDBar.prototype:GetDefaultSettings()
 	settings["isCustomBar"] = false
 	settings["cooldownToTrack"] = ""
 	settings["barColor"] = {r=1, g=0, b=0, a=1}
-	settings["displayWhenEmpty"] = false
+	settings["displayMode"] = "When cooling down"
 	settings["hideAnimationSettings"] = true
 	settings["cooldownTimerDisplay"] = "minutes"
 	settings["customBarType"] = "CD"
@@ -162,6 +174,7 @@ function IceCustomCDBar.prototype:GetOptions()
 			self.moduleSettings.cooldownToTrack = v
 			self:Redraw()
 			self:UpdateCustomBar()
+			self:UpdateIcon()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -189,20 +202,21 @@ function IceCustomCDBar.prototype:GetOptions()
 		order = 20.8,
 	}
 
-	opts["displayWhenEmpty"] = {
-		type = 'toggle',
-		name = 'Display when empty',
-		desc = 'Whether or not to display this bar even if the buff/debuff specified is not present.',
+	opts["displayMode"] = {
+		type = 'text',
+		name = 'Display mode',
+		desc = 'When to display this bar.',
 		get = function()
-			return self.moduleSettings.displayWhenEmpty
+			return self.moduleSettings.displayMode
 		end,
 		set = function(v)
-			self.moduleSettings.displayWhenEmpty = v
+			self.moduleSettings.displayMode = v
 			self:UpdateCustomBar()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
+		validate = validDisplayModes,
 		order = 20.9
 	}
 
@@ -260,13 +274,7 @@ function IceCustomCDBar.prototype:GetOptions()
 		end,
 		set = function(v)
 			self.moduleSettings.displayAuraIcon = v
-			if self.barFrame.icon then
-				if v then
-					self.barFrame.icon:Show()
-				else
-					self.barFrame.icon:Hide()
-				end
-			end
+			self:UpdateIcon()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -327,59 +335,72 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function IceCustomCDBar.prototype:GetCooldownDuration(buffName)
-		local now = GetTime()
-		local localDuration = nil
-		local localStart, localRemaining, hasCooldown = GetSpellCooldown(self.moduleSettings.cooldownToTrack)
+	local now = GetTime()
+	local localDuration = nil
+	local localStart, localRemaining, hasCooldown = GetSpellCooldown(self.moduleSettings.cooldownToTrack)
 
-		if (hasCooldown == 1) then
-		    -- the item has a potential cooldown
-			if (localStart > now) then
-			    localRemaining = localRemaining + (localStart - now)
-			    localDuration = localRemaining
-			else
-			    localRemaining = localRemaining + (localStart - now)
-			    localDuration = (now - localStart) + localRemaining
-			end
-			
-			if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
-				localDuration = tonumber(self.moduleSettings.maxDuration)
-			end
-			
-			local name, rank, icon = GetSpellInfo(self.moduleSettings.cooldownToTrack)
-
-			if localDuration > 1.5  then
-				return localDuration, localRemaining, icon
-			else
-				localRemaining = self.cooldownEndTime - now
-				if localRemaining > 0 then
-					return self.cooldownDuration, localRemaining, icon
-				else
-					return nil, nil, nil
-				end
-			end
+	if (hasCooldown == 1) then
+		-- the item has a potential cooldown
+		if (localStart > now) then
+			localRemaining = localRemaining + (localStart - now)
+			localDuration = localRemaining
 		else
-			return nil, nil, nil
+			localRemaining = localRemaining + (localStart - now)
+			localDuration = (now - localStart) + localRemaining
 		end
+
+		if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
+			localDuration = tonumber(self.moduleSettings.maxDuration)
+		end
+
+		if localDuration > 1.5  then
+			return localDuration, localRemaining
+		else
+			localRemaining = self.cooldownEndTime - now
+			if localRemaining > 0 then
+				return self.cooldownDuration, localRemaining
+			else
+				return nil, nil
+			end
+		end
+	else
+		return nil, nil
+	end
 end
 
 
-function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
-	local now = GetTime()
-	local remaining = nil
-	local auraIcon = nil
-
-	if not fromUpdate then
-		self.cooldownDuration, remaining, auraIcon =
-			self:GetCooldownDuration(self.moduleSettings.cooldownToTrack)
-
-		if not remaining then
-			self.cooldownEndTime = 0
+function IceCustomCDBar.prototype:EnableUpdates(enable_update)
+	-- If we want to display as soon as the spell is ready, we need to over-ride the parameter if
+	-- it is possible the spell might be starting or stopping to be ready at any time. For spells
+	-- without range (don't require a target) this is any time. For ranged spells that's when we
+	-- have a valid target (IsSpellInRange() returns 0 or 1).
+	--
+	-- There is a hole in the logic here for spells that can be cast on any friendly target. When
+	-- the correct UI option is selected they will cast on self when no target is selected. Deal
+	-- with that later if it turns out to be a problem.
+	if (not enable and (self.moduleSettings.displayMode == "When ready") and (IsUsableSpell(self.moduleSettings.cooldownToTrack) == 1)) then
+		if SpellHasRange(self.moduleSettings.cooldownToTrack) then
+			if IsSpellInRange(self.moduleSettings.cooldownToTrack, "target") then
+				enable_update = true
+			end
 		else
-			self.cooldownEndTime = remaining + now
-		end
+			enable_update = true
+	 	end
+	end
 
-		if auraIcon ~= nil then
-			self.barFrame.icon:SetTexture(auraIcon)
+	if enable_update then
+		IceHUD.IceCore:RequestUpdates(self.frame, function() self:UpdateCustomBar(true) end)
+	else
+		IceHUD.IceCore:RequestUpdates(self.frame, nil)
+	end
+end
+
+function IceCustomCDBar.prototype:UpdateIcon()
+	if self.barFrame.icon then
+		local name, rank, icon = GetSpellInfo(self.moduleSettings.cooldownToTrack)
+
+		if icon ~= nil then
+			self.barFrame.icon:SetTexture(icon)
 		end
 
 		if IceHUD.IceCore:IsInConfigMode() or self.moduleSettings.displayAuraIcon then
@@ -388,10 +409,27 @@ function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
 			self.barFrame.icon:Hide()
 		end
 	end
+end
+
+function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
+	local now = GetTime()
+	local remaining = nil
+	local auraIcon = nil
+
+	if not fromUpdate then
+		self.cooldownDuration, remaining =
+			self:GetCooldownDuration(self.moduleSettings.cooldownToTrack)
+
+		if not remaining then
+			self.cooldownEndTime = 0
+		else
+			self.cooldownEndTime = remaining + now
+		end
+	end
 
 	if self.cooldownEndTime and self.cooldownEndTime >= now then
 		if not fromUpdate then
-			self.frame:SetScript("OnUpdate", function() self:UpdateCustomBar(true) end)
+			self:EnableUpdates(true)
 		end
 
 		self:Show(true)
@@ -404,7 +442,7 @@ function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
 	else
 		self:UpdateBar(0, "undef")
 		self:Show(false)
-		self.frame:SetScript("OnUpdate", nil)
+		self:EnableUpdates(false)
 	end
 
 	if (remaining ~= nil) then
@@ -440,8 +478,37 @@ function IceCustomCDBar.prototype:OutCombat()
 	self:UpdateCustomBar()
 end
 
+function IceCustomCDBar.prototype:TargetChanged()
+	IceCustomCDBar.super.prototype.TargetChanged(self)
+
+	-- Target changing only affects us if we want to show the bar as soon as it is ready.
+	if (self.moduleSettings.displayMode == "When ready") then
+		self:UpdateCustomBar()
+	end
+end
+
+function IceCustomCDBar.prototype:IsReady()
+	local is_ready = nil
+
+	if (IsUsableSpell(self.moduleSettings.cooldownToTrack) == 1) then
+		if SpellHasRange(self.moduleSettings.cooldownToTrack) then
+			if (IsSpellInRange(self.moduleSettings.cooldownToTrack, "target") == 1) then
+				is_ready = 1
+			end
+		else
+			is_ready = 1
+		end
+	end
+
+	return is_ready
+end
+
 function IceCustomCDBar.prototype:Show(bShouldShow)
-	if self.moduleSettings.displayWhenEmpty then
+	if (self.moduleSettings.displayMode == "Always") then
+		if not self.bIsVisible then
+			IceCustomCDBar.super.prototype.Show(self, true)
+		end
+	elseif (self.moduleSettings.displayMode == "When ready") and self:IsReady() then
 		if not self.bIsVisible then
 			IceCustomCDBar.super.prototype.Show(self, true)
 		end

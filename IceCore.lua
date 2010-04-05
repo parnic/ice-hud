@@ -16,6 +16,9 @@ IceCore.RegisterModule = "IceCore_RegisterModule"
 -- Private variables --
 IceCore.prototype.settings = nil
 IceCore.prototype.IceHUDFrame = nil
+IceCore.prototype.updatees = {}
+IceCore.prototype.updatee_count = 0
+IceCore.prototype.update_elapsed = 0
 IceCore.prototype.elements = {}
 IceCore.prototype.enabled = nil
 IceCore.prototype.presets = {}
@@ -69,7 +72,9 @@ function IceCore.prototype:SetupDefaults()
 		barBlendMode = "BLEND",
 		barBgBlendMode = "BLEND",
 
-		bShouldUseDogTags = true
+		bShouldUseDogTags = true,
+
+		updatePeriod = 0.1
 	}
 
 	self:LoadPresets()
@@ -133,6 +138,9 @@ function IceCore.prototype:Enable()
 		end
 	end
 
+	if self.settings.updatePeriod == nil then
+		self.settings.updatePeriod = 0.1
+	end
 
 	-- make sure the module options are re-generated. if we switched profiles, we don't want the old elements hanging around
 	IceHUD:GenerateModuleOptions()
@@ -588,6 +596,50 @@ function IceCore.prototype:SetShouldUseDogTags(should)
 	self.settings.bShouldUseDogTags = should
 end
 
+function IceCore.prototype:UpdatePeriod()
+	return self.settings.updatePeriod
+end
+
+function IceCore.prototype:SetUpdatePeriod(period)
+	self.settings.updatePeriod = period
+end
+
+-- For elements that want to receive updates even when hidden
+function IceCore.HandleUpdates(frame, elapsed)
+	local update_period = IceHUD.IceCore:UpdatePeriod()
+	IceCore.prototype.update_elapsed = IceCore.prototype.update_elapsed + elapsed
+	if (IceCore.prototype.update_elapsed > update_period) then
+		for frame, func in pairs(IceCore.prototype.updatees)
+		do
+			func()
+		end
+		if (elapsed > update_period) then
+			IceCore.prototype.update_elapsed = 0
+		else
+			IceCore.prototype.update_elapsed = IceCore.prototype.update_elapsed - update_period
+		end
+	end
+end
+
+function IceCore.prototype:RequestUpdates(frame, func)
+	if self.updatees[frame] then
+		if not func then
+			self.updatee_count = self.updatee_count - 1
+		end
+	else
+		if func then
+			self.updatee_count = self.updatee_count + 1
+		end
+	end
+
+	if (self.updatee_count == 0) then
+		self.IceHUDFrame:SetScript("OnUpdate", nil)
+	else
+		self.IceHUDFrame:SetScript("OnUpdate", IceCore.HandleUpdates)
+	end
+
+	self.updatees[frame] = func
+end
 
 -------------------------------------------------------------------------------
 -- Presets                                                                   --
