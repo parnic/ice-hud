@@ -760,7 +760,7 @@ function PlayerHealth.prototype:CreateHealBar()
 	self.healFrame:SetHeight(self.settings.barHeight)
 
 	if not self.healFrame.bar then
-		self.healFrame.bar = self.frame:CreateTexture(nil, "BACKGROUND")
+		self.healFrame.bar = self.healFrame:CreateTexture(nil, "BACKGROUND")
 	end
 
 	self.healFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
@@ -1168,6 +1168,14 @@ UIParent:RegisterEvent("RAID_ROSTER_UPDATE")
 --	
 --	ShowPartyFrame(); -- Just call Blizzard default method
 --end
+
+function PlayerHealth.prototype:UpdateBar(scale, color, alpha)
+	PlayerHealth.super.prototype.UpdateBar(self, scale, color, alpha)
+	
+	if self.healFrame and self.healFrame.bar then
+		self.healFrame.bar:SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
+	end
+end
 
 -- Load us up
 IceHUD.PlayerHealth = PlayerHealth:new()
