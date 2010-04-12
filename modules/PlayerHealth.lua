@@ -1171,9 +1171,17 @@ UIParent:RegisterEvent("RAID_ROSTER_UPDATE")
 
 function PlayerHealth.prototype:UpdateBar(scale, color, alpha)
 	PlayerHealth.super.prototype.UpdateBar(self, scale, color, alpha)
-	
+
 	if self.healFrame and self.healFrame.bar then
 		self.healFrame.bar:SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
+	end
+
+	if self.frame.button then
+		if self.alpha == 0 then
+			self.frame.button:Hide()
+		else
+			self.frame.button:Show()
+		end
 	end
 end
 

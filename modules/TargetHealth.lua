@@ -893,6 +893,18 @@ function IceTargetHealth.prototype:HideBlizz()
 	ComboFrame:UnregisterAllEvents()
 end
 
+function IceTargetHealth.prototype:UpdateBar(scale, color, alpha)
+	IceTargetHealth.super.prototype.UpdateBar(self, scale, color, alpha)
+
+	if self.frame.button then
+		if self.alpha == 0 then
+			self.frame.button:Hide()
+		else
+			self.frame.button:Show()
+		end
+	end
+end
+
 
 
 -- Load us up
