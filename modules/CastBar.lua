@@ -392,33 +392,32 @@ function CastBar.prototype:CreateLagBar()
 	self.lagBar:SetFrameStrata("BACKGROUND")
 	self.lagBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.lagBar:SetHeight(self.settings.barHeight)
-	
-	
+	self.lagBar:ClearAllPoints()
+	if not self.moduleSettings.reverse then
+		self.lagBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
+	else
+		self.lagBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
+	end
+
 	if not (self.lagBar.bar) then
 		self.lagBar.bar = self.lagBar:CreateTexture(nil, "BACKGROUND")
 	end
-	
+
 	self.lagBar.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	self.lagBar.bar:SetPoint("BOTTOMLEFT",self.lagBar,"BOTTOMLEFT")
-	self.lagBar.bar:SetPoint("BOTTOMRIGHT",self.lagBar,"BOTTOMRIGHT")
-	
+	self.lagBar.bar:SetAllPoints(self.lagBar)
+
 	local r, g, b = self:GetColor("CastLag")
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor("CastCasting")
 	end
 	self.lagBar.bar:SetVertexColor(r, g, b, self.moduleSettings.lagAlpha)
-	
 
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.lagBar.bar:SetTexCoord(1, 0, 0, 0)
 	else
 		self.lagBar.bar:SetTexCoord(0, 1, 0, 0)
 	end
-	self.lagBar.bar:SetHeight(0)
 	self.lagBar.bar:Hide()
-	
-	self.lagBar:ClearAllPoints()
-	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
 end
 
 
@@ -447,22 +446,27 @@ function CastBar.prototype:SpellCastStart(unit, spell, rank)
 		pos = 0
 	end
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
+	
+	local min_y = 0
+	local max_y = pos
+	if self.moduleSettings.reverse then
+		min_y = 1-pos
+		max_y = 1
+	end
 
 	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.lagBar.bar:SetTexCoord(1, 0, 0, pos)
+		self.lagBar.bar:SetTexCoord(1, 0, min_y, max_y)
 	else
-		self.lagBar.bar:SetTexCoord(0, 1, 0, pos)
+		self.lagBar.bar:SetTexCoord(0, 1, min_y, max_y)
 	end
-	self.lagBar.bar:SetHeight(self.settings.barHeight * pos)
-	
+
 	if pos == 0 then
 		self.lagBar.bar:Hide()
 	else
 		self.lagBar.bar:Show()
 	end
-
-	self.lagBar:ClearAllPoints()
- 	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, y)
+	
+	self.lagBar:SetHeight(self.settings.barHeight * pos)
 end
 
 
@@ -482,13 +486,19 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 		pos = 0
 	end
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
+	
+	local min_y = 1-pos
+	local max_y = 1
+	if self.moduleSettings.reverse then
+		min_y = 0
+		max_y = pos
+	end
 
 	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.lagBar.bar:SetTexCoord(1, 0, 1-pos, 1)
+		self.lagBar.bar:SetTexCoord(1, 0, min_y, max_y)
 	else
-		self.lagBar.bar:SetTexCoord(0, 1, 1-pos, 1)
+		self.lagBar.bar:SetTexCoord(0, 1, min_y, max_y)
 	end
-	self.lagBar.bar:SetHeight(self.settings.barHeight * pos)
 	
 	if pos == 0 then
 		self.lagBar.bar:Hide()
@@ -496,7 +506,7 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 		self.lagBar.bar:Show()
 	end
 	
-	self.lagBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
+	self.lagBar:SetHeight(self.settings.barHeight * pos)
 end
 
 

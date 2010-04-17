@@ -758,26 +758,27 @@ function PlayerHealth.prototype:CreateHealBar()
 	self.healFrame:SetFrameStrata("LOW")
 	self.healFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.healFrame:SetHeight(self.settings.barHeight)
+	self.healFrame:ClearAllPoints()
+	if self.moduleSettings.reverse then
+		self.healFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
+	else
+		self.healFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
+	end
 
 	if not self.healFrame.bar then
 		self.healFrame.bar = self.healFrame:CreateTexture(nil, "BACKGROUND")
 	end
 
 	self.healFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	self.healFrame.bar:SetPoint("BOTTOMLEFT",self.frame,"BOTTOMLEFT")
-	self.healFrame.bar:SetPoint("BOTTOMRIGHT",self.frame,"BOTTOMRIGHT")
+	self.healFrame.bar:SetAllPoints(self.healFrame)
 
 	self.healFrame.bar:SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
-	
-	self.healFrame:ClearAllPoints()
-	self.healFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
 	
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.healFrame.bar:SetTexCoord(1, 0, 0, 1)
 	else
 		self.healFrame.bar:SetTexCoord(0, 1, 0, 1)
 	end
-	self.healFrame.bar:SetHeight(0)
 
 	self:UpdateBar(1, "undef")
 
@@ -992,13 +993,20 @@ function PlayerHealth.prototype:Update(unit)
 
 		barValue = IceHUD:Clamp(barValue, 0, 1)
 		percent = IceHUD:Clamp(percent, 0, 1)
+		
+		local min_y = barValue
+		local max_y = 1
+		if self.moduleSettings.reverse then
+			min_y = 0
+			max_y = 1-barValue
+		end
 
 		if (self.moduleSettings.side == IceCore.Side.Left) then
-			self.healFrame.bar:SetTexCoord(1, 0, barValue, 1)
+			self.healFrame.bar:SetTexCoord(1, 0, min_y, max_y)
 		else
-			self.healFrame.bar:SetTexCoord(0, 1, barValue, 1)
+			self.healFrame.bar:SetTexCoord(0, 1, min_y, max_y)
 		end
-		self.healFrame.bar:SetHeight(self.settings.barHeight * percent)
+		self.healFrame:SetHeight(self.settings.barHeight * percent)
 		
 		if percent == 0 then
 			self.healFrame.bar:Hide()

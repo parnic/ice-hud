@@ -161,30 +161,31 @@ function IceThreat.prototype:CreateAggroBar()
 	self.aggroBar:SetFrameStrata("BACKGROUND")
 	self.aggroBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.aggroBar:SetHeight(self.settings.barHeight)
-	
+	self.aggroBar:ClearAllPoints()
+	if not self.moduleSettings.reverse then
+		self.aggroBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
+	else
+		self.aggroBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
+	end
+
 	if not (self.aggroBar.bar) then
 		self.aggroBar.bar = self.aggroBar:CreateTexture(nil, "LOW")
 	end
-	
+
 	self.aggroBar.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	self.aggroBar.bar:SetPoint("BOTTOMLEFT",self.aggroBar,"BOTTOMLEFT")
-	self.aggroBar.bar:SetPoint("BOTTOMRIGHT",self.aggroBar,"BOTTOMRIGHT")
-	
+	self.aggroBar.bar:SetAllPoints(self.aggroBar)
+
 	local r, g, b = self:GetColor("ThreatPullAggro")
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor("CastCasting")
 	end
 	self.aggroBar.bar:SetVertexColor(r, g, b, self.moduleSettings.aggroAlpha)
-	
+
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.aggroBar.bar:SetTexCoord(1, 0, 0, 0)
 	else
 		self.aggroBar.bar:SetTexCoord(0, 1, 0, 0)
 	end
-	self.aggroBar.bar:SetHeight(0)
-	
-	self.aggroBar:ClearAllPoints()
-	self.aggroBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
 end
 
 -- bar stuff
@@ -295,13 +296,19 @@ function IceThreat.prototype:Update(unit)
 
 		local pos = IceHUD:Clamp(1 - (1 / rangeMulti), 0, 1)
 		local y = self.settings.barHeight - ( pos * self.settings.barHeight )
+		
+		local min_y = 0
+		local max_y = pos
+		if self.moduleSettings.reverse then
+			min_y = 1-pos
+			max_y = 1
+		end
 
 		if ( self.moduleSettings.side == IceCore.Side.Left ) then
-			self.aggroBar.bar:SetTexCoord(1, 0, 0, pos)
+			self.aggroBar.bar:SetTexCoord(1, 0, min_y, max_y)
 		else
-			self.aggroBar.bar:SetTexCoord(0, 1, 0, pos)
+			self.aggroBar.bar:SetTexCoord(0, 1, min_y, max_y)
 		end
-		self.aggroBar.bar:SetHeight(self.settings.barHeight * pos)
 		
 		if pos == 0 then
 			self.aggroBar.bar:Hide()
@@ -309,7 +316,7 @@ function IceThreat.prototype:Update(unit)
 			self.aggroBar.bar:Show()
 		end
 
-		self.aggroBar:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, y)
+		self.aggroBar:SetHeight(self.settings.barHeight * pos)
 	end
 
 	self:UpdateAlpha()
