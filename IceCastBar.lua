@@ -62,6 +62,9 @@ function IceCastBar.prototype:GetDefaultSettings()
 
 	settings["showSpellRank"] = true
 	settings["showCastTime"] = true
+	settings["displayAuraIcon"] = false
+	settings["auraIconXOffset"] = 40
+	settings["auraIconYOffset"] = 0
 
 	return settings
 end
@@ -102,6 +105,78 @@ function IceCastBar.prototype:GetOptions()
 		end,
 		order = 39.999
 	}
+	
+	opts["headerIcons"] = {
+		type = 'header',
+		name = 'Icons',
+		order = 50
+	}
+	
+	opts["displayAuraIcon"] = {
+		type = 'toggle',
+		name = "Display aura icon",
+		desc = "Whether or not to display an icon for the aura that this bar is tracking",
+		get = function()
+			return self.moduleSettings.displayAuraIcon
+		end,
+		set = function(v)
+			self.moduleSettings.displayAuraIcon = v
+			if self.barFrame.icon then
+				if v then
+					self.barFrame.icon:Show()
+				else
+					self.barFrame.icon:Hide()
+				end
+			end
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		usage = "<whether or not to display an icon for this bar's tracked spell>",
+		order = 51,
+	}
+	
+	opts["auraIconXOffset"] = {
+		type = 'range',
+		min = -250,
+		max = 250,
+		step = 1,
+		name = "Aura icon horizontal offset",
+		desc = "Adjust the horizontal position of the aura icon",
+		get = function()
+			return self.moduleSettings.auraIconXOffset
+		end,
+		set = function(v)
+			self.moduleSettings.auraIconXOffset = v
+			self:PositionIcons()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+		end,
+		usage = "<adjusts the spell icon's horizontal position>",
+		order = 52,
+	}
+
+	opts["auraIconYOffset"] = {
+		type = 'range',
+		min = -250,
+		max = 250,
+		step = 1,
+		name = "Aura icon vertical offset",
+		desc = "Adjust the vertical position of the aura icon",
+		get = function()
+			return self.moduleSettings.auraIconYOffset
+		end,
+		set = function(v)
+			self.moduleSettings.auraIconYOffset = v
+			self:PositionIcons()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+		end,
+		usage = "<adjusts the spell icon's vertical position>",
+		order = 53,
+	}
 
 	return opts
 end
@@ -112,8 +187,29 @@ end
 -- OVERRIDE
 function IceCastBar.prototype:CreateFrame()
 	IceCastBar.super.prototype.CreateFrame(self)
-	
+
 	self.frame.bottomUpperText:SetWidth(self.settings.gap + 30)
+
+	if not self.barFrame.icon then
+		self.barFrame.icon = self.barFrame:CreateTexture(nil, "LOW")
+		-- default texture so that 'config mode' can work without activating the bar first
+		self.barFrame.icon:SetTexture("Interface\\Icons\\Spell_Frost_Frost")
+		self.barFrame.icon:SetWidth(20)
+		self.barFrame.icon:SetHeight(20)
+		-- this cuts off the border around the buff icon
+		self.barFrame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+		self.barFrame.icon:SetDrawLayer("OVERLAY")
+	end
+	self:PositionIcons()
+end
+
+function IceCastBar.prototype:PositionIcons()
+	if not self.barFrame or not self.barFrame.icon then
+		return
+	end
+
+	self.barFrame.icon:ClearAllPoints()
+	self.barFrame.icon:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.moduleSettings.auraIconXOffset, self.moduleSettings.auraIconYOffset)
 end
 
 
@@ -214,6 +310,16 @@ function IceCastBar.prototype:StartBar(action, message)
 
 	if not spell then
 		return
+	end
+
+	if icon ~= nil then
+		self.barFrame.icon:SetTexture(icon)
+	end
+
+	if IceHUD.IceCore:IsInConfigMode() or self.moduleSettings.displayAuraIcon then
+		self.barFrame.icon:Show()
+	else
+		self.barFrame.icon:Hide()
 	end
 
 	self.action = action
