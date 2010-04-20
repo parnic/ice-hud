@@ -421,6 +421,11 @@ function IceCastBar.prototype:SpellCastFailed(unit, spell, rank)
 		return
 	end
 	
+	-- channeled spells will call ChannelStop, not cast failed
+	if self.action == IceCastBar.Actions.Channel then
+		return
+	end
+	
 	self.current = nil
 	
 	-- determine if we want to show failed casts
