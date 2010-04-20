@@ -389,15 +389,8 @@ function CastBar.prototype:CreateLagBar()
 		self.lagBar = CreateFrame("Frame", nil, self.frame)
 	end
 	
-	self.lagBar:SetFrameStrata("BACKGROUND")
 	self.lagBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.lagBar:SetHeight(self.settings.barHeight)
-	self.lagBar:ClearAllPoints()
-	if not self.moduleSettings.reverse then
-		self.lagBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
-	else
-		self.lagBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
-	end
 
 	if not (self.lagBar.bar) then
 		self.lagBar.bar = self.lagBar:CreateTexture(nil, "BACKGROUND")
@@ -438,6 +431,14 @@ function CastBar.prototype:SpellCastStart(unit, spell, rank)
 	if not self:IsVisible() or not self.actionDuration then
 		return
 	end
+	
+	self.lagBar:SetFrameStrata("BACKGROUND")
+	self.lagBar:ClearAllPoints()
+	if not self.moduleSettings.reverse then
+		self.lagBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
+	else
+		self.lagBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
+	end
 
 	local lag = GetTime() - (self.spellCastSent or 0)
 	
@@ -477,6 +478,14 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 
 	if not self:IsVisible() or not self.actionDuration then
 		return
+	end
+	
+	self.lagBar:SetFrameStrata("MEDIUM")
+	self.lagBar:ClearAllPoints()
+	if self.moduleSettings.reverse then
+		self.lagBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
+	else
+		self.lagBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
 	end
 	
 	local lag = GetTime() - (self.spellCastSent or 0)
