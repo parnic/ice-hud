@@ -45,7 +45,7 @@ end
 
 function IceCore.prototype:SetupDefaults()
 -- DEFAULT SETTINGS
-	local defaultPreset = "RoundBar"
+	local defaultPreset = "CleanCurves"
 	self.defaults = {
 		gap = 150,
 		verticalPos = -110,
