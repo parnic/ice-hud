@@ -306,6 +306,8 @@ function IceElement.prototype:GetClassColor(class)
 		else
 			return CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS["WARRIOR"] or RAID_CLASS_COLORS["WARRIOR"]
 		end
+	elseif type(class) == "function" then
+		return
 	end
 
 	class = class:upper()
