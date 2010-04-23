@@ -78,6 +78,14 @@ function IceTargetInfo.prototype:Enable(core)
 		self.moduleSettings.line3tag = origDefaults["line3tag"]
 		self.moduleSettings.myTagVersion = IceHUD.CurrTagVersion
 	end
+	
+	if self.moduleSettings.filterBuffs == nil
+		and self.moduleSettings.filterDebuffs == nil
+		and self.moduleSettings.filter ~= nil then
+		self.moduleSettings.filterBuffs = self.moduleSettings.filter
+		self.moduleSettings.filterDebuffs = self.moduleSettings.filter
+		self.moduleSettings.filter = nil
+	end
 
 	self:RegisterFontStrings()
 end
@@ -250,15 +258,15 @@ function IceTargetInfo.prototype:GetOptions()
 		order = 35
 	}
 	
-	opts["filter"] = {
+	opts["filterBuffs"] = {
 		type = 'text',
-		name = 'Filter buffs/debuffs',
-		desc = 'Toggles filtering buffs and debuffs (uses Blizzard default filter code)',
+		name = 'Filter buffs',
+		desc = 'Toggles filtering buffs (uses Blizzard default filter code)',
 		get = function()
-			return self.moduleSettings.filter
+			return self.moduleSettings.filterBuffs
 		end,
 		set = function(v)
-			self.moduleSettings.filter = v
+			self.moduleSettings.filterBuffs = v
 			self:RedrawBuffs()
 		end,
 		disabled = function()
@@ -266,6 +274,24 @@ function IceTargetInfo.prototype:GetOptions()
 		end,
 		validate = { "Never", "In Combat", "Always" },
 		order = 36
+	}
+	
+	opts["filterDebuffs"] = {
+		type = 'text',
+		name = 'Filter debuffs',
+		desc = 'Toggles filtering debuffs (uses Blizzard default filter code)',
+		get = function()
+			return self.moduleSettings.filterDebuffs
+		end,
+		set = function(v)
+			self.moduleSettings.filterDebuffs = v
+			self:RedrawBuffs()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		validate = { "Never", "In Combat", "Always" },
+		order = 36.1
 	}
 	
 	opts["perRow"] = {
@@ -601,7 +627,8 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 	defaults["debuffGrowDirection"] = "Right"
 	defaults["mouseTarget"] = true
 	defaults["mouseBuff"] = true
-	defaults["filter"] = "Never"
+	defaults["filterBuffs"] = "Never"
+	defaults["filterDebuffs"] = "Never"
 	defaults["perRow"] = 10
 	defaults["line1Tag"] = "[Name:HostileColor]"
 --	defaults["line2Tag"] = "[Level:DifficultyColor] [[IsPlayer ? Race ! CreatureType]:ClassColor] [[IsPlayer ? Class]:ClassColor] [[~PvP ? \"PvE\" ! \"PvP\"]:HostileColor] [IsLeader ? \"Leader\":Yellow] [InCombat ? \"Combat\":Red] [Classification]"
@@ -976,13 +1003,22 @@ end
 
 function IceTargetInfo.prototype:UpdateBuffs()
 	local zoom = self.moduleSettings.zoom
-	local filter = false
+	local filterBuffs = false
+	local filterDebuffs = false
 
-	if (self.moduleSettings.filter == "Always") then
-		filter = true
-	elseif (self.moduleSettings.filter == "In Combat") then
+	if (self.moduleSettings.filterBuffs == "Always") then
+		filterBuffs = true
+	elseif (self.moduleSettings.filterBuffs == "In Combat") then
 		if (UnitAffectingCombat("player")) then
-			filter = true
+			filterBuffs = true
+		end
+	end
+	
+	if (self.moduleSettings.filterDebuffs == "Always") then
+		filterDebuffs = true
+	elseif (self.moduleSettings.filterDebuffs == "In Combat") then
+		if (UnitAffectingCombat("player")) then
+			filterDebuffs = true
 		end
 	end
 
@@ -993,12 +1029,12 @@ function IceTargetInfo.prototype:UpdateBuffs()
 		local buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe, unitCaster;
 		if IceHUD.WowVer >= 30000 then
 			buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, unitCaster
-				= UnitAura(self.unit, i, "HELPFUL" .. (filter and "|PLAYER" or "")) --UnitBuff(self.unit, i, filter and not hostile)
+				= UnitAura(self.unit, i, "HELPFUL" .. (filterBuffs and "|PLAYER" or "")) --UnitBuff(self.unit, i, filterBuffs and not hostile)
 
 			isFromMe = (unitCaster == "player")
 		else
 			buffName, buffRank, buffTexture, buffApplications, buffDuration, buffTimeLeft
-				= UnitBuff(self.unit, i, filter and not hostile)
+				= UnitBuff(self.unit, i, filterBuffs and not hostile)
 
 			isFromMe = buffDuration and buffTimeLeft
 		end
@@ -1015,11 +1051,11 @@ function IceTargetInfo.prototype:UpdateBuffs()
 
 	for i = 1, IceCore.BuffLimit do
 		local buffName, buffRank, buffTexture, buffApplications, debuffDispelType,
-			debuffDuration, debuffTimeLeft, unitCaster = UnitAura(self.unit, i, "HARMFUL" .. (filter and "|PLAYER" or "")) --UnitDebuff(self.unit, i, filter and not hostile)
+			debuffDuration, debuffTimeLeft, unitCaster = UnitAura(self.unit, i, "HARMFUL" .. (filterDebuffs and "|PLAYER" or "")) --UnitDebuff(self.unit, i, filterDebuffs and not hostile)
 
 		local isFromMe = (unitCaster == "player")
 
-		if (buffTexture and (not hostile or not filter or (filter and debuffDuration))) then
+		if (buffTexture and (not hostile or not filterDebuffs or (filterDebuffs and debuffDuration))) then
 
 			local color = debuffDispelType and DebuffTypeColor[debuffDispelType] or DebuffTypeColor["none"]
 			local alpha = buffTexture and 1 or 0
