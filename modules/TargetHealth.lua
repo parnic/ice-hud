@@ -895,7 +895,7 @@ end
 
 function IceTargetHealth.prototype:UpdateBar(scale, color, alpha)
 	IceTargetHealth.super.prototype.UpdateBar(self, scale, color, alpha)
-
+--[[ seems to be causing taint. oh well
 	if self.frame.button then
 		if self.alpha == 0 then
 			self.frame.button:Hide()
@@ -903,6 +903,7 @@ function IceTargetHealth.prototype:UpdateBar(scale, color, alpha)
 			self.frame.button:Show()
 		end
 	end
+]]
 end
 
 

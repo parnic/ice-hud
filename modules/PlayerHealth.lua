@@ -1183,7 +1183,7 @@ function PlayerHealth.prototype:UpdateBar(scale, color, alpha)
 	if self.healFrame and self.healFrame.bar then
 		self.healFrame.bar:SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
 	end
-
+--[[ seems to be causing taint. oh well
 	if self.frame.button then
 		if self.alpha == 0 then
 			self.frame.button:Hide()
@@ -1191,6 +1191,7 @@ function PlayerHealth.prototype:UpdateBar(scale, color, alpha)
 			self.frame.button:Show()
 		end
 	end
+]]
 end
 
 -- Load us up
