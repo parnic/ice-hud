@@ -101,7 +101,7 @@ function PetHealth.prototype:Update(unit)
 		color = "PetHealthUnhappy"
 	end
 
-	if (self.moduleSettings.scaleColor) then
+	if (self.moduleSettings.scaleHealthColor) then
 		color = "ScaledHealthColor"
 	end
 	
