@@ -51,7 +51,7 @@ function GlobalCoolDown.prototype:GetSpellName()
 			PALADIN=GetSpellInfo(1152), -- purify
 			SHAMAN=GetSpellInfo(324), -- lightning shield
 			HUNTER=GetSpellInfo(1978), -- serpent sting
-			DEATHKNIGHT=GetSpellInfo(45462) -- plague strike
+			DEATHKNIGHT=GetSpellInfo(47541) -- death coil
 		}
 	else
 		defaultSpells = {
