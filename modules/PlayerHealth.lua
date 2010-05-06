@@ -831,6 +831,7 @@ function PlayerHealth.prototype:Resting()
 			self.frame.statusIcon = self:CreateTexCoord(self.frame.statusIcon, "Interface\\CharacterFrame\\UI-StateIcon", 20, 20,
 						self.moduleSettings.statusIconScale, 0.0625, 0.4475, 0.0625, 0.4375)
 			self:SetTexLoc(self.frame.statusIcon, self.moduleSettings.statusIconOffset['x'], self.moduleSettings.statusIconOffset['y'])
+			self:SetIconAlpha()
 		elseif (not self.moduleSettings.showStatusIcon or not self.moduleSettings.showStatusResting) and self.frame.statusIcon and not self.combat then
 			self.frame.statusIcon = self:DestroyTexFrame(self.frame.statusIcon)
 		end
@@ -862,6 +863,7 @@ function PlayerHealth.prototype:CheckCombat()
 			self.frame.statusIcon = self:CreateTexCoord(self.frame.statusIcon, "Interface\\CharacterFrame\\UI-StateIcon", 20, 20,
 						self.moduleSettings.statusIconScale, 0.5625, 0.9375, 0.0625, 0.4375)
 			self:SetTexLoc(self.frame.statusIcon, self.moduleSettings.statusIconOffset['x'], self.moduleSettings.statusIconOffset['y'])
+			self:SetIconAlpha()
 		elseif not configMode and not self.resting and (not self.moduleSettings.showStatusIcon or not self.moduleSettings.showStatusCombat) and self.frame.statusIcon then
 			self.frame.statusIcon = self:DestroyTexFrame(self.frame.statusIcon)
 		end
@@ -879,6 +881,7 @@ function PlayerHealth.prototype:CheckLeader()
 			self.frame.leaderIcon = self:CreateTexCoord(self.frame.leaderIcon, "Interface\\GroupFrame\\UI-Group-LeaderIcon", 20, 20,
 						self.moduleSettings.leaderIconScale, 0, 1, 0, 1)
 			self:SetTexLoc(self.frame.leaderIcon, self.moduleSettings.leaderIconOffset['x'], self.moduleSettings.leaderIconOffset['y'])
+			self:SetIconAlpha()
 		elseif not configMode and not self.moduleSettings.showLeaderIcon and self.frame.leaderIcon then
 			self.frame.leaderIcon = self:DestroyTexFrame(self.frame.leaderIcon)
 		end
@@ -899,6 +902,7 @@ function PlayerHealth.prototype:CheckLootMaster()
 			self.frame.lootMasterIcon = self:CreateTexCoord(self.frame.lootMasterIcon, "Interface\\GroupFrame\\UI-Group-MasterLooter", 20, 20,
 						self.moduleSettings.lootMasterIconScale, 0, 1, 0, 1)
 			self:SetTexLoc(self.frame.lootMasterIcon, self.moduleSettings.lootMasterIconOffset['x'], self.moduleSettings.lootMasterIconOffset['y'])
+			self:SetIconAlpha()
 		elseif not configMode and not self.moduleSettings.showLootMasterIcon and self.frame.lootMasterIcon then
 			self.frame.lootMasterIcon = self:DestroyTexFrame(self.frame.lootMasterIcon)
 		end
@@ -941,6 +945,7 @@ function PlayerHealth.prototype:CheckPvP()
 			self.frame.PvPIcon = self:CreateTexCoord(self.frame.PvPIcon, "Interface\\TargetingFrame\\UI-PVP-"..pvpMode, 20, 20,
 						self.moduleSettings.PvPIconScale, minx, maxx, miny, maxy)
 			self:SetTexLoc(self.frame.PvPIcon, self.moduleSettings.PvPIconOffset['x'], self.moduleSettings.PvPIconOffset['y'])
+			self:SetIconAlpha()
 		elseif not configMode and not self.moduleSettings.showPvPIcon and self.frame.PvPIcon then
 			self.frame.PvPIcon = self:DestroyTexFrame(self.frame.PvPIcon)
 		end
