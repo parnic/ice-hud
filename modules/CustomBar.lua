@@ -79,6 +79,7 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["displayAuraIcon"] = false
 	settings["auraIconXOffset"] = 40
 	settings["auraIconYOffset"] = 0
+	settings["exactMatch"] = false
 
 	return settings
 end
@@ -219,6 +220,24 @@ function IceCustomBar.prototype:GetOptions()
 		end,
 		usage = "<which buff to track>",
 		order = 20.6,
+	}
+	
+	opts["exactMatch"] = {
+		type = 'toggle',
+		name = 'Exact match only',
+		desc = 'If this is checked, then the buff name must be entered exactly as the full buff name. Otherwise, you can use only a portion of the name such as "Sting" to track all stings.',
+		get = function()
+			return self.moduleSettings.exactMatch
+		end,
+		set = function(v)
+			self.moduleSettings.exactMatch = v
+			self:Redraw()
+			self:UpdateCustomBar(self.unit)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
+		end,
+		order = 20.65,
 	}
 
 	opts["trackOnlyMine"] = {
@@ -423,7 +442,9 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 			duration = self.moduleSettings.maxDuration
 		end
 		
-		if (string.match(buff:upper(), buffName:upper()) and (not self.moduleSettings.trackOnlyMine or isMine)) then
+		if (((self.moduleSettings.exactMatch and buff:upper() == buffName:upper())
+				or (not self.moduleSettings.exactMatch and string.match(buff:upper(), buffName:upper())))
+			and (not self.moduleSettings.trackOnlyMine or isMine)) then
 			if endTime and not remaining then
 				remaining = endTime - GetTime()
 			end
