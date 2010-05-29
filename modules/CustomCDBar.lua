@@ -8,6 +8,7 @@ local validBuffTimers = {"none", "seconds", "minutes:seconds", "minutes"}
 
 IceCustomCDBar.prototype.cooldownDuration = 0
 IceCustomCDBar.prototype.cooldownEndTime = 0
+IceCustomCDBar.prototype.coolingDown = false
 
 
 
@@ -29,6 +30,7 @@ function IceCustomCDBar.prototype:Enable(core)
 
 	self:UpdateCustomBar()
 	self:UpdateIcon()
+	self:EnableUpdates(false)
 	
 	if self.moduleSettings.auraIconXOffset == nil then
 		self.moduleSettings.auraIconXOffset = 40
@@ -470,6 +472,8 @@ function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
 	end
 
 	self.barFrame.bar:SetVertexColor(self:GetBarColor())
+	
+	self.coolingDown = remaining ~= nil and remaining > 0
 end
 
 function IceCustomCDBar.prototype:OutCombat()
@@ -492,7 +496,7 @@ function IceCustomCDBar.prototype:IsReady()
 
 	if (IsUsableSpell(self.moduleSettings.cooldownToTrack) == 1) then
 		if SpellHasRange(self.moduleSettings.cooldownToTrack) then
-			if (IsSpellInRange(self.moduleSettings.cooldownToTrack, "target") == 1) then
+			if (UnitExists("target") and IsSpellInRange(self.moduleSettings.cooldownToTrack, "target") == 1) then
 				is_ready = 1
 			end
 		else
@@ -508,9 +512,11 @@ function IceCustomCDBar.prototype:Show(bShouldShow)
 		if not self.bIsVisible then
 			IceCustomCDBar.super.prototype.Show(self, true)
 		end
-	elseif (self.moduleSettings.displayMode == "When ready") and self:IsReady() then
-		if not self.bIsVisible then
+	elseif (self.moduleSettings.displayMode == "When ready") then
+		if not self.coolingDown and self:IsReady() then
 			IceCustomCDBar.super.prototype.Show(self, true)
+		else
+			IceCustomCDBar.super.prototype.Show(self, false)
 		end
 	else
 		IceCustomCDBar.super.prototype.Show(self, bShouldShow)
