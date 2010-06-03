@@ -522,3 +522,11 @@ function IceCustomCDBar.prototype:Show(bShouldShow)
 		IceCustomCDBar.super.prototype.Show(self, bShouldShow)
 	end
 end
+
+function IceCustomCDBar.prototype:UseTargetAlpha(scale)
+	if self.moduleSettings.displayMode == "When ready" and scale == 0 then
+		return false
+	end
+	
+	return true
+end
