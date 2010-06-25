@@ -293,6 +293,7 @@ function SliceAndDice.prototype:UpdateDurationBar(unit)
 	if scale == 0 then
 		self.durationFrame.bar:Hide()
 	else
+		self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.alpha * self.moduleSettings.durationAlpha))
 		self.durationFrame.bar:Show()
 	end
 
