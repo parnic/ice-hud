@@ -49,7 +49,11 @@ function SliceAndDice.prototype:Enable(core)
 		self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateDurationBar")
 	end
 
-	self:Show(false)
+	if not self.moduleSettings.alwaysFullAlpha then
+		self:Show(false)
+	else
+		self:UpdateSliceAndDice(self.unit)
+	end
 
 	self:SetBottomText1("")
 end
@@ -211,9 +215,9 @@ function SliceAndDice.prototype:UpdateSliceAndDice(unit, fromUpdate)
     if not fromUpdate or IceHUD.WowVer < 30000 then
         sndDuration, remaining = self:GetBuffDuration(self.unit, "Ability_Rogue_SliceDice")
 
-	if not remaining then
+		if not remaining then
             sndEndTime = 0
-	else
+		else
             sndEndTime = remaining + now
         end
     end
@@ -239,7 +243,9 @@ function SliceAndDice.prototype:UpdateSliceAndDice(unit, fromUpdate)
                 self.frame:SetScript("OnUpdate", nil)
             end
 
-            self:Show(false)
+			if not self.moduleSettings.alwaysFullAlpha then
+				self:Show(false)
+			end
 	end
     end
 
