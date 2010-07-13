@@ -13,6 +13,9 @@ IceThreat.prototype.color = nil
 IceThreat.aggroBar = nil
 IceThreat.aggroBarMulti = nil
 
+local MAX_NUM_RAID_MEMBERS = 40
+local MAX_NUM_PARTY_MEMBERS = 5
+
 -- constructor
 function IceThreat.prototype:init(name, unit)
 	if not name or not unit then
@@ -27,6 +30,7 @@ function IceThreat.prototype:init(name, unit)
 	self:SetDefaultColor("ThreatDanger", 255, 0, 0)
 	self:SetDefaultColor("ThreatCustom", 255, 255, 0)
 	self:SetDefaultColor("ThreatPullAggro", 255, 0, 0)
+	self:SetDefaultColor("ThreatSecondPlace", 255, 255, 0)
 
 	self:OnCoreLoad()
 end
@@ -41,6 +45,8 @@ function IceThreat.prototype:GetDefaultSettings()
 	settings["usesDogTagStrings"] = false
 	settings["onlyShowInGroups"] = true
 	settings["showScaledThreat"] = false
+	settings["displaySecondPlaceThreat"] = true
+	settings["secondPlaceThreatAlpha"] = 0.75
 	return settings
 end
 
@@ -51,7 +57,7 @@ function IceThreat.prototype:GetOptions()
 	opts["enabled"] = {
 		type = "toggle",
 		name = "|c" .. self.configColor .. "Enabled|r",
-		desc = "Enable/disable module (requires Threat-2.0 library)",
+		desc = "Enable/disable module",
 		get = function()
 			return self.moduleSettings.enabled
 		end,
@@ -121,6 +127,43 @@ function IceThreat.prototype:GetOptions()
 		order = 27.7
 	}
 
+	opts["displaySecondPlaceThreat"] = {
+		type = 'toggle',
+		name = 'Show second place threat',
+		desc = 'When tanking, this toggles whether or not the second-highest threat value found in your party or raid is displayed on top of your actual threat value',
+		get = function()
+			return self.moduleSettings.displaySecondPlaceThreat
+		end,
+		set = function(v)
+			self.moduleSettings.displaySecondPlaceThreat = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 27.8
+	}
+	
+	opts["secondPlaceThreatAlpha"] = {
+		type = 'range',
+		name = 'Second place threat alpha',
+		desc = "The alpha value for the second-place threat bar to be (this is multiplied by the bar's alpha so it's always proportionate)",
+		get = function()
+			return self.moduleSettings.secondPlaceThreatAlpha
+		end,
+		set = function(v)
+			self.moduleSettings.secondPlaceThreatAlpha = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		min = 0,
+		max = 1,
+		step = 0.05,
+		order = 27.9
+	}
+
 	return opts
 end
 
@@ -145,6 +188,7 @@ function IceThreat.prototype:CreateFrame()
 	IceThreat.super.prototype.CreateFrame(self)
 	
 	self:CreateAggroBar()
+	self:CreateSecondThreatBar()
 end
 
 -- needs to be inverted for threat bar
@@ -188,6 +232,38 @@ function IceThreat.prototype:CreateAggroBar()
 	end
 end
 
+function IceThreat.prototype:CreateSecondThreatBar()
+	if not (self.secondThreatBar) then
+		self.secondThreatBar = CreateFrame("Frame", nil, self.frame)
+	end
+
+	self.secondThreatBar:SetFrameStrata("MEDIUM")
+	self.secondThreatBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
+	self.secondThreatBar:SetHeight(self.settings.barHeight)
+	self.secondThreatBar:ClearAllPoints()
+	if self.moduleSettings.reverse then
+		self.secondThreatBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
+	else
+		self.secondThreatBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
+	end
+
+	if not (self.secondThreatBar.bar) then
+		self.secondThreatBar.bar = self.secondThreatBar:CreateTexture(nil, "OVERLAY")
+	end
+
+	self.secondThreatBar.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+	self.secondThreatBar.bar:SetAllPoints(self.secondThreatBar)
+
+	local r, g, b = self:GetColor("ThreatSecondPlace")
+	self.secondThreatBar.bar:SetVertexColor(r, g, b, self.alpha)
+
+	if (self.moduleSettings.side == IceCore.Side.Left) then
+		self.secondThreatBar.bar:SetTexCoord(1, 0, 0, 0)
+	else
+		self.secondThreatBar.bar:SetTexCoord(0, 1, 0, 0)
+	end
+end
+
 -- bar stuff
 function IceThreat.prototype:Update(unit)
 	IceThreat.super.prototype.Update(self)
@@ -214,9 +290,16 @@ function IceThreat.prototype:Update(unit)
 	end
 
 	local isTanking, threatState, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("player", self.unit)
-	local _, _, _, _, tankThreat = UnitDetailedThreatSituation("targettarget", self.unit) -- highest threat target of target (i.e. the tank)
+	local tankThreat = 0
+	local secondHighestThreat = 0
 	local rangeMulti = 1.1
 	local scaledPercentZeroToOne
+
+	if not isTanking then
+		_, _, _, _, tankThreat = UnitDetailedThreatSituation("targettarget", self.unit) -- highest threat target of target (i.e. the tank)
+	elseif self.moduleSettings.displaySecondPlaceThreat then
+		secondHighestThreat = self:GetSecondHighestThreat()
+	end
 
 	if threatValue and threatValue < 0 then
 		threatValue = threatValue + 410065408 -- the corrected threat while under MI or Fade
@@ -295,8 +378,7 @@ function IceThreat.prototype:Update(unit)
 		self.aggroBarMulti = rangeMulti
 
 		local pos = IceHUD:Clamp(1 - (1 / rangeMulti), 0, 1)
-		local y = self.settings.barHeight - ( pos * self.settings.barHeight )
-		
+
 		local min_y = 0
 		local max_y = pos
 		if self.moduleSettings.reverse then
@@ -309,7 +391,7 @@ function IceThreat.prototype:Update(unit)
 		else
 			self.aggroBar.bar:SetTexCoord(0, 1, min_y, max_y)
 		end
-		
+
 		if pos == 0 then
 			self.aggroBar.bar:Hide()
 		else
@@ -320,6 +402,73 @@ function IceThreat.prototype:Update(unit)
 	end
 
 	self:UpdateAlpha()
+	self:UpdateSecondHighestThreatBar(secondHighestThreat, threatValue)
+end
+
+function IceThreat.prototype:UpdateSecondHighestThreatBar(secondHighestThreat, threatValue)
+	if secondHighestThreat <= 0 or not threatValue or threatValue == 0 then
+		self.secondThreatBar:Hide()
+	else
+		local pos = IceHUD:Clamp(secondHighestThreat / threatValue, 0, 1)
+
+		local min_y = 0
+		local max_y = pos
+		if self.moduleSettings.reverse then
+			min_y = 1-pos
+			max_y = 1
+		end
+
+		if ( self.moduleSettings.side == IceCore.Side.Left ) then
+			self.secondThreatBar.bar:SetTexCoord(1, 0, max_y, min_y)
+		else
+			self.secondThreatBar.bar:SetTexCoord(0, 1, max_y, min_y)
+		end
+
+		local r, g, b = self:GetColor("ThreatSecondPlace")
+		self.secondThreatBar.bar:SetVertexColor(r, g, b, self.alpha * self.moduleSettings.secondPlaceThreatAlpha)
+
+		self.secondThreatBar:SetHeight(pos * self.settings.barHeight)
+		self.secondThreatBar:Show()
+	end
+end
+
+function IceThreat.prototype:GetSecondHighestThreat()
+	local secondHighestThreat = 0
+	local i = 1
+	local numFound = 0
+	local numMembers = 0
+
+	if UnitInRaid("player") then
+		numMembers = GetNumRaidMembers()
+
+		while numFound < numMembers and i <= MAX_NUM_RAID_MEMBERS do
+			if UnitExists("raid"..i) and not UnitIsUnit("player", "raid"..i) then
+				numFound = numFound + 1
+				local _, _, _, _, temp = UnitDetailedThreatSituation("raid"..i, self.unit)
+				if temp ~= nil and temp > secondHighestThreat then
+					secondHighestThreat = temp
+				end
+			end
+
+			i = i + 1
+		end
+	elseif UnitInParty("player") then
+		numMembers = GetNumPartyMembers()
+
+		while numFound < numMembers and i <= MAX_NUM_PARTY_MEMBERS do
+			if UnitExists("party"..i) and not UnitIsUnit("player", "party"..i) then
+				numFound = numFound + 1
+				local _, _, _, _, temp = UnitDetailedThreatSituation("party"..i, self.unit)
+				if temp ~= nil and temp > secondHighestThreat then
+					secondHighestThreat = temp
+				end
+			end
+
+			i = i + 1
+		end
+	end
+	
+	return secondHighestThreat
 end
 
 
