@@ -96,6 +96,7 @@ function IceCustomBar.prototype:CreateBar()
 		-- this cuts off the border around the buff icon
 		self.barFrame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 		self.barFrame.icon:SetDrawLayer("OVERLAY")
+		self.barFrame.icon:Hide()
 	end
 	self:PositionIcons()
 end
