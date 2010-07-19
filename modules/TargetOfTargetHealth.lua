@@ -2,6 +2,8 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 local TargetTargetHealth = AceOO.Class(IceTargetHealth)
 
+local SelfDisplayModeOptions = {"Color as SelfColor", "Hide", "Normal"}
+
 
 -- Constructor --
 function TargetTargetHealth.prototype:init()
@@ -20,7 +22,7 @@ function TargetTargetHealth.prototype:GetDefaultSettings()
 	settings["offset"] = 12
 	settings["classColor"] = false
 	settings["selfColor"] = { r = 0, g = 0, b = 1 }
-	settings["useSelfColor"] = true
+	settings["selfDisplayMode"] = "Color as SelfColor"
 	settings["upperText"] = "[PercentHP:Round]"
 	settings["lowerText"] = "[(HP:Round \"/\" MaxHP:Round):HPColor:Bracket]"
 	settings["barVerticalOffset"] = 35
@@ -38,19 +40,21 @@ function TargetTargetHealth.prototype:GetOptions()
 
 	opts["hideBlizz"] = nil
 
-	opts["useSelfColor"] = {
-		type = "toggle",
-		name = "Use Self Color",
-		desc = "Whether or not to use the self color.",
+	opts["selfDisplayMode"] = {
+		type = "text",
+		name = "Self Display Mode",
+		desc = "What this bar should do whenever the player is the TargetOfTarget",
 		get = function()
-			return self.moduleSettings.useSelfColor
+			return self.moduleSettings.selfDisplayMode
 		end,
 		set = function(value)
-			self.moduleSettings.useSelfColor = value
+			self.moduleSettings.selfDisplayMode = value
+			self:Redraw()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
+		validate = SelfDisplayModeOptions,
 		order = 44,
 	}
 
@@ -66,7 +70,7 @@ function TargetTargetHealth.prototype:GetOptions()
 			IceHUD.IceCore:SetColor("SelfColor", r, g, b)
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.useSelfColor
+			return not self.moduleSettings.enabled or self.moduleSettings.selfDisplayMode ~= "Color as SelfColor"
 		end,
 		hasAlpha = false,
 		order = 45,
@@ -79,6 +83,16 @@ end
 function TargetTargetHealth.prototype:Enable(core)
 	self.registerEvents = false
 	TargetTargetHealth.super.prototype.Enable(self, core)
+	
+	if self.moduleSettings.useSelfColor ~= nil then
+		if self.moduleSettings.useSelfColor == true then
+			self.moduleSettings.selfDisplayMode = "Color as SelfColor"
+		else
+			self.moduleSettings.selfDisplayMode = "Normal"
+		end
+		
+		self.moduleSettings.useSelfColor = nil
+	end
 
 	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.1, self, "targettarget")
 end
@@ -92,7 +106,7 @@ end
 function TargetTargetHealth.prototype:Update(unit)
 	self.color = "TargetTargetHealthFriendly" -- friendly > 4
 
-	local reaction = UnitReaction("targettarget", "player")
+	local reaction = UnitReaction(self.unit, "player")
 
 	if (reaction and (reaction == 4)) then
 		self.color = "TargetTargetHealthNeutral"
@@ -112,9 +126,16 @@ function TargetTargetHealth.prototype:Update(unit)
 		self.color = "Tapped"
 	end
 
-	if UnitIsUnit("player", "targettarget") and self.moduleSettings.useSelfColor then
-		self.color = "SelfColor"
+	if UnitIsUnit("player", self.unit) then
+		if self.moduleSettings.selfDisplayMode == "Color as SelfColor" then
+			self.color = "SelfColor"
+		elseif self.moduleSettings.selfDisplayMode == "Hide" then
+			self:Show(false)
+			return
+		end
 	end
+	
+	self:Show(true)
 
 	self.determineColor = false
 	TargetTargetHealth.super.prototype.Update(self, unit)

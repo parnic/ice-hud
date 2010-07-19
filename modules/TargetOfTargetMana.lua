@@ -2,6 +2,8 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 local TargetTargetMana = AceOO.Class(IceTargetMana)
 
+local SelfDisplayModeOptions = {"Hide", "Normal"}
+
 -- Constructor --
 function TargetTargetMana.prototype:init()
 	TargetTargetMana.super.prototype.init(self, "TargetTargetMana", "targettarget")
@@ -23,8 +25,33 @@ function TargetTargetMana.prototype:GetDefaultSettings()
 	settings["barVerticalOffset"] = 35
 	settings["scale"] = 0.7
 	settings["enabled"] = false
+	settings["selfDisplayMode"] = "Normal"
 
 	return settings
+end
+
+function TargetTargetMana.prototype:GetOptions()
+	local opts = TargetTargetMana.super.prototype.GetOptions(self)
+
+	opts["selfDisplayMode"] = {
+		type = "text",
+		name = "Self Display Mode",
+		desc = "What this bar should do whenever the player is the TargetOfTarget",
+		get = function()
+			return self.moduleSettings.selfDisplayMode
+		end,
+		set = function(value)
+			self.moduleSettings.selfDisplayMode = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		validate = SelfDisplayModeOptions,
+		order = 44,
+	}
+	
+	return opts
 end
 
 function TargetTargetMana.prototype:Enable(core)
@@ -44,6 +71,13 @@ end
 
 function TargetTargetMana.prototype:Update(unit)
 	self.color = "TargetTargetMana"
+
+	if self.moduleSettings.selfDisplayMode == "Hide" and UnitIsUnit("player", self.unit) then
+		self:Show(false)
+		return
+	end
+
+	self:Show(true)
 
 	local manaType = UnitPowerType(self.unit)
 

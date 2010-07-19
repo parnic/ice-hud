@@ -2,6 +2,8 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 local TargetTargetCast = AceOO.Class(IceCastBar)
 
+local SelfDisplayModeOptions = {"Hide", "Normal"}
+
 -- Constructor --
 function TargetTargetCast.prototype:init()
 	TargetTargetCast.super.prototype.init(self, "TargetTargetCast")
@@ -25,6 +27,7 @@ function TargetTargetCast.prototype:GetDefaultSettings()
 	settings["enabled"] = false
 	settings["barVerticalOffset"] = 35
 	settings["scale"] = 0.7
+	settings["selfDisplayMode"] = "Normal"
 
 	return settings
 end
@@ -40,6 +43,11 @@ end
 
 function TargetTargetCast.prototype:UpdateTargetTarget()
 	if not (UnitExists(self.unit)) then
+		self:StopBar()
+		return
+	end
+	
+	if self.moduleSettings.selfDisplayMode == "Hide" and UnitIsUnit("player", self.unit) then
 		self:StopBar()
 		return
 	end
@@ -128,6 +136,24 @@ function TargetTargetCast.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 29
+	}
+	
+	opts["selfDisplayMode"] = {
+		type = "text",
+		name = "Self Display Mode",
+		desc = "What this bar should do whenever the player is the TargetOfTarget",
+		get = function()
+			return self.moduleSettings.selfDisplayMode
+		end,
+		set = function(value)
+			self.moduleSettings.selfDisplayMode = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		validate = SelfDisplayModeOptions,
+		order = 44,
 	}
 
 	return opts
