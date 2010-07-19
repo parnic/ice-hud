@@ -49,6 +49,10 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["showPvPIcon"] = true
 	settings["PvPIconOffset"] = {x=95, y=-40}
 	settings["PvPIconScale"] = 0.9
+	
+	settings["showPartyRoleIcon"] = true
+	settings["PartyRoleIconOffset"] = {x=90, y=-59}
+	settings["PartyRoleIconScale"] = 0.9
 
 	return settings
 end
@@ -69,6 +73,9 @@ function PlayerHealth.prototype:Enable(core)
 
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "CheckLeader")
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckLeader")
+	self:RegisterEvent("LFG_PROPOSAL_UPDATE", "CheckPartyRole")
+	self:RegisterEvent("LFG_PROPOSAL_FAILED", "CheckPartyRole")
+	self:RegisterEvent("LFG_ROLE_UPDATE", "CheckPartyRole")
 	
 	--self:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckPartyFrameStatus")
 
@@ -679,6 +686,84 @@ function PlayerHealth.prototype:GetOptions()
 					return not self.moduleSettings.enabled or not self.moduleSettings.showPvPIcon
 				end,
 				order = 43
+			},
+			headerPartyRoleIcon = {
+				type = 'header',
+				name = "Party Role icon",
+				order = 49.9
+			},
+			PartyRoleIcon = {
+				type = "toggle",
+				name = "Show Party Role icon",
+				desc = "Whether or not to show the Party Role icon",
+				get = function()
+					return self.moduleSettings.showPartyRoleIcon
+				end,
+				set = function(value)
+					self.moduleSettings.showPartyRoleIcon = value
+					self:CheckPartyRole()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				order = 50
+			},
+			PartyRoleIconOffsetX = {
+				type = "range",
+				name = "Party Role Icon Horizontal Offset",
+				desc = "How much to offset the Party Role icon from the bar horizontally",
+				min = 0,
+				max = 250,
+				step = 1,
+				get = function()
+					return self.moduleSettings.PartyRoleIconOffset['x']
+				end,
+				set = function(v)
+					self.moduleSettings.PartyRoleIconOffset['x'] = v
+					self:SetTexLoc(self.frame.PartyRoleIcon, self.moduleSettings.PartyRoleIconOffset['x'], self.moduleSettings.PartyRoleIconOffset['y'])
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.showPartyRoleIcon
+				end,
+				order = 51
+			},
+			PartyRoleIconOffsetY = {
+				type = "range",
+				name = "Party Role Icon Vertical Offset",
+				desc = "How much to offset the Party Role icon from the bar vertically",
+				min = -300,
+				max = 50,
+				step = 1,
+				get = function()
+					return self.moduleSettings.PartyRoleIconOffset['y']
+				end,
+				set = function(v)
+					self.moduleSettings.PartyRoleIconOffset['y'] = v
+					self:SetTexLoc(self.frame.PartyRoleIcon, self.moduleSettings.PartyRoleIconOffset['x'], self.moduleSettings.PartyRoleIconOffset['y'])
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.showPartyRoleIcon
+				end,
+				order = 52
+			},
+			PartyRoleIconScale = {
+				type = "range",
+				name = "Party Role Icon Scale",
+				desc = "How much to scale the Party Role icon",
+				min = 0.05,
+				max = 2,
+				step = 0.05,
+				get = function()
+					return self.moduleSettings.PartyRoleIconScale
+				end,
+				set = function(v)
+					self.moduleSettings.PartyRoleIconScale = v
+					self:SetTexScale(self.frame.PartyRoleIcon, 20, 20, v)
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.showPartyRoleIcon
+				end,
+				order = 53
 			}
 		}
 	}
@@ -816,6 +901,7 @@ end
 function PlayerHealth.prototype:EnteringWorld()
 	self:CheckCombat()
 	self:CheckLeader()
+	self:CheckPartyRole()
 	self:CheckPvP()
 	-- Parnic - moved :Resting to the end because it calls Update which sets alpha on everything
 	self:Resting()
@@ -874,6 +960,88 @@ function PlayerHealth.prototype:CheckCombat()
 	end
 end
 
+function PlayerHealth.prototype:CheckPartyRole()
+	local IsLFGParty
+	local mode, submode
+
+	mode, submode= GetLFGMode()	
+	IsLFGParty = (mode ~= nil and mode ~= "abandonedInDungeon" and mode ~= "queued");
+
+	if configMode or IsLFGParty then
+		if (configMode or self.moduleSettings.showPartyRoleIcon) and not self.frame.PartyRoleIcon then		
+			local isTank, isHeal, isDPS;
+			local proposalExists, typeID, id, name
+			local texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader;
+			proposalExists, typeID, id, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader = GetLFGProposal();
+
+			local p = self.unit;
+			isTank, isHeal, isDPS = UnitGroupRolesAssigned(p);
+			IceHUD:Debug(".......");
+			IceHUD:Debug(p.."="..tostring(UnitName(p)));
+			IceHUD:Debug( tostring(proposalExists) .."**".. tostring(typeID) .."**".. tostring(id) .."**".. tostring(name) .."**".. tostring(texture) .."**".. tostring(role) .."**".. tostring(hasResponded) .."**".. tostring(totalEncounters) .."**".. tostring(completedEncounters) .."**".. tostring(numMembers) .."**".. tostring(isleader) );
+
+			if proposalExists == true then
+			      IceHUD:Debug(tostring(typeID).." "..role);
+			      isTank = (role == "TANK");
+			      isHeal = (role == "HEALER");
+			      isDPS = (role == "DAMAGER");
+			else   
+			      IceHUD:Debug("NoProposal");
+			end
+
+			IceHUD:Debug("---");
+
+			if proposalExists == nil then
+				hasResponded = false;
+				proposalExists = false;
+			end
+
+			if hasResponded == false then
+				if proposalExists == true then
+					isTank = (role == "TANK");
+					isHeal = (role == "HEALER");
+					isDPS = (role == "DAMAGER");
+				end
+			else
+				isTank = not hasResponded;
+				isHeal = not hasResponded;
+				isDPS = not hasResponded;
+			end
+
+			IceHUD:Debug("Tank:"..tostring(isTank));
+			IceHUD:Debug("Heal:"..tostring(isHeal));
+			IceHUD:Debug("DPS:"..tostring(isDPS));
+
+			if isTank then
+				IceHUD:Debug("Loading Tank");
+				self.frame.PartyRoleIcon = self:CreateTexCoord(self.frame.PartyRoleIcon, "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES", 20, 20, self.moduleSettings.PartyRoleIconScale, 0/64, 19/64, 22/64, 41/64)
+			elseif isHeal then
+				IceHUD:Debug("Loading Heal");
+				self.frame.PartyRoleIcon = self:CreateTexCoord(self.frame.PartyRoleIcon, "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES", 20, 20, self.moduleSettings.PartyRoleIconScale, 20/64, 39/64, 1/64, 20/64)
+			elseif isDPS then
+				IceHUD:Debug("Loading DPS");
+				self.frame.PartyRoleIcon = self:CreateTexCoord(self.frame.PartyRoleIcon, "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES", 20, 20, self.moduleSettings.PartyRoleIconScale, 20/64, 39/64, 22/64, 41/64)
+			elseif configMode then
+				IceHUD:Debug("No Roles==Defaulting to Leader icon");				
+				self.frame.PartyRoleIcon = self:CreateTexCoord(self.frame.PartyRoleIcon, "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES", 20, 20, self.moduleSettings.PartyRoleIconScale, 0/64, 19/64, 1/64, 20/64)
+			else
+				IceHUD:Debug("Clearing Frame");
+				self.frame.PartyRoleIcon = self:DestroyTexFrame(self.frame.PartyRoleIcon)				
+			end
+			self:SetTexLoc(self.frame.PartyRoleIcon, self.moduleSettings.PartyRoleIconOffset['x'], self.moduleSettings.PartyRoleIconOffset['y'])			
+			self:SetIconAlpha()
+		elseif not configMode and not self.moduleSettings.showPartyRoleIcon and self.frame.PartyRoleIcon then
+			IceHUD:Debug("Clearing Frame");
+			self.frame.PartyRoleIcon = self:DestroyTexFrame(self.frame.PartyRoleIcon)
+		end
+	else
+		if self.frame.PartyRoleIcon then
+			IceHUD:Debug("Clearing Frame");
+			self.frame.PartyRoleIcon = self:DestroyTexFrame(self.frame.PartyRoleIcon)
+		end
+	end
+	self:CheckLootMaster()
+end
 
 function PlayerHealth.prototype:CheckLeader()
 	if configMode or IsPartyLeader() then
@@ -891,7 +1059,7 @@ function PlayerHealth.prototype:CheckLeader()
 		end
 	end
 
-	self:CheckLootMaster()
+	self:CheckPartyRole()
 end
 
 
@@ -1025,6 +1193,7 @@ function PlayerHealth.prototype:Update(unit)
 		self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), textColor)
 	end
 
+	--self:CheckPartyRole()
 	self:SetIconAlpha()
 end
 
@@ -1044,6 +1213,10 @@ function PlayerHealth.prototype:SetIconAlpha()
 
 	if self.frame.PvPIcon then
 		self.frame.PvPIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
+	end
+	
+	if self.frame.PartyRoleIcon then
+		self.frame.PartyRoleIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
 	end
 end
 
