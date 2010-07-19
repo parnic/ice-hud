@@ -258,10 +258,27 @@ function IceTargetInfo.prototype:GetOptions()
 		order = 35
 	}
 	
+	opts["showBuffs"] = {
+		type = 'toggle',
+		name = 'Show buffs',
+		desc = 'Toggles whether or not buffs are displayed at all',
+		get = function()
+			return self.moduleSettings.showBuffs
+		end,
+		set = function(v)
+			self.moduleSettings.showBuffs = v
+			self:RedrawBuffs()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 36
+	}
+	
 	opts["filterBuffs"] = {
 		type = 'text',
-		name = 'Filter buffs',
-		desc = 'Toggles filtering buffs (uses Blizzard default filter code)',
+		name = 'Only show buffs by me',
+		desc = 'Will only show buffs that you cast instead of all buffs active',
 		get = function()
 			return self.moduleSettings.filterBuffs
 		end,
@@ -270,16 +287,33 @@ function IceTargetInfo.prototype:GetOptions()
 			self:RedrawBuffs()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or not self.moduleSettings.showBuffs
 		end,
 		validate = { "Never", "In Combat", "Always" },
-		order = 36
+		order = 36.1
+	}
+	
+	opts["showDebuffs"] = {
+		type = 'toggle',
+		name = 'Show debuffs',
+		desc = 'Toggles whether or not debuffs are displayed at all',
+		get = function()
+			return self.moduleSettings.showDebuffs
+		end,
+		set = function(v)
+			self.moduleSettings.showDebuffs = v
+			self:RedrawBuffs()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 36.2
 	}
 	
 	opts["filterDebuffs"] = {
 		type = 'text',
-		name = 'Filter debuffs',
-		desc = 'Toggles filtering debuffs (uses Blizzard default filter code)',
+		name = 'Only show debuffs by me',
+		desc = 'Will only show debuffs that you cast instead of all debuffs active',
 		get = function()
 			return self.moduleSettings.filterDebuffs
 		end,
@@ -288,10 +322,10 @@ function IceTargetInfo.prototype:GetOptions()
 			self:RedrawBuffs()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or not self.moduleSettings.showDebuffs
 		end,
 		validate = { "Never", "In Combat", "Always" },
-		order = 36.1
+		order = 36.3
 	}
 	
 	opts["perRow"] = {
@@ -333,7 +367,7 @@ function IceTargetInfo.prototype:GetOptions()
 			self:CreateBuffFrame()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or not self.moduleSettings.showBuffs
 		end,
 		order = 37.1
 	}
@@ -351,7 +385,7 @@ function IceTargetInfo.prototype:GetOptions()
 			self:CreateBuffFrame()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or not self.moduleSettings.showBuffs
 		end,
 		order = 37.2
 	}
@@ -371,7 +405,7 @@ function IceTargetInfo.prototype:GetOptions()
 			self:CreateBuffFrame()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or not self.moduleSettings.showBuffs
 		end,
 		order = 37.3
 	}
@@ -391,7 +425,7 @@ function IceTargetInfo.prototype:GetOptions()
 			self:CreateBuffFrame()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or not self.moduleSettings.showBuffs
 		end,
 		order = 37.4
 	}
@@ -415,7 +449,7 @@ function IceTargetInfo.prototype:GetOptions()
 			self:CreateDebuffFrame()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or not self.moduleSettings.showDebuffs
 		end,
 		order = 37.81
 	}
@@ -433,7 +467,7 @@ function IceTargetInfo.prototype:GetOptions()
 			self:CreateDebuffFrame()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or not self.moduleSettings.showDebuffs
 		end,
 		order = 37.82
 	}
@@ -453,7 +487,7 @@ function IceTargetInfo.prototype:GetOptions()
 			self:CreateDebuffFrame()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or not self.moduleSettings.showDebuffs
 		end,
 		order = 37.83
 	}
@@ -473,7 +507,7 @@ function IceTargetInfo.prototype:GetOptions()
 			self:CreateDebuffFrame()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or not self.moduleSettings.showDebuffs
 		end,
 		order = 37.84
 	}
@@ -637,6 +671,8 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 	defaults["line4Tag"] = ""
 	defaults["myTagVersion"] = 2
 	defaults["alwaysFullAlpha"] = true
+	defaults["showBuffs"] = true
+	defaults["showDebuffs"] = true
 
 	return defaults
 end
@@ -871,6 +907,12 @@ function IceTargetInfo.prototype:CreateBuffFrame(redraw)
 		local direction = self.moduleSettings.buffGrowDirection == "Left" and -1 or 1
 		self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, direction, self.frame.buffFrame.buffs, "buff")
 	end
+
+	if self.moduleSettings.showBuffs then
+		self.frame.buffFrame:Show()
+	else
+		self.frame.buffFrame:Hide()
+	end
 end
 
 
@@ -893,6 +935,12 @@ function IceTargetInfo.prototype:CreateDebuffFrame(redraw)
 	if (not redraw) then
 		local direction = self.moduleSettings.debuffGrowDirection == "Left" and -1 or 1
 		self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame, direction, self.frame.debuffFrame.buffs, "debuff")
+	end
+
+	if self.moduleSettings.showDebuffs then
+		self.frame.debuffFrame:Show()
+	else
+		self.frame.debuffFrame:Hide()
 	end
 end
 
@@ -998,7 +1046,6 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 end
 
 function IceTargetInfo.prototype:SetBuffSize(buff)
-	
 end
 
 function IceTargetInfo.prototype:UpdateBuffs()
@@ -1025,74 +1072,78 @@ function IceTargetInfo.prototype:UpdateBuffs()
 	local hostile = UnitCanAttack("player", self.unit)
 
 
-	for i = 1, IceCore.BuffLimit do
-		local buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe, unitCaster;
-		if IceHUD.WowVer >= 30000 then
-			buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, unitCaster
-				= UnitAura(self.unit, i, "HELPFUL" .. (filterBuffs and "|PLAYER" or "")) --UnitBuff(self.unit, i, filterBuffs and not hostile)
+	if self.moduleSettings.showBuffs then
+		for i = 1, IceCore.BuffLimit do
+			local buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe, unitCaster;
+			if IceHUD.WowVer >= 30000 then
+				buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, unitCaster
+					= UnitAura(self.unit, i, "HELPFUL" .. (filterBuffs and "|PLAYER" or "")) --UnitBuff(self.unit, i, filterBuffs and not hostile)
 
-			isFromMe = (unitCaster == "player")
-		else
-			buffName, buffRank, buffTexture, buffApplications, buffDuration, buffTimeLeft
-				= UnitBuff(self.unit, i, filterBuffs and not hostile)
+				isFromMe = (unitCaster == "player")
+			else
+				buffName, buffRank, buffTexture, buffApplications, buffDuration, buffTimeLeft
+					= UnitBuff(self.unit, i, filterBuffs and not hostile)
 
-			isFromMe = buffDuration and buffTimeLeft
-		end
+				isFromMe = buffDuration and buffTimeLeft
+			end
 
-		if (buffTexture) then
-			self:SetUpBuff(i, buffTexture, buffDuration, buffTimeLeft, isFromMe, buffApplications)
-		else
-			self.frame.buffFrame.buffs[i]:Hide()
+			if (buffTexture) then
+				self:SetUpBuff(i, buffTexture, buffDuration, buffTimeLeft, isFromMe, buffApplications)
+			else
+				self.frame.buffFrame.buffs[i]:Hide()
+			end
 		end
 	end
 
 	local direction = self.moduleSettings.buffGrowDirection == "Left" and -1 or 1
 	self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, direction, self.frame.buffFrame.buffs, "buff")
 
-	for i = 1, IceCore.BuffLimit do
-		local buffName, buffRank, buffTexture, buffApplications, debuffDispelType,
-			debuffDuration, debuffTimeLeft, unitCaster = UnitAura(self.unit, i, "HARMFUL" .. (filterDebuffs and "|PLAYER" or "")) --UnitDebuff(self.unit, i, filterDebuffs and not hostile)
+	if self.moduleSettings.showDebuffs then
+		for i = 1, IceCore.BuffLimit do
+			local buffName, buffRank, buffTexture, buffApplications, debuffDispelType,
+				debuffDuration, debuffTimeLeft, unitCaster = UnitAura(self.unit, i, "HARMFUL" .. (filterDebuffs and "|PLAYER" or "")) --UnitDebuff(self.unit, i, filterDebuffs and not hostile)
 
-		local isFromMe = (unitCaster == "player")
+			local isFromMe = (unitCaster == "player")
 
-		if (buffTexture and (not hostile or not filterDebuffs or (filterDebuffs and debuffDuration))) then
+			if (buffTexture and (not hostile or not filterDebuffs or (filterDebuffs and debuffDuration))) then
 
-			local color = debuffDispelType and DebuffTypeColor[debuffDispelType] or DebuffTypeColor["none"]
-			local alpha = buffTexture and 1 or 0
-			self.frame.debuffFrame.buffs[i].texture:SetTexture(1, 1, 1, alpha)
-			self.frame.debuffFrame.buffs[i].texture:SetVertexColor(color.r, color.g, color.b)
+				local color = debuffDispelType and DebuffTypeColor[debuffDispelType] or DebuffTypeColor["none"]
+				local alpha = buffTexture and 1 or 0
+				self.frame.debuffFrame.buffs[i].texture:SetTexture(1, 1, 1, alpha)
+				self.frame.debuffFrame.buffs[i].texture:SetVertexColor(color.r, color.g, color.b)
 
-			-- cooldown frame
-			if (debuffDuration and debuffDuration > 0 and
-				debuffTimeLeft and debuffTimeLeft > 0) then
-				local start
-				if IceHUD.WowVer >= 30000 then
-					-- in wotlk, the "bufftimeleft" parameter is actually the ending time for the buff
-					start = debuffTimeLeft - debuffDuration
+				-- cooldown frame
+				if (debuffDuration and debuffDuration > 0 and
+					debuffTimeLeft and debuffTimeLeft > 0) then
+					local start
+					if IceHUD.WowVer >= 30000 then
+						-- in wotlk, the "bufftimeleft" parameter is actually the ending time for the buff
+						start = debuffTimeLeft - debuffDuration
+					else
+						start = GetTime() - debuffDuration + debuffTimeLeft
+					end
+					self.frame.debuffFrame.buffs[i].cd:SetCooldown(start, debuffDuration)
+					self.frame.debuffFrame.buffs[i].cd:Show()
 				else
-					start = GetTime() - debuffDuration + debuffTimeLeft
+					self.frame.debuffFrame.buffs[i].cd:Hide()
 				end
-				self.frame.debuffFrame.buffs[i].cd:SetCooldown(start, debuffDuration)
-				self.frame.debuffFrame.buffs[i].cd:Show()
+
+				self.frame.debuffFrame.buffs[i].fromPlayer = isFromMe
+
+				self.frame.debuffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
+				self.frame.debuffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
+
+				if (buffApplications and (buffApplications > 1)) then
+					self.frame.debuffFrame.buffs[i].icon.stack:SetText(buffApplications)
+				else
+					self.frame.debuffFrame.buffs[i].icon.stack:SetText(nil)
+				end
+
+
+				self.frame.debuffFrame.buffs[i]:Show()
 			else
-				self.frame.debuffFrame.buffs[i].cd:Hide()
+				self.frame.debuffFrame.buffs[i]:Hide()
 			end
-
-			self.frame.debuffFrame.buffs[i].fromPlayer = isFromMe
-
-			self.frame.debuffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
-			self.frame.debuffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
-
-			if (buffApplications and (buffApplications > 1)) then
-				self.frame.debuffFrame.buffs[i].icon.stack:SetText(buffApplications)
-			else
-				self.frame.debuffFrame.buffs[i].icon.stack:SetText(nil)
-			end
-
-
-			self.frame.debuffFrame.buffs[i]:Show()
-		else
-			self.frame.debuffFrame.buffs[i]:Hide()
 		end
 	end
 
