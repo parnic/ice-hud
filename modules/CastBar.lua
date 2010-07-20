@@ -422,6 +422,9 @@ function CastBar.prototype:SpellCastSent(unit, spell, rank, target)
 	self.spellCastSent = GetTime()
 end
 
+local function xor(val1, val2)
+	return val1 and not val2 or val2 and not val1
+end
 
 -- OVERRIDE
 function CastBar.prototype:SpellCastStart(unit, spell, rank)
@@ -434,7 +437,7 @@ function CastBar.prototype:SpellCastStart(unit, spell, rank)
 	
 	self.lagBar:SetFrameStrata("BACKGROUND")
 	self.lagBar:ClearAllPoints()
-	if not self.moduleSettings.reverse then
+	if not xor(self.moduleSettings.reverse, self.moduleSettings.inverse) then
 		self.lagBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
 	else
 		self.lagBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
@@ -450,7 +453,7 @@ function CastBar.prototype:SpellCastStart(unit, spell, rank)
 	
 	local min_y = 0
 	local max_y = pos
-	if self.moduleSettings.reverse then
+	if xor(self.moduleSettings.reverse, self.moduleSettings.inverse) then
 		min_y = 1-pos
 		max_y = 1
 	end
