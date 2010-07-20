@@ -351,7 +351,7 @@ function IceCustomCDBar.prototype:GetCooldownDuration(buffName)
 			localDuration = (now - localStart) + localRemaining
 		end
 
-		if self.moduleSettings.maxDuration and tonumber(self.moduleSettings.maxDuration) ~= 0 then
+		if self.moduleSettings.maxDuration and tonumber(self.moduleSettings.maxDuration) ~= 0 and localDuration > 1.5 then
 			localDuration = tonumber(self.moduleSettings.maxDuration)
 		end
 
