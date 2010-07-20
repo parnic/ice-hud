@@ -65,6 +65,7 @@ function IceCastBar.prototype:GetDefaultSettings()
 	settings["displayAuraIcon"] = false
 	settings["auraIconXOffset"] = 40
 	settings["auraIconYOffset"] = 0
+    settings["reverseChannel"] = true
 
 	return settings
 end
@@ -178,6 +179,23 @@ function IceCastBar.prototype:GetOptions()
 		order = 53,
 	}
 
+    opts["reverseChannel"] = {
+        type = 'toggle',
+		name = "Reverse channel direction",
+		desc = "Whether or not to reverse the direction of a channel's castbar",
+		get = function()
+			return self.moduleSettings.reverseChannel
+		end,
+		set = function(v)
+			self.moduleSettings.reverseChannel = v
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		usage = "<whether or not to reverse the direction of a channel's castbar>",
+		order = 32.5,
+    }
+
 	return opts
 end
 
@@ -233,7 +251,7 @@ function IceCastBar.prototype:OnUpdate()
 		local remainingTime = self.actionStartTime + self.actionDuration - time
 		local scale = 1 - (self.actionDuration ~= 0 and remainingTime / self.actionDuration or 0)
 
-		if (self.action == IceCastBar.Actions.Channel) then
+		if (self.moduleSettings.reverseChannel and self.action == IceCastBar.Actions.Channel) then
 			scale = self.actionDuration ~= 0 and remainingTime / self.actionDuration or 0
 		end
 

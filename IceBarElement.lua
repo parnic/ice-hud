@@ -64,6 +64,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 1
 	settings["scale"] = 1
+	settings["inverse"] = false
 	settings["reverse"] = false
 	settings["barFontSize"] = 12
 	settings["lockUpperTextAlpha"] = true
@@ -158,6 +159,25 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		set = function(value)
 			self.moduleSettings.scale = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 32
+	}
+
+	opts["inverse"] = 
+	{
+		type = 'toggle',
+		name = 'Invert bar',
+		desc = 'Filling behaviour of bar',
+		get = function()
+			return self.moduleSettings.inverse
+		end,
+		set = function(value)
+			self.moduleSettings.inverse = value
+			self:SetBarFramePoints()
 			self:Redraw()
 		end,
 		disabled = function()
@@ -545,7 +565,7 @@ end
 
 function IceBarElement.prototype:SetBarFramePoints()
 	self.barFrame:ClearAllPoints()
-	if (self.moduleSettings.reverse) then
+	if (self.moduleSettings.inverse) then
 		self.barFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
 	else
 		self.barFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
@@ -768,11 +788,15 @@ function IceBarElement.prototype:SetScale(scale, force)
 	self.CurrScale = IceHUD:Clamp(self:LerpScale(scale), 0, 1)
 
 	if force or oldScale ~= self.CurrScale then
-		if (self.moduleSettings.reverse) then
+        local scale = self.CurrScale
+        if (self.moduleSettings.reverse) then
+            scale = 1 - scale
+        end
+		if (self.moduleSettings.inverse) then
 			min_y = 0;
-			max_y = self.CurrScale;
+			max_y = scale;
 		else
-			min_y = 1-self.CurrScale;
+			min_y = 1-scale;
 			max_y = 1;
 		end
 		if (self.moduleSettings.side == IceCore.Side.Left) then
@@ -781,7 +805,7 @@ function IceBarElement.prototype:SetScale(scale, force)
 			self.barFrame.bar:SetTexCoord(0, 1, min_y, max_y)
 		end
 
-		self.barFrame:SetHeight(self.settings.barHeight * self.CurrScale)
+		self.barFrame:SetHeight(self.settings.barHeight * scale)
 
 		if self.CurrScale == 0 then
 			self.barFrame.bar:Hide()
