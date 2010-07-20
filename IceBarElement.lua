@@ -41,6 +41,18 @@ function IceBarElement.prototype:Enable()
 		self.moduleSettings.myTagVersion = IceHUD.CurrTagVersion
 	end
 
+	-- fixup for the new 'invert' option
+	if not self.moduleSettings.updatedReverseInverse then
+		self.moduleSettings.updatedReverseInverse = true
+		
+		if self.moduleSettings.reverse then
+			self.moduleSettings.reverse = false
+			self.moduleSettings.inverse = true
+			
+			self:SetBarFramePoints()
+		end
+	end
+
 	self:RegisterFontStrings()
 end
 
@@ -171,7 +183,7 @@ function IceBarElement.prototype:GetOptions()
 	{
 		type = 'toggle',
 		name = 'Invert bar',
-		desc = 'Filling behaviour of bar',
+		desc = 'Controls which direction the bar fills up. With this checked, the bar will fill opposite from normal (e.g. for health: 0% at the top, 100% at the bottom).',
 		get = function()
 			return self.moduleSettings.inverse
 		end,
@@ -190,7 +202,7 @@ function IceBarElement.prototype:GetOptions()
 	{
 		type = 'toggle',
 		name = 'Reverse direction',
-		desc = 'Direction of bar movement',
+		desc = "Controls what it means for the bar to be filled. A normal bar will grow larger as the value grows from 0% to 100%. A reversed bar will shrink as the value grows from 0% to 100%.",
 		get = function()
 			return self.moduleSettings.reverse
 		end,
