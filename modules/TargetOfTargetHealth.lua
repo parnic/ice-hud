@@ -70,7 +70,7 @@ function TargetTargetHealth.prototype:GetOptions()
 			IceHUD.IceCore:SetColor("SelfColor", r, g, b)
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or self.moduleSettings.selfDisplayMode ~= "Color as SelfColor"
+			return not self.moduleSettings.enabled
 		end,
 		hasAlpha = false,
 		order = 45,
@@ -83,14 +83,14 @@ end
 function TargetTargetHealth.prototype:Enable(core)
 	self.registerEvents = false
 	TargetTargetHealth.super.prototype.Enable(self, core)
-	
+
 	if self.moduleSettings.useSelfColor ~= nil then
 		if self.moduleSettings.useSelfColor == true then
 			self.moduleSettings.selfDisplayMode = "Color as SelfColor"
 		else
 			self.moduleSettings.selfDisplayMode = "Normal"
 		end
-		
+
 		self.moduleSettings.useSelfColor = nil
 	end
 
@@ -130,11 +130,19 @@ function TargetTargetHealth.prototype:Update(unit)
 		if self.moduleSettings.selfDisplayMode == "Color as SelfColor" then
 			self.color = "SelfColor"
 		elseif self.moduleSettings.selfDisplayMode == "Hide" then
+			if self:IsVisible() then
+				UnregisterUnitWatch(self.frame)
+			end
+			
 			self:Show(false)
 			return
 		end
 	end
-	
+
+	if not self:IsVisible() then
+		RegisterUnitWatch(self.frame)
+	end
+
 	self:Show(true)
 
 	self.determineColor = false
