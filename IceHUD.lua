@@ -883,3 +883,7 @@ function IceHUD:ShouldSwapToVehicle(...)
 		return true
 	end
 end
+
+function IceHUD:xor(val1, val2)
+	return val1 and not val2 or val2 and not val1
+end

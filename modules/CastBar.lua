@@ -422,10 +422,6 @@ function CastBar.prototype:SpellCastSent(unit, spell, rank, target)
 	self.spellCastSent = GetTime()
 end
 
-local function xor(val1, val2)
-	return val1 and not val2 or val2 and not val1
-end
-
 -- OVERRIDE
 function CastBar.prototype:SpellCastStart(unit, spell, rank)
 	CastBar.super.prototype.SpellCastStart(self, unit, spell, rank)
@@ -437,7 +433,7 @@ function CastBar.prototype:SpellCastStart(unit, spell, rank)
 	
 	self.lagBar:SetFrameStrata("BACKGROUND")
 	self.lagBar:ClearAllPoints()
-	if not xor(self.moduleSettings.reverse, self.moduleSettings.inverse) then
+	if not IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse) then
 		self.lagBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
 	else
 		self.lagBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
@@ -453,7 +449,7 @@ function CastBar.prototype:SpellCastStart(unit, spell, rank)
 	
 	local min_y = 0
 	local max_y = pos
-	if xor(self.moduleSettings.reverse, self.moduleSettings.inverse) then
+	if IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse) then
 		min_y = 1-pos
 		max_y = 1
 	end
@@ -483,7 +479,7 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 		return
 	end
 	
-	local lagTop = not xor(self.moduleSettings.reverse, self.moduleSettings.inverse)
+	local lagTop = not IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse)
 	if self.moduleSettings.reverseChannel then
 		lagTop = not lagTop
 	end

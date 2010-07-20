@@ -202,11 +202,13 @@ function IceThreat.prototype:CreateAggroBar()
 		self.aggroBar = CreateFrame("Frame", nil, self.frame)
 	end
 	
+	local aggroTop = not IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse)
+	
 	self.aggroBar:SetFrameStrata("BACKGROUND")
 	self.aggroBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.aggroBar:SetHeight(self.settings.barHeight)
 	self.aggroBar:ClearAllPoints()
-	if not self.moduleSettings.reverse then
+	if aggroTop then
 		self.aggroBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
 	else
 		self.aggroBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
@@ -236,12 +238,12 @@ function IceThreat.prototype:CreateSecondThreatBar()
 	if not (self.secondThreatBar) then
 		self.secondThreatBar = CreateFrame("Frame", nil, self.frame)
 	end
-
+	
 	self.secondThreatBar:SetFrameStrata("MEDIUM")
 	self.secondThreatBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.secondThreatBar:SetHeight(self.settings.barHeight)
 	self.secondThreatBar:ClearAllPoints()
-	if self.moduleSettings.reverse then
+	if self.moduleSettings.inverse then
 		self.secondThreatBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
 	else
 		self.secondThreatBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
@@ -374,14 +376,15 @@ function IceThreat.prototype:Update(unit)
 	self:UpdateBar( scaledPercentZeroToOne, self.color )
 
 	-- do the aggro indicator bar stuff, but only if it has changed
-	if ( self.aggroBarMulti ~= rangeMulti ) then
+	--if ( self.aggroBarMulti ~= rangeMulti ) then
 		self.aggroBarMulti = rangeMulti
 
 		local pos = IceHUD:Clamp(1 - (1 / rangeMulti), 0, 1)
+		local fromTop = not IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse)
 
 		local min_y = 0
 		local max_y = pos
-		if self.moduleSettings.reverse then
+		if not fromTop then
 			min_y = 1-pos
 			max_y = 1
 		end
@@ -399,7 +402,7 @@ function IceThreat.prototype:Update(unit)
 		end
 
 		self.aggroBar:SetHeight(self.settings.barHeight * pos)
-	end
+	--end
 
 	self:UpdateAlpha()
 	self:UpdateSecondHighestThreatBar(secondHighestThreat, threatValue)
@@ -411,9 +414,13 @@ function IceThreat.prototype:UpdateSecondHighestThreatBar(secondHighestThreat, t
 	else
 		local pos = IceHUD:Clamp(secondHighestThreat / threatValue, 0, 1)
 
+		if self.moduleSettings.reverse then
+			pos = 1-pos
+		end
+
 		local min_y = 0
 		local max_y = pos
-		if self.moduleSettings.reverse then
+		if self.moduleSettings.inverse then
 			min_y = 1-pos
 			max_y = 1
 		end
