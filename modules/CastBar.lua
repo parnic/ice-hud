@@ -483,25 +483,30 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 		return
 	end
 	
+	local lagTop = not xor(self.moduleSettings.reverse, self.moduleSettings.inverse)
+	if self.moduleSettings.reverseChannel then
+		lagTop = not lagTop
+	end
+
 	self.lagBar:SetFrameStrata("MEDIUM")
 	self.lagBar:ClearAllPoints()
-	if self.moduleSettings.reverse then
+	if lagTop then
 		self.lagBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
 	else
 		self.lagBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
 	end
-	
+
 	local lag = GetTime() - (self.spellCastSent or 0)
-	
+
 	local pos = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
 	if self.unit == "vehicle" then
 		pos = 0
 	end
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
-	
+
 	local min_y = 1-pos
 	local max_y = 1
-	if self.moduleSettings.reverse then
+	if lagTop then
 		min_y = 0
 		max_y = pos
 	end
@@ -511,7 +516,7 @@ function CastBar.prototype:SpellCastChannelStart(unit)
 	else
 		self.lagBar.bar:SetTexCoord(0, 1, min_y, max_y)
 	end
-	
+
 	if pos == 0 then
 		self.lagBar.bar:Hide()
 	else
