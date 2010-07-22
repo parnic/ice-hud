@@ -64,7 +64,15 @@ function PlayerInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 	for i = 1, IceCore.BuffLimit do
 		if (self.moduleSettings.mouseBuff) then
 			buffs[i]:SetScript("OnMouseUp", function( self, button)
-				if( button == "RightButton" ) then CancelUnitBuff("player", i) end
+				if( button == "RightButton" ) then
+					if buffs[i].type == "mh" then
+						CancelItemTempEnchantment(1)
+					elseif buffs[i].type == "oh" then
+						CancelItemTempEnchantment(2)
+					else
+						CancelUnitBuff("player", i)
+					end
+				end
 			end)
 		else
 			buffs[i]:SetScript("OnMouseUp", nil)
@@ -108,20 +116,27 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 		PlayerInfo.super.prototype.UpdateBuffs(self)
 	end
 
+	local hasMainHandEnchant, mainHandExpiration, mainHandCharges, hasOffHandEnchant, offHandExpiration, offHandCharges
+		= GetWeaponEnchantInfo()
+
 	local startingNum = 0
 
 	for i=1, IceCore.BuffLimit do
 		if not self.frame.buffFrame.buffs[i]:IsVisible()
 			or self.frame.buffFrame.buffs[i].type == "mh"
 			or self.frame.buffFrame.buffs[i].type == "oh" then
-			startingNum = i
-			break
+			if startingNum == 0 then
+				startingNum = i
+			end
+		end
+
+		if self.frame.buffFrame.buffs[i]:IsVisible() then
+			if (self.frame.buffFrame.buffs[i].type == "mh" and not hasMainHandEnchant)
+				or (self.frame.buffFrame.buffs[i].type == "oh" and not hasOffHandEnchant) then
+				self.frame.buffFrame.buffs[i]:Hide()
+			end
 		end
 	end
-
-	local hasMainHandEnchant, mainHandExpiration, mainHandCharges,
-		hasOffHandEnchant, offHandExpiration, offHandCharges
-		= GetWeaponEnchantInfo()
 
 	if hasMainHandEnchant or hasOffHandEnchant then
 		local CurrTime = GetTime()
@@ -133,13 +148,15 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 				self.mainHandEnchantTimeSet = CurrTime
 			end
 
-			self:SetUpBuff(startingNum,
-				GetInventoryItemTexture(self.unit, GetInventorySlotInfo("MainHandSlot")),
-				self.mainHandEnchantEndTime,
-				CurrTime + (mainHandExpiration/1000),
-				true,
-				mainHandCharges,
-				"mh")
+			if not self.frame.buffFrame.buffs[startingNum]:IsVisible() or self.frame.buffFrame.buffs[startingNum].type ~= "mh" then
+				self:SetUpBuff(startingNum,
+					GetInventoryItemTexture(self.unit, GetInventorySlotInfo("MainHandSlot")),
+					self.mainHandEnchantEndTime,
+					CurrTime + (mainHandExpiration/1000),
+					true,
+					mainHandCharges,
+					"mh")
+			end
 
 			startingNum = startingNum + 1
 		end
@@ -151,15 +168,23 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 				self.offHandEnchantTimeSet = CurrTime
 			end
 
-			self:SetUpBuff(startingNum,
-				GetInventoryItemTexture(self.unit, GetInventorySlotInfo("SecondaryHandSlot")),
-				self.offHandEnchantEndTime,
-				CurrTime + (offHandExpiration/1000),
-				true,
-				offHandCharges,
-				"oh")
+			if not self.frame.buffFrame.buffs[startingNum]:IsVisible() or self.frame.buffFrame.buffs[startingNum].type ~= "oh" then
+				self:SetUpBuff(startingNum,
+					GetInventoryItemTexture(self.unit, GetInventorySlotInfo("SecondaryHandSlot")),
+					self.offHandEnchantEndTime,
+					CurrTime + (offHandExpiration/1000),
+					true,
+					offHandCharges,
+					"oh")
+			end
 
 			startingNum = startingNum + 1
+		end
+		
+		for i=startingNum, IceCore.BuffLimit do
+			if self.frame.buffFrame.buffs[i]:IsVisible() then
+				self.frame.buffFrame.buffs[i]:Hide()
+			end
 		end
 
 		local direction = self.moduleSettings.buffGrowDirection == "Left" and -1 or 1
