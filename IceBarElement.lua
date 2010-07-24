@@ -793,11 +793,11 @@ function IceBarElement.prototype:Flip(side)
 end
 
 
-function IceBarElement.prototype:SetScale(scale, force)
+function IceBarElement.prototype:SetScale(inScale, force)
 	local oldScale = self.CurrScale
 	local min_y, max_y;
 
-	self.CurrScale = IceHUD:Clamp(self:LerpScale(scale), 0, 1)
+	self.CurrScale = IceHUD:Clamp(self:LerpScale(inScale), 0, 1)
 
 	if force or oldScale ~= self.CurrScale then
         local scale = self.CurrScale
@@ -819,7 +819,7 @@ function IceBarElement.prototype:SetScale(scale, force)
 
 		self.barFrame:SetHeight(self.settings.barHeight * scale)
 
-		if self.CurrScale == 0 then
+		if scale == 0 then
 			self.barFrame.bar:Hide()
 		else
 			self.barFrame.bar:Show()

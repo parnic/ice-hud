@@ -508,15 +508,19 @@ function IceCustomCDBar.prototype:IsReady()
 end
 
 function IceCustomCDBar.prototype:Show(bShouldShow)
-	if (self.moduleSettings.displayMode == "Always") then
-		if not self.bIsVisible then
-			IceCustomCDBar.super.prototype.Show(self, true)
-		end
-	elseif (self.moduleSettings.displayMode == "When ready") then
-		if not self.coolingDown and self:IsReady() then
-			IceCustomCDBar.super.prototype.Show(self, true)
+	if self.moduleSettings.enabled then
+		if (self.moduleSettings.displayMode == "Always") then
+			if not self.bIsVisible then
+				IceCustomCDBar.super.prototype.Show(self, true)
+			end
+		elseif (self.moduleSettings.displayMode == "When ready") then
+			if not self.coolingDown and self:IsReady() then
+				IceCustomCDBar.super.prototype.Show(self, true)
+			else
+				IceCustomCDBar.super.prototype.Show(self, false)
+			end
 		else
-			IceCustomCDBar.super.prototype.Show(self, false)
+			IceCustomCDBar.super.prototype.Show(self, bShouldShow)
 		end
 	else
 		IceCustomCDBar.super.prototype.Show(self, bShouldShow)
