@@ -5,6 +5,8 @@ IceCustomBar = AceOO.Class(IceUnitBar)
 local validUnits = {"player", "target", "focus", "pet", "vehicle", "targettarget", "main hand weapon", "off hand weapon"}
 local buffOrDebuff = {"buff", "debuff"}
 local validBuffTimers = {"none", "seconds", "minutes:seconds", "minutes"}
+local AuraIconWidth = 20
+local AuraIconHeight = 20
 
 IceCustomBar.prototype.auraDuration = 0
 IceCustomBar.prototype.auraEndTime = 0
@@ -24,6 +26,10 @@ function IceCustomBar.prototype:Enable(core)
 	self:RegisterEvent("UNIT_PET", "UpdateCustomBar")
 	self:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomBar")
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomBar")
+
+	if self.moduleSettings.auraIconScale == nil then
+		self.moduleSettings.auraIconScale = 1
+	end
 
 	self:Show(true)
 
@@ -79,6 +85,7 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["displayAuraIcon"] = false
 	settings["auraIconXOffset"] = 40
 	settings["auraIconYOffset"] = 0
+	settings["auraIconScale"] = 1
 	settings["exactMatch"] = false
 
 	return settings
@@ -91,8 +98,6 @@ function IceCustomBar.prototype:CreateBar()
 		self.barFrame.icon = self.barFrame:CreateTexture(nil, "LOW")
 		-- default texture so that 'config mode' can work without activating the bar first
 		self.barFrame.icon:SetTexture("Interface\\Icons\\Spell_Frost_Frost")
-		self.barFrame.icon:SetWidth(20)
-		self.barFrame.icon:SetHeight(20)
 		-- this cuts off the border around the buff icon
 		self.barFrame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 		self.barFrame.icon:SetDrawLayer("OVERLAY")
@@ -108,6 +113,8 @@ function IceCustomBar.prototype:PositionIcons()
 
 	self.barFrame.icon:ClearAllPoints()
 	self.barFrame.icon:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.moduleSettings.auraIconXOffset, self.moduleSettings.auraIconYOffset)
+	self.barFrame.icon:SetWidth(AuraIconWidth * (self.moduleSettings.auraIconScale or 1))
+	self.barFrame.icon:SetHeight(AuraIconHeight * (self.moduleSettings.auraIconScale or 1))
 end
 
 function IceCustomBar.prototype:Redraw()
@@ -404,6 +411,27 @@ function IceCustomBar.prototype:GetOptions()
 		end,
 		usage = "<adjusts the spell icon's vertical position>",
 		order = 40.3,
+	}
+
+	opts["auraIconScale"] = {
+		type = 'range',
+		min = 0.1,
+		max = 3.0,
+		step = 0.05,
+		name = 'Aura icon scale',
+		desc = 'Adjusts the size of the aura icon for this bar',
+		get = function()
+			return self.moduleSettings.auraIconScale
+		end,
+		set = function(v)
+			self.moduleSettings.auraIconScale = v
+			self:PositionIcons()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+		end,
+		usage = "<adjusts the spell icon's size>",
+		order = 40.4,
 	}
 	
 	return opts

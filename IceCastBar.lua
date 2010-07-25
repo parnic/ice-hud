@@ -16,6 +16,8 @@ IceCastBar.prototype.actionMessage = nil
 IceCastBar.prototype.unit = nil
 IceCastBar.prototype.current = nil
 
+local AuraIconWidth = 20
+local AuraIconHeight = 20
 
 -- Constructor --
 function IceCastBar.prototype:init(name)
@@ -65,6 +67,7 @@ function IceCastBar.prototype:GetDefaultSettings()
 	settings["displayAuraIcon"] = false
 	settings["auraIconXOffset"] = 40
 	settings["auraIconYOffset"] = 0
+	settings["auraIconScale"] = 1
     settings["reverseChannel"] = true
 
 	return settings
@@ -178,6 +181,27 @@ function IceCastBar.prototype:GetOptions()
 		usage = "<adjusts the spell icon's vertical position>",
 		order = 53,
 	}
+	
+	opts["auraIconScale"] = {
+		type = 'range',
+		min = 0.1,
+		max = 3.0,
+		step = 0.05,
+		name = 'Aura icon scale',
+		desc = 'Adjusts the size of the aura icon for this bar',
+		get = function()
+			return self.moduleSettings.auraIconScale
+		end,
+		set = function(v)
+			self.moduleSettings.auraIconScale = v
+			self:PositionIcons()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+		end,
+		usage = "<adjusts the spell icon's size>",
+		order = 54,
+	}
 
     opts["reverseChannel"] = {
         type = 'toggle',
@@ -212,8 +236,6 @@ function IceCastBar.prototype:CreateFrame()
 		self.barFrame.icon = self.barFrame:CreateTexture(nil, "LOW")
 		-- default texture so that 'config mode' can work without activating the bar first
 		self.barFrame.icon:SetTexture("Interface\\Icons\\Spell_Frost_Frost")
-		self.barFrame.icon:SetWidth(20)
-		self.barFrame.icon:SetHeight(20)
 		-- this cuts off the border around the buff icon
 		self.barFrame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 		self.barFrame.icon:SetDrawLayer("OVERLAY")
@@ -228,6 +250,8 @@ function IceCastBar.prototype:PositionIcons()
 
 	self.barFrame.icon:ClearAllPoints()
 	self.barFrame.icon:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.moduleSettings.auraIconXOffset, self.moduleSettings.auraIconYOffset)
+	self.barFrame.icon:SetWidth(AuraIconWidth * self.moduleSettings.auraIconScale)
+	self.barFrame.icon:SetHeight(AuraIconHeight * self.moduleSettings.auraIconScale)
 end
 
 
