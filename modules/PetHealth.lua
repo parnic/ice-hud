@@ -28,6 +28,7 @@ function PetHealth.prototype:GetDefaultSettings()
 	settings["upperText"] = "[PercentHP:Round]"
 	settings["lowerText"] = ""
 	settings["barVerticalOffset"] = 35
+	settings["allowMouseInteraction"] = false
 
 	return settings
 end
@@ -139,11 +140,76 @@ function PetHealth.prototype:GetOptions()
 		end,
 		order = 41
 	}
+	
+	opts["allowClickTarget"] = {
+		type = 'toggle',
+		name = 'Allow click-targeting',
+		desc = 'Whether or not to allow click targeting/casting for this bar (Note: does not work properly with HiBar, have to click near the base of the bar)',
+		get = function()
+			return self.moduleSettings.allowMouseInteraction
+		end,
+		set = function(v)
+			self.moduleSettings.allowMouseInteraction = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		usage = '',
+		order = 42,
+	}
 
 	return opts
 end
 
+function PetHealth.prototype:CreateBackground()
+	PetHealth.super.prototype.CreateBackground(self)
 
+	if not self.frame.button then
+		self.frame.button = CreateFrame("Button", "IceHUD_PetClickFrame", self.frame, "SecureUnitButtonTemplate")
+	end
+
+	self.frame.button:ClearAllPoints()
+	-- Parnic - kinda hacky, but in order to fit this region to multiple types of bars, we need to do this...
+	--          would be nice to define this somewhere in data, but for now...here we are
+	if self:GetMyBarTexture() == "HiBar" then
+		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
+		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
+	else
+		if self.moduleSettings.side == IceCore.Side.Left then
+			self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", -6, 0)
+			self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth() / 3, 0)
+		else
+			self.frame.button:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 6, 0)
+			self.frame.button:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth() / 1.5, 0)
+		end
+	end
+
+	self:EnableClickTargeting(self.moduleSettings.allowMouseInteraction)
+end
+
+function PetHealth.prototype:EnableClickTargeting(bEnable)
+	if bEnable then
+		self.frame.button:EnableMouse(true)
+		self.frame.button:RegisterForClicks("LeftButtonUp")
+		self.frame.button:SetAttribute("type1", "target")
+		self.frame.button:SetAttribute("unit", self.unit)
+
+		-- set up click casting
+		ClickCastFrames = ClickCastFrames or {}
+		ClickCastFrames[self.frame.button] = true
+
+-- Parnic - debug code for showing the clickable region on this bar
+--		self.frame.button:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
+--						edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+--						tile = false,
+--						insets = { left = 0, right = 0, top = 0, bottom = 0 }});
+--		self.frame.button:SetBackdropColor(0,0,0,1);
+	else
+		self.frame.button:EnableMouse(false)
+		self.frame.button:RegisterForClicks()
+	end
+end
 
 -- Load us up
 IceHUD.PetHealth = PetHealth:new()
