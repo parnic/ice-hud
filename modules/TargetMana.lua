@@ -68,8 +68,8 @@ function IceTargetMana.prototype:Update(unit)
 	if (unit and (unit ~= self.unit)) then
 		return
 	end
-	
-	if ((not UnitExists(unit)) or (self.maxMana == 0)) then
+
+	if ((not UnitExists(self.unit)) or (self.maxMana == 0)) then
 		self:Show(false)
 		return
 	else	

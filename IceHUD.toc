@@ -69,3 +69,5 @@ modules\TargetInvuln.lua
 # - PlayerInvuln must be after TargetInvuln
 modules\PlayerInvuln.lua
 modules\ComboPointsBar.lua
+modules\CustomHealth.lua
+modules\CustomMana.lua

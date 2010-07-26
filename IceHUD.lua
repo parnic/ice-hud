@@ -551,6 +551,34 @@ IceHUD.options =
 			order = 94.7
 		},
 
+		customHealth = {
+			type = 'execute',
+			name = 'Custom health bar',
+			desc = 'Creates a new customized health bar. This bar monitors the health of whatever unit you specify. You can create as many of these as you like.',
+			func = function()
+				IceHUD.IceCore:AddNewDynamicModule(IceCustomHealth:new())
+				StaticPopup_Show("ICEHUD_CUSTOM_HEALTH_CREATED")
+			end,
+			hidden = function()
+				return IceCustomHealth == nil
+			end,
+			order = 94.8
+		},
+
+		customMana = {
+			type = 'execute',
+			name = 'Custom mana bar',
+			desc = 'Creates a new customized mana bar. This bar monitors the mana of whatever unit you specify. You can create as many of these as you like.',
+			func = function()
+				IceHUD.IceCore:AddNewDynamicModule(IceCustomMana:new())
+				StaticPopup_Show("ICEHUD_CUSTOM_MANA_CREATED")
+			end,
+			hidden = function()
+				return IceCustomMana == nil
+			end,
+			order = 94.8
+		},
+
 		configMode = {
 			type = 'toggle',
 			name = '|cffff0000Configuration Mode|r',
@@ -661,6 +689,24 @@ StaticPopupDialogs["ICEHUD_CUSTOM_COUNTER_CREATED"] =
 StaticPopupDialogs["ICEHUD_CUSTOM_CD_CREATED"] =
 {
 	text = "A custom cooldown bar has been created and can be configured through Module Settings => MyCustomCD. It is highly recommended that you change the bar name of this module so that it's easier to identify.",
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 0,
+}
+
+StaticPopupDialogs["ICEHUD_CUSTOM_HEALTH_CREATED"] =
+{
+	text = "A custom health bar has been created and can be configured through Module Settings => MyCustomHealth. It is highly recommended that you change the bar name of this module so that it's easier to identify.",
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 0,
+}
+
+StaticPopupDialogs["ICEHUD_CUSTOM_MANA_CREATED"] =
+{
+	text = "A custom mana bar has been created and can be configured through Module Settings => MyCustomMana. It is highly recommended that you change the bar name of this module so that it's easier to identify.",
 	button1 = OKAY,
 	timeout = 0,
 	whileDead = 1,

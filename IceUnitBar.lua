@@ -26,8 +26,7 @@ function IceUnitBar.prototype:init(name, unit)
 	IceUnitBar.super.prototype.init(self, name)
 	assert(unit, "IceUnitBar 'unit' is nil")
 	
-	self.unit = unit
-	_, self.unitClass = UnitClass(self.unit)
+	self:SetUnit(unit)
 	self.noFlash = false
 	
 	self:SetDefaultColor("Dead", 0.5, 0.5, 0.5)
@@ -47,6 +46,10 @@ function IceUnitBar.prototype:init(name, unit)
 	self.scaleMPColorInst = { r = 0, g = 0, b = 255 }
 end
 
+function IceUnitBar.prototype:SetUnit(unit)
+	self.unit = unit
+	_, self.unitClass = UnitClass(self.unit)
+end
 
 -- OVERRIDE
 function IceUnitBar.prototype:GetDefaultSettings()

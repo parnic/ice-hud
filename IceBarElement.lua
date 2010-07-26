@@ -58,7 +58,7 @@ end
 
 
 function IceBarElement.prototype:RegisterFontStrings()
-	if DogTag ~= nil and self.moduleSettings.usesDogTagStrings then
+	if DogTag ~= nil and self.moduleSettings ~= nil and self.moduleSettings.usesDogTagStrings then
 		if self.frame.bottomUpperText and self.moduleSettings.upperText then
 			DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.moduleSettings.upperText, "Unit", { unit = self.unit })
 		end

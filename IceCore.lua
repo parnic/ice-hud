@@ -120,21 +120,31 @@ function IceCore.prototype:Enable()
 	end
 
 	for k,v in pairs(self.settings.modules) do
-		if self.settings.modules[k].customBarType == "Bar" then
+		if self.settings.modules[k].customBarType == "Bar" and IceCustomBar ~= nil then
 			local newBar
 			newBar = IceCustomBar:new()
 			newBar.elementName = k
 			self:AddNewDynamicModule(newBar, true)
-		elseif self.settings.modules[k].customBarType == "Counter" then
+		elseif self.settings.modules[k].customBarType == "Counter" and IceCustomCount ~= nil then
 			local newCounter
 			newCounter = IceCustomCount:new()
 			newCounter.elementName = k
 			self:AddNewDynamicModule(newCounter, true)
-		elseif self.settings.modules[k].customBarType == "CD" then
+		elseif self.settings.modules[k].customBarType == "CD" and IceCustomCDBar ~= nil then
 			local newCD
 			newCD = IceCustomCDBar:new()
 			newCD.elementName = k
 			self:AddNewDynamicModule(newCD, true)
+		elseif self.settings.modules[k].customBarType == "Health" and IceCustomHealth ~= nil then
+			local newHealth
+			newHealth = IceCustomHealth:new()
+			newHealth.elementName = k
+			self:AddNewDynamicModule(newHealth, true)
+		elseif self.settings.modules[k].customBarType == "Mana" and IceCustomMana ~= nil then
+			local newMana
+			newMana = IceCustomMana:new()
+			newMana.elementName = k
+			self:AddNewDynamicModule(newMana, true)
 		end
 	end
 
