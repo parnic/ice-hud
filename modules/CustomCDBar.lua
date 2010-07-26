@@ -408,14 +408,16 @@ function IceCustomCDBar.prototype:EnableUpdates(enable_update)
 	-- There is a hole in the logic here for spells that can be cast on any friendly target. When
 	-- the correct UI option is selected they will cast on self when no target is selected. Deal
 	-- with that later if it turns out to be a problem.
-	if (not enable and (self.moduleSettings.displayMode == "When ready") and (IsUsableSpell(self.moduleSettings.cooldownToTrack) == 1)) then
-		if SpellHasRange(self.moduleSettings.cooldownToTrack) then
-			if IsSpellInRange(self.moduleSettings.cooldownToTrack, "target") then
-				enable_update = true
-			end
-		else
+	if (not enable and (self.moduleSettings.displayMode == "When ready")--[[ and (IsUsableSpell(self.moduleSettings.cooldownToTrack) == 1)]]) then
+-- Parnic: there are too many edge cases for "when ready" cooldowns that cause the bar to not appear when it should
+--         so, i'm forcing updates to always run for any bar that's set to only show "when ready"
+--		if SpellHasRange(self.moduleSettings.cooldownToTrack) then
+--			if IsSpellInRange(self.moduleSettings.cooldownToTrack, "target") then
+--				enable_update = true
+--			end
+--		else
 			enable_update = true
-	 	end
+--	 	end
 	end
 
 	if enable_update then
