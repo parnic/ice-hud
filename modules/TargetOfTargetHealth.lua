@@ -43,12 +43,21 @@ function TargetTargetHealth.prototype:GetOptions()
 	opts["selfDisplayMode"] = {
 		type = "text",
 		name = "Self Display Mode",
-		desc = "What this bar should do whenever the player is the TargetOfTarget",
+		desc = "What this bar should do whenever the player is the TargetOfTarget\n\nNOTE: When this is set to 'hide', then click-targeting is not available due to Blizzard's restrictions",
 		get = function()
 			return self.moduleSettings.selfDisplayMode
 		end,
 		set = function(value)
 			self.moduleSettings.selfDisplayMode = value
+			if value == "Hide" then
+				self.moduleSettings.allowMouseInteraction = false
+				self.DisplayClickTargetOption = false
+				UnregisterUnitWatch(self.frame)
+			else
+				RegisterUnitWatch(self.frame)
+				self.DisplayClickTargetOption = true
+			end
+			AceLibrary("Waterfall-1.0"):Refresh("IceHUD")
 			self:Redraw()
 		end,
 		disabled = function()
@@ -83,6 +92,13 @@ end
 function TargetTargetHealth.prototype:Enable(core)
 	self.registerEvents = false
 	TargetTargetHealth.super.prototype.Enable(self, core)
+
+	if self.moduleSettings.selfDisplayMode == "Hide" then
+		UnregisterUnitWatch(self.frame)
+		self.DisplayClickTargetOption = false
+		self.moduleSettings.allowMouseInteraction = false
+		self:EnableClickTargeting(false)
+	end
 
 	if self.moduleSettings.useSelfColor ~= nil then
 		if self.moduleSettings.useSelfColor == true then
@@ -130,20 +146,14 @@ function TargetTargetHealth.prototype:Update(unit)
 		if self.moduleSettings.selfDisplayMode == "Color as SelfColor" then
 			self.color = "SelfColor"
 		elseif self.moduleSettings.selfDisplayMode == "Hide" then
-			if self:IsVisible() then
-				UnregisterUnitWatch(self.frame)
-			end
-			
 			self:Show(false)
 			return
 		end
 	end
-
-	if not self:IsVisible() then
-		RegisterUnitWatch(self.frame)
+	
+	if self.moduleSettings.selfDisplayMode == "Hide" then
+		self:Show(UnitExists(self.unit))
 	end
-
-	self:Show(true)
 
 	self.determineColor = false
 	TargetTargetHealth.super.prototype.Update(self, unit)

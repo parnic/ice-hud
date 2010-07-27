@@ -16,6 +16,7 @@ IceTargetHealth.prototype.raidIconHeight = 16
 IceTargetHealth.prototype.EliteTexture = IceElement.TexturePath .. "Elite"
 IceTargetHealth.prototype.RareEliteTexture = IceElement.TexturePath .. "RareElite"
 IceTargetHealth.prototype.RareTexture = IceElement.TexturePath .. "Rare"
+IceTargetHealth.prototype.DisplayClickTargetOption = true
 
 local configMode = false
 
@@ -135,7 +136,7 @@ function IceTargetHealth.prototype:GetOptions()
 			self:CreateBackground(true)
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or not self.DisplayClickTargetOption
 		end,
 		usage = '',
 		order = 43
@@ -555,44 +556,45 @@ end
 function IceTargetHealth.prototype:CreateBackground(redraw)
 	IceTargetHealth.super.prototype.CreateBackground(self)
 
-	if not self.frame.button then
-		self.frame.button = CreateFrame("Button", "IceHUD_TargetClickFrame", self.frame, "SecureUnitButtonTemplate")
-	end
-
-	self.frame.button:ClearAllPoints()
-	-- Parnic - kinda hacky, but in order to fit this region to multiple types of bars, we need to do this...
-	--          would be nice to define this somewhere in data, but for now...here we are
-	if self:GetMyBarTexture() == "HiBar" then
-		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
-		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
-	elseif self:GetMyBarTexture() == "ArcHUD" then
-		if self.moduleSettings.side == IceCore.Side.Left then
-			self.frame.button:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
-			self.frame.button:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMLEFT", self.frame:GetWidth() / 3, 0)
-		else
-			self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT")
-			self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth() / 3, 0)
-		end
-	else
-		if self.moduleSettings.side == IceCore.Side.Left then
-			self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", -6, 0)
-			self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth() / 3, 0)
-		else
-			self.frame.button:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 6, 0)
-			self.frame.button:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth() / 1.5, 0)
-		end
-	end
-
-	self.frame.button.menu = function()
-		ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor");
-	end
-
 	self:EnableClickTargeting(self.moduleSettings.allowMouseInteraction)
+	if self.frame.button then
+		self.frame.button:ClearAllPoints()
+		-- Parnic - kinda hacky, but in order to fit this region to multiple types of bars, we need to do this...
+		--          would be nice to define this somewhere in data, but for now...here we are
+		if self:GetMyBarTexture() == "HiBar" then
+			self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
+			self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
+		elseif self:GetMyBarTexture() == "ArcHUD" then
+			if self.moduleSettings.side == IceCore.Side.Left then
+				self.frame.button:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
+				self.frame.button:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMLEFT", self.frame:GetWidth() / 3, 0)
+			else
+				self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT")
+				self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth() / 3, 0)
+			end
+		else
+			if self.moduleSettings.side == IceCore.Side.Left then
+				self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", -6, 0)
+				self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth() / 3, 0)
+			else
+				self.frame.button:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 6, 0)
+				self.frame.button:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth() / 1.5, 0)
+			end
+		end
+
+		self.frame.button.menu = function()
+			ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor");
+		end
+	end
 end
 
 
 function IceTargetHealth.prototype:EnableClickTargeting(bEnable)
 	if bEnable then
+		if not self.frame.button then
+			self.frame.button = CreateFrame("Button", "IceHUD_TargetClickFrame", self.frame, "SecureUnitButtonTemplate")
+		end
+
 		self.frame.button:EnableMouse(true)
 		self.frame.button:RegisterForClicks("AnyUp")
 		self.frame.button:SetAttribute("type1", "target")
@@ -610,8 +612,12 @@ function IceTargetHealth.prototype:EnableClickTargeting(bEnable)
 --						insets = { left = 0, right = 0, top = 0, bottom = 0 }});
 --		self.frame.button:SetBackdropColor(0,0,0,1);
 	else
-		self.frame.button:EnableMouse(false)
-		self.frame.button:RegisterForClicks()
+		if self.frame.button then
+			self.frame.button:EnableMouse(false)
+			self.frame.button:RegisterForClicks()
+
+			self.frame.button = nil
+		end
 	end
 end
 
