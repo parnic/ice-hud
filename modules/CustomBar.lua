@@ -2,14 +2,15 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 IceCustomBar = AceOO.Class(IceUnitBar)
 
-local validUnits = {"player", "target", "focus", "pet", "vehicle", "targettarget", "main hand weapon", "off hand weapon"}
+local validUnits = {"player", "target", "focus", "focustarget", "pet", "pettarget", "vehicle", "targettarget", "main hand weapon", "off hand weapon"}
 local buffOrDebuff = {"buff", "debuff"}
 local validBuffTimers = {"none", "seconds", "minutes:seconds", "minutes"}
 local AuraIconWidth = 20
 local AuraIconHeight = 20
 
-IceCustomBar.prototype.auraDuration = 0
-IceCustomBar.prototype.auraEndTime = 0
+IceCustomBar.prototype.auraDuration = -1
+IceCustomBar.prototype.auraEndTime = -1
+IceCustomBar.prototype.bIsAura = false
 
 -- Constructor --
 function IceCustomBar.prototype:init()
@@ -34,6 +35,7 @@ function IceCustomBar.prototype:Enable(core)
 	self:Show(true)
 
 	self.unit = self.moduleSettings.myUnit
+	self:CheckShouldSubscribe()
 
 	self:UpdateCustomBar(self.unit)
 
@@ -42,6 +44,14 @@ function IceCustomBar.prototype:Enable(core)
 	end
 	if self.moduleSettings.auraIconYOffset == nil then
 		self.moduleSettings.auraIconYOffset = 0
+	end
+end
+
+function IceCustomBar.prototype:CheckShouldSubscribe()
+	if self.unit == "focustarget" or self.unit == "pettarget" then
+		IceHUD.IceCore:RequestUpdates(self.frame, function() self:UpdateCustomBar() end)
+	else
+		IceHUD.IceCore:RequestUpdates(self.frame, nil)
 	end
 end
 
@@ -179,6 +189,7 @@ function IceCustomBar.prototype:GetOptions()
 		set = function(v)
 			self.moduleSettings.myUnit = v
 			self.unit = v
+			self:CheckShouldSubscribe()
 			self:Redraw()
 			self:UpdateCustomBar(self.unit)
 			AceLibrary("Waterfall-1.0"):Refresh("IceHUD")
@@ -477,7 +488,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 			if endTime and not remaining then
 				remaining = endTime - GetTime()
 			end
-			return duration, remaining, count, texture
+			return duration, remaining, count, texture, endTime
 		end
 
 		i = i + 1;
@@ -498,14 +509,22 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 	local remaining = nil
 	local count = 0
 	local auraIcon = nil
+	local endTime = 0
 
 	if not fromUpdate then
-		self.auraDuration, remaining, count, auraIcon =
+		self.auraDuration, remaining, count, auraIcon, endTime =
 			self:GetAuraDuration(self.unit, self.moduleSettings.buffToTrack)
 
-		if not remaining then
+		if endTime == 0 then
+			self.bIsAura = true
+			self.auraDuration = 1
 			self.auraEndTime = 0
+			remaining = 1
+		elseif not remaining then
+			self.bIsAura = false
+			self.auraEndTime = -1
 		else
+			self.bIsAura = false
 			self.auraEndTime = remaining + now
 		end
 
@@ -520,15 +539,20 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 		end
 	end
 
-	if self.auraEndTime and self.auraEndTime >= now then
-		if not fromUpdate then
-			self.frame:SetScript("OnUpdate", function() self:UpdateCustomBar(self.unit, true) end)
+	if self.auraEndTime ~= nil and (self.auraEndTime == 0 or self.auraEndTime >= now) then
+		if not fromUpdate and not IceHUD.IceCore:IsUpdateSubscribed(self.frame) then
+			IceHUD.IceCore:RequestUpdates(self.frame, function() self:UpdateCustomBar(self.unit, true) end)
+			--self.frame:SetScript("OnUpdate", function() self:UpdateCustomBar(self.unit, true) end)
 		end
 
 		self:Show(true)
 
 		if not remaining then
-			remaining = self.auraEndTime - now
+			if self.auraEndTime == 0 then
+				remaining = self.auraDuration
+			else
+				remaining = self.auraEndTime - now
+			end
 		end
 
 		self:UpdateBar(self.auraDuration ~= 0 and remaining / self.auraDuration or 0, "undef")
@@ -556,7 +580,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 				end
 			end
 		end
-		self:SetBottomText1(self.moduleSettings.upperText .. " " .. buffString)
+		self:SetBottomText1(self.moduleSettings.upperText .. (not self.bIsAura and (" " .. buffString) or ""))
 	else
 		self.auraBuffCount = 0
 		self:SetBottomText1(self.moduleSettings.upperText)

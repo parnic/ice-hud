@@ -651,6 +651,10 @@ function IceCore.prototype:RequestUpdates(frame, func)
 	self.updatees[frame] = func
 end
 
+function IceCore.prototype:IsUpdateSubscribed(frame)
+	return self.updatees[frame] ~= nil
+end
+
 -------------------------------------------------------------------------------
 -- Presets                                                                   --
 -------------------------------------------------------------------------------
