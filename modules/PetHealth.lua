@@ -8,11 +8,11 @@ PetHealth.prototype.happiness = nil
 -- Constructor --
 function PetHealth.prototype:init()
 	PetHealth.super.prototype.init(self, "PetHealth", "pet")
-	
+
 	self:SetDefaultColor("PetHealthHappy", 37, 164, 30)
 	self:SetDefaultColor("PetHealthContent", 164, 164, 30)
 	self:SetDefaultColor("PetHealthUnhappy", 164, 30, 30)
-	
+
 	self.scalingEnabled = true
 end
 
@@ -53,7 +53,7 @@ end
 
 function PetHealth.prototype:Enable(core)
 	PetHealth.super.prototype.Enable(self, core)
-	
+
 	self:RegisterEvent("PET_UI_UPDATE",	 "CheckPet");
 	self:RegisterEvent("PLAYER_PET_CHANGED", "CheckPet");
 	self:RegisterEvent("PET_BAR_CHANGED", "CheckPet");
@@ -61,17 +61,25 @@ function PetHealth.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_HEALTH", "Update")
 	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
-	
+
 	self:RegisterEvent("UNIT_HAPPINESS", "PetHappiness")
 
+	self.frame:SetAttribute("unit", self.unit)
+	RegisterUnitWatch(self.frame)
+
 	self:CheckPet()
+end
+
+function PetHealth.prototype:Disable(core)
+	PetHealth.super.prototype.Disable(self, core)
+	UnregisterUnitWatch(self.frame)
 end
 
 function PetHealth.prototype:PetHappiness(unit)
 	if (unit and (unit ~= self.unit)) then
 		return
 	end
-	
+
 	self.happiness = GetPetHappiness()
 	self.happiness = self.happiness or 3 -- '3' means happy
 	self:Update(unit)
@@ -80,11 +88,8 @@ end
 
 function PetHealth.prototype:CheckPet()
 	if (UnitExists(self.unit)) then
-		self:Show(true)
 		self:PetHappiness(self.unit)
 		self:Update(self.unit)
-	else
-		self:Show(false)
 	end
 end
 
@@ -94,7 +99,7 @@ function PetHealth.prototype:Update(unit)
 	if (unit and (unit ~= self.unit)) then
 		return
 	end
-	
+
 	local color = "PetHealthHappy"
 	if (self.happiness == 2) then
 		color = "PetHealthContent"
@@ -105,7 +110,7 @@ function PetHealth.prototype:Update(unit)
 	if (self.moduleSettings.scaleHealthColor) then
 		color = "ScaledHealthColor"
 	end
-	
+
 	if not (self.alive) then
 		color = "Dead"
 	end
@@ -140,7 +145,7 @@ function PetHealth.prototype:GetOptions()
 		end,
 		order = 41
 	}
-	
+
 	opts["allowClickTarget"] = {
 		type = 'toggle',
 		name = 'Allow click-targeting',
@@ -200,8 +205,8 @@ function PetHealth.prototype:EnableClickTargeting(bEnable)
 		ClickCastFrames[self.frame.button] = true
 
 -- Parnic - debug code for showing the clickable region on this bar
---		self.frame.button:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
---						edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+--		self.frame.button:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+--						edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
 --						tile = false,
 --						insets = { left = 0, right = 0, top = 0, bottom = 0 }});
 --		self.frame.button:SetBackdropColor(0,0,0,1);
