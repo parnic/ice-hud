@@ -939,6 +939,7 @@ function IceBarElement.prototype:SetBottomText1(text, color)
 	end
 
 	self.frame.bottomUpperText:SetText(text)
+	self.frame.bottomUpperText:SetWidth(0)
 end
 
 
@@ -968,6 +969,7 @@ function IceBarElement.prototype:SetBottomText2(text, color, alpha)
 
 	self.frame.bottomLowerText:SetTextColor(self:GetColor(color, alpha))
 	self.frame.bottomLowerText:SetText(text)
+	self.frame.bottomLowerText:SetWidth(0)
 end
 
 
