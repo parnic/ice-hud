@@ -14,7 +14,6 @@ function GlobalCoolDown.prototype:init()
 	self.unit = "player"
 	self.startTime = nil
 	self.duration = nil
-	self.spellId = _FindSpellId(self:GetSpellName())
 
 	self:SetDefaultColor("GlobalCoolDown", 0.1, 0.1, 0.1)
 end
@@ -38,32 +37,32 @@ function GlobalCoolDown.prototype:Disable(core)
 	self:CancelScheduledEvent(self.elementName)
 end
 
-function GlobalCoolDown.prototype:GetSpellName()
+function GlobalCoolDown.prototype:GetSpellId()
 	local defaultSpells;
 	if (IceHUD.WowVer >= 30000) then
 		defaultSpells = {
-			ROGUE=GetSpellInfo(1752), -- sinister strike
-			PRIEST=GetSpellInfo(139), -- renew
-			DRUID=GetSpellInfo(774), -- rejuvenation
-			WARRIOR=GetSpellInfo(6673), -- battle shout
-			MAGE=GetSpellInfo(168), -- frost armor
-			WARLOCK=GetSpellInfo(1454), -- life tap
-			PALADIN=GetSpellInfo(1152), -- purify
-			SHAMAN=GetSpellInfo(324), -- lightning shield
-			HUNTER=GetSpellInfo(1978), -- serpent sting
-			DEATHKNIGHT=GetSpellInfo(47541) -- death coil
+			ROGUE=1752, -- sinister strike
+			PRIEST=139, -- renew
+			DRUID=774, -- rejuvenation
+			WARRIOR=6673, -- battle shout
+			MAGE=168, -- frost armor
+			WARLOCK=1454, -- life tap
+			PALADIN=1152, -- purify
+			SHAMAN=324, -- lightning shield
+			HUNTER=1978, -- serpent sting
+			DEATHKNIGHT=47541 -- death coil
 		}
 	else
 		defaultSpells = {
-			ROGUE=GetSpellInfo(1752), -- sinister strike
-			PRIEST=GetSpellInfo(139), -- renew
-			DRUID=GetSpellInfo(774), -- rejuvenation
-			WARRIOR=GetSpellInfo(6673), -- battle shout
-			MAGE=GetSpellInfo(168), -- frost armor
-			WARLOCK=GetSpellInfo(1454), -- life tap
-			PALADIN=GetSpellInfo(1152), -- purify
-			SHAMAN=GetSpellInfo(324), -- lightning shield
-			HUNTER=GetSpellInfo(1978) -- serpent sting
+			ROGUE=1752, -- sinister strike
+			PRIEST=139, -- renew
+			DRUID=774, -- rejuvenation
+			WARRIOR=6673, -- battle shout
+			MAGE=168, -- frost armor
+			WARLOCK=1454, -- life tap
+			PALADIN=1152, -- purify
+			SHAMAN=324, -- lightning shield
+			HUNTER=1978 -- serpent sting
 		}
 	end
 	local _, unitClass = UnitClass("player")
@@ -100,46 +99,14 @@ end
 
 -- 'Protected' methods --------------------------------------------------------
 
-function _FindSpellId(spellName)
-	if not spellName then
-		return nil
-	end
-
-	for tab = 1, 4 do
-		local _, _, offset, numSpells = GetSpellTabInfo(tab)
-
-		for i = (1+offset), (offset+numSpells) do
-			local spell = GetSpellName(i, BOOKTYPE_SPELL)
-
-			if spell:lower() == spellName:lower() then
-				return i
-			end
-		end
-	end
-
-	return nil
-end
-
-function GlobalCoolDown.prototype:UpdateSpell()
-	if not self.spellId then
-		self.spellId = _FindSpellId(self:GetSpellName())
-	end	
-end
-
 function GlobalCoolDown.prototype:CooldownStateChanged()
-	self:UpdateSpell()
+	local start, dur = GetSpellCooldown(self:GetSpellId())
 
-	if not self.spellId then
-		return
-	end
-
-	local start, dur = GetSpellCooldown(self.spellId, BOOKTYPE_SPELL)
-
-	if dur > 0 and dur <= 1.5 then
+	if dur ~= nil and dur > 0 and dur <= 1.5 then
 		self.startTime = start
 		self.duration = dur
 
-	self.CurrScale = 1
+		self.CurrScale = 1
 		self.frame:SetFrameStrata("TOOLTIP")
 		self:Show(true)
 		self.frame.bg:SetAlpha(0)
