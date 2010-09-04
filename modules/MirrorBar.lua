@@ -114,7 +114,7 @@ function MirrorBar.prototype:MirrorStart(timer, value, maxValue, scale, paused, 
 
 	self:Update()
 	self:Show(true)
-	self.frame:SetScript("OnUpdate", function() self:OnUpdate(arg1) end)
+	self.frame:SetScript("OnUpdate", function(this, arg1, ...) self:OnUpdate(arg1) end)
 end
 
 

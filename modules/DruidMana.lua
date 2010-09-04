@@ -34,8 +34,13 @@ function DruidMana.prototype:Enable(core)
 	DruidMana.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM", "Update")
-	self:RegisterEvent("UNIT_MAXMANA", "Update")
-	self:RegisterEvent("UNIT_MANA", "Update")
+	if IceHUD.WowVer >= 40000 then
+		self:RegisterEvent("UNIT_POWER", "Update")
+		self:RegisterEvent("UNIT_MAXPOWER", "Update")
+	else
+		self:RegisterEvent("UNIT_MAXMANA", "Update")
+		self:RegisterEvent("UNIT_MANA", "Update")
+	end
 end
 
 

@@ -1022,18 +1022,18 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 			buffs[i].icon.texture:ClearAllPoints()
 			buffs[i].icon.texture:SetAllPoints(buffs[i].icon)
 		end
-		
+
 		buffs[i].icon.stack = self:FontFactory(self.moduleSettings.stackFontSize, buffs[i].icon, buffs[i].icon.stack,
 			"OUTLINE")
 
 		buffs[i].icon.stack:ClearAllPoints()
 		buffs[i].icon.stack:SetPoint("BOTTOMRIGHT" , buffs[i].icon, "BOTTOMRIGHT", 3, -1)
-		
-		
+
+
 		buffs[i].id = i
 		if (self.moduleSettings.mouseBuff) then
 			buffs[i]:EnableMouse(true)
-			buffs[i]:SetScript("OnEnter", function() self:BuffOnEnter(buffs[i].type or type) end)
+			buffs[i]:SetScript("OnEnter", function(this, ...) self:BuffOnEnter(this, buffs[i].type or type) end)
 			buffs[i]:SetScript("OnLeave", function() GameTooltip:Hide() end)
 		else
 			buffs[i]:EnableMouse(false)
@@ -1391,8 +1391,8 @@ function IceTargetInfo.prototype:OnLeave(frame)
 end
 
 
-function IceTargetInfo.prototype:BuffOnEnter(type)
-	if (not this:IsVisible()) then
+function IceTargetInfo.prototype:BuffOnEnter(this, type)
+	if (not self:IsVisible()) then
 		return
 	end
 

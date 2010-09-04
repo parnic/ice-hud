@@ -391,7 +391,7 @@ function TargetOfTarget.prototype:CreateIconFrames(parent)
 		
 		if (self.moduleSettings.mouse) then
 			buffs[i]:EnableMouse(true)
-			buffs[i]:SetScript("OnEnter", function() self:BuffOnEnter() end)
+			buffs[i]:SetScript("OnEnter", function(this) self:BuffOnEnter(this) end)
 			buffs[i]:SetScript("OnLeave", function() GameTooltip:Hide() end)
 		else
 			buffs[i]:EnableMouse(false)
@@ -505,7 +505,7 @@ function TargetOfTarget.prototype:OnLeave(frame)
 end
 
 
-function TargetOfTarget.prototype:BuffOnEnter(type)
+function TargetOfTarget.prototype:BuffOnEnter(this)
 	if (not this:IsVisible()) then
 		return
 	end

@@ -39,23 +39,28 @@ function IceTargetMana.prototype:Enable(core)
 	IceTargetMana.super.prototype.Enable(self, core)
 
 	if self.registerEvents then
-		self:RegisterEvent("UNIT_MAXMANA", "Update")
-		self:RegisterEvent("UNIT_MAXRAGE", "Update")
-		self:RegisterEvent("UNIT_MAXENERGY", "Update")
-		self:RegisterEvent("UNIT_MAXFOCUS", "Update")
+		if IceHUD.WowVer >= 40000 then
+			self:RegisterEvent("UNIT_POWER", "Update")
+			self:RegisterEvent("UNIT_MAXPOWER", "Update")
+		else
+			self:RegisterEvent("UNIT_MAXMANA", "Update")
+			self:RegisterEvent("UNIT_MAXRAGE", "Update")
+			self:RegisterEvent("UNIT_MAXENERGY", "Update")
+			self:RegisterEvent("UNIT_MAXFOCUS", "Update")
+
+			self:RegisterEvent("UNIT_MANA", "Update")
+			self:RegisterEvent("UNIT_RAGE", "Update")
+			self:RegisterEvent("UNIT_ENERGY", "Update")
+			self:RegisterEvent("UNIT_FOCUS", "Update")
+
+			-- DK rune stuff
+			if IceHUD.WowVer >= 30000 then
+				self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
+				self:RegisterEvent("UNIT_MAXRUNIC_POWER", "Update")
+			end
+		end
 		self:RegisterEvent("UNIT_AURA", "Update")
 		self:RegisterEvent("UNIT_FLAGS", "Update")
-
-		self:RegisterEvent("UNIT_MANA", "Update")
-		self:RegisterEvent("UNIT_RAGE", "Update")
-		self:RegisterEvent("UNIT_ENERGY", "Update")
-		self:RegisterEvent("UNIT_FOCUS", "Update")
-
-		-- DK rune stuff
-		if IceHUD.WowVer >= 30000 then
-			self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
-			self:RegisterEvent("UNIT_MAXRUNIC_POWER", "Update")
-		end
 	end
 
 	self:Update(self.unit)

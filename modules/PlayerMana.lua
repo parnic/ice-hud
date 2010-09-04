@@ -101,16 +101,21 @@ function PlayerMana.prototype:Enable(core)
 
 	self:CreateTickerFrame()
 
-	self:RegisterEvent("UNIT_MAXMANA", "Update")
-	self:RegisterEvent("UNIT_MAXRAGE", "Update")
-	self:RegisterEvent("UNIT_MAXENERGY", "Update")
-	self:RegisterEvent("UNIT_MAXRUNIC_POWER", "Update")
+	if IceHUD.WowVer >= 40000 then
+		self:RegisterEvent("UNIT_POWER", "Update")
+		self:RegisterEvent("UNIT_MAXPOWER", "Update")
+	else
+		self:RegisterEvent("UNIT_MAXMANA", "Update")
+		self:RegisterEvent("UNIT_MAXRAGE", "Update")
+		self:RegisterEvent("UNIT_MAXENERGY", "Update")
+		self:RegisterEvent("UNIT_MAXRUNIC_POWER", "Update")
 
-	self:RegisterEvent("UNIT_MANA", "Update")
-	self:RegisterEvent("UNIT_RAGE", "Update")
-	self:RegisterEvent("UNIT_ENERGY", "UpdateEnergy")
-	self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
-
+		self:RegisterEvent("UNIT_MANA", "Update")
+		self:RegisterEvent("UNIT_RAGE", "Update")
+		self:RegisterEvent("UNIT_ENERGY", "UpdateEnergy")
+		self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
+	end
+	
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
 
@@ -211,10 +216,14 @@ function PlayerMana.prototype:ManaType(unit)
 end
 
 
-function PlayerMana.prototype:Update(unit)
+function PlayerMana.prototype:Update(unit, powertype)
 	PlayerMana.super.prototype.Update(self)
 	if (unit and (unit ~= self.unit)) then
 		return
+	end
+	
+	if powertype ~= nil and powertype == "ENERGY" then
+		self:UpdateEnergy(unit)
 	end
 
 	if self.unit == "vehicle" and ((not UnitExists(unit)) or (self.maxMana == 0)) then
@@ -305,7 +314,9 @@ function PlayerMana.prototype:UpdateEnergy(unit)
 	end
 
 	self.previousEnergy = UnitPower(self.unit)
-	self:Update(unit)
+	if IceHUD.WowVer < 40000 then
+		self:Update(unit)
+	end
 
 	if self:ShouldUseTicker() and
 		((not (self.previousEnergy) or (self.previousEnergy <= UnitPower(self.unit))) and

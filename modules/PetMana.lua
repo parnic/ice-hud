@@ -57,14 +57,19 @@ function PetMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_PET", "CheckPet");
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "CheckPet")
 
-	self:RegisterEvent("UNIT_MANA", "Update")
-	self:RegisterEvent("UNIT_MAXMANA", "Update")
-	self:RegisterEvent("UNIT_RAGE", "Update")
-	self:RegisterEvent("UNIT_MAXRAGE", "Update")
-	self:RegisterEvent("UNIT_ENERGY", "Update")
-	self:RegisterEvent("UNIT_MAXENERGY", "Update")
-	self:RegisterEvent("UNIT_FOCUS", "Update")
-	self:RegisterEvent("UNIT_MAXFOCUS", "Update")
+	if IceHUD.WowVer >= 40000 then
+		self:RegisterEvent("UNIT_POWER", "Update")
+		self:RegisterEvent("UNIT_MAXPOWER", "Update")
+	else
+		self:RegisterEvent("UNIT_MANA", "Update")
+		self:RegisterEvent("UNIT_MAXMANA", "Update")
+		self:RegisterEvent("UNIT_RAGE", "Update")
+		self:RegisterEvent("UNIT_MAXRAGE", "Update")
+		self:RegisterEvent("UNIT_ENERGY", "Update")
+		self:RegisterEvent("UNIT_MAXENERGY", "Update")
+		self:RegisterEvent("UNIT_FOCUS", "Update")
+		self:RegisterEvent("UNIT_MAXFOCUS", "Update")
+	end
 
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
