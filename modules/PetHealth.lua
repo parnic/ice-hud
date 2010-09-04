@@ -62,7 +62,11 @@ function PetHealth.prototype:Enable(core)
 	self:RegisterEvent("UNIT_HEALTH", "Update")
 	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
 
-	self:RegisterEvent("UNIT_HAPPINESS", "PetHappiness")
+	if IceHUD.WowVer >= 40000 then
+		self:RegisterEvent("UNIT_POWER", "PetHappiness")
+	else
+		self:RegisterEvent("UNIT_HAPPINESS", "PetHappiness")
+	end
 
 	self.frame:SetAttribute("unit", self.unit)
 	RegisterUnitWatch(self.frame)
@@ -75,8 +79,12 @@ function PetHealth.prototype:Disable(core)
 	UnregisterUnitWatch(self.frame)
 end
 
-function PetHealth.prototype:PetHappiness(unit)
+function PetHealth.prototype:PetHappiness(unit, powertype)
 	if (unit and (unit ~= self.unit)) then
+		return
+	end
+
+	if IceHUD.WowVer >= 40000 and (powertype == nil or powertype ~= "HAPPINESS") then
 		return
 	end
 
@@ -88,7 +96,7 @@ end
 
 function PetHealth.prototype:CheckPet()
 	if (UnitExists(self.unit)) then
-		self:PetHappiness(self.unit)
+		self:PetHappiness(self.unit, "HAPPINESS")
 		self:Update(self.unit)
 	end
 end
