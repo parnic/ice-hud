@@ -76,7 +76,7 @@ function IceTargetHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.classColor
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.classColor = value
 			self:Update(self.unit)
 		end,
@@ -93,7 +93,7 @@ function IceTargetHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.npcHostilityColor
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.npcHostilityColor = v
 			self:Redraw()
 		end,
@@ -110,7 +110,7 @@ function IceTargetHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.hideBlizz
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.hideBlizz = value
 			if (value) then
 				self:HideBlizz()
@@ -131,14 +131,13 @@ function IceTargetHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.allowMouseInteraction
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.allowMouseInteraction = v
 			self:CreateBackground(true)
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.DisplayClickTargetOption
 		end,
-		usage = '',
 		order = 43
 	}
 
@@ -149,7 +148,7 @@ function IceTargetHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.scaleHealthColor
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.scaleHealthColor = value
 			self:Redraw()
 		end,
@@ -167,7 +166,7 @@ if not IceHUD.IceCore:ShouldUseDogTags() then
 		get = function()
 			return self.moduleSettings.abbreviateHealth
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.abbreviateHealth = v
 		end,
 		disabled = function()
@@ -193,7 +192,7 @@ end
 				get = function()
 					return configMode
 				end,
-				set = function(v)
+				set = function(info, v)
 					configMode = v
 					self:CheckPvP()
 					self:UpdateRaidTargetIcon()
@@ -209,7 +208,7 @@ end
 				get = function()
 					return self.moduleSettings.lockIconAlpha
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.lockIconAlpha = v
 					self:Redraw()
 				end,
@@ -229,7 +228,7 @@ end
 				get = function()
 					return self.moduleSettings.showPvPIcon
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.showPvPIcon = value
 					self:CheckPvP()
 				end,
@@ -245,7 +244,7 @@ end
 				get = function()
 					return self.moduleSettings.PvPIconOnTop
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.PvPIconOnTop = value
 					self:CheckPvP()
 				end,
@@ -264,7 +263,7 @@ end
 				get = function()
 					return self.moduleSettings.PvPIconOffset['x']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.PvPIconOffset['x'] = v
 					self:SetTexLoc(self.barFrame.PvPIcon, self.moduleSettings.PvPIconOffset['x'], self.moduleSettings.PvPIconOffset['y'])
 				end,
@@ -283,7 +282,7 @@ end
 				get = function()
 					return self.moduleSettings.PvPIconOffset['y']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.PvPIconOffset['y'] = v
 					self:SetTexLoc(self.barFrame.PvPIcon, self.moduleSettings.PvPIconOffset['x'], self.moduleSettings.PvPIconOffset['y'])
 				end,
@@ -302,7 +301,7 @@ end
 				get = function()
 					return self.moduleSettings.PvPIconScale
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.PvPIconScale = v
 					self:SetTexScale(self.barFrame.PvPIcon, 20, 20, v)
 				end,
@@ -325,7 +324,7 @@ end
 				get = function()
 					return self.moduleSettings.showRaidIcon
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.showRaidIcon = value
 					self:UpdateRaidTargetIcon()
 				end,
@@ -342,7 +341,7 @@ end
 				get = function()
 					return self.moduleSettings.raidIconOnTop
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.raidIconOnTop = value
 					self:UpdateRaidTargetIcon()
 				end,
@@ -362,7 +361,7 @@ end
 				get = function()
 					return self.moduleSettings.raidIconXOffset
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.raidIconXOffset = value
 					self:SetRaidIconPlacement()
 					self:Redraw()
@@ -383,7 +382,7 @@ end
 				get = function()
 					return self.moduleSettings.raidIconYOffset
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.raidIconYOffset = value
 					self:SetRaidIconPlacement()
 					self:Redraw()
@@ -404,7 +403,7 @@ end
 				get = function()
 					return self.moduleSettings.raidIconScale
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.raidIconScale = v
 					self:SetTexScale(self.frame.raidIcon, self.raidIconWidth, self.raidIconHeight, v)
 				end,
@@ -427,7 +426,7 @@ end
 				get = function()
 					return self.moduleSettings.showClassificationIcon
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.showClassificationIcon = value
 					self:Redraw()
 				end,
@@ -444,7 +443,7 @@ end
 				get = function()
 					return self.moduleSettings.classIconOnTop
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.classIconOnTop = value
 					self:Redraw()
 				end,
@@ -464,7 +463,7 @@ end
 				get = function()
 					return self.moduleSettings.classIconOffset['x']
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.classIconOffset['x'] = value
 					self:Redraw()
 				end,
@@ -484,7 +483,7 @@ end
 				get = function()
 					return self.moduleSettings.classIconOffset['y']
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.classIconOffset['y'] = value
 					self:Redraw()
 				end,
@@ -504,7 +503,7 @@ end
 				get = function()
 					return self.moduleSettings.classIconScale
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.classIconScale = v
 					self:SetTexScale(self.barFrame.classIcon, self.texWidth, self.texHeight, self.moduleSettings.scale / 3.0 * self.moduleSettings.classIconScale)
 				end,

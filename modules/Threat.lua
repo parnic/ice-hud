@@ -61,7 +61,7 @@ function IceThreat.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.enabled
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.enabled = value
 			if (value) then
 				self:Enable(true)
@@ -83,7 +83,7 @@ function IceThreat.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.aggroAlpha
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.aggroAlpha = value
 			self:Redraw()
 		end,
@@ -100,7 +100,7 @@ function IceThreat.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.onlyShowInGroups
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.onlyShowInGroups = v
 			self:Redraw()
 		end,
@@ -117,7 +117,7 @@ function IceThreat.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.showScaledThreat
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.showScaledThreat = v
 			self:Redraw()
 		end,
@@ -134,7 +134,7 @@ function IceThreat.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.displaySecondPlaceThreat
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.displaySecondPlaceThreat = v
 			self:Redraw()
 		end,
@@ -151,7 +151,7 @@ function IceThreat.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.secondPlaceThreatAlpha
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.secondPlaceThreatAlpha = v
 			self:Redraw()
 		end,

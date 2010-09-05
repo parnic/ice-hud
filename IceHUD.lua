@@ -1,7 +1,8 @@
-IceHUD = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceDB-2.0", "FuBarPlugin-2.0")
+IceHUD = LibStub("AceAddon-3.0"):NewAddon("IceHUD", "AceConsole-3.0")
 
-local waterfall = AceLibrary("Waterfall-1.0")
 local SML = AceLibrary("LibSharedMedia-3.0")
+local ACR = LibStub("AceConfigRegistry-3.0")
+local ConfigDialog = LibStub("AceConfigDialog-3.0")
 
 IceHUD.CurrTagVersion = 3
 IceHUD.debugging = false
@@ -38,7 +39,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetVerticalPos()
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetVerticalPos(v)
 					end,
 					min = -700,
@@ -54,7 +55,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetHorizontalPos()
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetHorizontalPos(v)
 					end,
 					min = -2000,
@@ -70,7 +71,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetGap()
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetGap(v)
 					end,
 					min = 50,
@@ -86,7 +87,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetScale()
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetScale(v)
 					end,
 					min = 0.5,
@@ -118,7 +119,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetAlpha("IC")
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetAlpha("IC", v)
 					end,
 					min = 0,
@@ -135,7 +136,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetAlpha("OOC")
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetAlpha("OOC", v)
 					end,
 					min = 0,
@@ -152,7 +153,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetAlpha("Target")
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetAlpha("Target", v)
 					end,
 					min = 0,
@@ -169,7 +170,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetAlpha("NotFull")
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetAlpha("NotFull", v)
 					end,
 					min = 0,
@@ -180,8 +181,6 @@ IceHUD.options =
 				},
 
 
-
-				headerAlphaBackgroundBlank = { type = 'header', name = " ", order = 20 },
 				headerAlphaBackground = {
 					type = 'header',
 					name = "Background Alpha",
@@ -195,7 +194,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetAlphaBG("IC")
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetAlphaBG("IC", v)
 					end,
 					min = 0,
@@ -212,7 +211,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetAlphaBG("OOC")
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetAlphaBG("OOC", v)
 					end,
 					min = 0,
@@ -229,7 +228,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetAlphaBG("Target")
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetAlphaBG("Target", v)
 					end,
 					min = 0,
@@ -246,7 +245,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetAlphaBG("NotFull")
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetAlphaBG("NotFull", v)
 					end,
 					min = 0,
@@ -257,7 +256,6 @@ IceHUD.options =
 				},
 
 
-				headerBarAdvancedBlank = { type = 'header', name = " ", order = 30 },
 				headerBarAdvanced = {
 					type = 'header',
 					name = "Other",
@@ -271,7 +269,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetBackgroundToggle()
 					end,
-					set = function(value)
+					set = function(info, value)
 						IceHUD.IceCore:SetBackgroundToggle(value)
 					end,
 					order = 31
@@ -284,7 +282,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetBackgroundColor()
 					end,
-					set = function(r, g, b)
+					set = function(info, r, g, b)
 						IceHUD.IceCore:SetBackgroundColor(r, g, b)
 					end,
 					order = 32,
@@ -294,17 +292,17 @@ IceHUD.options =
 
 
 		textSettings = {
-			type = 'text',
+			type = 'select',
 			name =  'Font',
 			desc = 'IceHUD Font',
 			order = 19,
-			get = function()
-				return IceHUD.IceCore:GetFontFamily()
+			get = function(info)
+				return IceHUD:GetSelectValue(info, IceHUD.IceCore:GetFontFamily())
 			end,
-			set = function(value)
-				IceHUD.IceCore:SetFontFamily(value)
+			set = function(info, value)
+				IceHUD.IceCore:SetFontFamily(info.option.values[value])
 			end,
-			validate = SML:List('font'),	
+			values = SML:List('font'),	
 		},
 
 		barSettings = {
@@ -314,21 +312,20 @@ IceHUD.options =
 			order = 20,
 			args = {
 				barPresets = {
-					type = 'text',
+					type = 'select',
 					name = 'Presets',
 					desc = 'Predefined settings for different bars',
-					get = function()
-						return IceHUD.IceCore:GetBarPreset()
+					get = function(info)
+						return IceHUD:GetSelectValue(info, IceHUD.IceCore:GetBarPreset())
 					end,
-					set = function(value)
-						IceHUD.IceCore:SetBarPreset(value)
+					set = function(info, value)
+						IceHUD.IceCore:SetBarPreset(info.option.values[value])
 					end,
-					validate = IceHUD.validBarList,
+					values = IceHUD.validBarList,
 					order = 9
 				},
 
 
-				headerBarAdvancedBlank = { type = 'header', name = " ", order = 10 },
 				headerBarAdvanced = {
 					type = 'header',
 					name = "Advanced Bar Settings",
@@ -336,16 +333,16 @@ IceHUD.options =
 				},
 
 				barTexture = {
-					type = 'text',
+					type = 'select',
 					name = 'Bar Texture',
 					desc = 'IceHUD Bar Texture',
-					get = function()
-						return IceHUD.IceCore:GetBarTexture()
+					get = function(info)
+						return IceHUD:GetSelectValue(info, IceHUD.IceCore:GetBarTexture())
 					end,
-					set = function(value)
-						IceHUD.IceCore:SetBarTexture(value)
+					set = function(info, value)
+						IceHUD.IceCore:SetBarTexture(IceHUD.validBarList[value])
 					end,
-					validate = IceHUD.validBarList,
+					values = IceHUD.validBarList,
 					order = 11
 				},
 
@@ -356,7 +353,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetBarWidth()
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetBarWidth(v)
 					end,
 					min = 20,
@@ -372,7 +369,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetBarHeight()
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetBarHeight(v)
 					end,
 					min = 100,
@@ -388,7 +385,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetBarProportion()
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetBarProportion(v)
 					end,
 					min = 0.01,
@@ -405,7 +402,7 @@ IceHUD.options =
 					get = function()
 						return IceHUD.IceCore:GetBarSpace()
 					end,
-					set = function(v)
+					set = function(info, v)
 						IceHUD.IceCore:SetBarSpace(v)
 					end,
 					min = -10,
@@ -415,30 +412,30 @@ IceHUD.options =
 				},
 
 				bgBlendMode = {
-					type = 'text',
+					type = 'select',
 					name = 'Bar Background Blend Mode',
 					desc = 'IceHUD Bar Background Blend mode',
-					get = function()
+					get = function(info)
 						return IceHUD.IceCore:GetBarBgBlendMode()
 					end,
-					set = function(value)
+					set = function(info, value)
 						IceHUD.IceCore:SetBarBgBlendMode(value)
 					end,
-					validate = { BLEND = "Blend", ADD = "Additive" }, --"Disable", "Alphakey", "Mod" },		
+					values = { BLEND = "Blend", ADD = "Additive" }, --"Disable", "Alphakey", "Mod" },		
 					order = 16
 				},
 
 				barBlendMode = {
-					type = 'text',
+					type = 'select',
 					name = 'Bar Blend Mode',
 					desc = 'IceHUD Bar Blend mode',
-					get = function()
+					get = function(info)
 						return IceHUD.IceCore:GetBarBlendMode()
 					end,
-					set = function(value)
+					set = function(info, value)
 						IceHUD.IceCore:SetBarBlendMode(value)
 					end,
-					validate = { BLEND = "Blend", ADD = "Additive" }, --"Disable", "Alphakey", "Mod" },		
+					values = { BLEND = "Blend", ADD = "Additive" }, --"Disable", "Alphakey", "Mod" },		
 					order = 17
 				},
 			}
@@ -461,7 +458,6 @@ IceHUD.options =
 			order = 42
 		},
 
-		headerOtherBlank = { type = 'header', name = ' ', order = 90 },
 		headerOther = {
 			type = 'header',
 			name = 'Other',
@@ -475,7 +471,7 @@ IceHUD.options =
 			get = function()
 				return IceHUD.IceCore:IsEnabled()
 			end,
-			set = function(value)
+			set = function(info, value)
 				if (value) then
 					IceHUD.IceCore:Enable()
 				else
@@ -492,7 +488,7 @@ IceHUD.options =
 			get = function()
 				return IceHUD.IceCore:GetDebug()
 			end,
-			set = function(value)
+			set = function(info, value)
 				IceHUD.IceCore:SetDebug(value)
 			end,
 			order = 92
@@ -506,16 +502,6 @@ IceHUD.options =
 				StaticPopup_Show("ICEHUD_RESET")
 			end,
 			order = 93
-		},
-		
-		about = {
-			type = 'execute',
-			name = 'About',
-			desc = "Prints info about IceHUD",
-			func = function()
-				IceHUD:PrintAddonInfo()
-			end,
-			order = 94
 		},
 
 		customBar = {
@@ -586,7 +572,7 @@ IceHUD.options =
 			get = function()
 				return IceHUD.IceCore:IsInConfigMode()
 			end,
-			set = function(value)
+			set = function(info, value)
 				IceHUD.IceCore:ConfigModeToggle(value)
 			end,
 			order = 95
@@ -599,7 +585,7 @@ IceHUD.options =
 			get = function()
 				return IceHUD.IceCore:ShouldUseDogTags()
 			end,
-			set = function(v)
+			set = function(info, v)
 				StaticPopupDialogs["ICEHUD_CHANGED_DOGTAG"] = {
 					text = "This option requires the UI to be reloaded. Do you wish to reload it now?",
 					button1 = "Yes",
@@ -627,7 +613,7 @@ IceHUD.options =
 			get = function()
 				return IceHUD.IceCore:UpdatePeriod()
 			end,
-			set = function(v)
+			set = function(info, v)
 				IceHUD.IceCore:SetUpdatePeriod(v)
 			end,
 			min = 0.01,
@@ -636,22 +622,6 @@ IceHUD.options =
 			order = 97
 		},
 	}
-}
-
-
-IceHUD.slashMenu =
-{
-	type = 'execute',
-	func = function()
-		if waterfall:IsOpen("IceHUD") then
-			waterfall:Close("IceHUD")
-		elseif not (UnitAffectingCombat("player")) then
-			waterfall:Open("IceHUD")
-		else
-			DEFAULT_CHAT_FRAME:AddMessage("|cff8888ffIceHUD|r: Combat lockdown restriction." ..
-										  " Leave combat and try again.")
-		end
-	end
 }
 
 
@@ -731,22 +701,24 @@ function IceHUD:OnInitialize()
 	self:SetDebugging(false)
 	self:Debug("IceHUD:OnInitialize()")
 
-	self:RegisterDB("IceCoreDB")
-	
 	self.IceCore = IceCore:new()
 
-	self:RegisterDefaults('profile', self.IceCore.defaults)
+	self.db = LibStub("AceDB-3.0"):New("IceCoreDB", self.IceCore.defaults, "Default")
+	self.db.RegisterCallback(self, "OnProfileShutdown", "PreProfileChanged")
+	self.db.RegisterCallback(self, "OnProfileChanged", "PostProfileChanged")
+	self.db.RegisterCallback(self, "OnProfileReset", "ProfileReset")
+	self.db.RegisterCallback(self, "OnProfileCopied", "ProfileCopied")
 
-	self.IceCore.settings = self.db.profile
-	self.IceCore:SetModuleDatabases()
+	self:NotifyNewDb()
 	self:GenerateModuleOptions(true)
 	self.options.args.colors.args = self.IceCore:GetColorOptions()
+	self.options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 
-	waterfall:Register("IceHUD", 'aceOptions', IceHUD.options)
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("IceHUD", self.options, "/icehudcl")
 
-	-- Parnic - added /icehudcl to make rock config pick this up
-	self:RegisterChatCommand({"/icehudcl"}, IceHUD.options)
-	self:RegisterChatCommand({ "/icehud" }, IceHUD.slashMenu)
+	ConfigDialog:SetDefaultSize("IceHUD", 750, 650)
+	self:RegisterChatCommand("icehud", function() IceHUD:OpenConfig() end)
+	self:RegisterChatCommand("rl", function() ReloadUI() end)
 
 	self:SyncSettingsVersions()
 
@@ -754,11 +726,21 @@ function IceHUD:OnInitialize()
 end
 
 
+function IceHUD:NotifyNewDb()
+	self.IceCore.settings = self.db.profile
+	self.IceCore:SetModuleDatabases()
+end
+
+
 function IceHUD:GenerateModuleOptions(firstLoad)
 	self.options.args.modules.args = self.IceCore:GetModuleOptions()
-	if not firstLoad then
-		waterfall:Refresh("IceHUD")
+	if not firstLoad and ACR ~= nil then
+		IceHUD:NotifyOptionsChange()
 	end
+end
+
+function IceHUD:NotifyOptionsChange()
+	ACR:NotifyChange("IceHUD")
 end
 
 
@@ -771,11 +753,6 @@ function IceHUD:OnEnable(isFirst)
 		self:SetDebugging(self.IceCore:GetDebug())
 		self.debugFrame = ChatFrame2
 	end
-end
-
-function IceHUD:ResetSettings()
-	self:ResetDB()
-	ReloadUI()
 end
 
 -- add settings changes/updates here so that existing users don't lose their settings
@@ -798,7 +775,7 @@ function IceHUD:InitLDB()
 			icon = "Interface\\Icons\\Spell_Frost_Frost",
 			OnClick = function(_, msg)
 				if not (UnitAffectingCombat("player")) then
-					waterfall:Open("IceHUD")
+					IceHUD:OpenConfig()
 				else
 					DEFAULT_CHAT_FRAME:AddMessage("|cff8888ffIceHUD|r: Combat lockdown restriction. Leave combat and try again.")
 				end
@@ -813,13 +790,7 @@ IceHUD.hasIcon = "Interface\\Icons\\Spell_Frost_Frost"
 IceHUD.hideWithoutStandby = true
 IceHUD.independentProfile = true
 function IceHUD.OnClick()
-	if not waterfall then return end
-
-	if waterfall:IsOpen("IceHUD") then
-		waterfall:Close("IceHUD")
-	else
-		waterfall:Open("IceHUD")
-	end
+	IceHUD:OpenConfig()
 end
 
 -- blizzard interface options
@@ -829,9 +800,14 @@ blizOptionsPanel.button = CreateFrame("BUTTON", "IceHUDOpenConfigButton", blizOp
 blizOptionsPanel.button:SetText("Open IceHUD configuration")
 blizOptionsPanel.button:SetWidth(240)
 blizOptionsPanel.button:SetHeight(30)
-blizOptionsPanel.button:SetScript("OnClick", function(self) HideUIPanel(InterfaceOptionsFrame) HideUIPanel(GameMenuFrame) waterfall:Open("IceHUD") end)
+blizOptionsPanel.button:SetScript("OnClick", function(self) HideUIPanel(InterfaceOptionsFrame) HideUIPanel(GameMenuFrame) IceHUD:OpenConfig() end)
 blizOptionsPanel.button:SetPoint('TOPLEFT', blizOptionsPanel, 'TOPLEFT', 20, -20)
 InterfaceOptions_AddCategory(blizOptionsPanel)
+
+function IceHUD:OpenConfig()
+	if not ConfigDialog then return end
+	ConfigDialog:Open("IceHUD")
+end
 
 function IceHUD:Debug(msg)
 	if self.debugging then
@@ -894,14 +870,20 @@ function IceHUD:OnDisable()
 	IceHUD.IceCore:Disable()
 end
 
-function IceHUD:OnProfileDisable()
+function IceHUD:PreProfileChanged(db)
 	self.IceCore:Disable()
 end
 
-function IceHUD:OnProfileEnable(oldName, oldData)
-	self.IceCore.settings = self.db.profile
-	self.IceCore:SetModuleDatabases()
+function IceHUD:PostProfileChanged(db, newProfile)
+	self:NotifyNewDb()
 	self.IceCore:Enable()
+end
+
+function IceHUD:ProfileReset()
+	ReloadUI()
+end
+function IceHUD:ProfileCopied()
+	ReloadUI()
 end
 
 function IceHUD:Clamp(value, min, max)
@@ -932,4 +914,14 @@ end
 
 function IceHUD:xor(val1, val2)
 	return val1 and not val2 or val2 and not val1
+end
+
+function IceHUD:GetSelectValue(info, val)
+	for k,v in pairs(info.option.values) do
+		if v == val then
+			return k
+		end
+	end
+
+	return 1
 end

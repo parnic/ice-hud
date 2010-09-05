@@ -147,7 +147,7 @@ function PlayerHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.classColor
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.classColor = value
 			self:Update(self.unit)
 		end,
@@ -164,7 +164,7 @@ function PlayerHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.hideBlizz
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.hideBlizz = value
 			if (value) then
 				self:HideBlizz()
@@ -185,7 +185,7 @@ function PlayerHealth.prototype:GetOptions()
 			get = function()
 				return self.moduleSettings.hideBlizzParty
 			end,
-			set = function(value)
+			set = function(info, value)
 				self.moduleSettings.hideBlizzParty = value
 				if (value) then
 					self:HideBlizzardParty()
@@ -206,7 +206,7 @@ function PlayerHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.scaleHealthColor
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.scaleHealthColor = value
 			self:Redraw()
 		end,
@@ -223,14 +223,13 @@ function PlayerHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.allowMouseInteraction
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.allowMouseInteraction = v
 			self:CreateBackground(true)
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		usage = '',
 		order = 43
 	}
 
@@ -241,14 +240,13 @@ function PlayerHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.allowMouseInteractionCombat
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.allowMouseInteractionCombat = v
 			self:CreateBackground(true)
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.allowMouseInteraction
 		end,
-		usage = '',
 		order = 43.5
 	}
 
@@ -260,7 +258,7 @@ function PlayerHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.showIncomingHeals
 		end,
-		set = function(v)
+		set = function(info, v)
 			if not v then
 				self.healFrame.bar:Hide()
 			else
@@ -275,7 +273,6 @@ function PlayerHealth.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled or not HealComm
 		end,
-		usage = '',
 		order = 43.6
 	}
 
@@ -290,7 +287,7 @@ function PlayerHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.healAlpha * 100
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.healAlpha = v / 100.0
 			self:Redraw()
 		end,
@@ -316,7 +313,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return configMode
 				end,
-				set = function(v)
+				set = function(info, v)
 					configMode = v
 					self:EnteringWorld()
 				end,
@@ -330,7 +327,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.lockIconAlpha
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.lockIconAlpha = v
 					self:Redraw()
 				end,
@@ -349,7 +346,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.showStatusIcon
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.showStatusIcon = value
 					self:Resting()
 					self:CheckCombat()
@@ -366,7 +363,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.showStatusCombat
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.showStatusCombat = value
 					self:Resting()
 					self:CheckCombat()
@@ -383,7 +380,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.showStatusResting
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.showStatusResting = value
 					self:Resting()
 					self:CheckCombat()
@@ -403,7 +400,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.statusIconOffset['x']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.statusIconOffset['x'] = v
 					self:SetTexLoc(self.frame.statusIcon, self.moduleSettings.statusIconOffset['x'], self.moduleSettings.statusIconOffset['y'])
 				end,
@@ -422,7 +419,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.statusIconOffset['y']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.statusIconOffset['y'] = v
 					self:SetTexLoc(self.frame.statusIcon, self.moduleSettings.statusIconOffset['x'], self.moduleSettings.statusIconOffset['y'])
 				end,
@@ -441,7 +438,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.statusIconScale
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.statusIconScale = v
 					self:SetTexScale(self.frame.statusIcon, 20, 20, v)
 				end,
@@ -463,7 +460,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.showLeaderIcon
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.showLeaderIcon = value
 					self:CheckLeader()
 				end,
@@ -482,7 +479,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.leaderIconOffset['x']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.leaderIconOffset['x'] = v
 					self:SetTexLoc(self.frame.leaderIcon, self.moduleSettings.leaderIconOffset['x'], self.moduleSettings.leaderIconOffset['y'])
 				end,
@@ -501,7 +498,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.leaderIconOffset['y']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.leaderIconOffset['y'] = v
 					self:SetTexLoc(self.frame.leaderIcon, self.moduleSettings.leaderIconOffset['x'], self.moduleSettings.leaderIconOffset['y'])
 				end,
@@ -520,7 +517,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.leaderIconScale
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.leaderIconScale = v
 					self:SetTexScale(self.frame.leaderIcon, 20, 20, v)
 				end,
@@ -542,7 +539,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.showLootMasterIcon
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.showLootMasterIcon = value
 					self:CheckLootMaster()
 				end,
@@ -561,7 +558,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.lootMasterIconOffset['x']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.lootMasterIconOffset['x'] = v
 					self:SetTexLoc(self.frame.lootMasterIcon, self.moduleSettings.lootMasterIconOffset['x'], self.moduleSettings.lootMasterIconOffset['y'])
 				end,
@@ -580,7 +577,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.lootMasterIconOffset['y']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.lootMasterIconOffset['y'] = v
 					self:SetTexLoc(self.frame.lootMasterIcon, self.moduleSettings.lootMasterIconOffset['x'], self.moduleSettings.lootMasterIconOffset['y'])
 				end,
@@ -599,7 +596,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.lootMasterIconScale
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.lootMasterIconScale = v
 					self:SetTexScale(self.frame.lootMasterIcon, 20, 20, v)
 				end,
@@ -621,7 +618,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.showPvPIcon
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.showPvPIcon = value
 					self:CheckPvP()
 				end,
@@ -640,7 +637,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.PvPIconOffset['x']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.PvPIconOffset['x'] = v
 					self:SetTexLoc(self.frame.PvPIcon, self.moduleSettings.PvPIconOffset['x'], self.moduleSettings.PvPIconOffset['y'])
 				end,
@@ -659,7 +656,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.PvPIconOffset['y']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.PvPIconOffset['y'] = v
 					self:SetTexLoc(self.frame.PvPIcon, self.moduleSettings.PvPIconOffset['x'], self.moduleSettings.PvPIconOffset['y'])
 				end,
@@ -678,7 +675,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.PvPIconScale
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.PvPIconScale = v
 					self:SetTexScale(self.frame.PvPIcon, 20, 20, v)
 				end,
@@ -699,7 +696,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.showPartyRoleIcon
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.showPartyRoleIcon = value
 					self:CheckPartyRole()
 				end,
@@ -718,7 +715,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.PartyRoleIconOffset['x']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.PartyRoleIconOffset['x'] = v
 					self:SetTexLoc(self.frame.PartyRoleIcon, self.moduleSettings.PartyRoleIconOffset['x'], self.moduleSettings.PartyRoleIconOffset['y'])
 				end,
@@ -737,7 +734,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.PartyRoleIconOffset['y']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.PartyRoleIconOffset['y'] = v
 					self:SetTexLoc(self.frame.PartyRoleIcon, self.moduleSettings.PartyRoleIconOffset['x'], self.moduleSettings.PartyRoleIconOffset['y'])
 				end,
@@ -756,7 +753,7 @@ function PlayerHealth.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.PartyRoleIconScale
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.PartyRoleIconScale = v
 					self:SetTexScale(self.frame.PartyRoleIcon, 20, 20, v)
 				end,

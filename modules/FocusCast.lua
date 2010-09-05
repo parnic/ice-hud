@@ -95,7 +95,7 @@ function FocusCast.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.barVisible['bar']
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.barVisible['bar'] = v
 			if v then
 				self.barFrame:Show()
@@ -116,7 +116,7 @@ function FocusCast.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.barVisible['bg']
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.barVisible['bg'] = v
 			if v then
 				self.frame.bg:Show()

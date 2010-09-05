@@ -53,7 +53,7 @@ function Totems.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.vpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.vpos = v
 			self:Redraw()
 		end,
@@ -73,7 +73,7 @@ function Totems.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.hpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.hpos = v
 			self:Redraw()
 		end,
@@ -93,7 +93,7 @@ function Totems.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.hideBlizz
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.hideBlizz = value
 			if (value) then
 				self:HideBlizz()
@@ -108,17 +108,17 @@ function Totems.prototype:GetOptions()
 	}
 --]]
 	opts["displayMode"] = {
-		type = 'text',
+		type = 'select',
 		name = 'Totem orientation',
 		desc = 'Whether the totems should draw side-by-side or on top of one another',
-		get = function()
-			return self.moduleSettings.displayMode
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.displayMode)
 		end,
-		set = function(v)
-			self.moduleSettings.displayMode = v
+		set = function(info, v)
+			self.moduleSettings.displayMode = info.option.values[v]
 			self:Redraw()
 		end,
-		validate = { "Horizontal", "Vertical" },
+		values = { "Horizontal", "Vertical" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -126,62 +126,23 @@ function Totems.prototype:GetOptions()
 	}
 
 	opts["cooldownMode"] = {
-		type = 'text',
+		type = 'select',
 		name = 'Totem cooldown mode',
 		desc = 'Choose whether the totems use a cooldown-style wipe or simply an alpha fade to show availability.',
-		get = function()
-			return self.moduleSettings.cooldownMode
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.cooldownMode)
 		end,
-		set = function(v)
-			self.moduleSettings.cooldownMode = v
+		set = function(info, v)
+			self.moduleSettings.cooldownMode = info.option.values[v]
 			self:Redraw()
 		end,
-		validate = { "Cooldown" }, -- "Alpha" not supported?
+		values = { "Cooldown" }, -- "Alpha" not supported?
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
 		order = 36
 	}
--- todo: numeric mode isn't supported just yet...so these options are removed for now
---[[
-	opts["runeFontSize"] = {
-		type = "range",
-		name = "Runes Font Size",
-		desc = "Runes Font Size",
-		get = function()
-			return self.moduleSettings.runeFontSize
-		end,
-		set = function(v)
-			self.moduleSettings.runeFontSize = v
-			self:Redraw()
-		end,
-		min = 10,
-		max = 40,
-		step = 1,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 33
-	}
 
-	opts["runeMode"] = {
-		type = "text",
-		name = "Display Mode",
-		desc = "Show graphical or numeric runes",
-		get = function()
-			return self.moduleSettings.runeMode
-		end,
-		set = function(v)
-			self.moduleSettings.runeMode = v
-			self:Redraw()
-		end,
-		validate = { "Numeric", "Graphical" },
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 34
-	}
-]]--
 	opts["totemGap"] = {
 		type = 'range',
 		name = 'Totem gap',
@@ -192,7 +153,7 @@ function Totems.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.totemGap
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.totemGap = v
 			self:Redraw()
 		end,

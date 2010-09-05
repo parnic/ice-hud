@@ -118,7 +118,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.vpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.vpos = v
 			self:Redraw()
 		end,
@@ -138,7 +138,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.hpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.hpos = v
 			self:Redraw()
 		end,
@@ -158,7 +158,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.fontSize
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.fontSize = v
 			self:Redraw()
 		end,
@@ -178,7 +178,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.stackFontSize
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.stackFontSize = v
 			self:RedrawBuffs()
 		end,
@@ -198,7 +198,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.zoom
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.zoom = v
 			self:RedrawBuffs()
 		end,
@@ -225,7 +225,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.buffSize
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.buffSize = v
 			self:RedrawBuffs()
 		end,
@@ -245,7 +245,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.ownBuffSize
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.ownBuffSize = v
 			self:RedrawBuffs()
 		end,
@@ -265,7 +265,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.showBuffs
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.showBuffs = v
 			self:RedrawBuffs()
 		end,
@@ -276,20 +276,20 @@ function IceTargetInfo.prototype:GetOptions()
 	}
 	
 	opts["filterBuffs"] = {
-		type = 'text',
+		type = 'select',
 		name = 'Only show buffs by me',
 		desc = 'Will only show buffs that you cast instead of all buffs active',
-		get = function()
-			return self.moduleSettings.filterBuffs
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.filterBuffs)
 		end,
-		set = function(v)
-			self.moduleSettings.filterBuffs = v
+		set = function(info, v)
+			self.moduleSettings.filterBuffs = info.option.values[v]
 			self:RedrawBuffs()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.showBuffs
 		end,
-		validate = { "Never", "In Combat", "Always" },
+		values = { "Never", "In Combat", "Always" },
 		order = 36.1
 	}
 	
@@ -300,7 +300,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.showDebuffs
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.showDebuffs = v
 			self:RedrawBuffs()
 		end,
@@ -311,20 +311,20 @@ function IceTargetInfo.prototype:GetOptions()
 	}
 	
 	opts["filterDebuffs"] = {
-		type = 'text',
+		type = 'select',
 		name = 'Only show debuffs by me',
 		desc = 'Will only show debuffs that you cast instead of all debuffs active',
-		get = function()
-			return self.moduleSettings.filterDebuffs
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.filterDebuffs)
 		end,
-		set = function(v)
-			self.moduleSettings.filterDebuffs = v
+		set = function(info, v)
+			self.moduleSettings.filterDebuffs = info.option.values[v]
 			self:RedrawBuffs()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.showDebuffs
 		end,
-		validate = { "Never", "In Combat", "Always" },
+		values = { "Never", "In Combat", "Always" },
 		order = 36.3
 	}
 	
@@ -335,7 +335,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.perRow
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.perRow = v
 			self:RedrawBuffs()
 		end,
@@ -355,15 +355,15 @@ function IceTargetInfo.prototype:GetOptions()
 	}
 
 	opts["buffGrowDirection"] = {
-		type = 'text',
+		type = 'select',
 		name = 'Buff grow direction',
 		desc = 'Which direction the buffs should grow from the anchor point',
-		validate = { "Left", "Right" },
-		get = function()
-			return self.moduleSettings.buffGrowDirection
+		values = { "Left", "Right" },
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.buffGrowDirection)
 		end,
-		set = function(v)
-			self.moduleSettings.buffGrowDirection = v
+		set = function(info, v)
+			self.moduleSettings.buffGrowDirection = info.option.values[v]
 			self:CreateBuffFrame()
 		end,
 		disabled = function()
@@ -373,15 +373,15 @@ function IceTargetInfo.prototype:GetOptions()
 	}
 
 	opts["buffAnchorTo"] = {
-		type = 'text',
+		type = 'select',
 		name = 'Buff anchor to',
 		desc = 'The point on the TargetInfo frame that the buff frame gets connected to',
-		validate = ValidAnchors,
-		get = function()
-			return self.moduleSettings.buffAnchorTo
+		values = ValidAnchors,
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.buffAnchorTo)
 		end,
-		set = function(v)
-			self.moduleSettings.buffAnchorTo = v
+		set = function(info, v)
+			self.moduleSettings.buffAnchorTo = info.option.values[v]
 			self:CreateBuffFrame()
 		end,
 		disabled = function()
@@ -400,7 +400,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.buffOffset['x']
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.buffOffset['x'] = v
 			self:CreateBuffFrame()
 		end,
@@ -420,7 +420,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.buffOffset['y']
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.buffOffset['y'] = v
 			self:CreateBuffFrame()
 		end,
@@ -437,15 +437,15 @@ function IceTargetInfo.prototype:GetOptions()
 	}
 
 	opts["debuffGrowDirection"] = {
-		type = 'text',
+		type = 'select',
 		name = 'Debuff grow direction',
 		desc = 'Which direction the debuffs should grow from the anchor point',
-		validate = { "Left", "Right" },
-		get = function()
-			return self.moduleSettings.debuffGrowDirection
+		values = { "Left", "Right" },
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.debuffGrowDirection)
 		end,
-		set = function(v)
-			self.moduleSettings.debuffGrowDirection = v
+		set = function(info, v)
+			self.moduleSettings.debuffGrowDirection = info.option.values[v]
 			self:CreateDebuffFrame()
 		end,
 		disabled = function()
@@ -455,15 +455,15 @@ function IceTargetInfo.prototype:GetOptions()
 	}
 
 	opts["debuffAnchorTo"] = {
-		type = 'text',
+		type = 'select',
 		name = 'Debuff anchor to',
 		desc = 'The point on the TargetInfo frame that the debuff frame gets connected to',
-		validate = ValidAnchors,
-		get = function()
-			return self.moduleSettings.debuffAnchorTo
+		values = ValidAnchors,
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.debuffAnchorTo)
 		end,
-		set = function(v)
-			self.moduleSettings.debuffAnchorTo = v
+		set = function(info, v)
+			self.moduleSettings.debuffAnchorTo = info.option.values[v]
 			self:CreateDebuffFrame()
 		end,
 		disabled = function()
@@ -482,7 +482,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.debuffOffset['x']
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.debuffOffset['x'] = v
 			self:CreateDebuffFrame()
 		end,
@@ -502,7 +502,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.debuffOffset['y']
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.debuffOffset['y'] = v
 			self:CreateDebuffFrame()
 		end,
@@ -525,7 +525,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.mouseTarget
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.mouseTarget = v
 			self:Redraw()
 		end,
@@ -542,7 +542,7 @@ function IceTargetInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.mouseBuff
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.mouseBuff = v
 			self:RedrawBuffs()
 		end,
@@ -559,13 +559,13 @@ function IceTargetInfo.prototype:GetOptions()
 	}
 
 	opts["line1Tag"] = {
-		type = 'text',
+		type = 'input',
 		name = 'Line 1 tag',
 		desc = 'DogTag-formatted string to use for the top text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press ENTER after filling out this box or it will not save.',
 		get = function()
 			return self.moduleSettings.line1Tag
 		end,
-		set = function(v)
+		set = function(info, v)
 			v = DogTag:CleanCode(v)
 			self.moduleSettings.line1Tag = v
 			self:RegisterFontStrings()
@@ -575,17 +575,18 @@ function IceTargetInfo.prototype:GetOptions()
 			return not self.moduleSettings.enabled or DogTag == nil
 		end,
 		usage = '',
+		multiline = true,
 		order = 39.1
 	}
 
 	opts["line2Tag"] = {
-		type = 'text',
+		type = 'input',
 		name = 'Line 2 tag',
 		desc = 'DogTag-formatted string to use for the second text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press ENTER after filling out this box or it will not save.',
 		get = function()
 			return self.moduleSettings.line2Tag
 		end,
-		set = function(v)
+		set = function(info, v)
 			v = DogTag:CleanCode(v)
 			self.moduleSettings.line2Tag = v
 			self:RegisterFontStrings()
@@ -595,17 +596,18 @@ function IceTargetInfo.prototype:GetOptions()
 			return not self.moduleSettings.enabled or DogTag == nil
 		end,
 		usage = '',
+		multiline = true,
 		order = 39.2
 	}
 
 	opts["line3Tag"] = {
-		type = 'text',
+		type = 'input',
 		name = 'Line 3 tag',
 		desc = 'DogTag-formatted string to use for the third text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press ENTER after filling out this box or it will not save.',
 		get = function()
 			return self.moduleSettings.line3Tag
 		end,
-		set = function(v)
+		set = function(info, v)
 			v = DogTag:CleanCode(v)
 			self.moduleSettings.line3Tag = v
 			self:RegisterFontStrings()
@@ -615,17 +617,18 @@ function IceTargetInfo.prototype:GetOptions()
 			return not self.moduleSettings.enabled or DogTag == nil
 		end,
 		usage = '',
+		multiline = true,
 		order = 39.3
 	}
 
 	opts["line4Tag"] = {
-		type = 'text',
+		type = 'input',
 		name = 'Line 4 tag',
 		desc = 'DogTag-formatted string to use for the bottom text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press ENTER after filling out this box or it will not save.',
 		get = function()
 			return self.moduleSettings.line4Tag
 		end,
-		set = function(v)
+		set = function(info, v)
 			v = DogTag:CleanCode(v)
 			self.moduleSettings.line4Tag = v
 			self:RegisterFontStrings()
@@ -635,6 +638,7 @@ function IceTargetInfo.prototype:GetOptions()
 			return not self.moduleSettings.enabled or DogTag == nil
 		end,
 		usage = '',
+		multiline = true,
 		order = 39.4
 	}
 

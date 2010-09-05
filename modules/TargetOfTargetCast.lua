@@ -103,7 +103,7 @@ function TargetTargetCast.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.barVisible['bar']
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.barVisible['bar'] = v
 			if v then
 				self.barFrame:Show()
@@ -124,7 +124,7 @@ function TargetTargetCast.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.barVisible['bg']
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.barVisible['bg'] = v
 			if v then
 				self.frame.bg:Show()
@@ -139,20 +139,20 @@ function TargetTargetCast.prototype:GetOptions()
 	}
 	
 	opts["selfDisplayMode"] = {
-		type = "text",
+		type = 'select',
 		name = "Self Display Mode",
 		desc = "What this bar should do whenever the player is the TargetOfTarget",
-		get = function()
-			return self.moduleSettings.selfDisplayMode
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.selfDisplayMode)
 		end,
-		set = function(value)
-			self.moduleSettings.selfDisplayMode = value
+		set = function(info, value)
+			self.moduleSettings.selfDisplayMode = info.option.values[value]
 			self:Redraw()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		validate = SelfDisplayModeOptions,
+		values = SelfDisplayModeOptions,
 		order = 44,
 	}
 

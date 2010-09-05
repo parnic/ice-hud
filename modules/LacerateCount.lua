@@ -1,7 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local LacerateCount = AceOO.Class(IceElement)
-local waterfall = AceLibrary("Waterfall-1.0")
 
 LacerateCount.prototype.lacerateSize = 20
 
@@ -29,7 +28,7 @@ function LacerateCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.vpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.vpos = v
 			self:Redraw()
 		end,
@@ -49,7 +48,7 @@ function LacerateCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.hpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.hpos = v
 			self:Redraw()
 		end,
@@ -69,7 +68,7 @@ function LacerateCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.lacerateFontSize
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.lacerateFontSize = v
 			self:Redraw()
 		end,
@@ -83,19 +82,19 @@ function LacerateCount.prototype:GetOptions()
 	}
 
 	opts["lacerateMode"] = {
-		type = "text",
+		type = 'select',
 		name = "Display Mode",
 		desc = "Show graphical or numeric lacerates",
-		get = function()
-			return self.moduleSettings.lacerateMode
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.lacerateMode)
 		end,
-		set = function(v)
-			self.moduleSettings.lacerateMode = v
+		set = function(info, v)
+			self.moduleSettings.lacerateMode = info.option.values[v]
 			self:CreateLacerateFrame(true)
 			self:Redraw()
-			waterfall:Refresh("IceHUD")
+			IceHUD:NotifyOptionsChange()
 		end,
-		validate = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
+		values = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -112,7 +111,7 @@ function LacerateCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.lacerateGap
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.lacerateGap = v
 			self:Redraw()
 		end,
@@ -129,7 +128,7 @@ function LacerateCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.gradient
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.gradient = v
 			self:Redraw()
 		end,

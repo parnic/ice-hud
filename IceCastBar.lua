@@ -84,7 +84,7 @@ function IceCastBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.showCastTime
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.showCastTime = value
 		end,
 		disabled = function()
@@ -101,7 +101,7 @@ function IceCastBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.showSpellRank
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.showSpellRank = value
 		end,
 		disabled = function()
@@ -123,7 +123,7 @@ function IceCastBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.displayAuraIcon
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.displayAuraIcon = v
 			if self.barFrame.icon then
 				if v then
@@ -136,7 +136,6 @@ function IceCastBar.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		usage = "<whether or not to display an icon for this bar's tracked spell>",
 		order = 51,
 	}
 	
@@ -150,14 +149,13 @@ function IceCastBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.auraIconXOffset
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.auraIconXOffset = v
 			self:PositionIcons()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
 		end,
-		usage = "<adjusts the spell icon's horizontal position>",
 		order = 52,
 	}
 
@@ -171,14 +169,13 @@ function IceCastBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.auraIconYOffset
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.auraIconYOffset = v
 			self:PositionIcons()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
 		end,
-		usage = "<adjusts the spell icon's vertical position>",
 		order = 53,
 	}
 	
@@ -192,14 +189,13 @@ function IceCastBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.auraIconScale
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.auraIconScale = v
 			self:PositionIcons()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
 		end,
-		usage = "<adjusts the spell icon's size>",
 		order = 54,
 	}
 
@@ -210,13 +206,12 @@ function IceCastBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.reverseChannel
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.reverseChannel = v
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		usage = "<whether or not to reverse the direction of a channel's castbar>",
 		order = 32.5,
     }
 

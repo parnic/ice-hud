@@ -1,6 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-IceCore = AceOO.Class("AceEvent-2.0", "AceDB-2.0")
+IceCore = AceOO.Class("AceEvent-2.0")
 
 IceCore.Side = { Left = "LEFT", Right = "RIGHT" }
 
@@ -25,8 +25,6 @@ IceCore.prototype.presets = {}
 IceCore.prototype.settingsHash = nil
 IceCore.prototype.bConfigMode = false
 
-local waterfall = AceLibrary("Waterfall-1.0")
-
 -- Constructor --
 function IceCore.prototype:init()
 	IceCore.super.prototype.init(self)
@@ -47,50 +45,52 @@ function IceCore.prototype:SetupDefaults()
 -- DEFAULT SETTINGS
 	local defaultPreset = "RoundBar"
 	self.defaults = {
-		gap = 150,
-		verticalPos = -110,
-		horizontalPos = 0,
-		scale = 0.9,
-		
-		alphaooc = 0.3,
-		alphaic = 0.6,
-		alphaTarget = 0.4,
-		alphaNotFull = 0.4,
+		profile = {
+			gap = 150,
+			verticalPos = -110,
+			horizontalPos = 0,
+			scale = 0.9,
+			
+			alphaooc = 0.3,
+			alphaic = 0.6,
+			alphaTarget = 0.4,
+			alphaNotFull = 0.4,
 
-		alphaoocbg = 0.2,
-		alphaicbg = 0.3,
-		alphaTargetbg = 0.25,
-		alphaNotFullbg = 0.25,
-		
-		backgroundToggle = false,
-		backgroundColor = {r = 0.5, g = 0.5, b = 0.5},
-		barTexture = "Bar",
-		barPreset = defaultPreset,
-		fontFamily = "Arial Narrow",
-		debug = false,
+			alphaoocbg = 0.2,
+			alphaicbg = 0.3,
+			alphaTargetbg = 0.25,
+			alphaNotFullbg = 0.25,
+			
+			backgroundToggle = false,
+			backgroundColor = {r = 0.5, g = 0.5, b = 0.5},
+			barTexture = "Bar",
+			barPreset = defaultPreset,
+			fontFamily = "Arial Narrow",
+			debug = false,
 
-		barBlendMode = "BLEND",
-		barBgBlendMode = "BLEND",
+			barBlendMode = "BLEND",
+			barBgBlendMode = "BLEND",
 
-		bShouldUseDogTags = true,
+			bShouldUseDogTags = true,
 
-		updatePeriod = 0.1
+			updatePeriod = 0.1
+		}
 	}
 
 	self:LoadPresets()
 	for k, v in pairs(self.presets[defaultPreset]) do
-		self.defaults[k] = v
+		self.defaults.profile[k] = v
 	end
 	
 	-- get default settings from the modules
-	self.defaults.modules = {}
+	self.defaults.profile.modules = {}
 	for i = 1, table.getn(self.elements) do
 		local name = self.elements[i]:GetElementName()
-		self.defaults.modules[name] = self.elements[i]:GetDefaultSettings()	
+		self.defaults.profile.modules[name] = self.elements[i]:GetDefaultSettings()	
 	end
 	
 	if (table.getn(self.elements) > 0) then
-		self.defaults.colors = self.elements[1].defaultColors
+		self.defaults.profile.colors = self.elements[1].defaultColors
 	end
 end
 
@@ -256,6 +256,7 @@ function IceCore.prototype:Disable()
 	end
 	
 	self.IceHUDFrame:Hide()
+	self:EmptyUpdates()
 	self.enabled = false
 end
 
@@ -315,7 +316,7 @@ function IceCore.prototype:GetColorOptions()
 			get = function()
 				return IceHUD.IceCore:GetColor(kk)
 			end,
-			set = function(r, g, b)
+			set = function(info, r, g, b)
 				local color = k
 				IceHUD.IceCore:SetColor(kk, r, g, b)
 			end
@@ -529,7 +530,7 @@ function IceCore.prototype:ChangePreset(value)
 	self:SetBarBlendMode(self.presets[value].barBlendMode)
 	self:SetBarBgBlendMode(self.presets[value].barBgBlendMode)
 
-	waterfall:Refresh("IceHUD")
+	IceHUD:NotifyOptionsChange()
 end
 
 
@@ -653,6 +654,12 @@ end
 
 function IceCore.prototype:IsUpdateSubscribed(frame)
 	return self.updatees[frame] ~= nil
+end
+
+function IceCore.prototype:EmptyUpdates()
+	self.IceHUDFrame:SetScript("OnUpdate", nil)
+	self.updatees = {}
+	self.updatee_count = 0
 end
 
 -------------------------------------------------------------------------------

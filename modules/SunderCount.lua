@@ -1,7 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local SunderCount = AceOO.Class(IceElement)
-local waterfall = AceLibrary("Waterfall-1.0")
 
 SunderCount.prototype.sunderSize = 20
 
@@ -29,7 +28,7 @@ function SunderCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.vpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.vpos = v
 			self:Redraw()
 		end,
@@ -49,7 +48,7 @@ function SunderCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.sunderFontSize
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.sunderFontSize = v
 			self:Redraw()
 		end,
@@ -63,19 +62,19 @@ function SunderCount.prototype:GetOptions()
 	}
 
 	opts["sunderMode"] = {
-		type = "text",
+		type = 'select',
 		name = "Display Mode",
 		desc = "Show graphical or numeric sunders",
-		get = function()
-			return self.moduleSettings.sunderMode
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.sunderMode)
 		end,
-		set = function(v)
-			self.moduleSettings.sunderMode = v
+		set = function(info, v)
+			self.moduleSettings.sunderMode = info.option.values[v]
 			self:CreateSunderFrame(true)
 			self:Redraw()
-			waterfall:Refresh("IceHUD")
+			IceHUD:NotifyOptionsChange()
 		end,
-		validate = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
+		values = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -92,7 +91,7 @@ function SunderCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.sunderGap
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.sunderGap = v
 			self:Redraw()
 		end,
@@ -109,7 +108,7 @@ function SunderCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.gradient
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.gradient = v
 			self:Redraw()
 		end,

@@ -1,7 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local MaelstromCount = AceOO.Class(IceElement)
-local waterfall = AceLibrary("Waterfall-1.0")
 
 MaelstromCount.prototype.maelstromSize = 20
 
@@ -29,7 +28,7 @@ function MaelstromCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.vpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.vpos = v
 			self:Redraw()
 		end,
@@ -49,7 +48,7 @@ function MaelstromCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.maelstromFontSize
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.maelstromFontSize = v
 			self:Redraw()
 		end,
@@ -63,19 +62,19 @@ function MaelstromCount.prototype:GetOptions()
 	}
 
 	opts["maelstromMode"] = {
-		type = "text",
+		type = 'select',
 		name = "Display Mode",
 		desc = "Show graphical or numeric maelstroms",
-		get = function()
-			return self.moduleSettings.maelstromMode
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.maelstromMode)
 		end,
-		set = function(v)
-			self.moduleSettings.maelstromMode = v
+		set = function(info, v)
+			self.moduleSettings.maelstromMode = info.option.values[v]
 			self:CreateMaelstromFrame(true)
 			self:Redraw()
-			waterfall:Refresh("IceHUD")
+			IceHUD:NotifyOptionsChange()
 		end,
-		validate = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
+		values = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -92,7 +91,7 @@ function MaelstromCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.maelstromGap
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.maelstromGap = v
 			self:Redraw()
 		end,
@@ -109,7 +108,7 @@ function MaelstromCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.gradient
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.gradient = v
 			self:Redraw()
 		end,

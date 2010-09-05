@@ -131,7 +131,7 @@ function TargetInvuln.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.alertParty
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.alertParty = v
 		end,
 		disabled = function()

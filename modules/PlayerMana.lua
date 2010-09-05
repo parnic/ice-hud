@@ -44,7 +44,7 @@ if self:ShouldUseTicker() then
 		get = function()
 			return self.moduleSettings.tickerEnabled
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.tickerEnabled = value
 			self:ManaType(self.unit)
 		end,
@@ -65,7 +65,7 @@ if self:ShouldUseTicker() then
 		get = function()
 			return self.moduleSettings.tickerAlpha
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.tickerAlpha = value
 			self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
 		end,
@@ -82,7 +82,7 @@ end
 		get = function()
 			return self.moduleSettings.scaleManaColor
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.scaleManaColor = value
 			self:Redraw()
 		end,

@@ -1,7 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 IceCustomCount = AceOO.Class(IceElement)
-local waterfall = AceLibrary("Waterfall-1.0")
 
 IceCustomCount.prototype.countSize = 20
 
@@ -40,13 +39,13 @@ function IceCustomCount.prototype:GetOptions()
 	}
 
 	opts["name"] = {
-		type = 'text',
+		type = 'input',
 		name = 'Counter name',
 		desc = 'The name of this counter (must be unique!). \n\nRemember to press ENTER after filling out this box with the name you want or it will not save.',
 		get = function()
 			return self.elementName
 		end,
-		set = function(v)
+		set = function(info, v)
 			if v ~= "" then
 				IceHUD.IceCore:RenameDynamicModule(self, v)
 			end
@@ -59,18 +58,18 @@ function IceCustomCount.prototype:GetOptions()
 	}
 
 	opts["auraTarget"] = {
-		type = 'text',
-		validate = validUnits,
+		type = 'select',
+		values = validUnits,
 		name = 'Unit to track',
 		desc = 'Select which unit that this bar should be looking for buffs/debuffs on',
-		get = function()
-			return self.moduleSettings.auraTarget
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.auraTarget)
 		end,
-		set = function(v)
-			self.moduleSettings.auraTarget = v
-			self.unit = v
+		set = function(info, v)
+			self.moduleSettings.auraTarget = info.option.values[v]
+			self.unit = info.option.values[v]
 			self:Redraw()
-			AceLibrary("Waterfall-1.0"):Refresh("IceHUD")
+			IceHUD:NotifyOptionsChange()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -79,15 +78,15 @@ function IceCustomCount.prototype:GetOptions()
 	}
 
 	opts["auraType"] = {
-		type = 'text',
-		validate = buffOrDebuff,
+		type = 'select',
+		values = buffOrDebuff,
 		name = 'Buff or debuff?',
 		desc = 'Whether we are tracking a buff or debuff',
-		get = function()
-			return self.moduleSettings.auraType
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.auraType)
 		end,
-		set = function(v)
-			self.moduleSettings.auraType = v
+		set = function(info, v)
+			self.moduleSettings.auraType = info.option.values[v]
 			self:Redraw()
 		end,
 		disabled = function()
@@ -97,13 +96,13 @@ function IceCustomCount.prototype:GetOptions()
 	}
 
 	opts["auraName"] = {
-		type = 'text',
+		type = 'input',
 		name = "Aura to track",
 		desc = "Which buff/debuff this counter will be tracking. \n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
 		get = function()
 			return self.moduleSettings.auraName
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.auraName = v
 			self:Redraw()
 		end,
@@ -121,7 +120,7 @@ function IceCustomCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.onlyMine
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.onlyMine = v
 			self:Redraw()
 		end,
@@ -138,7 +137,7 @@ function IceCustomCount.prototype:GetOptions()
 		get = function()
 			return self:GetCustomColor()
 		end,
-		set = function(r,g,b)
+		set = function(info, r,g,b)
 			self.moduleSettings.countColor.r = r
 			self.moduleSettings.countColor.g = g
 			self.moduleSettings.countColor.b = b
@@ -157,7 +156,7 @@ function IceCustomCount.prototype:GetOptions()
 		get = function()
 			return self:GetCustomMinColor()
 		end,
-		set = function(r,g,b)
+		set = function(info, r,g,b)
 			self.moduleSettings.countMinColor.r = r
 			self.moduleSettings.countMinColor.g = g
 			self.moduleSettings.countMinColor.b = b
@@ -170,13 +169,13 @@ function IceCustomCount.prototype:GetOptions()
 	}
 
 	opts["maxCount"] = {
-		type = 'text',
+		type = 'input',
 		name = "Maximum applications",
 		desc = "How many total applications of this buff/debuff can be applied. For example, only 5 sunders can ever be on a target, so this would be set to 5 for tracking Sunder.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
 		get = function()
 			return self.moduleSettings.maxCount
 		end,
-		set = function(v)
+		set = function(info, v)
 			if not v or not tonumber(v) then
 				v = 0
 			end
@@ -203,7 +202,7 @@ function IceCustomCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.vpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.vpos = v
 			self:Redraw()
 		end,
@@ -223,7 +222,7 @@ function IceCustomCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.hpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.hpos = v
 			self:Redraw()
 		end,
@@ -243,7 +242,7 @@ function IceCustomCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.countFontSize
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.countFontSize = v
 			self:Redraw()
 		end,
@@ -257,19 +256,19 @@ function IceCustomCount.prototype:GetOptions()
 	}
 
 	opts["CustomMode"] = {
-		type = "text",
+		type = 'select',
 		name = "Display Mode",
 		desc = "Show graphical or numeric counts",
-		get = function()
-			return self.moduleSettings.countMode
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.countMode)
 		end,
-		set = function(v)
-			self.moduleSettings.countMode = v
+		set = function(info, v)
+			self.moduleSettings.countMode = info.option.values[v]
 			self:CreateCustomFrame(true)
 			self:Redraw()
-			waterfall:Refresh("IceHUD")
+			IceHUD:NotifyOptionsChange()
 		end,
-		validate = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
+		values = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -277,20 +276,20 @@ function IceCustomCount.prototype:GetOptions()
 	}
 
 	opts["graphicalLayout"] = {
-		type = 'text',
+		type = 'select',
 		name = 'Layout',
 		desc = 'How the graphical counter should be displayed',
-		get = function()
-			return self.moduleSettings.graphicalLayout
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.graphicalLayout)
 		end,
-		set = function(v)
-			self.moduleSettings.graphicalLayout = v
+		set = function(info, v)
+			self.moduleSettings.graphicalLayout = info.option.values[v]
 			self:Redraw()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or self.moduleSettings.countMode == "Numeric"
 		end,
-		validate = {"Horizontal", "Vertical"},
+		values = {"Horizontal", "Vertical"},
 		order = 33.1
 	}
 
@@ -304,7 +303,7 @@ function IceCustomCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.countGap
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.countGap = v
 			self:Redraw()
 		end,
@@ -321,7 +320,7 @@ function IceCustomCount.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.gradient
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.gradient = v
 			self:Redraw()
 		end,

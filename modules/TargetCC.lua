@@ -280,7 +280,7 @@ function TargetCC.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.alertParty
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.alertParty = v
 		end,
 		disabled = function()
@@ -295,7 +295,7 @@ function TargetCC.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.onlyShowForMyDebuffs
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.onlyShowForMyDebuffs = v
 		end,
 		disabled = function()

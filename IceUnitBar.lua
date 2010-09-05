@@ -77,7 +77,7 @@ function IceUnitBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.lowThreshold
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.lowThreshold = value
 			self:Redraw()
 		end,
@@ -97,7 +97,7 @@ function IceUnitBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.lowThresholdFlash
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.lowThresholdFlash = v
 		end,
 		disabled = function()
@@ -112,7 +112,7 @@ function IceUnitBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.lowThresholdColor
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.lowThresholdColor = value
 			self:Redraw()
 		end,

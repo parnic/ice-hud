@@ -54,13 +54,13 @@ function IceCustomHealth.prototype:GetOptions()
 	}
 
 	opts["name"] = {
-		type = 'text',
+		type = 'input',
 		name = 'Bar name',
 		desc = 'The name of this bar (must be unique!).\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.',
 		get = function()
 			return self.elementName
 		end,
-		set = function(v)
+		set = function(info, v)
 			if v~= "" then
 				IceHUD.IceCore:RenameDynamicModule(self, v)
 			end
@@ -73,13 +73,13 @@ function IceCustomHealth.prototype:GetOptions()
 	}
 
 	opts["unitToTrack"] = {
-		type = 'text',
+		type = 'input',
 		name = 'Unit to track',
 		desc = 'Enter which unit that this bar should be monitoring the health of (e.g.: focustarget, pettarget, etc.)\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.',
 		get = function()
 			return self.moduleSettings.unitToTrack
 		end,
-		set = function(v)
+		set = function(info, v)
 			v = string.lower(v)
 			self.moduleSettings.unitToTrack = v
 			self:SetUnit(v)

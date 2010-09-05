@@ -105,7 +105,7 @@ function SliceAndDice.prototype:GetOptions()
         get = function()
             return self.moduleSettings.showAsPercentOfMax
         end,
-        set = function(v)
+        set = function(info, v)
             self.moduleSettings.showAsPercentOfMax = v
         end,
         disabled = function()
@@ -124,7 +124,7 @@ function SliceAndDice.prototype:GetOptions()
         get = function()
             return self.moduleSettings.durationAlpha * 100
         end,
-        set = function(v)
+        set = function(info, v)
             self.moduleSettings.durationAlpha = v / 100.0
             self:Redraw()
         end,

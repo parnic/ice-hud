@@ -19,7 +19,7 @@ function ComboPointsBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.alwaysDisplay
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.alwaysDisplay = v
 			self:UpdateComboPoints()
 		end,

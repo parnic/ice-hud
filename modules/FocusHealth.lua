@@ -54,7 +54,7 @@ function FocusHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.mobhealth
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.mobhealth = value
 			self:Update(self.unit)
 		end,
@@ -71,7 +71,7 @@ function FocusHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.classColor
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.classColor = value
 			self:Update(self.unit)
 		end,
@@ -88,7 +88,7 @@ function FocusHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.hideBlizz
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.hideBlizz = value
 			if (value) then
 				self:HideBlizz()
@@ -109,7 +109,7 @@ function FocusHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.scaleHealthColor
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.scaleHealthColor = value
 			self:Redraw()
 		end,
@@ -126,7 +126,7 @@ function FocusHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.showRaidIcon
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.showRaidIcon = value
 			self:UpdateRaidFocusIcon()
 		end,
@@ -143,7 +143,7 @@ function FocusHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.lockIconAlpha
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.lockIconAlpha = value
 			self:Redraw()
 		end,
@@ -160,7 +160,7 @@ function FocusHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.raidIconOnTop
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.raidIconOnTop = value
 			self:UpdateRaidFocusIcon()
 		end,
@@ -180,7 +180,7 @@ function FocusHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.raidIconXOffset
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.raidIconXOffset = value
 			self:SetRaidIconPlacement()
 			self:Redraw()
@@ -201,7 +201,7 @@ function FocusHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.raidIconYOffset
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.raidIconYOffset = value
 			self:SetRaidIconPlacement()
 			self:Redraw()
@@ -219,7 +219,7 @@ function FocusHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.abbreviateHealth
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.abbreviateHealth = v
 		end,
 		disabled = function()
@@ -235,14 +235,13 @@ function FocusHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.allowMouseInteraction
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.allowMouseInteraction = v
 			self:Redraw()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		usage = '',
 		order = 43,
 	}
 

@@ -130,7 +130,7 @@ function IceTargetMana.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.scaleManaColor
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.scaleManaColor = value
 			self:Redraw()
 		end,
@@ -147,7 +147,7 @@ function IceTargetMana.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.onlyShowMana
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.onlyShowMana = v
 			self:Redraw()
 		end,

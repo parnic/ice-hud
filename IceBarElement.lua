@@ -111,25 +111,25 @@ function IceBarElement.prototype:GetOptions()
 	}
 	opts["side"] = 
 	{
-		type = 'text',
+		type = 'select',
 		name =  '|c' .. self.configColor .. 'Side|r',
 		desc = 'Side of the HUD where the bar appears',
-		get = function()
+		get = function(info)
 			if (self.moduleSettings.side == IceCore.Side.Right) then
-				return "Right"
+				return 2
 			else
-				return "Left"
+				return 1
 			end
 		end,
-		set = function(value)
-			if (value == "Right") then
+		set = function(info, value)
+			if (value == 2) then
 				self.moduleSettings.side = IceCore.Side.Right
 			else
 				self.moduleSettings.side = IceCore.Side.Left
 			end
 			self:Redraw()
 		end,
-		validate = { "Left", "Right" },
+		values = { "Left", "Right" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -147,7 +147,7 @@ function IceBarElement.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.offset
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.offset = value
 			self:Redraw()
 		end,
@@ -169,7 +169,7 @@ function IceBarElement.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.scale
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.scale = value
 			self:Redraw()
 		end,
@@ -187,7 +187,7 @@ function IceBarElement.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.inverse
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.inverse = value
 			self:SetBarFramePoints()
 			self:Redraw()
@@ -206,7 +206,7 @@ function IceBarElement.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.reverse
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.reverse = value
 			self:SetBarFramePoints()
 			self:Redraw()
@@ -229,7 +229,7 @@ function IceBarElement.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.barVisible['bar']
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.barVisible['bar'] = v
 			if v then
 				self.barFrame:Show()
@@ -250,7 +250,7 @@ function IceBarElement.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.barVisible['bg']
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.barVisible['bg'] = v
 			if v then
 				self.frame.bg:Show()
@@ -277,7 +277,7 @@ if not self.moduleSettings.hideAnimationSettings then
 		get = function()
 			return self.moduleSettings.shouldAnimate
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.shouldAnimate = value
 			self:Redraw()
 		end,
@@ -298,7 +298,7 @@ if not self.moduleSettings.hideAnimationSettings then
 		get = function()
 			return self.moduleSettings.desiredLerpTime
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.desiredLerpTime = value
 		end,
 		disabled = function()
@@ -319,7 +319,7 @@ end
 		get = function()
 			return self.moduleSettings.widthModifier
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.widthModifier = v
 			self:Redraw()
 		end,
@@ -340,7 +340,7 @@ end
 		get = function()
 			return self.moduleSettings.barVerticalOffset
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.barVerticalOffset = v
 			self:Redraw()
 		end,
@@ -358,9 +358,9 @@ end
 		get = function()
 			return self.moduleSettings.shouldUseOverride
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.shouldUseOverride = value
-			AceLibrary("Waterfall-1.0"):Refresh("IceHUD")
+			IceHUD:NotifyOptionsChange()
 			self:Redraw()
 		end,
 		disabled = function()
@@ -371,20 +371,20 @@ end
 
 	opts["barTextureOverride"] =
 	{
-		type = 'text',
+		type = 'select',
 		name = 'Bar Texture Override',
 		desc = 'This will override the global bar texture setting for this bar.',
-		get = function()
-			return self.moduleSettings.barTextureOverride
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.barTextureOverride)
 		end,
-		set = function(value)
-			self.moduleSettings.barTextureOverride = value
+		set = function(info, value)
+			self.moduleSettings.barTextureOverride = info.option.values[value]
 			self:Redraw()
 		end,
 		disabled = function()
 			return not self:IsEnabled() or not self.moduleSettings.shouldUseOverride
 		end,
-		validate = IceHUD.validBarList,
+		values = IceHUD.validBarList,
 		order = 36
 	}
 
@@ -405,7 +405,7 @@ end
 				get = function()
 					return self.moduleSettings.barFontSize
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.barFontSize = v
 					self:Redraw()
 				end,
@@ -422,7 +422,7 @@ end
 				get = function()
 					return self.moduleSettings.lockUpperTextAlpha
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.lockUpperTextAlpha = v
 					self:Redraw()
 				end,
@@ -436,7 +436,7 @@ end
 				get = function()
 					return self.moduleSettings.lockLowerTextAlpha
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.lockLowerTextAlpha = v
 					self:Redraw()
 				end,
@@ -450,7 +450,7 @@ end
 				get = function()
 					return self.moduleSettings.textVisible['upper']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.textVisible['upper'] = v
 					self:Redraw()
 				end,
@@ -464,7 +464,7 @@ end
 				get = function()
 					return self.moduleSettings.textVisible['lower']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.textVisible['lower'] = v
 					self:Redraw()
 				end,
@@ -472,7 +472,7 @@ end
 			},
 
 			upperTextString = {
-				type = 'text',
+				type = 'input',
 				name = 'Upper Text',
 				desc = 'The upper text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info.\n\nRemember to press ENTER after filling out this box or it will not save.',
 				hidden = function()
@@ -481,7 +481,7 @@ end
 				get = function()
 					return self.moduleSettings.upperText
 				end,
-				set = function(v)
+				set = function(info, v)
 					if DogTag ~= nil and v ~= '' and v ~= nil then
 						v = DogTag:CleanCode(v)
 					end
@@ -490,11 +490,12 @@ end
 					self:RegisterFontStrings()
 					self:Redraw()
 				end,
+				multiline = true,
 				usage = "<upper text to display>"
 			},
 
 			lowerTextString = {
-				type = 'text',
+				type = 'input',
 				name = 'Lower Text',
 				desc = 'The lower text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info.\n\nRemember to press ENTER after filling out this box or it will not save.',
 				hidden = function()
@@ -503,7 +504,7 @@ end
 				get = function()
 					return self.moduleSettings.lowerText
 				end,
-				set = function(v)
+				set = function(info, v)
 					if DogTag ~= nil and v ~= '' and v ~= nil then
 						v = DogTag:CleanCode(v)
 					end
@@ -512,21 +513,22 @@ end
 					self:RegisterFontStrings()
 					self:Redraw()
 				end,
+				multiline = true,
 				usage = "<lower text to display>"
 			},
 
 			forceJustifyText = {
-				type = 'text',
+				type = 'select',
 				name =  'Force Text Justification',
 				desc = 'This sets the alignment for the text on this bar',
-				get = function()
+				get = function(info)
 					return self.moduleSettings.forceJustifyText
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.forceJustifyText = value
 					self:Redraw()
 				end,
-				validate = { NONE = "None", LEFT = "Left", RIGHT = "Right" },
+				values = { NONE = "None", LEFT = "Left", RIGHT = "Right" },
 				disabled = function()
 					return not self.moduleSettings.enabled
 				end,
@@ -542,7 +544,7 @@ end
 				get = function()
 					return self.moduleSettings.textVerticalOffset
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.textVerticalOffset = v
 					self:Redraw()
 				end,
@@ -561,7 +563,7 @@ end
 				get = function()
 					return self.moduleSettings.textHorizontalOffset
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.textHorizontalOffset = v
 					self:Redraw()
 				end,
@@ -571,7 +573,7 @@ end
 			}
 		}
 	}
-	
+
 	return opts
 end
 

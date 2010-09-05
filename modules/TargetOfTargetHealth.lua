@@ -41,15 +41,15 @@ function TargetTargetHealth.prototype:GetOptions()
 	opts["hideBlizz"] = nil
 
 	opts["selfDisplayMode"] = {
-		type = "text",
+		type = 'select',
 		name = "Self Display Mode",
 		desc = "What this bar should do whenever the player is the TargetOfTarget\n\nNOTE: When this is set to 'hide', then click-targeting is not available due to Blizzard's restrictions",
-		get = function()
-			return self.moduleSettings.selfDisplayMode
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.selfDisplayMode)
 		end,
-		set = function(value)
-			self.moduleSettings.selfDisplayMode = value
-			if value == "Hide" then
+		set = function(info, value)
+			self.moduleSettings.selfDisplayMode = info.option.values[value]
+			if info.option.values[value] == "Hide" then
 				self.moduleSettings.allowMouseInteraction = false
 				self.DisplayClickTargetOption = false
 				UnregisterUnitWatch(self.frame)
@@ -57,13 +57,13 @@ function TargetTargetHealth.prototype:GetOptions()
 				RegisterUnitWatch(self.frame)
 				self.DisplayClickTargetOption = true
 			end
-			AceLibrary("Waterfall-1.0"):Refresh("IceHUD")
+			IceHUD:NotifyOptionsChange()
 			self:Redraw()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		validate = SelfDisplayModeOptions,
+		values = SelfDisplayModeOptions,
 		order = 44,
 	}
 
@@ -74,7 +74,7 @@ function TargetTargetHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.selfColor.r, self.moduleSettings.selfColor.g, self.moduleSettings.selfColor.b
 		end,
-		set = function(r, g, b)
+		set = function(info, r, g, b)
 			self.moduleSettings.selfColor = { r = r, g = g, b = b }
 			IceHUD.IceCore:SetColor("SelfColor", r, g, b)
 		end,

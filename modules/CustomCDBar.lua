@@ -151,13 +151,13 @@ function IceCustomCDBar.prototype:GetOptions()
 	}
 
 	opts["name"] = {
-		type = 'text',
+		type = 'input',
 		name = 'Bar name',
 		desc = 'The name of this bar (must be unique!).\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.',
 		get = function()
 			return self.elementName
 		end,
-		set = function(v)
+		set = function(info, v)
 			if v ~= "" then
 				IceHUD.IceCore:RenameDynamicModule(self, v)
 			end
@@ -170,13 +170,13 @@ function IceCustomCDBar.prototype:GetOptions()
 	}
 
 	opts["cooldownToTrack"] = {
-		type = 'text',
+		type = 'input',
 		name = "Spell to track",
 		desc = "Which spell cooldown this bar will be tracking.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
 		get = function()
 			return self.moduleSettings.cooldownToTrack
 		end,
-		set = function(v)
+		set = function(info, v)
 			if self.moduleSettings.cooldownToTrack == self.moduleSettings.upperText then
 				self.moduleSettings.upperText = v
 			end
@@ -199,7 +199,7 @@ function IceCustomCDBar.prototype:GetOptions()
 		get = function()
 			return self:GetBarColor()
 		end,
-		set = function(r,g,b)
+		set = function(info, r,g,b)
 			self.moduleSettings.barColor.r = r
 			self.moduleSettings.barColor.g = g
 			self.moduleSettings.barColor.b = b
@@ -212,49 +212,49 @@ function IceCustomCDBar.prototype:GetOptions()
 	}
 
 	opts["displayMode"] = {
-		type = 'text',
+		type = 'select',
 		name = 'Display mode',
 		desc = 'When to display this bar.',
-		get = function()
-			return self.moduleSettings.displayMode
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.displayMode)
 		end,
-		set = function(v)
-			self.moduleSettings.displayMode = v
+		set = function(info, v)
+			self.moduleSettings.displayMode = info.option.values[v]
 			self:UpdateCustomBar()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		validate = validDisplayModes,
+		values = validDisplayModes,
 		order = 20.9
 	}
 
 	opts["cooldownTimerDisplay"] = {
-		type = 'text',
+		type = 'select',
 		name = 'Cooldown timer display',
 		desc = 'How to display the buff timer next to the name of the buff on the bar',
-		get = function()
-			return self.moduleSettings.cooldownTimerDisplay
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.cooldownTimerDisplay)
 		end,
-		set = function(v)
-			self.moduleSettings.cooldownTimerDisplay = v
+		set = function(info, v)
+			self.moduleSettings.cooldownTimerDisplay = info.option.values[v]
 			self:UpdateCustomBar()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		validate = validBuffTimers,
+		values = validBuffTimers,
 		order = 21
 	}
 	
 	opts["maxDuration"] = {
-		type = 'text',
+		type = 'input',
 		name = "Maximum duration",
 		desc = "Maximum Duration for the bar (the bar will remained full if it has longer than maximum remaining).  Leave 0 for spell duration.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
 		get = function()
 			return self.moduleSettings.maxDuration
 		end,
-		set = function(v)
+		set = function(info, v)
 			if not v or not tonumber(v) then
 				v = 0
 			end
@@ -281,14 +281,13 @@ function IceCustomCDBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.displayAuraIcon
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.displayAuraIcon = v
 			self:UpdateIcon()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		usage = "<whether or not to display an icon for this bar's tracked spell>",
 		order = 40.1,
 	}
 	
@@ -302,14 +301,13 @@ function IceCustomCDBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.auraIconXOffset
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.auraIconXOffset = v
 			self:PositionIcons()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
 		end,
-		usage = "<adjusts the spell icon's horizontal position>",
 		order = 40.2,
 	}
 
@@ -323,14 +321,13 @@ function IceCustomCDBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.auraIconYOffset
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.auraIconYOffset = v
 			self:PositionIcons()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
 		end,
-		usage = "<adjusts the spell icon's vertical position>",
 		order = 40.3,
 	}
 
@@ -344,14 +341,13 @@ function IceCustomCDBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.auraIconScale
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.auraIconScale = v
 			self:PositionIcons()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
 		end,
-		usage = "<adjusts the spell icon's size>",
 		order = 40.4,
 	}
 

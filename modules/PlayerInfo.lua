@@ -33,7 +33,7 @@ function PlayerInfo.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.hideBlizz
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.hideBlizz = value
 			if (value) then
 				self:HideBlizz()

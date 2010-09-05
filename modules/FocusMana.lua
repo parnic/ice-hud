@@ -108,7 +108,7 @@ function FocusMana.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.scaleManaColor
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.scaleManaColor = value
 			self:Redraw()
 		end,

@@ -58,7 +58,7 @@ function RangeCheck.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.vpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.vpos = v
 			self:Redraw()
 		end,
@@ -78,7 +78,7 @@ function RangeCheck.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.hpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.hpos = v
 			self:Redraw()
 		end,
@@ -92,13 +92,13 @@ function RangeCheck.prototype:GetOptions()
 	}
 
 	opts["rangeString"] = {
-		type = 'text',
+		type = 'input',
 		name = 'Range string',
 		desc = 'DogTag-formatted string to use for the range display (only available if LibDogTag is being used)\n\nType /dogtag for a list of available tags',
 		get = function()
 			return self.moduleSettings.rangeString
 		end,
-		set = function(v)
+		set = function(info, v)
 			v = DogTag:CleanCode(v)
 			self.moduleSettings.rangeString = v
 			self:RegisterFontStrings()

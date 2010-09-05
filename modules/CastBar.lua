@@ -43,16 +43,16 @@ function CastBar.prototype:GetOptions()
 
 	opts["flashInstants"] =
 	{
-		type = 'text',
+		type = 'select',
 		name =  "Flash Instant Spells",
 		desc = "Defines when cast bar should flash on instant spells",
-		get = function()
-			return self.moduleSettings.flashInstants
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.flashInstants)
 		end,
-		set = function(value)
-			self.moduleSettings.flashInstants = value
+		set = function(info, value)
+			self.moduleSettings.flashInstants = info.option.values[value]
 		end,
-		validate = { "Always", "Caster", "Never" },
+		values = { "Always", "Caster", "Never" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -61,19 +61,19 @@ function CastBar.prototype:GetOptions()
 
 	opts["flashFailures"] =
 	{
-		type = "text",
+		type = 'select',
 		name = "Flash on Spell Failures",
 		desc = "Defines when cast bar should flash on failed spells",
-		get = function()
-			return self.moduleSettings.flashFailures
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.flashFailures)
 		end,
-		set = function(value)
-			self.moduleSettings.flashFailures = value
+		set = function(info, value)
+			self.moduleSettings.flashFailures = info.option.values[value]
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		validate = { "Always", "Caster", "Never" },
+		values = { "Always", "Caster", "Never" },
 		order = 41
 	}
 	
@@ -88,7 +88,7 @@ function CastBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.lagAlpha
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.lagAlpha = value
 			self:Redraw()
 		end,
@@ -106,7 +106,7 @@ function CastBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.showBlizzCast
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.showBlizzCast = value
 			self:ToggleBlizzCast(self.moduleSettings.showBlizzCast)
 		end,
@@ -148,7 +148,7 @@ function CastBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.barVisible['bar']
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.barVisible['bar'] = v
 			if v then
 				self.barFrame:Show()
@@ -169,7 +169,7 @@ function CastBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.barVisible['bg']
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.barVisible['bg'] = v
 			if v then
 				self.frame.bg:Show()
@@ -190,7 +190,7 @@ function CastBar.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.rangeColor
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.rangeColor = v
 		end,
 		disabled = function()
@@ -216,7 +216,7 @@ function CastBar.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.barFontSize
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.barFontSize = v
 					self:Redraw()
 				end,
@@ -233,7 +233,7 @@ function CastBar.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.lockUpperTextAlpha
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.lockUpperTextAlpha = v
 					self:Redraw()
 				end,
@@ -247,7 +247,7 @@ function CastBar.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.textVisible['upper']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.textVisible['upper'] = v
 					self:Redraw()
 				end,
@@ -264,7 +264,7 @@ function CastBar.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.textVerticalOffset
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.textVerticalOffset = v
 					self:Redraw()
 				end,
@@ -283,7 +283,7 @@ function CastBar.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.textHorizontalOffset
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.textHorizontalOffset = v
 					self:Redraw()
 				end,
@@ -293,17 +293,17 @@ function CastBar.prototype:GetOptions()
 			},
 
 			forceJustifyText = {
-				type = 'text',
+				type = 'select',
 				name =  'Force Text Justification',
 				desc = 'This sets the alignment for the text on this bar',
 				get = function()
 					return self.moduleSettings.forceJustifyText
 				end,
-				set = function(value)
+				set = function(info, value)
 					self.moduleSettings.forceJustifyText = value
 					self:Redraw()
 				end,
-				validate = { NONE = "None", LEFT = "Left", RIGHT = "Right" },
+				values = { NONE = "None", LEFT = "Left", RIGHT = "Right" },
 				disabled = function()
 					return not self.moduleSettings.enabled
 				end,

@@ -1,7 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local ComboPoints = AceOO.Class(IceElement)
-local waterfall = AceLibrary("Waterfall-1.0")
 
 ComboPoints.prototype.comboSize = 20
 
@@ -29,7 +28,7 @@ function ComboPoints.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.vpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.vpos = v
 			self:Redraw()
 		end,
@@ -49,7 +48,7 @@ function ComboPoints.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.hpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.hpos = v
 			self:Redraw()
 		end,
@@ -69,7 +68,7 @@ function ComboPoints.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.comboFontSize
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.comboFontSize = v
 			self:Redraw()
 		end,
@@ -83,19 +82,19 @@ function ComboPoints.prototype:GetOptions()
 	}
 
 	opts["comboMode"] = {
-		type = "text",
+		type = 'select',
 		name = "Display Mode",
 		desc = "Show graphical or numeric combo points",
-		get = function()
-			return self.moduleSettings.comboMode
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.comboMode)
 		end,
-		set = function(v)
-			self.moduleSettings.comboMode = v
+		set = function(info, v)
+			self.moduleSettings.comboMode = info.option.values[v]
 			self:CreateComboFrame(true)
 			self:Redraw()
-			waterfall:Refresh("IceHUD")
+			IceHUD:NotifyOptionsChange()
 		end,
-		validate = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
+		values = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -103,20 +102,20 @@ function ComboPoints.prototype:GetOptions()
 	}
 
 	opts["graphicalLayout"] = {
-		type = 'text',
+		type = 'select',
 		name = 'Layout',
 		desc = 'How the graphical combo points should be displayed',
-		get = function()
-			return self.moduleSettings.graphicalLayout
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.graphicalLayout)
 		end,
-		set = function(v)
-			self.moduleSettings.graphicalLayout = v
+		set = function(info, v)
+			self.moduleSettings.graphicalLayout = info.option.values[v]
 			self:Redraw()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or self.moduleSettings.comboMode == "Numeric"
 		end,
-		validate = {"Horizontal", "Vertical"},
+		values = {"Horizontal", "Vertical"},
 		order = 33.1
 	}
 
@@ -130,7 +129,7 @@ function ComboPoints.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.comboGap
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.comboGap = v
 			self:Redraw()
 		end,
@@ -147,7 +146,7 @@ function ComboPoints.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.gradient
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.gradient = v
 			self:Redraw()
 		end,

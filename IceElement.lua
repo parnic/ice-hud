@@ -121,7 +121,7 @@ function IceElement.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.enabled
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.enabled = value
 			if (value) then
 				self:Enable(true)
@@ -145,7 +145,7 @@ function IceElement.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.scale
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.scale = value
 			self:Redraw()
 		end,
@@ -163,7 +163,7 @@ function IceElement.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.alwaysFullAlpha
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.alwaysFullAlpha = value
 			self:Update(self.unit)
 			self:Redraw()

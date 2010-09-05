@@ -34,20 +34,20 @@ function TargetTargetMana.prototype:GetOptions()
 	local opts = TargetTargetMana.super.prototype.GetOptions(self)
 
 	opts["selfDisplayMode"] = {
-		type = "text",
+		type = 'select',
 		name = "Self Display Mode",
 		desc = "What this bar should do whenever the player is the TargetOfTarget",
-		get = function()
-			return self.moduleSettings.selfDisplayMode
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.selfDisplayMode)
 		end,
-		set = function(value)
-			self.moduleSettings.selfDisplayMode = value
+		set = function(info, value)
+			self.moduleSettings.selfDisplayMode = info.option.values[value]
 			self:Redraw()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		validate = SelfDisplayModeOptions,
+		values = SelfDisplayModeOptions,
 		order = 44,
 	}
 	

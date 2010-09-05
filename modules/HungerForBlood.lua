@@ -81,7 +81,7 @@ function HungerForBlood.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.allowMouseInteraction
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.allowMouseInteraction = v
 			self:CreateFrame()
 		end,

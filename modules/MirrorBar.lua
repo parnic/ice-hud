@@ -198,25 +198,25 @@ function MirrorBarHandler.prototype:GetOptions()
 
 	opts["side"] = 
 	{
-		type = 'text',
+		type = 'select',
 		name = '|c' .. self.configColor .. 'Side|r',
 		desc = 'Side of the HUD where the bar appears',
-		get = function()
+		get = function(info)
 			if (self.moduleSettings.side == IceCore.Side.Right) then
-				return "Right"
+				return 2
 			else
-				return "Left"
+				return 1
 			end
 		end,
-		set = function(value)
-			if (value == "Right") then
+		set = function(info, value)
+			if (value == 2) then
 				self.moduleSettings.side = IceCore.Side.Right
 			else
 				self.moduleSettings.side = IceCore.Side.Left
 			end
 			self:Redraw()
 		end,
-		validate = { "Left", "Right" },		
+		values = { "Left", "Right" },		
 		order = 30
 	}
 
@@ -231,7 +231,7 @@ function MirrorBarHandler.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.offset
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.offset = value
 			self:Redraw()
 		end,
@@ -245,7 +245,7 @@ function MirrorBarHandler.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.barVisible['bar']
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.barVisible['bar'] = v
 			self:Redraw()
 		end,
@@ -262,7 +262,7 @@ function MirrorBarHandler.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.barVisible['bg']
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.barVisible['bg'] = v
 			self:Redraw()
 		end,
@@ -283,7 +283,7 @@ function MirrorBarHandler.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.barVerticalOffset
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.barVerticalOffset = v
 			self:Redraw()
 		end,
@@ -307,7 +307,7 @@ function MirrorBarHandler.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.barFontSize
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.barFontSize = v
 					self:Redraw()
 				end,
@@ -324,7 +324,7 @@ function MirrorBarHandler.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.barFontBold
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.barFontBold = v
 					self:Redraw()
 				end,
@@ -338,7 +338,7 @@ function MirrorBarHandler.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.lockTextAlpha
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.lockTextAlpha = v
 					self:Redraw()
 				end,
@@ -352,7 +352,7 @@ function MirrorBarHandler.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.textVisible['upper']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.textVisible['upper'] = v
 					self:Redraw()
 				end,
@@ -366,7 +366,7 @@ function MirrorBarHandler.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.textVisible['lower']
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.textVisible['lower'] = v
 					self:Redraw()
 				end,
@@ -383,7 +383,7 @@ function MirrorBarHandler.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.textVerticalOffset
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.textVerticalOffset = v
 					self:Redraw()
 				end,
@@ -402,7 +402,7 @@ function MirrorBarHandler.prototype:GetOptions()
 				get = function()
 					return self.moduleSettings.textHorizontalOffset
 				end,
-				set = function(v)
+				set = function(info, v)
 					self.moduleSettings.textHorizontalOffset = v
 					self:Redraw()
 				end,

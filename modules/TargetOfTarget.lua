@@ -35,7 +35,7 @@ function TargetOfTarget.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.vpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.vpos = v
 			self:Redraw()
 		end,
@@ -55,7 +55,7 @@ function TargetOfTarget.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.hpos
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.hpos = v
 			self:Redraw()
 		end,
@@ -75,7 +75,7 @@ function TargetOfTarget.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.showDebuffs
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.showDebuffs = value
 			self:UpdateBuffs()
 		end,
@@ -92,7 +92,7 @@ function TargetOfTarget.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.fontSize
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.fontSize = v
 			self:Redraw()
 		end,
@@ -112,7 +112,7 @@ function TargetOfTarget.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.mouse
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.mouse = v
 			self:Redraw()
 		end,
@@ -123,20 +123,20 @@ function TargetOfTarget.prototype:GetOptions()
 	}
 	
 	opts["texture"] = {
-		type = 'text',
+		type = 'select',
 		name = 'Texture',
 		desc = 'ToT frame texture',
-		get = function()
-			return self.moduleSettings.texture
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.texture)
 		end,
-		set = function(v)
-			self.moduleSettings.texture = v
+		set = function(info, v)
+			self.moduleSettings.texture = info.option.values[v]
 			self:Redraw()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		validate = SML:List(SML.MediaType.STATUSBAR),
+		values = SML:List(SML.MediaType.STATUSBAR),
 		order = 35
 	}
 
@@ -147,7 +147,7 @@ function TargetOfTarget.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.sizeToGap
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.sizeToGap = v
 			self:Redraw()
 		end,
@@ -166,7 +166,7 @@ function TargetOfTarget.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.totWidth
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.totWidth = v
 			self:Redraw()
 		end,

@@ -144,7 +144,7 @@ function PetHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.scaleHealthColor
 		end,
-		set = function(value)
+		set = function(info, value)
 			self.moduleSettings.scaleHealthColor = value
 			self:Redraw()
 		end,
@@ -161,14 +161,13 @@ function PetHealth.prototype:GetOptions()
 		get = function()
 			return self.moduleSettings.allowMouseInteraction
 		end,
-		set = function(v)
+		set = function(info, v)
 			self.moduleSettings.allowMouseInteraction = v
 			self:Redraw()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		usage = '',
 		order = 42,
 	}
 
