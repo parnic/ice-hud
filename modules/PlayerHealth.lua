@@ -269,7 +269,7 @@ function PlayerHealth.prototype:GetOptions()
 	{
 		type = 'toggle',
 		name = 'Show incoming heals',
-		desc = 'Whether or not to show incoming heals as a lighter-colored bar on top of your current health (requires LibHealComm-3.0)',
+		desc = 'Whether or not to show incoming heals as a lighter-colored bar on top of your current health (requires LibHealComm-4.0 or official patch 4.0)',
 		get = function()
 			return self.moduleSettings.showIncomingHeals
 		end,
