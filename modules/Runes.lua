@@ -204,17 +204,19 @@ end
 
 function Runes.prototype:ResetRuneAvailability()
 	for i=1, self.numRunes do
-		self:UpdateRunePower(i, true, true)
+		self:UpdateRunePower(i, true)
 	end
 end
 
 -- simply shows/hides the foreground rune when it becomes usable/unusable. this allows the background transparent rune to show only
-function Runes.prototype:UpdateRunePower(rune, usable, dontFlash)
+function Runes.prototype:UpdateRunePower(rune, dontFlash)
 	if not rune or not self.frame.graphical or #self.frame.graphical < rune then
 		return
 	end
 
 --	DEFAULT_CHAT_FRAME:AddMessage("Runes.prototype:UpdateRunePower: rune="..rune.." usable="..(usable and "yes" or "no").." GetRuneType(rune)="..GetRuneType(rune));
+
+	local start, duration, usable = GetRuneCooldown(rune)
 
 	if usable then
 		if self.moduleSettings.cooldownMode == "Cooldown" then
