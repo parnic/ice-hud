@@ -88,13 +88,17 @@ function PlayerHealth.prototype:Enable(core)
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
 
-	if AceLibrary:HasInstance("LibHealComm-4.0") then
-		HealComm = AceLibrary("LibHealComm-4.0")
-		HealComm.RegisterCallback(self, "HealComm_HealStarted", function(event, casterGUID, spellID, spellType, endTime, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...) end)
-		HealComm.RegisterCallback(self, "HealComm_HealUpdated", function(event, casterGUID, spellID, spellType, endTime, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...) end)
-		HealComm.RegisterCallback(self, "HealComm_HealDelayed", function(event, casterGUID, spellID, spellType, endTime, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...) end)
-		HealComm.RegisterCallback(self, "HealComm_HealStopped", function(event, casterGUID, spellID, spellType, interrupted, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, interrupted, ...) end)
-		HealComm.RegisterCallback(self, "HealComm_ModifierChanged", function(event, guid) self:HealComm_ModifierChanged(event, guid) end)
+	if IceHUD.WowVer < 40000 then
+		if AceLibrary:HasInstance("LibHealComm-4.0") then
+			HealComm = AceLibrary("LibHealComm-4.0")
+			HealComm.RegisterCallback(self, "HealComm_HealStarted", function(event, casterGUID, spellID, spellType, endTime, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...) end)
+			HealComm.RegisterCallback(self, "HealComm_HealUpdated", function(event, casterGUID, spellID, spellType, endTime, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...) end)
+			HealComm.RegisterCallback(self, "HealComm_HealDelayed", function(event, casterGUID, spellID, spellType, endTime, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...) end)
+			HealComm.RegisterCallback(self, "HealComm_HealStopped", function(event, casterGUID, spellID, spellType, interrupted, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, interrupted, ...) end)
+			HealComm.RegisterCallback(self, "HealComm_ModifierChanged", function(event, guid) self:HealComm_ModifierChanged(event, guid) end)
+		end
+	else
+		self:RegisterEvent("UNIT_HEAL_PREDICTION", "IncomingHealPrediction")
 	end
 
 	if (self.moduleSettings.hideBlizz) then
@@ -131,6 +135,17 @@ end
 function PlayerHealth.prototype:HealComm_ModifierChanged(event, guid)
 	if guid == UnitGUID("player") then
 		incomingHealAmt = incomingHealAmt * HealComm:GetHealModifier(guid)
+		self:Update()
+	end
+end
+
+function PlayerHealth.prototype:IncomingHealPrediction(unit)
+	if IceHUD.WowVer >= 40000 then
+		if unit and unit ~= self.unit then
+			return
+		end
+
+		incomingHealAmt = UnitGetIncomingHeals(self.unit)
 		self:Update()
 	end
 end
