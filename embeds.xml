@@ -16,4 +16,5 @@
 <Script file="libs\LibRangeCheck-2.0\LibRangeCheck-2.0.lua"/>
 <Include file="libs\LibSharedMedia-3.0\lib.xml"/>
 <Script file="libs\Deformat-2.0\Deformat-2.0.lua"/>
+<Script file="LibDataBroker-1.1.lua"/>
 </Ui>

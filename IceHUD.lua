@@ -784,15 +784,6 @@ function IceHUD:InitLDB()
 	end
 end
 
--- fubar stuff
-IceHUD.OnMenuRequest = IceHUD.options
-IceHUD.hasIcon = "Interface\\Icons\\Spell_Frost_Frost"
-IceHUD.hideWithoutStandby = true
-IceHUD.independentProfile = true
-function IceHUD.OnClick()
-	IceHUD:OpenConfig()
-end
-
 -- blizzard interface options
 local blizOptionsPanel = CreateFrame("FRAME", "IceHUDConfigPanel", UIParent)
 blizOptionsPanel.name = "IceHUD"
