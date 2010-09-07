@@ -841,7 +841,7 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 	end
 
 	self.frame.button.menu = function()
-		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "cursor");
+		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "cursor")
 	end
 
 	self:EnableClickTargeting(self.moduleSettings.allowMouseInteraction)
@@ -901,8 +901,8 @@ function PlayerHealth.prototype:EnableClickTargeting(bEnable)
 --		self.frame.button:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
 --						edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
 --						tile = false,
---						insets = { left = 0, right = 0, top = 0, bottom = 0 }});
---		self.frame.button:SetBackdropColor(0,0,0,1);
+--						insets = { left = 0, right = 0, top = 0, bottom = 0 }})
+--		self.frame.button:SetBackdropColor(0,0,0,1)
 	else
 		self.frame.button:EnableMouse(false)
 		self.frame.button:RegisterForClicks()
@@ -977,78 +977,85 @@ function PlayerHealth.prototype:CheckPartyRole()
 	local mode, submode
 
 	mode, submode= GetLFGMode()	
-	IsLFGParty = (mode ~= nil and mode ~= "abandonedInDungeon" and mode ~= "queued");
+	IsLFGParty = (mode ~= nil and mode ~= "abandonedInDungeon" and mode ~= "queued")
 
 	if configMode or IsLFGParty then
 		if (configMode or self.moduleSettings.showPartyRoleIcon) and not self.frame.PartyRoleIcon then		
-			local isTank, isHeal, isDPS;
+			local isTank, isHeal, isDPS
 			local proposalExists, typeID, id, name
-			local texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader;
-			proposalExists, typeID, id, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader = GetLFGProposal();
+			local texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader
+			proposalExists, typeID, id, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader = GetLFGProposal()
 
-			local p = self.unit;
-			isTank, isHeal, isDPS = UnitGroupRolesAssigned(p);
-			IceHUD:Debug(".......");
-			IceHUD:Debug(p.."="..tostring(UnitName(p)));
-			IceHUD:Debug( tostring(proposalExists) .."**".. tostring(typeID) .."**".. tostring(id) .."**".. tostring(name) .."**".. tostring(texture) .."**".. tostring(role) .."**".. tostring(hasResponded) .."**".. tostring(totalEncounters) .."**".. tostring(completedEncounters) .."**".. tostring(numMembers) .."**".. tostring(isleader) );
+			local p = self.unit
+			if IceHUD.WowVer < 40000 then
+				isTank, isHeal, isDPS = UnitGroupRolesAssigned(p)
+			else
+				local role = UnitGroupRolesAssigned(p)
+				isTank = (role == "TANK")
+				isHeal = (role == "HEALER")
+				isDPS = (role == "DAMAGER")
+			end
+			IceHUD:Debug(".......")
+			IceHUD:Debug(p.."="..tostring(UnitName(p)))
+			IceHUD:Debug( tostring(proposalExists) .."**".. tostring(typeID) .."**".. tostring(id) .."**".. tostring(name) .."**".. tostring(texture) .."**".. tostring(role) .."**".. tostring(hasResponded) .."**".. tostring(totalEncounters) .."**".. tostring(completedEncounters) .."**".. tostring(numMembers) .."**".. tostring(isleader) )
 
 			if proposalExists == true then
-			      IceHUD:Debug(tostring(typeID).." "..role);
-			      isTank = (role == "TANK");
-			      isHeal = (role == "HEALER");
-			      isDPS = (role == "DAMAGER");
+			      IceHUD:Debug(tostring(typeID).." "..role)
+			      isTank = (role == "TANK")
+			      isHeal = (role == "HEALER")
+			      isDPS = (role == "DAMAGER")
 			else   
-			      IceHUD:Debug("NoProposal");
+			      IceHUD:Debug("NoProposal")
 			end
 
-			IceHUD:Debug("---");
+			IceHUD:Debug("---")
 
 			if proposalExists == nil then
-				hasResponded = false;
-				proposalExists = false;
+				hasResponded = false
+				proposalExists = false
 			end
 
 			if hasResponded == false then
 				if proposalExists == true then
-					isTank = (role == "TANK");
-					isHeal = (role == "HEALER");
-					isDPS = (role == "DAMAGER");
+					isTank = (role == "TANK")
+					isHeal = (role == "HEALER")
+					isDPS = (role == "DAMAGER")
 				end
 			else
-				isTank = not hasResponded;
-				isHeal = not hasResponded;
-				isDPS = not hasResponded;
+				isTank = not hasResponded
+				isHeal = not hasResponded
+				isDPS = not hasResponded
 			end
 
-			IceHUD:Debug("Tank:"..tostring(isTank));
-			IceHUD:Debug("Heal:"..tostring(isHeal));
-			IceHUD:Debug("DPS:"..tostring(isDPS));
+			IceHUD:Debug("Tank:"..tostring(isTank))
+			IceHUD:Debug("Heal:"..tostring(isHeal))
+			IceHUD:Debug("DPS:"..tostring(isDPS))
 
 			if isTank then
-				IceHUD:Debug("Loading Tank");
+				IceHUD:Debug("Loading Tank")
 				self.frame.PartyRoleIcon = self:CreateTexCoord(self.frame.PartyRoleIcon, "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES", 20, 20, self.moduleSettings.PartyRoleIconScale, 0/64, 19/64, 22/64, 41/64)
 			elseif isHeal then
-				IceHUD:Debug("Loading Heal");
+				IceHUD:Debug("Loading Heal")
 				self.frame.PartyRoleIcon = self:CreateTexCoord(self.frame.PartyRoleIcon, "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES", 20, 20, self.moduleSettings.PartyRoleIconScale, 20/64, 39/64, 1/64, 20/64)
 			elseif isDPS then
-				IceHUD:Debug("Loading DPS");
+				IceHUD:Debug("Loading DPS")
 				self.frame.PartyRoleIcon = self:CreateTexCoord(self.frame.PartyRoleIcon, "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES", 20, 20, self.moduleSettings.PartyRoleIconScale, 20/64, 39/64, 22/64, 41/64)
 			elseif configMode then
-				IceHUD:Debug("No Roles==Defaulting to Leader icon");				
+				IceHUD:Debug("No Roles==Defaulting to Leader icon")				
 				self.frame.PartyRoleIcon = self:CreateTexCoord(self.frame.PartyRoleIcon, "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES", 20, 20, self.moduleSettings.PartyRoleIconScale, 0/64, 19/64, 1/64, 20/64)
 			else
-				IceHUD:Debug("Clearing Frame");
+				IceHUD:Debug("Clearing Frame")
 				self.frame.PartyRoleIcon = self:DestroyTexFrame(self.frame.PartyRoleIcon)				
 			end
 			self:SetTexLoc(self.frame.PartyRoleIcon, self.moduleSettings.PartyRoleIconOffset['x'], self.moduleSettings.PartyRoleIconOffset['y'])			
 			self:SetIconAlpha()
 		elseif not configMode and not self.moduleSettings.showPartyRoleIcon and self.frame.PartyRoleIcon then
-			IceHUD:Debug("Clearing Frame");
+			IceHUD:Debug("Clearing Frame")
 			self.frame.PartyRoleIcon = self:DestroyTexFrame(self.frame.PartyRoleIcon)
 		end
 	else
 		if self.frame.PartyRoleIcon then
-			IceHUD:Debug("Clearing Frame");
+			IceHUD:Debug("Clearing Frame")
 			self.frame.PartyRoleIcon = self:DestroyTexFrame(self.frame.PartyRoleIcon)
 		end
 	end
@@ -1281,21 +1288,21 @@ end
 function PlayerHealth.prototype:ShowBlizz()
 	PlayerFrame:Show()
 
-	PlayerFrame:RegisterEvent("UNIT_LEVEL");
-	PlayerFrame:RegisterEvent("UNIT_COMBAT");
-	PlayerFrame:RegisterEvent("UNIT_FACTION");
-	PlayerFrame:RegisterEvent("UNIT_MAXMANA");
-	PlayerFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
-	PlayerFrame:RegisterEvent("PLAYER_ENTER_COMBAT");
-	PlayerFrame:RegisterEvent("PLAYER_LEAVE_COMBAT");
-	PlayerFrame:RegisterEvent("PLAYER_REGEN_DISABLED");
-	PlayerFrame:RegisterEvent("PLAYER_REGEN_ENABLED");
-	PlayerFrame:RegisterEvent("PLAYER_UPDATE_RESTING");
-	PlayerFrame:RegisterEvent("PARTY_MEMBERS_CHANGED");
-	PlayerFrame:RegisterEvent("PARTY_LEADER_CHANGED");
-	PlayerFrame:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
-	PlayerFrame:RegisterEvent("RAID_ROSTER_UPDATE");
-	PlayerFrame:RegisterEvent("PLAYTIME_CHANGED");
+	PlayerFrame:RegisterEvent("UNIT_LEVEL")
+	PlayerFrame:RegisterEvent("UNIT_COMBAT")
+	PlayerFrame:RegisterEvent("UNIT_FACTION")
+	PlayerFrame:RegisterEvent("UNIT_MAXMANA")
+	PlayerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	PlayerFrame:RegisterEvent("PLAYER_ENTER_COMBAT")
+	PlayerFrame:RegisterEvent("PLAYER_LEAVE_COMBAT")
+	PlayerFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+	PlayerFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+	PlayerFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
+	PlayerFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	PlayerFrame:RegisterEvent("PARTY_LEADER_CHANGED")
+	PlayerFrame:RegisterEvent("PARTY_LOOT_METHOD_CHANGED")
+	PlayerFrame:RegisterEvent("RAID_ROSTER_UPDATE")
+	PlayerFrame:RegisterEvent("PLAYTIME_CHANGED")
 end
 
 
@@ -1364,7 +1371,7 @@ UIParent:RegisterEvent("RAID_ROSTER_UPDATE")
 --	end
 --	UIParent:RegisterEvent('RAID_ROSTER_UPDATE')
 --	
---	ShowPartyFrame(); -- Just call Blizzard default method
+--	ShowPartyFrame() -- Just call Blizzard default method
 --end
 
 function PlayerHealth.prototype:UpdateBar(scale, color, alpha)
