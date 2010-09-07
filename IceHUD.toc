@@ -72,3 +72,4 @@ modules\PlayerInvuln.lua
 modules\ComboPointsBar.lua
 modules\CustomHealth.lua
 modules\CustomMana.lua
+modules\HolyPower.lua
