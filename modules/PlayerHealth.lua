@@ -990,10 +990,10 @@ function PlayerHealth.prototype:CheckPartyRole()
 			if IceHUD.WowVer < 40000 then
 				isTank, isHeal, isDPS = UnitGroupRolesAssigned(p)
 			else
-				local role = UnitGroupRolesAssigned(p)
-				isTank = (role == "TANK")
-				isHeal = (role == "HEALER")
-				isDPS = (role == "DAMAGER")
+				local grpRole = UnitGroupRolesAssigned(p)
+				isTank = (grpRole == "TANK")
+				isHeal = (grpRole == "HEALER")
+				isDPS = (grpRole == "DAMAGER")
 			end
 			IceHUD:Debug(".......")
 			IceHUD:Debug(p.."="..tostring(UnitName(p)))
