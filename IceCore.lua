@@ -316,6 +316,13 @@ end
 function IceCore.prototype:GetModuleOptions()
 	local options = {}
 	
+	options["aaaClickPlus"] = {
+		type = 'description',
+		fontSize = 'large',
+		name = 'Click the + next to Module Settings to see the available modules that you can tweak.\n\nAlso notice that some modules have a + next to them. This will open up additional settings such as text tweaks and icon tweaks on that module.',
+		order = 1
+	}
+
 	for i = 1, table.getn(self.elements) do
 		local modName = self.elements[i]:GetElementName()
 		local opt = self.elements[i]:GetOptions()

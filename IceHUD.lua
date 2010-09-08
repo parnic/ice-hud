@@ -35,7 +35,10 @@ IceHUD.options =
 				test = {
 					type = 'description',
 					fontSize = "medium",
-					name = [[1. How do I hide the default Blizzard player and target unit frames?
+					name = [[Thanks for using IceHUD! Below you will find answers to all of the most commonly-asked questions. Be sure to check the addon's page on curse.com and wowinterface.com as well for more discussion and updates!
+
+
+1. How do I hide the default Blizzard player and target unit frames?
 Expand the "Module Settings" section, click "Player Health" or "Target Health," and check "Hide Blizzard Frame"
 
 2. How do I turn off click-targeting and menus on the player bar?
