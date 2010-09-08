@@ -213,7 +213,7 @@ function HolyPower.prototype:GetDefaultSettings()
 	defaults["runeFontSize"] = 20
 	defaults["runeMode"] = "Graphical"
 	defaults["usesDogTagStrings"] = false
-	defaults["hideBlizz"] = true
+	defaults["hideBlizz"] = false
 	defaults["alwaysFullAlpha"] = false
 	defaults["displayMode"] = "Horizontal"
 	defaults["runeGap"] = 0
