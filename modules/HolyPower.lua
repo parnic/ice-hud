@@ -2,8 +2,8 @@ local AceOO = AceLibrary("AceOO-2.0")
 
 local HolyPower = AceOO.Class(IceElement)
 
-HolyPower.prototype.runeHeight = 25
-HolyPower.prototype.runeWidth = 35
+HolyPower.prototype.runeHeight = 22
+HolyPower.prototype.runeWidth = 36
 -- blizzard has hardcoded 3 runes right now, so i'll do the same...see PaladinPowerBar.lua
 HolyPower.prototype.numRunes = 3
 HolyPower.prototype.lastNumReady = 0
