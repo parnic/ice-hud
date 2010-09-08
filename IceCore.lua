@@ -73,8 +73,11 @@ function IceCore.prototype:SetupDefaults()
 
 			bShouldUseDogTags = true,
 
-			updatePeriod = 0.1
-		}
+			updatePeriod = 0.1,
+		},
+		global = {
+			lastRunVersion = 0,
+		},
 	}
 
 	self:LoadPresets()
@@ -91,6 +94,32 @@ function IceCore.prototype:SetupDefaults()
 	
 	if (table.getn(self.elements) > 0) then
 		self.defaults.profile.colors = self.elements[1].defaultColors
+	end
+end
+
+
+StaticPopupDialogs["ICEHUD_CONVERTED_TO_ACE3"] =
+{
+	text = "(If this is your first time running IceHUD, please disregard this message)\n\nSince the last version of IceHUD you ran, we have upgraded to Ace3! This means that if you were using a custom profile for your settings you may need to open the /icehud options and re-choose it. You'll only need to do this once.\n\nThanks for using IceHUD!",
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 0,
+}
+
+function IceCore.prototype:CheckDisplayUpdateMessage()
+	local thisVersion
+--[===[@non-debug@
+	thisVersion = @project-revision@
+--@end-non-debug@]===]
+--@debug@
+	thisVersion = 9999
+--@end-debug@
+	if self.accountSettings.lastRunVersion < thisVersion then
+		if self.accountSettings.lastRunVersion < 549 then
+			StaticPopup_Show("ICEHUD_CONVERTED_TO_ACE3")
+		end
+		self.accountSettings.lastRunVersion = thisVersion
 	end
 end
 

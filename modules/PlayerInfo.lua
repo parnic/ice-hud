@@ -58,19 +58,32 @@ function PlayerInfo.prototype:CreateFrame(redraw)
 	end
 end
 
+StaticPopupDialogs["ICEHUD_BUFF_DISMISS_UNAVAILABLE"] =
+{
+	text = "Sorry, but there is currently no way for custom mods to cancel buffs. This will be fixed whenever Blizzard fixes the API.",
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 0,
+}
+
 function PlayerInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 	local buffs = PlayerInfo.super.prototype.CreateIconFrames(self, parent, direction, buffs, type)
 
 	for i = 1, IceCore.BuffLimit do
 		if (self.moduleSettings.mouseBuff) then
 			buffs[i]:SetScript("OnMouseUp", function( self, button)
-				if( button == "RightButton" ) then
-					if buffs[i].type == "mh" then
-						CancelItemTempEnchantment(1)
-					elseif buffs[i].type == "oh" then
-						CancelItemTempEnchantment(2)
-					else
-						CancelUnitBuff("player", i)
+				if IceHUD.WowVer >= 40000 then
+					StaticPopup_Show("ICEHUD_BUFF_DISMISS_UNAVAILABLE")
+				else
+					if( button == "RightButton" ) then
+						if buffs[i].type == "mh" then
+							CancelItemTempEnchantment(1)
+						elseif buffs[i].type == "oh" then
+							CancelItemTempEnchantment(2)
+						else
+							CancelUnitBuff("player", i)
+						end
 					end
 				end
 			end)

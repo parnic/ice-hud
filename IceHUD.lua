@@ -25,6 +25,51 @@ IceHUD.options =
 			name = "General Settings",
 			order = 10
 		},
+		
+		faq = {
+			type = 'group',
+			name = 'FAQs',
+			desc = 'Answers to questions that are frequently asked.',
+			order = 1,
+			args = {
+				test = {
+					type = 'description',
+					fontSize = "medium",
+					name = [[1. How do I hide the default Blizzard player and target unit frames?
+Expand the "Module Settings" section, click "Player Health" or "Target Health," and check "Hide Blizzard Frame"
+
+2. How do I turn off click-targeting and menus on the player bar?
+Expand the "Module Settings" section, click "Player Health," un-check "Allow click-targeting." Note that as of v1.3, there is now an option to allow click-targeting out of combat, but turn it off while in combat.
+
+3. How do I hide the HUD or change its transparency based on combat, targeting, etc.?
+Check the "Transparency Settings" section. Nearly any combination of states should be available for tweaking.
+
+4. Even if the rest of the HUD is transparent, the health percentages seem to show up. Why?
+Expand the "Module Settings" section, expand "Player Health," click "Text Settings," look for options about keeping the lower/upper text blocks alpha locked. If the text is alpha locked, it will not drop below 100%, otherwise it respects its bar's transparency setting. Player Health/Mana, Target Health/Mana, and pet bars should all have these options.
+
+5. Is there any way to see combo points for Rogues and Druids or sunder applications for Warriors?
+Yes, check the "combo points" and "sunder count" modules in the configuration panel. (Note that these modules may not show up if you're not of the appropriate class to see them. They should be present for their respective classes, however.)
+
+6. What's this thing at the top of the player's cast bar? It's darker than the rest of the bar.
+That's the Cast Lag Indicator that shows you when you can start casting a new spell and still be able to finish the current one (based on your lag to the server). You can disable this in the Player Cast Bar module settings.
+
+7. Is there a bar that shows breath underwater and if so, how can I adjust it?
+Yes, this is called the MirrorBarHandler in the module settings. It's called that because it mirrors casting bar behavior, displays more than just breathing (fatigue is one example), and that's what Blizzard calls it. It can be moved/adjusted/resized/etc. as with any other module.
+
+8. There's a long green bar that sometimes shows up below everything else. What is it?
+That would be the TargetOfTarget module. That module is available for people who don't want the full ToT health/mana bars, but do want some sort of ToT representation on the screen.
+
+9. IceHUD needs a bar or counter for buff/debuff X!
+Good news: as of v1.5, you can create as many bars and counters for any buffs or debuffs you want! Click one of the "Create custom ..." buttons above. This will create a module named MyCustomBar# (where # is a number based on how many custom bars you've made so far) or MyCustomCounter#. You can then expand the Module Settings group and modify all sorts of settings on the new custom module. It is highly recommend that you rename the bar as soon as possible to avoid any confusion later. These custom modules are full-featured enough to replace some of the class-specific ones that are already there, but I will leave them so as not to upset people who are already using them.
+
+10. How do I turn off the resting/combat/PvP/etc. icons on the player or target?
+Expand Module Settings, expand PlayerHealth (or TargetHealth for targets), click Icon Settings. You can control every aspect of the icons there including location, visibility, draw order, etc.
+
+11. How do I turn off buffs/debuffs on the player's or target's bar?
+Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set the number of buffs per row to be 0. These cannot be controlled independently (e.g. you can turn off buffs and debuffs, but not just one or the other).]]
+				}
+			}
+		},
 
 		positioningSettings = {
 			type = 'group',
@@ -445,7 +490,7 @@ IceHUD.options =
 		modules = {
 			type='group',
 			desc = 'Module configuration options',
-			name = 'Module settings',
+			name = 'Module Settings',
 			args = {},
 			order = 41
 		},
@@ -727,8 +772,11 @@ end
 
 
 function IceHUD:NotifyNewDb()
+	self.IceCore.accountSettings = self.db.global
 	self.IceCore.settings = self.db.profile
 	self.IceCore:SetModuleDatabases()
+	
+	self.IceCore:CheckDisplayUpdateMessage()
 end
 
 
