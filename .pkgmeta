@@ -37,6 +37,8 @@ externals:
         url: svn://svn.wowace.com/wow/libdogtag-3-0/mainline/trunk
     libs/LibDogTag-Unit-3.0:
         url: svn://svn.wowace.com/wow/libdogtag-unit-3-0/mainline/trunk
+    libs/LibDBIcon-1.0:
+        url: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
 
 optional-dependencies:
     - libdogtag-3-0

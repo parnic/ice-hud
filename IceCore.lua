@@ -74,6 +74,7 @@ function IceCore.prototype:SetupDefaults()
 			bShouldUseDogTags = true,
 
 			updatePeriod = 0.1,
+			minimap = {},
 		},
 		global = {
 			lastRunVersion = 0,

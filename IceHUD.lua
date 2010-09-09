@@ -3,6 +3,7 @@ IceHUD = LibStub("AceAddon-3.0"):NewAddon("IceHUD", "AceConsole-3.0")
 local SML = AceLibrary("LibSharedMedia-3.0")
 local ACR = LibStub("AceConfigRegistry-3.0")
 local ConfigDialog = LibStub("AceConfigDialog-3.0")
+local icon = LibStub("LibDBIcon-1.0")
 
 IceHUD.CurrTagVersion = 3
 IceHUD.debugging = false
@@ -669,6 +670,25 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 			step = 0.01,
 			order = 97
 		},
+
+		showMinimap = {
+			type = 'toggle',
+			name = "Show Minimap Icon",
+			desc = "Whether or not to show an IceHUD icon on the minimap.",
+			get = function(info)
+				return not IceHUD.db.profile.minimap.hide
+			end,
+			set = function(info, v)
+				IceHUD.db.profile.minimap.hide = not v
+				if v then
+					icon:Show("IceHUD")
+				else
+					icon:Hide("IceHUD")
+				end
+			end,
+			hidden = function() return not icon end,
+			order = 98
+		}
 	}
 }
 
@@ -832,6 +852,10 @@ function IceHUD:InitLDB()
 				end
 			end,
 		})
+
+		if icon then
+			icon:Register("IceHUD", ldbButton, self.db.profile.minimap)
+		end
 	end
 end
 
