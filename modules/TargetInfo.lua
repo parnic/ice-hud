@@ -1189,7 +1189,7 @@ end
 
 
 
-function IceTargetInfo.prototype:AuraChanged(unit)
+function IceTargetInfo.prototype:AuraChanged(event, unit)
 	if (unit == self.unit) then
 		self:UpdateBuffs()
 	end
@@ -1234,12 +1234,12 @@ function IceTargetInfo.prototype:TargetChanged()
 	-- pass "internal" as a paramater so event handler code doesn't execute
 	-- Update() unnecassarily
 
-	self:TargetName(internal)
+	self:TargetName(nil, internal)
 
-	self:TargetLevel(internal)
-	self:TargetReaction(internal)
-	self:TargetFaction(internal)
-	self:TargetFlags(internal)
+	self:TargetLevel(nil, internal)
+	self:TargetReaction(nil, internal)
+	self:TargetFaction(nil, internal)
+	self:TargetFlags(nil, internal)
 
 	self:UpdateBuffs()
 	self:UpdateRaidTargetIcon()
@@ -1248,7 +1248,7 @@ function IceTargetInfo.prototype:TargetChanged()
 end
 
 
-function IceTargetInfo.prototype:TargetName(unit)
+function IceTargetInfo.prototype:TargetName(event, unit)
 	if (unit == self.unit or unit == internal) then
 		self.name, self.realm = UnitName(self.unit)
 		self.classLocale, self.classEnglish = UnitClass(self.unit)
@@ -1282,7 +1282,7 @@ function IceTargetInfo.prototype:TargetName(unit)
 end
 
 
-function IceTargetInfo.prototype:TargetLevel(unit)
+function IceTargetInfo.prototype:TargetLevel(event, unit)
 	if (unit == self.unit or unit == internal) then
 		self.level = UnitLevel(self.unit)
 
@@ -1319,7 +1319,7 @@ end
 
 
 -- PVP status
-function IceTargetInfo.prototype:TargetFaction(unit)
+function IceTargetInfo.prototype:TargetFaction(event, unit)
 	if (unit == self.unit or unit == internal) then
 		if (self.isPlayer) then
 			if (UnitIsPVP(self.unit)) then
@@ -1341,7 +1341,7 @@ function IceTargetInfo.prototype:TargetFaction(unit)
 end
 
 
-function IceTargetInfo.prototype:TargetFlags(unit)
+function IceTargetInfo.prototype:TargetFlags(event, unit)
 	if (unit == self.unit or unit == internal) then
 		self.tapped = UnitIsTapped(self.unit) and (not UnitIsTappedByPlayer(self.unit))
 		self.targetCombat = UnitAffectingCombat(self.unit) and " |cffee4030Combat|r" or ""

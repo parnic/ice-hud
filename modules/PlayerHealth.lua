@@ -62,8 +62,8 @@ end
 function PlayerHealth.prototype:Enable(core)
 	PlayerHealth.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("UNIT_HEALTH", "Update")
-	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
+	self:RegisterEvent("UNIT_HEALTH", "UpdateEvent")
+	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateEvent")
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
 
@@ -785,7 +785,7 @@ function PlayerHealth.prototype:GetOptions()
 end
 
 
-function PlayerHealth.prototype:EnteringVehicle(unit, arg2)
+function PlayerHealth.prototype:EnteringVehicle(event, unit, arg2)
 	if (self.unit == "player" and IceHUD:ShouldSwapToVehicle(unit, arg2)) then
 		self.unit = "vehicle"
 		self:RegisterFontStrings()
@@ -794,7 +794,7 @@ function PlayerHealth.prototype:EnteringVehicle(unit, arg2)
 end
 
 
-function PlayerHealth.prototype:ExitingVehicle(unit)
+function PlayerHealth.prototype:ExitingVehicle(event, unit)
 	if (unit == "player" and self.unit == "vehicle") then
 		self.unit = "player"
 		self:RegisterFontStrings()
@@ -1154,6 +1154,10 @@ function PlayerHealth.prototype:CheckPvP()
 	end
 end
 
+
+function PlayerHealth.prototype:UpdateEvent(event, unit)
+	self:Update(unit)
+end
 
 function PlayerHealth.prototype:Update(unit)
 	PlayerHealth.super.prototype.Update(self)

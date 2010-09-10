@@ -205,11 +205,11 @@ end
 
 function Totems.prototype:ResetTotemAvailability()
 	for i=1, self.numTotems do
-		self:UpdateTotem(totem)
+		self:UpdateTotem(nil, totem)
 	end
 end
 
-function Totems.prototype:UpdateTotem(totem, ...)
+function Totems.prototype:UpdateTotem(event, totem, ...)
 	if not totem or tonumber(totem) ~= totem or totem < 1 or totem > self.numTotems then
 		return
 	end

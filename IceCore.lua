@@ -1,6 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-IceCore = AceOO.Class("AceEvent-2.0")
+IceCore = AceOO.Class()
 
 IceCore.Side = { Left = "LEFT", Right = "RIGHT" }
 
@@ -31,13 +31,6 @@ function IceCore.prototype:init()
 	IceHUD:Debug("IceCore.prototype:init()")
 
 	self.IceHUDFrame = CreateFrame("Frame","IceHUDFrame", UIParent)
-
-	-- We are ready to load modules
-	self:RegisterEvent(IceCore.RegisterModule, "Register")
-	self:TriggerEvent(IceCore.Loaded)
-
-
-	self:SetupDefaults()
 end
 
 
@@ -50,7 +43,7 @@ function IceCore.prototype:SetupDefaults()
 			verticalPos = -110,
 			horizontalPos = 0,
 			scale = 0.9,
-			
+
 			alphaooc = 0.3,
 			alphaic = 0.6,
 			alphaTarget = 0.4,
@@ -60,7 +53,7 @@ function IceCore.prototype:SetupDefaults()
 			alphaicbg = 0.3,
 			alphaTargetbg = 0.25,
 			alphaNotFullbg = 0.25,
-			
+
 			backgroundToggle = false,
 			backgroundColor = {r = 0.5, g = 0.5, b = 0.5},
 			barTexture = "Bar",
@@ -85,14 +78,14 @@ function IceCore.prototype:SetupDefaults()
 	for k, v in pairs(self.presets[defaultPreset]) do
 		self.defaults.profile[k] = v
 	end
-	
+
 	-- get default settings from the modules
 	self.defaults.profile.modules = {}
 	for i = 1, table.getn(self.elements) do
 		local name = self.elements[i]:GetElementName()
-		self.defaults.profile.modules[name] = self.elements[i]:GetDefaultSettings()	
+		self.defaults.profile.modules[name] = self.elements[i]:GetDefaultSettings()
 	end
-	
+
 	if (table.getn(self.elements) > 0) then
 		self.defaults.profile.colors = self.elements[1].defaultColors
 	end
@@ -284,7 +277,7 @@ function IceCore.prototype:Disable()
 			self.elements[i]:Disable(true)
 		end
 	end
-	
+
 	self.IceHUDFrame:Hide()
 	self:EmptyUpdates()
 	self.enabled = false
@@ -299,9 +292,9 @@ function IceCore.prototype:DrawFrame()
 	self.IceHUDFrame:SetFrameStrata("BACKGROUND")
 	self.IceHUDFrame:SetWidth(self.settings.gap)
 	self.IceHUDFrame:SetHeight(20)
-	
+
 	self:SetScale(self.settings.scale)
-	
+
 	self.IceHUDFrame:SetPoint("CENTER", self.settings.horizontalPos, self.settings.verticalPos)
 	self.IceHUDFrame:Show()
 end
@@ -316,7 +309,7 @@ end
 
 function IceCore.prototype:GetModuleOptions()
 	local options = {}
-	
+
 	options["aaaClickPlus"] = {
 		type = 'description',
 		fontSize = 'large',
@@ -334,16 +327,16 @@ function IceCore.prototype:GetModuleOptions()
 			args = opt
 		}
 	end
-	
+
 	return options
 end
 
 
 function IceCore.prototype:GetColorOptions()
 	assert(table.getn(IceHUD.IceCore.elements) > 0, "Unable to get color options, no elements found!")
-	
+
 	local options = {}
-	
+
 	for k, v in pairs(self.elements[1]:GetColors()) do
 		local kk, vv = k, v
 		options[k] =  {
@@ -359,7 +352,7 @@ function IceCore.prototype:GetColorOptions()
 			end
 		}
 	end
-	
+
 	return options
 end
 
@@ -411,7 +404,7 @@ function IceCore.prototype:GetScale()
 end
 function IceCore.prototype:SetScale(value)
 	self.settings.scale = value
-	
+
 	self.IceHUDFrame:SetScale(value)
 end
 
@@ -572,7 +565,7 @@ end
 
 
 function IceCore.prototype:GetFontFamily()
-	return self.settings.fontFamily 
+	return self.settings.fontFamily
 end
 function IceCore.prototype:SetFontFamily(value)
 	self.settings.fontFamily  = value
@@ -598,7 +591,7 @@ function IceCore.prototype:SetColor(color, r, g, b)
 	self.settings.colors[color].r = r
 	self.settings.colors[color].g = g
 	self.settings.colors[color].b = b
-	
+
 	self:Redraw()
 end
 
@@ -713,7 +706,7 @@ function IceCore.prototype:LoadPresets()
 		barBlendMode = "BLEND",
 		barBgBlendMode = "BLEND",
 	}
-	
+
 	self.presets["HiBar"] = {
 		barTexture = "HiBar",
 		barWidth = 63,
@@ -723,7 +716,7 @@ function IceCore.prototype:LoadPresets()
 		barBlendMode = "BLEND",
 		barBgBlendMode = "BLEND",
 	}
-	
+
 	self.presets["RoundBar"] = {
 		barTexture = "RoundBar",
 		barWidth = 155,

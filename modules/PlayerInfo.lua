@@ -102,7 +102,7 @@ function PlayerInfo.prototype:Enable(core)
 		self:HideBlizz()
 	end
 
-	self:ScheduleRepeatingEvent(self.elementName, self.UpdateBuffs, 1, self, self.unit, true)
+	self:ScheduleRepeatingTimer(function() self:RepeatingUpdateBuffs() end, 1)
 end
 
 function PlayerInfo.prototype:ShowBlizz()
@@ -118,6 +118,10 @@ function PlayerInfo.prototype:HideBlizz()
 	TemporaryEnchantFrame:Hide()
 
 	BuffFrame:UnregisterAllEvents()
+end
+
+function PlayerInfo.prototype:RepeatingUpdateBuffs()
+	self:UpdateBuffs(self.unit, true)
 end
 
 function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)

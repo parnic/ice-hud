@@ -38,7 +38,7 @@ function FocusCast.prototype:Enable(core)
 end
 
 
-function FocusCast.prototype:FocusChanged(unit)
+function FocusCast.prototype:FocusChanged(event, unit)
 	if not (UnitExists(self.unit)) then
 		self:StopBar()
 		return

@@ -204,12 +204,12 @@ end
 
 function Runes.prototype:ResetRuneAvailability()
 	for i=1, self.numRunes do
-		self:UpdateRunePower(i, true)
+		self:UpdateRunePower(nil, i, true)
 	end
 end
 
 -- simply shows/hides the foreground rune when it becomes usable/unusable. this allows the background transparent rune to show only
-function Runes.prototype:UpdateRunePower(rune, dontFlash)
+function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
 	if not rune or not self.frame.graphical or #self.frame.graphical < rune then
 		return
 	end
@@ -255,7 +255,7 @@ function Runes.prototype:ShineFinished(rune)
 	UIFrameFadeOut(self.frame.graphical[rune].shine, 0.5);
 end
 
-function Runes.prototype:UpdateRuneType(rune)
+function Runes.prototype:UpdateRuneType(event, rune)
 --	DEFAULT_CHAT_FRAME:AddMessage("Runes.prototype:UpdateRuneType: rune="..rune.." GetRuneType(rune)="..GetRuneType(rune));
 
 	if not rune or tonumber(rune) ~= rune or rune < 1 or rune > self.numRunes then

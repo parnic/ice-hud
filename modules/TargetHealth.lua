@@ -523,10 +523,10 @@ function IceTargetHealth.prototype:Enable(core)
 	IceTargetHealth.super.prototype.Enable(self, core)
 
 	if self.registerEvents then
-		self:RegisterEvent("UNIT_HEALTH", "Update")
-		self:RegisterEvent("UNIT_MAXHEALTH", "Update")
-		self:RegisterEvent("UNIT_FLAGS", "Update")
-		self:RegisterEvent("UNIT_FACTION", "Update")
+		self:RegisterEvent("UNIT_HEALTH", "UpdateEvent")
+		self:RegisterEvent("UNIT_MAXHEALTH", "UpdateEvent")
+		self:RegisterEvent("UNIT_FLAGS", "UpdateEvent")
+		self:RegisterEvent("UNIT_FACTION", "UpdateEvent")
 		self:RegisterEvent("RAID_TARGET_UPDATE", "UpdateRaidTargetIcon")
 		self:RegisterEvent("UPDATE_FACTION", "CheckPvP")
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", "CheckPvP")
@@ -620,6 +620,10 @@ function IceTargetHealth.prototype:EnableClickTargeting(bEnable)
 	end
 end
 
+
+function IceTargetHealth.prototype:UpdateEvent(event, unit)
+	self:Update(unit)
+end
 
 function IceTargetHealth.prototype:Update(unit)
 	IceTargetHealth.super.prototype.Update(self)

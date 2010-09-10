@@ -23,7 +23,7 @@ function RangeCheck.prototype:Enable(core)
 		DogTag = AceLibrary("LibDogTag-3.0")
 		self:RegisterFontStrings()
 	else
-		self:ScheduleRepeatingEvent(self.elementName, self.UpdateRange, 0.1, self)
+		self:ScheduleRepeatingTimer(function() self:UpdateRange() end, 0.1)
 	end
 end
 

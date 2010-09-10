@@ -110,7 +110,7 @@ function TargetTargetHealth.prototype:Enable(core)
 		self.moduleSettings.useSelfColor = nil
 	end
 
-	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.1, self, "targettarget")
+	self:ScheduleRepeatingTimer(function() self:Update("targettarget") end, 0.1)
 end
 
 function TargetTargetHealth.prototype:Disable(core)

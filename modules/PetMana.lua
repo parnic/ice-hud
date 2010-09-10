@@ -58,23 +58,23 @@ function PetMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "CheckPet")
 
 	if IceHUD.WowVer >= 40000 then
-		self:RegisterEvent("UNIT_POWER", "Update")
-		self:RegisterEvent("UNIT_MAXPOWER", "Update")
+		self:RegisterEvent("UNIT_POWER", "UpdateEvent")
+		self:RegisterEvent("UNIT_MAXPOWER", "UpdateEvent")
 	else
-		self:RegisterEvent("UNIT_MANA", "Update")
-		self:RegisterEvent("UNIT_MAXMANA", "Update")
-		self:RegisterEvent("UNIT_RAGE", "Update")
-		self:RegisterEvent("UNIT_MAXRAGE", "Update")
-		self:RegisterEvent("UNIT_ENERGY", "Update")
-		self:RegisterEvent("UNIT_MAXENERGY", "Update")
-		self:RegisterEvent("UNIT_FOCUS", "Update")
-		self:RegisterEvent("UNIT_MAXFOCUS", "Update")
+		self:RegisterEvent("UNIT_MANA", "UpdateEvent")
+		self:RegisterEvent("UNIT_MAXMANA", "UpdateEvent")
+		self:RegisterEvent("UNIT_RAGE", "UpdateEvent")
+		self:RegisterEvent("UNIT_MAXRAGE", "UpdateEvent")
+		self:RegisterEvent("UNIT_ENERGY", "UpdateEvent")
+		self:RegisterEvent("UNIT_MAXENERGY", "UpdateEvent")
+		self:RegisterEvent("UNIT_FOCUS", "UpdateEvent")
+		self:RegisterEvent("UNIT_MAXFOCUS", "UpdateEvent")
 	end
 
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
 	self:CheckPet()
-	self:ManaType(self.unit)
+	self:ManaType(nil, self.unit)
 end
 
 
@@ -83,7 +83,7 @@ function PetMana.prototype:CheckPet()
 
 	if (UnitExists(self.unit)) then
 		self:Show(true)
-		self:ManaType(self.unit)
+		self:ManaType(nil, self.unit)
 		self:Update(self.unit)
 	else
 		self:Show(false)
@@ -91,7 +91,7 @@ function PetMana.prototype:CheckPet()
 end
 
 
-function PetMana.prototype:ManaType(unit)
+function PetMana.prototype:ManaType(event, unit)
 	if (unit ~= self.unit) then
 		return
 	end
@@ -134,10 +134,14 @@ function PetMana.prototype:CheckForVehicle()
 	end
 
 	if self.unit ~= lastUnit then
-		self:ManaType(self.unit)
+		self:ManaType(nil, self.unit)
 	end
 end
 
+
+function PetMana.prototype:UpdateEvent(event, unit)
+	self:Update(unit)
+end
 
 function PetMana.prototype:Update(unit)
 	self:CheckForVehicle()

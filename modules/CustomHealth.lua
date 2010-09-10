@@ -103,7 +103,7 @@ function IceCustomHealth.prototype:Enable(core)
 	self:SetUnit(self.moduleSettings.unitToTrack)
 	self:CreateFrame()
 
-	self:ScheduleRepeatingEvent(self.elementName, self.Update, IceHUD.IceCore:UpdatePeriod(), self)
+	self:ScheduleRepeatingTimer(function() self:Update() end, IceHUD.IceCore:UpdatePeriod())
 end
 
 function IceCustomHealth.prototype:Disable(core)

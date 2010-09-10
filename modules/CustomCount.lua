@@ -536,11 +536,7 @@ function IceCustomCount.prototype:GetGradientColor(curr)
 end
 
 
-function IceCustomCount.prototype:UpdateCustomCount(unit)
-	if unit and unit ~= self.unit and self.unit ~= "main hand weapon" and self.unit ~= "off hand weapon" then
-		return
-	end
-
+function IceCustomCount.prototype:UpdateCustomCount()
 	local points
 	if IceHUD.IceCore:IsInConfigMode() then
 		points = tonumber(self.moduleSettings.maxCount)

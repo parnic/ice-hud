@@ -5,6 +5,9 @@ local ACR = LibStub("AceConfigRegistry-3.0")
 local ConfigDialog = LibStub("AceConfigDialog-3.0")
 local icon = LibStub("LibDBIcon-1.0")
 
+local pendingModuleLoads = {}
+local bReadyToRegisterModules = false
+
 IceHUD.CurrTagVersion = 3
 IceHUD.debugging = false
 
@@ -19,14 +22,14 @@ IceHUD.options =
 	name = "IceHUD",
 	desc = "IceHUD",
 	icon = "Interface\\Icons\\Spell_Frost_Frost",
-	args = 
+	args =
 	{
 		headerGeneral = {
 			type = 'header',
 			name = "General Settings",
 			order = 10
 		},
-		
+
 		faq = {
 			type = 'group',
 			name = 'FAQs',
@@ -351,7 +354,7 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 			set = function(info, value)
 				IceHUD.IceCore:SetFontFamily(info.option.values[value])
 			end,
-			values = SML:List('font'),	
+			values = SML:List('font'),
 		},
 
 		barSettings = {
@@ -470,7 +473,7 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 					set = function(info, value)
 						IceHUD.IceCore:SetBarBgBlendMode(value)
 					end,
-					values = { BLEND = "Blend", ADD = "Additive" }, --"Disable", "Alphakey", "Mod" },		
+					values = { BLEND = "Blend", ADD = "Additive" }, --"Disable", "Alphakey", "Mod" },
 					order = 16
 				},
 
@@ -484,7 +487,7 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 					set = function(info, value)
 						IceHUD.IceCore:SetBarBlendMode(value)
 					end,
-					values = { BLEND = "Blend", ADD = "Additive" }, --"Disable", "Alphakey", "Mod" },		
+					values = { BLEND = "Blend", ADD = "Additive" }, --"Disable", "Alphakey", "Mod" },
 					order = 17
 				},
 			}
@@ -498,7 +501,7 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 			args = {},
 			order = 41
 		},
-		
+
 		colors = {
 			type='group',
 			desc = 'Module color configuration options',
@@ -542,7 +545,7 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 			end,
 			order = 92
 		},
-		
+
 		reset = {
 			type = 'execute',
 			name = '|cffff0000Reset|r',
@@ -693,7 +696,7 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 }
 
 
-StaticPopupDialogs["ICEHUD_RESET"] = 
+StaticPopupDialogs["ICEHUD_RESET"] =
 {
 	text = "Are you sure you want to reset IceHUD settings?",
 	button1 = OKAY,
@@ -770,6 +773,9 @@ function IceHUD:OnInitialize()
 	self:Debug("IceHUD:OnInitialize()")
 
 	self.IceCore = IceCore:new()
+	self:RegisterPendingModules()
+	self.IceCore:SetupDefaults()
+	bReadyToRegisterModules = true
 
 	self.db = LibStub("AceDB-3.0"):New("IceCoreDB", self.IceCore.defaults, "Default")
 	self.db.RegisterCallback(self, "OnProfileShutdown", "PreProfileChanged")
@@ -798,7 +804,7 @@ function IceHUD:NotifyNewDb()
 	self.IceCore.accountSettings = self.db.global
 	self.IceCore.settings = self.db.profile
 	self.IceCore:SetModuleDatabases()
-	
+
 	self.IceCore:CheckDisplayUpdateMessage()
 end
 
@@ -990,4 +996,20 @@ function IceHUD:GetSelectValue(info, val)
 	end
 
 	return 1
+end
+
+function IceHUD:Register(element)
+	assert(element, "Trying to register a nil module")
+	if not bReadyToRegisterModules then
+		pendingModuleLoads[#pendingModuleLoads+1] = element
+	else
+		self.IceCore:Register(element)
+	end
+end
+
+function IceHUD:RegisterPendingModules()
+	for i=1, #pendingModuleLoads do
+		self.IceCore:Register(pendingModuleLoads[i])
+	end
+	pendingModuleLoads = {}
 end

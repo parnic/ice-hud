@@ -1,7 +1,7 @@
 local AceOO = AceLibrary("AceOO-2.0")
 local SML = AceLibrary("LibSharedMedia-3.0")
 
-IceElement = AceOO.Class("AceEvent-2.0")
+IceElement = AceOO.Class()
 IceElement.virtual = true
 
 IceElement.TexturePath = IceHUD.Location .. "\\textures\\"
@@ -42,7 +42,10 @@ function IceElement.prototype:init(name)
 	self:SetDefaultColor("Text", 1, 1, 1)
 	self:SetDefaultColor("undef", 0.7, 0.7, 0.7)
 	
-	self:RegisterEvent(IceCore.Loaded, "OnCoreLoad")
+	LibStub("AceEvent-3.0"):Embed(self)
+	LibStub("AceTimer-3.0"):Embed(self)
+
+	IceHUD:Register(self)
 end
 
 
@@ -60,7 +63,7 @@ end
 
 function IceElement.prototype:Create(parent)
 	assert(parent, "IceElement 'parent' can't be nil")
-	
+
 	self.parent = parent
 	self:CreateFrame()
 	self:Show(false)
@@ -105,7 +108,7 @@ end
 -- inherting classes should override this and provide
 -- make sure they refresh any changes made to them
 function IceElement.prototype:Redraw()
-	
+
 end
 
 
@@ -167,12 +170,12 @@ function IceElement.prototype:GetOptions()
 			self.moduleSettings.alwaysFullAlpha = value
 			self:Update(self.unit)
 			self:Redraw()
-		end,	
+		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
 		order = 27.5
-	}	
+	}
 
 	return opts
 end
@@ -253,7 +256,7 @@ function IceElement.prototype:GetColor(color, alpha)
 	if not (alpha) then
 		alpha = self.alpha
 	end
-	
+
 	if not (self.settings.colors[color]) then
 		local r, g, b = self:GetClassColor(color)
 		return r, g, b, alpha
@@ -293,7 +296,7 @@ function IceElement.prototype:SetDefaultColor(color, red, green, blue)
 	if (blue > 1) then
 		blue = blue / 255
 	end
-	
+
 	self.defaultColors[color] = {r = red, g = green, b = blue}
 end
 
@@ -331,20 +334,20 @@ function IceElement.prototype:FontFactory(size, frame, font, flags)
 	if not (frame) then
 		frame = self.frame
 	end
-	
+
 	local fontString = nil
 	if not (font) then
 		fontString = frame:CreateFontString()
 	else
 		fontString = font
 	end
-	
+
 	fontString:SetFont(SML:Fetch('font', self.settings.fontFamily), size, flags)
 	if not (flags) then
 		fontString:SetShadowColor(0, 0, 0, 1)
 		fontString:SetShadowOffset(1, -1)
 	end
-	
+
 	return fontString
 end
 
@@ -375,15 +378,6 @@ function IceElement.prototype:Show(bShouldShow)
 	else
 		self.frame:Show()
 	end
-end
-
-
-
--- Event Handlers -------------------------------------------------------------
-
--- Register ourself to the core
-function IceElement.prototype:OnCoreLoad()
-	self:TriggerEvent(IceCore.RegisterModule, self)
 end
 
 

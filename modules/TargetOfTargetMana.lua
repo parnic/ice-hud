@@ -60,7 +60,7 @@ function TargetTargetMana.prototype:Enable(core)
 	self.determineColor = false
 	TargetTargetMana.super.prototype.Enable(self, core)
 
-	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.1, self, "targettarget")
+	self:ScheduleRepeatingTimer(function() self:Update("targettarget") end, 0.1)
 end
 
 function TargetTargetMana.prototype:Disable(core)

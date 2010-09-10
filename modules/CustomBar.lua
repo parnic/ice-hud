@@ -23,10 +23,10 @@ end
 function IceCustomBar.prototype:Enable(core)
 	IceCustomBar.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("UNIT_AURA", "UpdateCustomBar")
-	self:RegisterEvent("UNIT_PET", "UpdateCustomBar")
-	self:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomBar")
-	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomBar")
+	self:RegisterEvent("UNIT_AURA", "UpdateCustomBarEvent")
+	self:RegisterEvent("UNIT_PET", "UpdateCustomBarEvent")
+	self:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomBarEvent")
+	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomBarEvent")
 
 	if self.moduleSettings.auraIconScale == nil then
 		self.moduleSettings.auraIconScale = 1
@@ -494,6 +494,10 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 	end
 
 	return nil, nil, nil, nil
+end
+
+function IceCustomBar.prototype:UpdateCustomBarEvent(event, unit)
+	self:UpdateCustomBar(unit)
 end
 
 function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)

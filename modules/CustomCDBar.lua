@@ -25,8 +25,8 @@ end
 function IceCustomCDBar.prototype:Enable(core)
 	IceCustomCDBar.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("SPELL_UPDATE_COOLDOWN", "UpdateCustomBar")
-	self:RegisterEvent("SPELL_UPDATE_USEABLE", "UpdateCustomBar")
+	self:RegisterEvent("SPELL_UPDATE_COOLDOWN", "UpdateCustomBarEvent")
+	self:RegisterEvent("SPELL_UPDATE_USEABLE", "UpdateCustomBarEvent")
 
 	self:Show(true)
 
@@ -437,6 +437,10 @@ function IceCustomCDBar.prototype:UpdateIcon()
 			self.barFrame.icon:Hide()
 		end
 	end
+end
+
+function IceCustomCDBar.prototype:UpdateCustomBarEvent()
+	self:UpdateCustomBar()
 end
 
 function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)

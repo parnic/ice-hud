@@ -104,7 +104,7 @@ function IceCustomMana.prototype:Enable(core)
 
 	self:CreateFrame()
 
-	self:ScheduleRepeatingEvent(self.elementName, self.Update, IceHUD.IceCore:UpdatePeriod(), self)
+	self:ScheduleRepeatingTimer(function() self:Update() end, IceHUD.IceCore:UpdatePeriod())
 end
 
 function IceCustomMana.prototype:Disable(core)

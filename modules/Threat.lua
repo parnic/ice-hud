@@ -31,8 +31,6 @@ function IceThreat.prototype:init(name, unit)
 	self:SetDefaultColor("ThreatCustom", 255, 255, 0)
 	self:SetDefaultColor("ThreatPullAggro", 255, 0, 0)
 	self:SetDefaultColor("ThreatSecondPlace", 255, 255, 0)
-
-	self:OnCoreLoad()
 end
 
 -- default settings
@@ -171,7 +169,7 @@ end
 function IceThreat.prototype:Enable(core)
 	IceThreat.super.prototype.Enable(self, core)
 
-	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.2, self)
+	self:ScheduleRepeatingTimer(function() self:Update() end, 0.2)
 
 	self:Update(self.unit)
 end

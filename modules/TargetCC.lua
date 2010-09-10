@@ -236,7 +236,7 @@ function TargetCC.prototype:Enable(core)
 	self:RegisterEvent("UNIT_AURA", "UpdateTargetDebuffs")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateTargetDebuffs")
 
---	self:ScheduleRepeatingEvent(self.elementName, self.UpdateTargetDebuffs, 0.1, self)
+--	self:ScheduleRepeatingTimer(function() self:UpdateTargetDebuffs() end, 0.1)
 
 	self:Show(false)
 end
@@ -337,10 +337,10 @@ function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 	return unpack(result)
 end
 
-function TargetCC.prototype:UpdateTargetDebuffs(unit, isUpdate)
+function TargetCC.prototype:UpdateTargetDebuffs(event, unit, isUpdate)
 	local name, duration, remaining
 	if not isUpdate then
-		self.frame:SetScript("OnUpdate", function() self:UpdateTargetDebuffs(self.unit, true) end)
+		self.frame:SetScript("OnUpdate", function() self:UpdateTargetDebuffs(nil, self.unit, true) end)
 		self.debuffName, self.debuffDuration, self.debuffRemaining = self:GetMaxDebuffDuration(self.unit, self.debuffList)
 	else
 		self.debuffRemaining = math.max(0, self.debuffRemaining - (1.0 / GetFramerate()))

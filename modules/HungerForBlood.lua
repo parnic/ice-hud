@@ -162,7 +162,7 @@ function HungerForBlood.prototype:GetBuffDuration(unitName, buffName)
     return nil, nil, nil
 end
 
-function HungerForBlood.prototype:UpdateHungerForBlood(unit, fromUpdate)
+function HungerForBlood.prototype:UpdateHungerForBlood(event, unit, fromUpdate)
     if unit and unit ~= self.unit then
         return
     end
@@ -183,7 +183,7 @@ function HungerForBlood.prototype:UpdateHungerForBlood(unit, fromUpdate)
 
     if hfbEndTime and hfbEndTime >= now then
         if not fromUpdate then
-            self.frame:SetScript("OnUpdate", function() self:UpdateHungerForBlood(self.unit, true) end)
+            self.frame:SetScript("OnUpdate", function() self:UpdateHungerForBlood(nil, self.unit, true) end)
         end
 
 --        self:Show(true)

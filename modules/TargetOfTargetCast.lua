@@ -37,7 +37,7 @@ end
 function TargetTargetCast.prototype:Enable(core)
 	TargetTargetCast.super.prototype.Enable(self, core)
 
-	self:ScheduleRepeatingEvent(self.elementName, self.UpdateTargetTarget, 0.1, self)
+	self:ScheduleRepeatingTimer(function() self:UpdateTargetTarget() end, 0.1)
 end
 
 

@@ -327,7 +327,7 @@ function CastBar.prototype:Enable(core)
 end
 
 
-function CastBar.prototype:EnteringVehicle(unit, arg2)
+function CastBar.prototype:EnteringVehicle(event, unit, arg2)
 	if (self.unit == "player" and IceHUD:ShouldSwapToVehicle(unit, arg2)) then
 		self.unit = "vehicle"
 		self:Update(self.unit)
@@ -335,7 +335,7 @@ function CastBar.prototype:EnteringVehicle(unit, arg2)
 end
 
 
-function CastBar.prototype:ExitingVehicle(unit)
+function CastBar.prototype:ExitingVehicle(event, unit)
 	if (unit == "player" and self.unit == "vehicle") then
 		self.unit = "player"
 		self:Update(self.unit)
@@ -415,16 +415,16 @@ end
 
 
 -- OVERRIDE
-function CastBar.prototype:SpellCastSent(unit, spell, rank, target)
-	CastBar.super.prototype.SpellCastSent(self, unit, spell, rank, target)
+function CastBar.prototype:SpellCastSent(event, unit, spell, rank, target)
+	CastBar.super.prototype.SpellCastSent(self, event, unit, spell, rank, target)
 	if (unit ~= self.unit) then return end
 
 	self.spellCastSent = GetTime()
 end
 
 -- OVERRIDE
-function CastBar.prototype:SpellCastStart(unit, spell, rank)
-	CastBar.super.prototype.SpellCastStart(self, unit, spell, rank)
+function CastBar.prototype:SpellCastStart(event, unit, spell, rank)
+	CastBar.super.prototype.SpellCastStart(self, event, unit, spell, rank)
 	if (unit ~= self.unit) then return end
 
 	if not self:IsVisible() or not self.actionDuration then
@@ -471,8 +471,8 @@ end
 
 
 -- OVERRIDE
-function CastBar.prototype:SpellCastChannelStart(unit)
-	CastBar.super.prototype.SpellCastChannelStart(self, unit)
+function CastBar.prototype:SpellCastChannelStart(event, unit)
+	CastBar.super.prototype.SpellCastChannelStart(self, event, unit)
 	if (unit ~= self.unit) then return end
 
 	if not self:IsVisible() or not self.actionDuration then

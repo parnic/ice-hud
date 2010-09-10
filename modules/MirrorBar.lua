@@ -450,7 +450,7 @@ function MirrorBarHandler.prototype:Redraw()
 end
 
 
-function MirrorBarHandler.prototype:MirrorStart(timer, value, maxValue, scale, paused, label)
+function MirrorBarHandler.prototype:MirrorStart(event, timer, value, maxValue, scale, paused, label)
 	local done = nil
 
 	-- check if we can find an already running timer to reverse it
@@ -483,7 +483,7 @@ function MirrorBarHandler.prototype:MirrorStart(timer, value, maxValue, scale, p
 end
 
 
-function MirrorBarHandler.prototype:MirrorStop(timer)
+function MirrorBarHandler.prototype:MirrorStop(event, timer)
 	for i = 1, table.getn(self.bars) do
 		if (self.bars[i].timer == timer) then
 			self.bars[i]:MirrorStop()
@@ -492,7 +492,7 @@ function MirrorBarHandler.prototype:MirrorStop(timer)
 end
 
 
-function MirrorBarHandler.prototype:MirrorPause(paused)
+function MirrorBarHandler.prototype:MirrorPause(event, paused)
 	for i = 1, table.getn(self.bars) do
 		if (self.bars[i].timer ~= nil) then
 			self.bars[i]:MirrorPause(paused > 0)

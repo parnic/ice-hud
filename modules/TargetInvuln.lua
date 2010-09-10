@@ -88,7 +88,7 @@ function TargetInvuln.prototype:Enable(core)
 	self:RegisterEvent("UNIT_AURA", "UpdateTargetBuffs")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateTargetBuffs")
 
---	self:ScheduleRepeatingEvent(self.elementName, self.UpdateTargetBuffs, 0.1, self)
+--	self:ScheduleRepeatingTimer(function() self:UpdateTargetBuffs() end, 0.1)
 
 	self:Show(false)
 end
@@ -180,10 +180,10 @@ function TargetInvuln.prototype:GetMaxbuffDuration(unitName, buffNames)
 	return unpack(result)
 end
 
-function TargetInvuln.prototype:UpdateTargetBuffs(unit, isUpdate)
+function TargetInvuln.prototype:UpdateTargetBuffs(event, unit, isUpdate)
 	local name, duration, remaining
 	if not isUpdate then
-		self.frame:SetScript("OnUpdate", function() self:UpdateTargetBuffs(self.unit, true) end)
+		self.frame:SetScript("OnUpdate", function() self:UpdateTargetBuffs(nil, self.unit, true) end)
 		self.buffName, self.buffDuration, self.buffRemaining = self:GetMaxbuffDuration(self.unit, self.buffList)
 	       
 	else

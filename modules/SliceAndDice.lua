@@ -41,18 +41,13 @@ function SliceAndDice.prototype:Enable(core)
 	SliceAndDice.super.prototype.Enable(self, core)
 	
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
-	if IceHUD.WowVer >= 30000 then
-		self:RegisterEvent("UNIT_AURA", "UpdateSliceAndDice")
-		self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateDurationBar")
-	else
-		self:RegisterEvent("PLAYER_AURAS_CHANGED", "UpdateSliceAndDice")
-		self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateDurationBar")
-	end
+	self:RegisterEvent("UNIT_AURA", "UpdateSliceAndDice")
+	self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateDurationBar")
 
 	if not self.moduleSettings.alwaysFullAlpha then
 		self:Show(false)
 	else
-		self:UpdateSliceAndDice(self.unit)
+		self:UpdateSliceAndDice(nil, self.unit)
 	end
 
 	self:SetBottomText1("")
@@ -204,7 +199,7 @@ function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
     return nil, nil
 end
 
-function SliceAndDice.prototype:UpdateSliceAndDice(unit, fromUpdate)
+function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
     if unit and unit ~= self.unit then
         return
     end
@@ -224,7 +219,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(unit, fromUpdate)
 
     if sndEndTime and sndEndTime >= now then
         if not fromUpdate then
-            self.frame:SetScript("OnUpdate", function() self:UpdateSliceAndDice(self.unit, true) end)
+            self.frame:SetScript("OnUpdate", function() self:UpdateSliceAndDice(nil, self.unit, true) end)
         end
 
         self:Show(true)
@@ -255,7 +250,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(unit, fromUpdate)
     end
 end
 
-function SliceAndDice.prototype:UpdateDurationBar(unit)
+function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 	if unit and unit ~= self.unit then
 		return
 	end

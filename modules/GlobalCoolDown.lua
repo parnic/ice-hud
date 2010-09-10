@@ -26,7 +26,7 @@ function GlobalCoolDown.prototype:Enable(core)
 	
 	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "CooldownStateChanged")
 
-	self:ScheduleRepeatingEvent(self.elementName, self.UpdateGlobalCoolDown, 0.05, self)
+	self:ScheduleRepeatingTimer(function() self:UpdateGlobalCoolDown() end, 0.05)
 
 	self:Show(false)
 end

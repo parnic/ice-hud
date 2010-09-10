@@ -210,7 +210,7 @@ end
 function TargetOfTarget.prototype:Enable(core)
 	TargetOfTarget.super.prototype.Enable(self, core)
 	
-	self:ScheduleRepeatingEvent(self.elementName, self.Update, 0.2, self)
+	self:ScheduleRepeatingTimer(function() self:Update() end, 0.2)
 	RegisterUnitWatch(self.frame)
 	
 	self:Update()

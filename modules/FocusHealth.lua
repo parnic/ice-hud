@@ -252,10 +252,10 @@ end
 function FocusHealth.prototype:Enable(core)
 	FocusHealth.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("UNIT_HEALTH", "Update")
-	self:RegisterEvent("UNIT_MAXHEALTH", "Update")
-	self:RegisterEvent("UNIT_FLAGS", "Update")
-	self:RegisterEvent("UNIT_FACTION", "Update")
+	self:RegisterEvent("UNIT_HEALTH", "UpdateEvent")
+	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateEvent")
+	self:RegisterEvent("UNIT_FLAGS", "UpdateEvent")
+	self:RegisterEvent("UNIT_FACTION", "UpdateEvent")
 	self:RegisterEvent("RAID_TARGET_UPDATE", "UpdateRaidFocusIcon")
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateFocus")
 
@@ -329,7 +329,9 @@ function FocusHealth.prototype:Disable(core)
 	FocusHealth.super.prototype.Disable(self, core)
 end
 
-
+function FocusHealth.prototype:UpdateEvent(event, unit)
+	self:Update(unit)
+end
 
 function FocusHealth.prototype:Update(unit)
 	FocusHealth.super.prototype.Update(self)

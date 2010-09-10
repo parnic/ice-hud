@@ -47,7 +47,7 @@ if self:ShouldUseTicker() then
 		end,
 		set = function(info, value)
 			self.moduleSettings.tickerEnabled = value
-			self:ManaType(self.unit)
+			self:ManaType(nil, self.unit)
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -103,18 +103,18 @@ function PlayerMana.prototype:Enable(core)
 	self:CreateTickerFrame()
 
 	if IceHUD.WowVer >= 40000 then
-		self:RegisterEvent("UNIT_POWER", "Update")
-		self:RegisterEvent("UNIT_MAXPOWER", "Update")
+		self:RegisterEvent("UNIT_POWER", "UpdateEvent")
+		self:RegisterEvent("UNIT_MAXPOWER", "UpdateEvent")
 	else
-		self:RegisterEvent("UNIT_MAXMANA", "Update")
-		self:RegisterEvent("UNIT_MAXRAGE", "Update")
-		self:RegisterEvent("UNIT_MAXENERGY", "Update")
-		self:RegisterEvent("UNIT_MAXRUNIC_POWER", "Update")
+		self:RegisterEvent("UNIT_MAXMANA", "UpdateEvent")
+		self:RegisterEvent("UNIT_MAXRAGE", "UpdateEvent")
+		self:RegisterEvent("UNIT_MAXENERGY", "UpdateEvent")
+		self:RegisterEvent("UNIT_MAXRUNIC_POWER", "UpdateEvent")
 
-		self:RegisterEvent("UNIT_MANA", "Update")
-		self:RegisterEvent("UNIT_RAGE", "Update")
+		self:RegisterEvent("UNIT_MANA", "UpdateEvent")
+		self:RegisterEvent("UNIT_RAGE", "UpdateEvent")
 		self:RegisterEvent("UNIT_ENERGY", "UpdateEnergy")
-		self:RegisterEvent("UNIT_RUNIC_POWER", "Update")
+		self:RegisterEvent("UNIT_RUNIC_POWER", "UpdateEvent")
 	end
 	
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
@@ -127,7 +127,7 @@ function PlayerMana.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
-	self:ManaType(self.unit)
+	self:ManaType(nil, self.unit)
 end
 
 function PlayerMana.prototype:ShouldUseTicker()
@@ -148,7 +148,7 @@ function PlayerMana.prototype:SetupOnUpdate(enable)
 end
 
 
-function PlayerMana.prototype:EnteringVehicle(unit, arg2)
+function PlayerMana.prototype:EnteringVehicle(event, unit, arg2)
 	if (self.unit == "player" and IceHUD:ShouldSwapToVehicle(unit, arg2)) then
 		self.unit = "vehicle"
 		self:RegisterFontStrings()
@@ -157,7 +157,7 @@ function PlayerMana.prototype:EnteringVehicle(unit, arg2)
 end
 
 
-function PlayerMana.prototype:ExitingVehicle(unit)
+function PlayerMana.prototype:ExitingVehicle(event, unit)
 	if (unit == "player" and self.unit == "vehicle") then
 		self.unit = "player"
 		self:RegisterFontStrings()
@@ -195,7 +195,7 @@ function PlayerMana.prototype:UseTargetAlpha(scale)
 end
 
 
-function PlayerMana.prototype:ManaType(unit)
+function PlayerMana.prototype:ManaType(event, unit)
 	if (unit ~= self.unit) then
 		return
 	end
@@ -217,6 +217,10 @@ function PlayerMana.prototype:ManaType(unit)
 end
 
 
+function PlayerMana.prototype:UpdateEvent(event, unit, powertype)
+	self:Update(unit, powertype)
+end
+
 function PlayerMana.prototype:Update(unit, powertype)
 	PlayerMana.super.prototype.Update(self)
 	if (unit and (unit ~= self.unit)) then
@@ -224,7 +228,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 	end
 	
 	if powertype ~= nil and powertype == "ENERGY" then
-		self:UpdateEnergy(unit)
+		self:UpdateEnergy(nil, unit)
 	end
 
 	if self.unit == "vehicle" and ((not UnitExists(unit)) or (self.maxMana == 0)) then
@@ -311,7 +315,7 @@ end
 
 
 
-function PlayerMana.prototype:UpdateEnergy(unit)
+function PlayerMana.prototype:UpdateEnergy(event, unit)
 	if (unit and (unit ~= self.unit)) then
 		return
 	end

@@ -256,7 +256,7 @@ function MaelstromCount.prototype:CreateMaelstromFrame(doTextureUpdate)
 end
 
 
-function MaelstromCount.prototype:UpdateMaelstromCount(unit)
+function MaelstromCount.prototype:UpdateMaelstromCount(event, unit)
 	if unit and unit ~= "player" then
 		return
 	end

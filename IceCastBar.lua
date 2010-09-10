@@ -415,13 +415,13 @@ end
 -- NORMAL SPELLS                                                             --
 -------------------------------------------------------------------------------
 
-function IceCastBar.prototype:SpellCastSent(unit, spell, rank, target)
+function IceCastBar.prototype:SpellCastSent(event, unit, spell, rank, target)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastSent", unit, spell, rank, target)
 end
 
 
-function IceCastBar.prototype:SpellCastStart(unit, spell, rank)
+function IceCastBar.prototype:SpellCastStart(event, unit, spell, rank)
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastStart", unit, spell, rank)
 	--UnitCastingInfo(unit)
@@ -430,7 +430,7 @@ function IceCastBar.prototype:SpellCastStart(unit, spell, rank)
 	self.current = spell
 end
 
-function IceCastBar.prototype:SpellCastStop(unit, spell, rank)
+function IceCastBar.prototype:SpellCastStop(event, unit, spell, rank)
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastStop", unit, spell, self.current)
 	
@@ -449,7 +449,7 @@ function IceCastBar.prototype:SpellCastStop(unit, spell, rank)
 end
 
 
-function IceCastBar.prototype:SpellCastFailed(unit, spell, rank)
+function IceCastBar.prototype:SpellCastFailed(event, unit, spell, rank)
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastFailed", unit, self.current)
 
@@ -477,7 +477,7 @@ function IceCastBar.prototype:SpellCastFailed(unit, spell, rank)
 	self:StartBar(IceCastBar.Actions.Failure, "Failed")
 end
 
-function IceCastBar.prototype:CheckChatInterrupt(msg)
+function IceCastBar.prototype:CheckChatInterrupt(event, msg)
 	local player, spell = deformat(msg, SPELLINTERRUPTOTHERSELF)
 	IceHUD:Debug("CheckChatInterrupt", msg, self.current)
 
@@ -491,7 +491,7 @@ function IceCastBar.prototype:CheckChatInterrupt(msg)
 	end
 end
 
-function IceCastBar.prototype:SpellCastInterrupted(unit, spell, rank)
+function IceCastBar.prototype:SpellCastInterrupted(event, unit, spell, rank)
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastInterrupted", unit, self.current)
 
@@ -505,7 +505,7 @@ function IceCastBar.prototype:SpellCastInterrupted(unit, spell, rank)
 	self:StartBar(IceCastBar.Actions.Failure, "Interrupted")
 end
 
-function IceCastBar.prototype:SpellCastDelayed(unit, delay)
+function IceCastBar.prototype:SpellCastDelayed(event, unit, delay)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastDelayed", unit, UnitCastingInfo(unit))
 	
@@ -518,7 +518,7 @@ function IceCastBar.prototype:SpellCastDelayed(unit, delay)
 end
 
 
-function IceCastBar.prototype:SpellCastSucceeded(unit, spell, rank)
+function IceCastBar.prototype:SpellCastSucceeded(event, unit, spell, rank)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastSucceeded", unit, spell, rank)
 	
@@ -556,14 +556,14 @@ end
 -- CHANNELING SPELLS                                                         --
 -------------------------------------------------------------------------------
 
-function IceCastBar.prototype:SpellCastChannelStart(unit)
+function IceCastBar.prototype:SpellCastChannelStart(event, unit)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastChannelStart", unit)
 	
 	self:StartBar(IceCastBar.Actions.Channel)
 end
 
-function IceCastBar.prototype:SpellCastChannelUpdate(unit)
+function IceCastBar.prototype:SpellCastChannelUpdate(event, unit)
 	if (unit ~= self.unit or not self.actionStartTime) then return end
 	--IceHUD:Debug("SpellCastChannelUpdate", unit, UnitChannelInfo(unit))
 	
@@ -571,7 +571,7 @@ function IceCastBar.prototype:SpellCastChannelUpdate(unit)
 	self.actionDuration = endTime/1000 - self.actionStartTime
 end
 
-function IceCastBar.prototype:SpellCastChannelStop(unit)
+function IceCastBar.prototype:SpellCastChannelStop(event, unit)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastChannelStop", unit)
 	
