@@ -383,6 +383,8 @@ function IceCustomCount.prototype:Enable(core)
 	self:RegisterEvent("UNIT_PET", "UpdateCustomCount")
 	self:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomCount")
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomCount")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateCustomCount")
+	self:RegisterEvent("PLAYER_DEAD", "UpdateCustomCount")
 
 	self.unit = self.moduleSettings.auraTarget
 
