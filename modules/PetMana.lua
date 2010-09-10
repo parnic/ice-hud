@@ -155,8 +155,8 @@ function PetMana.prototype:Update(unit)
 		self:Show(true)
 	end
 
-	if (self.manaPercentage == 1 and self.manaType ~= 1 and self.manaType ~= 6)
-		or (self.manaPercentage == 0 and (self.manaType == 1 or self.manaType == 6)) then
+	if (self.manaPercentage == 1 and self.manaType ~= SPELL_POWER_RAGE and self.manaType ~= SPELL_POWER_RUNIC_POWER)
+		or (self.manaPercentage == 0 and (self.manaType == SPELL_POWER_RAGE or self.manaType == SPELL_POWER_RUNIC_POWER)) then
 		self:SetupOnUpdate(false)
 	elseif GetCVarBool("predictedPower") then
 		self:SetupOnUpdate(true)
@@ -169,11 +169,11 @@ function PetMana.prototype:Update(unit)
 	if not (self.alive) then
 		color = "Dead"
 	else
-		if (self.manaType == 1) then
+		if (self.manaType == SPELL_POWER_RAGE) then
 			color = "PetRage"
-		elseif (self.manaType == 2) then
+		elseif (self.manaType == SPELL_POWER_FOCUS) then
 			color = "PetFocus"
-		elseif (self.manaType == 3) then
+		elseif (self.manaType == SPELL_POWER_ENERGY) then
 			color = "PetEnergy"
 		end
 	end

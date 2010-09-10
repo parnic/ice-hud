@@ -5,6 +5,7 @@ local DruidMana = AceOO.Class(IceUnitBar)
 DruidMana.prototype.druidMana = nil
 DruidMana.prototype.druidManaMax = nil
 
+local MANA_POWER_INDEX = SPELL_POWER_MANA
 
 -- Constructor --
 function DruidMana.prototype:init()
@@ -54,8 +55,8 @@ function DruidMana.prototype:Update()
 
 	local forms = (UnitPowerType(self.unit) ~= 0)
 
-	self.druidMana = UnitPower(self.unit, 0)
-	self.druidManaMax = UnitPowerMax(self.unit, 0)
+	self.druidMana = UnitPower(self.unit, MANA_POWER_INDEX)
+	self.druidManaMax = UnitPowerMax(self.unit, MANA_POWER_INDEX)
 
 	if (not self.alive or not forms or not self.druidMana or not self.druidManaMax or self.druidManaMax == 0) then
 		self:Show(false)

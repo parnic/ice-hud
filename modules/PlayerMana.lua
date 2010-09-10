@@ -187,7 +187,7 @@ end
 
 -- OVERRIDE
 function PlayerMana.prototype:UseTargetAlpha(scale)
-	if (self.manaType == 1 or self.manaType == 6) then
+	if (self.manaType == SPELL_POWER_RAGE or self.manaType == SPELL_POWER_RUNIC_POWER) then
 		return (scale and (scale > 0))
 	else
 		return PlayerMana.super.prototype.UseTargetAlpha(self, scale)
@@ -204,7 +204,7 @@ function PlayerMana.prototype:ManaType(unit)
 
 	if self:ShouldUseTicker() then
 		-- register ticker for rogue energy
-		if (self.moduleSettings.tickerEnabled and (self.manaType == 3) and self.alive) then
+		if (self.moduleSettings.tickerEnabled and (self.manaType == SPELL_POWER_ENERGY) and self.alive) then
 			self.tickerFrame:Show()
 			self.tickerFrame:SetScript("OnUpdate", function() self:EnergyTick() end)
 		else
@@ -239,7 +239,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 		self:CreateTickerFrame()
 	end
 
-	if (self.manaType ~= 3 and self:ShouldUseTicker()) then
+	if (self.manaType ~= SPELL_POWER_ENERGY and self:ShouldUseTicker()) then
 		self.tickerFrame:Hide()
 	end
 	
@@ -250,13 +250,13 @@ function PlayerMana.prototype:Update(unit, powertype)
 	if not (self.alive) then
 		color = "Dead"
 	else
-		if (self.manaType == 1) then
+		if (self.manaType == SPELL_POWER_RAGE) then
 			color = "PlayerRage"
-		elseif (self.manaType == 3) then
+		elseif (self.manaType == SPELL_POWER_ENERGY) then
 			color = "PlayerEnergy"
-		elseif (self.manaType == 6) then
+		elseif (self.manaType == SPELL_POWER_RUNIC_POWER) then
 			color = "PlayerRunicPower"
-		elseif (self.manaType == 2) then
+		elseif (self.manaType == SPELL_POWER_FOCUS) then
 			color = "PlayerFocus"
 		end
 	end
@@ -283,7 +283,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		-- extra hack for whiny rogues (are there other kind?)
 		local displayPercentage = self.manaPercentage
-		if (self.manaType == 3) then
+		if (self.manaType == SPELL_POWER_ENERGY) then
 			displayPercentage = self.mana
 		else
 			displayPercentage = math.floor(displayPercentage * 100)
@@ -294,7 +294,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 		local amount = self:GetFormattedText(self.mana, self.maxMana)
 
 		-- druids get a little shorted string to make room for druid mana in forms
-		if (self.unitClass == "DRUID" and self.manaType ~= 0) then
+		if (self.unitClass == "DRUID" and self.manaType ~= SPELL_POWER_MANA) then
 			amount = self:GetFormattedText(self.mana)
 		end
 		self:SetBottomText2(amount, color)
@@ -304,7 +304,7 @@ end
 
 -- OVERRIDE
 function PlayerMana.prototype:UpdateBar(scale, color, alpha)
-	self.noFlash = (self.manaType ~= 0)
+	self.noFlash = (self.manaType ~= SPELL_POWER_MANA)
 
 	PlayerMana.super.prototype.UpdateBar(self, scale, color, alpha)
 end
@@ -323,7 +323,7 @@ function PlayerMana.prototype:UpdateEnergy(unit)
 
 	if self:ShouldUseTicker() and
 		((not (self.previousEnergy) or (self.previousEnergy <= UnitPower(self.unit))) and
-		(self.moduleSettings.tickerEnabled) and self.manaType == 3) then
+		(self.moduleSettings.tickerEnabled) and self.manaType == SPELL_POWER_ENERGY) then
 			self.tickStart = GetTime()
 			self.tickerFrame:Show()
 	end

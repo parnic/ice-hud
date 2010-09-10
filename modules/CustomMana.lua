@@ -112,35 +112,7 @@ function IceCustomMana.prototype:Disable(core)
 
 	self:CancelScheduledEvent(self.elementName)
 end
---[[
-function IceCustomMana.prototype:Update(unit)
-	self.color = "CustomManaMana"
 
-	self:Show(true)
-
-	local manaType = UnitPowerType(self.unit)
-
-	if (self.moduleSettings.scaleManaColor) then
-		self.color = "CustomManaColor"
-	end
-
-	if (manaType == 1) then
-		self.color = "CustomManaRage"
-	elseif (manaType == 2) then
-		self.color = "CustomManaFocus"
-	elseif (manaType == 3) then
-		self.color = "CustomManaEnergy"
-	elseif (manaType == 6) then
-		self.color = "CustomManaRunicPower"
-	end
-
-	if (self.tapped) then
-		self.color = "Tapped"
-	end
-
-	IceCustomMana.super.prototype.Update(self, unit)
-end
-]]--
 function IceCustomMana.prototype:SetUnit(unit)
 	IceCustomMana.super.prototype.SetUnit(self, unit)
 	if self.frame ~= nil and self.frame.button ~= nil then

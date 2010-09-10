@@ -68,19 +68,19 @@ function FocusMana.prototype:Update(unit)
 	else	
 		self:Show(true)
 	end
-	
-	
+
+
 	local manaType = UnitPowerType(self.unit)
 	
 	local color = "FocusMana"
 	if (self.moduleSettings.scaleManaColor) then
 		color = "ScaledManaColor"
 	end
-	if (manaType == 1) then
+	if (manaType == SPELL_POWER_RAGE) then
 		color = "FocusRage"
-	elseif (manaType == 2) then
+	elseif (manaType == SPELL_POWER_FOCUS) then
 		color = "FocusFocus"
-	elseif (manaType == 3) then
+	elseif (manaType == SPELL_POWER_ENERGY) then
 		color = "FocusEnergy"
 	end
 	

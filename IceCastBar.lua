@@ -469,7 +469,7 @@ function IceCastBar.prototype:SpellCastFailed(unit, spell, rank)
 	if (self.moduleSettings.flashFailures == "Never") then
 		return
 	elseif (self.moduleSettings.flashFailures == "Caster") then
-		if (UnitPowerType("player") ~= 0) then -- 0 == mana user
+		if (UnitPowerType("player") ~= SPELL_POWER_MANA) then
 			return
 		end
 	end
@@ -542,7 +542,7 @@ function IceCastBar.prototype:SpellCastSucceeded(unit, spell, rank)
 	if (self.moduleSettings.flashInstants == "Never") then
 		return
 	elseif (self.moduleSettings.flashInstants == "Caster") then
-		if (UnitPowerType("player") ~= 0) then -- 0 == mana user
+		if (UnitPowerType("player") ~= SPELL_POWER_MANA) then
 			return
 		end
 	end

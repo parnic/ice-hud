@@ -25,7 +25,6 @@ local runeCoords =
 	{0.15234375, 0.25781250, 0.64843750, 0.81250000},
 }
 
-local HOLY_POWER_INDEX = 9
 local runeShineFadeSpeed = 0.4
 
 -- 'Public' methods -----------------------------------------------------------
@@ -247,7 +246,7 @@ function HolyPower.prototype:Enable(core)
 end
 
 function HolyPower.prototype:UpdateRunePower()
-	local numReady = UnitPower("player", HOLY_POWER_INDEX)
+	local numReady = UnitPower("player", SPELL_POWER_HOLY_POWER)
 	
 	if self.moduleSettings.runeMode == "Graphical" then
 		for i=1, self.numRunes do
