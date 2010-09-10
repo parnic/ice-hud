@@ -3,6 +3,7 @@ local AceOO = AceLibrary("AceOO-2.0")
 local PlayerHealth = AceOO.Class(IceUnitBar)
 
 PlayerHealth.prototype.resting = nil
+PlayerHealth.prototype.pendingBlizzardPartyHide = false
 
 local configMode = false
 local HealComm
@@ -944,7 +945,17 @@ end
 
 
 function PlayerHealth.prototype:CheckCombat()
+	local preCombatValue = self.combat
 	PlayerHealth.super.prototype.CheckCombat(self)
+	local postCombatValue = self.combat
+
+	if preCombatValue ~= postCombatValue then
+		if postCombatValue then
+			self:InCombat()
+		else
+			self:OutCombat()
+		end
+	end
 
 	if self.combat then
 		if self.moduleSettings.allowMouseInteraction and not self.moduleSettings.allowMouseInteractionCombat then
@@ -1313,6 +1324,11 @@ function PlayerHealth.prototype:HideBlizz()
 end
 
 function PlayerHealth.prototype:HideBlizzardParty()
+	if self.combat then
+		self.pendingBlizzardPartyHide = true
+		return
+	end
+
 	-- Both Pitbull 4 and Xperl use these exact code, so we use it too.
 	for i = 1, MAX_PARTY_MEMBERS do
 		local party = _G['PartyMemberFrame'..i]
@@ -1389,6 +1405,15 @@ function PlayerHealth.prototype:UpdateBar(scale, color, alpha)
 		end
 	end
 ]]
+end
+
+function PlayerHealth.prototype:OutCombat()
+	PlayerHealth.super.prototype.OutCombat(self)
+
+	if self.pendingBlizzardPartyHide then
+		self.pendingBlizzardPartyHide = false
+		self:HideBlizzardParty()
+	end
 end
 
 -- Load us up
