@@ -166,6 +166,8 @@ function RangeCheck.prototype:UpdateRange()
 		else
 			self.frame.rangeFontString:SetText("Unknown")
 		end
+		
+		self.frame.rangeFontString:SetWidth(0)
 	else
 		self.frame.rangeFontString:SetText()
 	end
