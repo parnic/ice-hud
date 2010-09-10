@@ -56,7 +56,7 @@ function FocusMana.prototype:UpdateFocus()
 	self:Update(self.unit)
 end
 
-function FocusMana.prototype:Update(event, unit)
+function FocusMana.prototype:UpdateEvent(event, unit)
 	self:Update(unit)
 end
 
