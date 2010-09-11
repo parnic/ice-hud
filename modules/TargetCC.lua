@@ -236,15 +236,11 @@ function TargetCC.prototype:Enable(core)
 	self:RegisterEvent("UNIT_AURA", "UpdateTargetDebuffs")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateTargetDebuffs")
 
---	self:ScheduleRepeatingTimer(function() self:UpdateTargetDebuffs() end, 0.1)
-
 	self:Show(false)
 end
 
 function TargetCC.prototype:Disable(core)
 	TargetCC.super.prototype.Disable(self, core)
-
---	self:CancelScheduledEvent(self.elementName)
 end
 
 -- OVERRIDE

@@ -63,8 +63,6 @@ end
 
 function IceCustomBar.prototype:Disable(core)
 	IceCustomBar.super.prototype.Disable(self, core)
-
-	self:CancelScheduledEvent(self.elementName)
 end
 
 -- OVERRIDE

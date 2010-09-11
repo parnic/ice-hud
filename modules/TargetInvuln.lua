@@ -88,15 +88,11 @@ function TargetInvuln.prototype:Enable(core)
 	self:RegisterEvent("UNIT_AURA", "UpdateTargetBuffs")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateTargetBuffs")
 
---	self:ScheduleRepeatingTimer(function() self:UpdateTargetBuffs() end, 0.1)
-
 	self:Show(false)
 end
 
 function TargetInvuln.prototype:Disable(core)
 	TargetInvuln.super.prototype.Disable(self, core)
-
---	self:CancelScheduledEvent(self.elementName)
 end
 
 -- OVERRIDE

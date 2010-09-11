@@ -8,6 +8,7 @@ TargetOfTarget.prototype.buffSize = nil
 TargetOfTarget.prototype.height = nil
 TargetOfTarget.prototype.unit = nil
 TargetOfTarget.prototype.hadTarget = nil
+TargetOfTarget.prototype.scheduledEvent = nil
 
 
 -- Constructor --
@@ -210,7 +211,7 @@ end
 function TargetOfTarget.prototype:Enable(core)
 	TargetOfTarget.super.prototype.Enable(self, core)
 	
-	self:ScheduleRepeatingTimer(function() self:Update() end, 0.2)
+	self.scheduledEvent = self:ScheduleRepeatingTimer("Update", 0.2)
 	RegisterUnitWatch(self.frame)
 	
 	self:Update()
@@ -220,7 +221,7 @@ end
 function TargetOfTarget.prototype:Disable(core)
 	TargetOfTarget.super.prototype.Disable(self, core)
 	
-	self:CancelScheduledEvent(self.elementName)
+	self:CancelTimer(self.scheduledEvent, true)
 	
 	UnregisterUnitWatch(self.frame)
 end

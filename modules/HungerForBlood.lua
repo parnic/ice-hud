@@ -44,8 +44,6 @@ end
 
 function HungerForBlood.prototype:Disable(core)
 	HungerForBlood.super.prototype.Disable(self, core)
-
-	self:CancelScheduledEvent(self.elementName)
 end
 
 -- OVERRIDE

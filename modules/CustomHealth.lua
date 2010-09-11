@@ -1,6 +1,7 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 IceCustomHealth = AceOO.Class(IceTargetHealth)
+IceCustomHealth.prototype.scheduledEvent = nil
 
 -- Constructor --
 function IceCustomHealth.prototype:init()
@@ -103,13 +104,13 @@ function IceCustomHealth.prototype:Enable(core)
 	self:SetUnit(self.moduleSettings.unitToTrack)
 	self:CreateFrame()
 
-	self:ScheduleRepeatingTimer(function() self:Update() end, IceHUD.IceCore:UpdatePeriod())
+	self.scheduledEvent = self:ScheduleRepeatingTimer("Update", IceHUD.IceCore:UpdatePeriod())
 end
 
 function IceCustomHealth.prototype:Disable(core)
 	IceCustomHealth.super.prototype.Disable(self, core)
 
-	self:CancelScheduledEvent(self.elementName)
+	self:CancelTimer(self.scheduledEvent, true)
 end
 
 function IceCustomHealth.prototype:Update(unit)

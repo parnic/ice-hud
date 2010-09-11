@@ -1,6 +1,7 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local RangeCheck = AceOO.Class(IceElement)
+RangeCheck.prototype.scheduledEvent = nil
 
 local LibRange = nil
 local DogTag = nil
@@ -23,7 +24,7 @@ function RangeCheck.prototype:Enable(core)
 		DogTag = AceLibrary("LibDogTag-3.0")
 		self:RegisterFontStrings()
 	else
-		self:ScheduleRepeatingTimer(function() self:UpdateRange() end, 0.1)
+		self.scheduledEvent = self:ScheduleRepeatingTimer("UpdateRange", 0.1)
 	end
 end
 
@@ -33,7 +34,7 @@ function RangeCheck.prototype:Disable(core)
 	if DogTag then
 		self:UnregisterFontStrings()
 	else
-		self:CancelScheduledEvent(self.elementName)
+		self:CancelTimer(self.scheduledEvent, true)
 	end
 end
 

@@ -60,8 +60,6 @@ end
 
 function SliceAndDice.prototype:Disable(core)
 	SliceAndDice.super.prototype.Disable(self, core)
-
-	self:CancelScheduledEvent(self.elementName)
 end
 
 -- OVERRIDE

@@ -1,6 +1,7 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local TargetTargetHealth = AceOO.Class(IceTargetHealth)
+TargetTargetHealth.prototype.scheduledEvent = nil
 
 local SelfDisplayModeOptions = {"Color as SelfColor", "Hide", "Normal"}
 
@@ -110,13 +111,13 @@ function TargetTargetHealth.prototype:Enable(core)
 		self.moduleSettings.useSelfColor = nil
 	end
 
-	self:ScheduleRepeatingTimer(function() self:Update("targettarget") end, 0.1)
+	self.scheduledEvent = self:ScheduleRepeatingTimer("Update", 0.1, "targettarget")
 end
 
 function TargetTargetHealth.prototype:Disable(core)
 	TargetTargetHealth.super.prototype.Disable(self, core)
 
-	self:CancelScheduledEvent(self.elementName)
+	self:CancelTimer(self.scheduledEvent, true)
 end
 
 function TargetTargetHealth.prototype:Update(unit)

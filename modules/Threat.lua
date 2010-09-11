@@ -1,6 +1,5 @@
 --[[
 Name: IceThreat
-Version: 1.2
 Author: Caryna/Turalyon EU (Alliance) (updated for Threat-2.0 by 'acapela' of WoWI and merged into IceHUD by Parnic)
 Description: adds a threat bar to IceHUD
 ]]
@@ -12,6 +11,7 @@ IceThreat = AceOO.Class(IceUnitBar)
 IceThreat.prototype.color = nil
 IceThreat.aggroBar = nil
 IceThreat.aggroBarMulti = nil
+IceThreat.prototype.scheduledEvent = nil
 
 local MAX_NUM_RAID_MEMBERS = 40
 local MAX_NUM_PARTY_MEMBERS = 5
@@ -169,7 +169,7 @@ end
 function IceThreat.prototype:Enable(core)
 	IceThreat.super.prototype.Enable(self, core)
 
-	self:ScheduleRepeatingTimer(function() self:Update() end, 0.2)
+	self.scheduledEvent = self:ScheduleRepeatingTimer("Update", 0.2)
 
 	self:Update(self.unit)
 end
@@ -178,7 +178,7 @@ end
 function IceThreat.prototype:Disable(core)
 	IceThreat.super.prototype.Disable(self, core)
 
-	self:CancelScheduledEvent(self.elementName)
+	self:CancelTimer(self.scheduledEvent, true)
 end
 
 -- OVERRIDE

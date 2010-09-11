@@ -58,8 +58,6 @@ end
 
 function IceCustomCDBar.prototype:Disable(core)
 	IceCustomCDBar.super.prototype.Disable(self, core)
-
-	self:CancelScheduledEvent(self.elementName)
 end
 
 -- OVERRIDE

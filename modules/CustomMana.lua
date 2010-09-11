@@ -1,6 +1,7 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 IceCustomMana = AceOO.Class(IceTargetMana)
+IceCustomMana.prototype.scheduledEvent = nil
 
 -- Constructor --
 function IceCustomMana.prototype:init()
@@ -104,13 +105,13 @@ function IceCustomMana.prototype:Enable(core)
 
 	self:CreateFrame()
 
-	self:ScheduleRepeatingTimer(function() self:Update() end, IceHUD.IceCore:UpdatePeriod())
+	self.scheduledEvent = self:ScheduleRepeatingTimer("Update", IceHUD.IceCore:UpdatePeriod())
 end
 
 function IceCustomMana.prototype:Disable(core)
 	IceCustomMana.super.prototype.Disable(self, core)
 
-	self:CancelScheduledEvent(self.elementName)
+	self:CancelTimer(self.scheduledEvent, true)
 end
 
 function IceCustomMana.prototype:SetUnit(unit)

@@ -1,6 +1,7 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local TargetTargetMana = AceOO.Class(IceTargetMana)
+TargetTargetMana.prototype.scheduledEvent = nil
 
 local SelfDisplayModeOptions = {"Hide", "Normal"}
 
@@ -60,13 +61,13 @@ function TargetTargetMana.prototype:Enable(core)
 	self.determineColor = false
 	TargetTargetMana.super.prototype.Enable(self, core)
 
-	self:ScheduleRepeatingTimer(function() self:Update("targettarget") end, 0.1)
+	self.scheduledEvent = self:ScheduleRepeatingTimer("Update", 0.1, "targettarget")
 end
 
 function TargetTargetMana.prototype:Disable(core)
 	TargetTargetMana.super.prototype.Disable(self, core)
 
-	self:CancelScheduledEvent(self.elementName)
+	self:CancelTimer(self.scheduledEvent, true)
 end
 
 function TargetTargetMana.prototype:Update(unit)

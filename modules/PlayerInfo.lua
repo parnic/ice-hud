@@ -7,6 +7,7 @@ PlayerInfo.prototype.mainHandEnchantTimeSet = 0
 PlayerInfo.prototype.mainHandEnchantEndTime = 0
 PlayerInfo.prototype.offHandEnchantTimeSet = 0
 PlayerInfo.prototype.offHandEnchantEndTime = 0
+PlayerInfo.prototype.scheduledEvent = nil
 
 -- Constructor --
 function PlayerInfo.prototype:init()
@@ -102,7 +103,13 @@ function PlayerInfo.prototype:Enable(core)
 		self:HideBlizz()
 	end
 
-	self:ScheduleRepeatingTimer(function() self:RepeatingUpdateBuffs() end, 1)
+	self.scheduledEvent = self:ScheduleRepeatingTimer("RepeatingUpdateBuffs", 1)
+end
+
+function PlayerInfo.prototype:Disable(core)
+	PlayerInfo.super.prototype.Disable(self, core)
+
+	self:CancelTimer(self.scheduledEvent, true)
 end
 
 function PlayerInfo.prototype:ShowBlizz()

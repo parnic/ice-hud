@@ -1,6 +1,7 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local GlobalCoolDown = AceOO.Class(IceBarElement)
+GlobalCoolDown.prototype.scheduledEvent = nil
 
 -- Constructor --
 function GlobalCoolDown.prototype:init()
@@ -26,7 +27,7 @@ function GlobalCoolDown.prototype:Enable(core)
 	
 	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "CooldownStateChanged")
 
-	self:ScheduleRepeatingTimer(function() self:UpdateGlobalCoolDown() end, 0.05)
+	self.scheduledEvent = self:ScheduleRepeatingTimer("UpdateGlobalCoolDown", 0.05)
 
 	self:Show(false)
 end
@@ -34,7 +35,7 @@ end
 function GlobalCoolDown.prototype:Disable(core)
 	GlobalCoolDown.super.prototype.Disable(self, core)
 
-	self:CancelScheduledEvent(self.elementName)
+	self:CancelTimer(self.scheduledEvent, true)
 end
 
 function GlobalCoolDown.prototype:GetSpellId()

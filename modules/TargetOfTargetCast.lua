@@ -1,6 +1,7 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local TargetTargetCast = AceOO.Class(IceCastBar)
+TargetTargetCast.prototype.scheduledEvent = nil
 
 local SelfDisplayModeOptions = {"Hide", "Normal"}
 
@@ -37,9 +38,14 @@ end
 function TargetTargetCast.prototype:Enable(core)
 	TargetTargetCast.super.prototype.Enable(self, core)
 
-	self:ScheduleRepeatingTimer(function() self:UpdateTargetTarget() end, 0.1)
+	self.scheduledEvent = self:ScheduleRepeatingTimer("UpdateTargetTarget", 0.1)
 end
 
+function TargetTargetCast.prototype:Disable(core)
+	TargetTargetCast.super.prototype.Disable(self, core)
+	
+	self:CancelTimer(self.scheduledEvent, true)
+end
 
 function TargetTargetCast.prototype:UpdateTargetTarget()
 	if not (UnitExists(self.unit)) then
