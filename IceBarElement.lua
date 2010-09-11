@@ -44,11 +44,11 @@ function IceBarElement.prototype:Enable()
 	-- fixup for the new 'invert' option
 	if not self.moduleSettings.updatedReverseInverse then
 		self.moduleSettings.updatedReverseInverse = true
-		
+
 		if self.moduleSettings.reverse then
 			self.moduleSettings.reverse = false
 			self.moduleSettings.inverse = true
-			
+
 			self:SetBarFramePoints()
 		end
 	end
@@ -72,7 +72,7 @@ end
 -- OVERRIDE
 function IceBarElement.prototype:GetDefaultSettings()
 	local settings = IceBarElement.super.prototype.GetDefaultSettings(self)
-	
+
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 1
 	settings["scale"] = 1
@@ -109,7 +109,7 @@ function IceBarElement.prototype:GetOptions()
 		name = 'Look and Feel',
 		order = 29.9
 	}
-	opts["side"] = 
+	opts["side"] =
 	{
 		type = 'select',
 		name =  '|c' .. self.configColor .. 'Side|r',
@@ -135,8 +135,8 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		order = 30
 	}
-	
-	opts["offset"] = 
+
+	opts["offset"] =
 	{
 		type = 'range',
 		name = '|c' .. self.configColor .. 'Offset|r',
@@ -156,8 +156,8 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		order = 31
 	}
-	
-	opts["scale"] = 
+
+	opts["scale"] =
 	{
 		type = 'range',
 		name = '|c' .. self.configColor .. 'Scale|r',
@@ -179,7 +179,7 @@ function IceBarElement.prototype:GetOptions()
 		order = 32
 	}
 
-	opts["inverse"] = 
+	opts["inverse"] =
 	{
 		type = 'toggle',
 		name = 'Invert bar',
@@ -198,7 +198,7 @@ function IceBarElement.prototype:GetOptions()
 		order = 32
 	}
 
-	opts["reverse"] = 
+	opts["reverse"] =
 	{
 		type = 'toggle',
 		name = 'Reverse direction',
@@ -242,7 +242,7 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		order = 28
 	}
-			
+
 	opts["bgVisible"] = {
 		type = 'toggle',
 		name = 'Bar background visible',
@@ -308,7 +308,7 @@ if not self.moduleSettings.hideAnimationSettings then
 	}
 end
 
-	opts["widthModifier"] = 
+	opts["widthModifier"] =
 	{
 		type = 'range',
 		name = '|c' .. self.configColor .. 'Bar width modifier|r',
@@ -329,7 +329,7 @@ end
 		order = 33
 	}
 
-	opts["barVerticalOffset"] = 
+	opts["barVerticalOffset"] =
 	{
 		type='range',
 		name = '|c' .. self.configColor .. 'Bar vertical offset|r',
@@ -456,7 +456,7 @@ end
 				end,
 				order = 14
 			},
-			
+
 			lowerTextVisible = {
 				type = 'toggle',
 				name = 'Lower text visible',
@@ -619,15 +619,19 @@ function IceBarElement.prototype:CreateFrame()
 	self:CreateBackground()
 	self:CreateBar()
 	self:CreateTexts()
-	
+
 	self.frame:SetScale(self.moduleSettings.scale)
 	-- never register the OnUpdate for the mirror bar since it's handled internally
 	-- in addition, do not register OnUpdate if predictedPower is set and this is the player mana or target mana bar
 	if not string.find(self.elementName, "MirrorBar")
 		and ((IceHUD.WowVer < 30000 or not GetCVarBool("predictedPower")) or (not string.find(self.elementName, "PlayerMana")))
-		and not self.moduleSettings.isCustomBar then
+		and not self.moduleSettings.isCustomBar and self:RegisterOnUpdate() then
 		self.frame:SetScript("OnUpdate", function() self:MyOnUpdate() end)
 	end
+end
+
+function IceBarElement.prototype:RegisterOnUpdate()
+	return true
 end
 
 
@@ -636,43 +640,43 @@ function IceBarElement.prototype:CreateBackground()
 	if not (self.frame) then
 		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.parent)
 	end
-	
+
 	self.frame:SetFrameStrata("BACKGROUND")
 	self.frame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.frame:SetHeight(self.settings.barHeight)
-	
+
 	if not (self.frame.bg) then
 		self.frame.bg = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
-	
+
 	self.frame.bg:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture() .."BG")
 	self.frame.bg:SetBlendMode(self.settings.barBgBlendMode)
-	
+
 	self.frame.bg:ClearAllPoints()
 	self.frame.bg:SetPoint("BOTTOMLEFT",self.frame,"BOTTOMLEFT")
 	self.frame.bg:SetPoint("BOTTOMRIGHT",self.frame,"BOTTOMRIGHT")
 	self.frame.bg:SetHeight(self.settings.barHeight)
-	
+
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.frame.bg:SetTexCoord(1, 0, 0, 1)
 	else
 		self.frame.bg:SetTexCoord(0, 1, 0, 1)
 	end
-	
+
 	self.frame.bg:SetVertexColor(self:GetColor("undef", self.settings.alphabg))
-	
+
 	local ownPoint = "LEFT"
 	if (self.moduleSettings.side == ownPoint) then
 		ownPoint = "RIGHT"
 	end
-	
+
 	-- ofxx = (bar width) + (extra space in between the bars)
 	local offx = (self.settings.barProportion * self.settings.barWidth * self.moduleSettings.offset)
 		+ (self.moduleSettings.offset * self.settings.barSpace)
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		offx = offx * -1
-	end	
-	
+	end
+
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("BOTTOM"..ownPoint, self.parent, "BOTTOM"..self.moduleSettings.side, offx, self.moduleSettings.barVerticalOffset)
 end
@@ -683,7 +687,7 @@ function IceBarElement.prototype:CreateBar()
 	if not (self.barFrame) then
 		self.barFrame = CreateFrame("Frame", nil, self.frame)
 	end
-	
+
 	self.barFrame:SetFrameStrata("LOW")
 	self:SetBarFramePoints()
 	self.barFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
@@ -692,7 +696,7 @@ function IceBarElement.prototype:CreateBar()
 	if not (self.barFrame.bar) then
 		self.barFrame.bar = self.barFrame:CreateTexture(nil, "LOW")
 	end
-	
+
 	self.barFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	self.barFrame.bar:SetBlendMode(self.settings.barBlendMode)
 	self.barFrame.bar:SetAllPoints(self.barFrame)
@@ -718,7 +722,7 @@ function IceBarElement.prototype:CreateTexts()
 -- Parnic - commented these out so that they conform to whatever width the string is set to
 --	self.frame.bottomUpperText:SetWidth(80)
 --	self.frame.bottomLowerText:SetWidth(120)
-	
+
 	self.frame.bottomUpperText:SetHeight(14)
 	self.frame.bottomLowerText:SetHeight(14)
 
@@ -729,7 +733,7 @@ function IceBarElement.prototype:CreateTexts()
 
 	local justify = "RIGHT"
 	if ((self.moduleSettings.side == "LEFT" and self.moduleSettings.offset <= 1) or
-		(self.moduleSettings.side == "RIGHT" and self.moduleSettings.offset > 1)) 
+		(self.moduleSettings.side == "RIGHT" and self.moduleSettings.offset > 1))
 	then
 		justify = "LEFT"
 	end
@@ -751,8 +755,8 @@ function IceBarElement.prototype:CreateTexts()
 	if (self.moduleSettings.offset <= 1) then
 		offx = self.settings.barProportion * self.settings.barWidth - offx
 	end
-	
-	
+
+
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		offx = offx * -1
 	end
@@ -771,13 +775,13 @@ function IceBarElement.prototype:CreateTexts()
 
 	self.frame.bottomUpperText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, offy)
 	self.frame.bottomLowerText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, offy - 14)
-	
+
 	if (self.moduleSettings.textVisible["upper"]) then
 		self.frame.bottomUpperText:Show()
 	else
 		self.frame.bottomUpperText:Hide()
 	end
-	
+
 	if (self.moduleSettings.textVisible["lower"]) then
 		self.frame.bottomLowerText:Show()
 	else
@@ -926,16 +930,16 @@ function IceBarElement.prototype:SetBottomText1(text, color)
 	end
 
 	local alpha = self.alpha
-	
+
 	if (self.alpha > 0) then
 		-- boost text alpha a bit to make it easier to see
 		alpha = self.alpha + 0.1
-			
+
 		if (alpha > 1) then
 			alpha = 1
 		end
 	end
-	
+
 	if (self.moduleSettings.lockUpperTextAlpha and (self.alpha > 0)) then
 		alpha = 1
 	end
@@ -950,7 +954,7 @@ function IceBarElement.prototype:SetBottomText2(text, color, alpha)
 	if not (self.moduleSettings.textVisible["lower"]) then
 		return
 	end
-	
+
 	if not (color) then
 		color = "Text"
 	end
@@ -958,7 +962,7 @@ function IceBarElement.prototype:SetBottomText2(text, color, alpha)
 		-- boost text alpha a bit to make it easier to see
 		if (self.alpha > 0) then
 			alpha = self.alpha + 0.1
-			
+
 			if (alpha > 1) then
 				alpha = 1
 			end
@@ -987,16 +991,16 @@ end
 
 function IceBarElement.prototype:GetFormattedText(value1, value2)
 	local color = "ffcccccc"
-	
+
 	local bLeft = ""
 	local bRight = ""
-	
+
 	if (self.moduleSettings.brackets) then
 		bLeft = "["
 		bRight = "]"
 	end
-	
-	
+
+
 	if not (value2) then
 		return string.format("|c%s%s|r%s|c%s%s|r", color, bLeft, value1, color, bRight)
 	end

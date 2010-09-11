@@ -923,19 +923,42 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 		return 0
 	end
 
-	for i = 1, 40 do
-		local name, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
-
-		if (not matchByName and not texture) or (matchByName and not name) then
-			break
-		end
-
-		if (not matchByName and string.match(texture:upper(), ability:upper())) or (matchByName and string.match(name:upper(), ability:upper())) then
+	local i = 1
+	local name, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+	while name do
+		if (not matchByName and string.match(texture:upper(), ability:upper()))
+			or (matchByName and string.match(name:upper(), ability:upper())) then
 			return applications
 		end
+
+		i = i + 1
+		name, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
 	end
 
 	return 0
+end
+
+function IceHUD:HasBuffs(unit, spellIDs)
+	local retval = {}
+	for i=1, #spellIDs do
+		retval[i] = false
+	end
+
+	local i = 1
+	local name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i)
+	while name do
+		for i=1, #spellIDs do
+			if spellIDs[i] == auraID then
+				retval[i] = applications == 0 and true or applications
+				break
+			end
+		end
+
+		i = i + 1
+		name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i)
+	end
+	
+	return retval
 end
 
 function IceHUD:OnDisable()
