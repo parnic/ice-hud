@@ -41,7 +41,7 @@ function IceElement.prototype:init(name)
 	-- Some common colors
 	self:SetDefaultColor("Text", 1, 1, 1)
 	self:SetDefaultColor("undef", 0.7, 0.7, 0.7)
-	
+
 	LibStub("AceEvent-3.0"):Embed(self)
 	LibStub("AceTimer-3.0"):Embed(self)
 
@@ -119,7 +119,7 @@ function IceElement.prototype:GetOptions()
 
 	opts["enabled"] = {
 		type = "toggle",
-		name = "|c" .. self.configColor .. "Enabled|r",
+		name = "Enabled",
 		desc = "Enable/disable module",
 		get = function()
 			return self.moduleSettings.enabled
@@ -135,10 +135,16 @@ function IceElement.prototype:GetOptions()
 		order = 20
 	}
 
+	opts["headerVisibility"] = {
+		type = 'header',
+		name = 'Visibility Settings',
+		order = 27
+	}
+
 	opts["scale"] =
 	{
 		type = 'range',
-		name = "|c" .. self.configColor .. "Scale|r",
+		name = "Scale",
 		desc = 'Scale of the element',
 		min = 0.2,
 		max = 2,
@@ -155,7 +161,7 @@ function IceElement.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 21
+		order = 27.1
 	}
 
 	opts["alwaysFullAlpha"] =
@@ -163,6 +169,7 @@ function IceElement.prototype:GetOptions()
 		type = 'toggle',
 		name = 'Always show at 100% alpha',
 		desc = 'Whether to always show this module at 100% alpha or not',
+		width = 'double',
 		get = function()
 			return self.moduleSettings.alwaysFullAlpha
 		end,

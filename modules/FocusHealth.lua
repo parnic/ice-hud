@@ -1,6 +1,5 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
-local MobHealth = nil
 local FocusHealth = AceOO.Class(IceUnitBar)
 
 FocusHealth.prototype.color = nil
@@ -9,12 +8,10 @@ FocusHealth.prototype.color = nil
 -- Constructor --
 function FocusHealth.prototype:init()
 	FocusHealth.super.prototype.init(self, "FocusHealth", "focus")
-	
+
 	self:SetDefaultColor("FocusHealthHostile", 231, 31, 36)
 	self:SetDefaultColor("FocusHealthFriendly", 46, 223, 37)
 	self:SetDefaultColor("FocusHealthNeutral", 210, 219, 87)
-
-	MobHealth = AceLibrary:HasInstance("LibMobHealth-4.0") and AceLibrary("LibMobHealth-4.0") or nil
 end
 
 
@@ -25,7 +22,6 @@ function FocusHealth.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = -1
 	settings["scale"] = 0.7
-	settings["mobhealth"] = (MobHealth3 ~= nil)
 	settings["classColor"] = false
 	settings["hideBlizz"] = false
 	settings["upperText"] = "[PercentHP:Round]"
@@ -46,23 +42,6 @@ end
 -- OVERRIDE
 function FocusHealth.prototype:GetOptions()
 	local opts = FocusHealth.super.prototype.GetOptions(self)
-
-	opts["mobhealth"] = {
-		type = "toggle",
-		name = "MobHealth3 support",
-		desc = "Enable/disable MobHealth3 Focus HP data. If this option is gray, you do not have MobHealth3.",
-		get = function()
-			return self.moduleSettings.mobhealth
-		end,
-		set = function(info, value)
-			self.moduleSettings.mobhealth = value
-			self:Update(self.unit)
-		end,
-		disabled = function()
-			return (not self.moduleSettings.enabled) and (MobHealth3 == nil)
-		end,
-		order = 40
-	}
 
 	opts["classColor"] = {
 		type = "toggle",
@@ -119,6 +98,12 @@ function FocusHealth.prototype:GetOptions()
 		order = 43
 	}
 
+	opts["headerIcons"] = {
+		type = 'header',
+		name = 'Icons',
+		order = 50
+	}
+
 	opts["showRaidIcon"] = {
 		type = "toggle",
 		name = "Show Raid Icon",
@@ -133,7 +118,7 @@ function FocusHealth.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 50
+		order = 50.1
 	}
 
 	opts["lockIconAlpha"] = {
@@ -214,7 +199,7 @@ function FocusHealth.prototype:GetOptions()
 
 	opts["shortenHealth"] = {
 		type = 'toggle',
-		name = 'Abbreviate estimated health',
+		name = 'Abbreviate health',
 		desc = 'If this is checked, then a health value of 1100 will display as 1.1k, otherwise it shows the number\n\nNote: this only applies if you are NOT using DogTag',
 		get = function()
 			return self.moduleSettings.abbreviateHealth
@@ -310,8 +295,8 @@ function FocusHealth.prototype:EnableClickTargeting(bEnable)
 		ClickCastFrames[self.frame.button] = true
 
 -- Parnic - debug code for showing the clickable region on this bar
---		self.frame.button:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
---						edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+--		self.frame.button:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+--						edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
 --						tile = false,
 --						insets = { left = 0, right = 0, top = 0, bottom = 0 }});
 --		self.frame.button:SetBackdropColor(0,0,0,1);
@@ -342,7 +327,7 @@ function FocusHealth.prototype:Update(unit)
 	if not (UnitExists(unit)) then
 		self:Show(false)
 		return
-	else	
+	else
 		self:Show(true)
 	end
 
@@ -356,7 +341,7 @@ function FocusHealth.prototype:Update(unit)
 	elseif (reaction and (reaction < 4)) then
 		self.color = "FocusHealthHostile"
 	end
-	
+
 	if (self.moduleSettings.classColor) then
 		self.color = self.unitClass
 	end
@@ -373,17 +358,6 @@ function FocusHealth.prototype:Update(unit)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
-
-		-- first see if we have LibMobHealth that we can piggyback on
-		if MobHealth then
-			self.health = MobHealth:GetUnitCurrentHP(self.unit)
-			self.maxHealth = MobHealth:GetUnitMaxHP(self.unit)
-		elseif (self.maxHealth == 100 and self.moduleSettings.mobhealth and MobHealth3) then
-			-- assumption that if a unit's max health is 100, it's not actual amount
-			-- but rather a percentage - this obviously has one caveat though
-
-			self.health, self.maxHealth, _ = MobHealth3:GetUnitHealth(self.unit, self.health, self.maxHealth)
-		end
 
 		if self.moduleSettings.abbreviateHealth then
 			self.health = self:Round(self.health)

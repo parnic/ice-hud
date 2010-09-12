@@ -132,7 +132,7 @@ local SilenceCCList = {
 	50613,
 	-- Arcane Torrent
 	28730,
-	-- Arcane Torrent	
+	-- Arcane Torrent
 	25046,
 	-- Improved Kick
 	13867,
@@ -249,6 +249,7 @@ function TargetCC.prototype:GetDefaultSettings()
 
 	settings["enabled"] = false
 	settings["shouldAnimate"] = false
+	settings["hideAnimationSettings"] = true
 	settings["desiredLerpTime"] = nil
 	settings["lowThreshold"] = 0
 	settings["side"] = IceCore.Side.Left
@@ -263,8 +264,6 @@ end
 function TargetCC.prototype:GetOptions()
 	local opts = TargetCC.super.prototype.GetOptions(self)
 
-	opts["shouldAnimate"] = nil
-	opts["desiredLerpTime"] = nil
 	opts["lowThreshold"] = nil
 	opts["textSettings"].args["upperTextString"] = nil
 	opts["textSettings"].args["lowerTextString"] = nil
@@ -288,6 +287,7 @@ function TargetCC.prototype:GetOptions()
 		type = 'toggle',
 		name = 'Only show for my debuffs',
 		desc = 'With this checked, the bar will only activate for your own CC spells and not those of others.',
+		width = 'double',
 		get = function()
 			return self.moduleSettings.onlyShowForMyDebuffs
 		end,
@@ -299,9 +299,9 @@ function TargetCC.prototype:GetOptions()
 		end,
 	}
 
-	return opts	
+	return opts
 end
-	
+
 -- 'Protected' methods --------------------------------------------------------
 
 function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)

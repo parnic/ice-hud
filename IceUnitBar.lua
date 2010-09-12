@@ -25,10 +25,10 @@ IceUnitBar.prototype.noFlash = nil
 function IceUnitBar.prototype:init(name, unit)
 	IceUnitBar.super.prototype.init(self, name)
 	assert(unit, "IceUnitBar 'unit' is nil")
-	
+
 	self:SetUnit(unit)
 	self.noFlash = false
-	
+
 	self:SetDefaultColor("Dead", 0.5, 0.5, 0.5)
 	self:SetDefaultColor("Tapped", 0.8, 0.8, 0.8)
 
@@ -68,11 +68,11 @@ end
 -- OVERRIDE
 function IceUnitBar.prototype:GetOptions()
 	local opts = IceUnitBar.super.prototype.GetOptions(self)
-	
-	opts["lowThreshold"] = 
+
+	opts["lowThreshold"] =
 	{
 		type = 'range',
-		name =  '|cff22bb22Low Threshold|r',
+		name =  'Low Threshold',
 		desc = 'Threshold of pulsing the bar (0 means never) (for player applies only to mana, not rage/energy/runic power)',
 		get = function()
 			return self.moduleSettings.lowThreshold
@@ -88,12 +88,13 @@ function IceUnitBar.prototype:GetOptions()
 		max = 1,
 		step = 0.05,
 		isPercent = true,
-		order = 37
+		order = 30.091
 	}
 	opts["lowThresholdFlash"] = {
 		type = 'toggle',
 		name = 'Flash bar below Low Threshold',
 		desc = 'Flashes the bar when it is below the Low Threshold specified above',
+		width = 'double',
 		get = function()
 			return self.moduleSettings.lowThresholdFlash
 		end,
@@ -103,7 +104,7 @@ function IceUnitBar.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 38
+		order = 30.092
 	}
 	opts["lowThresholdColor"] = {
 		type = "toggle",
@@ -119,9 +120,9 @@ function IceUnitBar.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled or not (self.moduleSettings.scaleHealthColor and self.moduleSettings.scaleManaColor)
 		end,
-		order = 39
+		order = 30.093
 	}
-	
+
 	return opts
 end
 
@@ -130,11 +131,11 @@ end
 
 function IceUnitBar.prototype:Enable()
 	IceUnitBar.super.prototype.Enable(self)
-	
+
 	self:RegisterEvent("PLAYER_UNGHOST", "Alive")
 	self:RegisterEvent("PLAYER_ALIVE", "Alive")
 	self:RegisterEvent("PLAYER_DEAD", "Dead")
-	
+
 	self.alive = not UnitIsDeadOrGhost(self.unit)
 	self.combat = UnitAffectingCombat(self.unit)
 end
@@ -143,7 +144,7 @@ end
 -- OVERRIDE
 function IceUnitBar.prototype:Redraw()
 	IceUnitBar.super.prototype.Redraw(self)
-	
+
 	if (self.moduleSettings.enabled) then
 		self:Update(self.unit)
 	end
@@ -265,15 +266,15 @@ end
 -- OVERRIDE
 function IceUnitBar.prototype:UpdateBar(scale, color, alpha)
 	IceUnitBar.super.prototype.UpdateBar(self, scale, color, alpha)
-	
+
 	if (not self.flashFrame) then
 		-- skip if flashFrame hasn't been created yet
 		return
 	end
 
 	self.flashFrame.flash:SetVertexColor(self:GetColor(color))
-	
-	if (self.moduleSettings.lowThreshold > 0 and 
+
+	if (self.moduleSettings.lowThreshold > 0 and
 		self.moduleSettings.lowThresholdFlash and
 		self.moduleSettings.lowThreshold >= scale and self.alive and
 		not self.noFlash) then
@@ -288,13 +289,13 @@ end
 function IceUnitBar.prototype:OnFlashUpdate()
 	local time = GetTime()
 	local decimals = time - math.floor(time)
-	
+
 	if (decimals > 0.5) then
 		decimals = 1 - decimals
 	end
-	
+
 	decimals = decimals*1.1 -- add more dynamic to the color change
-	
+
 	self.flashFrame:SetAlpha(decimals)
 end
 

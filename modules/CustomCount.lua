@@ -10,7 +10,7 @@ local buffOrDebuff = {"buff", "debuff"}
 -- Constructor --
 function IceCustomCount.prototype:init()
 	IceCustomCount.super.prototype.init(self, "CustomCount")
-	
+
 	self.scalingEnabled = true
 end
 
@@ -22,7 +22,7 @@ function IceCustomCount.prototype:GetOptions()
 	opts["customHeader"] = {
 		type = 'header',
 		name = "Aura settings",
-		order = 20.1,
+		order = 30.1,
 	}
 
 	opts["deleteme"] = {
@@ -35,7 +35,7 @@ function IceCustomCount.prototype:GetOptions()
 				dialog.data = self
 			end
 		end,
-		order = 20.2,
+		order = 20.1,
 	}
 
 	opts["name"] = {
@@ -54,7 +54,7 @@ function IceCustomCount.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		usage = "<a name for this bar>",
-		order = 20.3,
+		order = 30.3,
 	}
 
 	opts["auraTarget"] = {
@@ -74,7 +74,7 @@ function IceCustomCount.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 20.4,
+		order = 30.4,
 	}
 
 	opts["auraType"] = {
@@ -92,7 +92,7 @@ function IceCustomCount.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
-		order = 20.5,
+		order = 30.5,
 	}
 
 	opts["auraName"] = {
@@ -110,7 +110,7 @@ function IceCustomCount.prototype:GetOptions()
 			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
 		usage = "<which aura to track>",
-		order = 20.6,
+		order = 30.6,
 	}
 
 	opts["trackOnlyMine"] = {
@@ -127,7 +127,7 @@ function IceCustomCount.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
-		order = 20.7,
+		order = 30.7,
 	}
 
 	opts["countColor"] = {
@@ -146,7 +146,7 @@ function IceCustomCount.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 20.8,
+		order = 30.8,
 	}
 
 	opts["countMinColor"] = {
@@ -165,7 +165,7 @@ function IceCustomCount.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.gradient
 		end,
-		order = 20.81,
+		order = 30.81,
 	}
 
 	opts["maxCount"] = {
@@ -186,13 +186,13 @@ function IceCustomCount.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		usage = "<the maximum number of valid applications>",
-		order = 20.9,
+		order = 30.9,
 	}
 
 	opts["normalHeader"] = {
 		type = 'header',
 		name = "Counter look and feel",
-		order = 30,
+		order = 31,
 	}
 
 	opts["vpos"] = {
@@ -212,7 +212,7 @@ function IceCustomCount.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 31
+		order = 31.1
 	}
 
 	opts["hpos"] = {
@@ -232,7 +232,7 @@ function IceCustomCount.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 31
+		order = 31.2
 	}
 
 	opts["CustomFontSize"] = {
@@ -369,7 +369,7 @@ end
 -- OVERRIDE
 function IceCustomCount.prototype:Redraw()
 	IceCustomCount.super.prototype.Redraw(self)
-	
+
 	self:CreateFrame()
 	self:UpdateCustomCount()
 end
@@ -378,7 +378,7 @@ end
 -- OVERRIDE
 function IceCustomCount.prototype:Enable(core)
 	IceCustomCount.super.prototype.Enable(self, core)
-	
+
 	self:RegisterEvent("UNIT_AURA", "UpdateCustomCount")
 	self:RegisterEvent("UNIT_PET", "UpdateCustomCount")
 	self:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomCount")
@@ -409,7 +409,7 @@ function IceCustomCount.prototype:CreateFrame()
 	end
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
-	
+
 	self:Show(true)
 
 	self:CreateCustomFrame()
@@ -436,7 +436,7 @@ function IceCustomCount.prototype:CreateCustomFrame(doTextureUpdate)
 	for i = 1, self.moduleSettings.maxCount do
 		if (not self.frame.graphicalBG[i]) then
 			local frame = CreateFrame("Frame", nil, self.frame)
-			self.frame.graphicalBG[i] = frame 
+			self.frame.graphicalBG[i] = frame
 			frame.texture = frame:CreateTexture()
 			frame.texture:SetAllPoints(frame)
 		end
@@ -470,7 +470,7 @@ function IceCustomCount.prototype:CreateCustomFrame(doTextureUpdate)
 	for i = 1, self.moduleSettings.maxCount do
 		if (not self.frame.graphical[i]) then
 			local frame = CreateFrame("Frame", nil, self.frame)
-			self.frame.graphical[i] = frame 
+			self.frame.graphical[i] = frame
 			frame.texture = frame:CreateTexture()
 			frame.texture:SetAllPoints(frame)
 		end
@@ -505,7 +505,7 @@ function IceCustomCount.prototype:SetCustomColor()
 		if (self.moduleSettings.gradient) then
 			r,g,b = self:GetGradientColor(i)
 		end
-		self.frame.graphical[i].texture:SetVertexColor(r, g, b)		
+		self.frame.graphical[i].texture:SetVertexColor(r, g, b)
 	end
 end
 
@@ -566,7 +566,7 @@ function IceCustomCount.prototype:UpdateCustomCount()
 			else
 				self.frame.graphicalBG[i]:Hide()
 			end
-			
+
 			if (points ~= nil and i <= points) then
 				self.frame.graphical[i]:Show()
 			else

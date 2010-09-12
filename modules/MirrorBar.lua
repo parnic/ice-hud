@@ -196,10 +196,16 @@ end
 function MirrorBarHandler.prototype:GetOptions()
 	local opts = MirrorBarHandler.super.prototype.GetOptions(self)
 
-	opts["side"] = 
+	opts["headerLookAndFeel"] = {
+		type = 'header',
+		name = 'Look and Feel',
+		order = 29.9
+	}
+
+	opts["side"] =
 	{
 		type = 'select',
-		name = '|c' .. self.configColor .. 'Side|r',
+		name = 'Side',
 		desc = 'Side of the HUD where the bar appears',
 		get = function(info)
 			if (self.moduleSettings.side == IceCore.Side.Right) then
@@ -216,14 +222,14 @@ function MirrorBarHandler.prototype:GetOptions()
 			end
 			self:Redraw()
 		end,
-		values = { "Left", "Right" },		
+		values = { "Left", "Right" },
 		order = 30
 	}
 
-	opts["offset"] = 
+	opts["offset"] =
 	{
 		type = 'range',
-		name = '|c' .. self.configColor .. 'Offset|r',
+		name = 'Offset',
 		desc = 'Offset of the bar',
 		min = -1,
 		max = 10,
@@ -254,7 +260,7 @@ function MirrorBarHandler.prototype:GetOptions()
 		end,
 		order = 28
 	}
-		
+
 	opts["bgVisible"] = {
 		type = 'toggle',
 		name = 'Bar background visible',
@@ -272,10 +278,10 @@ function MirrorBarHandler.prototype:GetOptions()
 		order = 29
 	}
 
-	opts["barVerticalOffset"] = 
+	opts["barVerticalOffset"] =
 	{
 		type='range',
-		name = '|c' .. self.configColor .. 'Bar vertical offset|r',
+		name = 'Bar vertical offset',
 		desc = 'Adjust the vertical placement of this bar',
 		min = -400,
 		max = 400,
@@ -375,7 +381,7 @@ function MirrorBarHandler.prototype:GetOptions()
 
 			textVerticalOffset = {
 				type = 'range',
-				name = '|c' .. self.configColor .. 'Text Vertical Offset|r',
+				name = 'Text Vertical Offset',
 				desc = 'Offset of the text from the bar vertically (negative is farther below)',
 				min = -250,
 				max = 350,
@@ -394,7 +400,7 @@ function MirrorBarHandler.prototype:GetOptions()
 
 			textHorizontalOffset = {
 				type = 'range',
-				name = '|c' .. self.configColor .. 'Text Horizontal Offset|r',
+				name = 'Text Horizontal Offset',
 				desc = 'Offset of the text from the bar horizontally',
 				min = -50,
 				max = 50,

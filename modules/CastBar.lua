@@ -30,6 +30,7 @@ function CastBar.prototype:GetDefaultSettings()
 	settings["lagAlpha"] = 0.7
 	settings["showBlizzCast"] = false
 	settings["shouldAnimate"] = false
+	settings["hideAnimationSettings"] = true
 	settings["usesDogTagStrings"] = false
 	settings["rangeColor"] = true
 
@@ -76,8 +77,8 @@ function CastBar.prototype:GetOptions()
 		values = { "Always", "Caster", "Never" },
 		order = 41
 	}
-	
-	opts["lagAlpha"] = 
+
+	opts["lagAlpha"] =
 	{
 		type = 'range',
 		name = 'Lag Indicator alpha',
@@ -116,31 +117,6 @@ function CastBar.prototype:GetOptions()
 		order = 43
 	}
 
-	-- Parnic - this exists solely for the console/rock config to work...animating cast bars doesn't make sense
-	opts["shouldAnimate"] =
-	{
-		type = 'toggle',
-		name = 's',
-		desc = 's',
-		set = 's',
-		get = 's',
-		hidden = function()
-			return true
-		end
-	}
-
-	opts["desiredLerpTime"] =
-	{
-		type = 'toggle',
-		name = 'd',
-		desc = 'd',
-		set = 'd',
-		get = 'd',
-		hidden = function()
-			return true
-		end
-	}
-
 	opts["barVisible"] = {
 		type = 'toggle',
 		name = 'Bar visible',
@@ -161,7 +137,7 @@ function CastBar.prototype:GetOptions()
 		end,
 		order = 28
 	}
-			
+
 	opts["bgVisible"] = {
 		type = 'toggle',
 		name = 'Bar background visible',
@@ -225,7 +201,7 @@ function CastBar.prototype:GetOptions()
 				step = 1,
 				order = 11
 			},
-			
+
 			lockFontAlpha = {
 				type = "toggle",
 				name = "Lock Bar Text Alpha",
@@ -256,7 +232,7 @@ function CastBar.prototype:GetOptions()
 
 			textVerticalOffset = {
 				type = 'range',
-				name = '|c' .. self.configColor .. 'Text Vertical Offset|r',
+				name = 'Text Vertical Offset',
 				desc = 'Offset of the text from the bar vertically (negative is farther below)',
 				min = -250,
 				max = 350,
@@ -275,7 +251,7 @@ function CastBar.prototype:GetOptions()
 
 			textHorizontalOffset = {
 				type = 'range',
-				name = '|c' .. self.configColor .. 'Text Horizontal Offset|r',
+				name = 'Text Horizontal Offset',
 				desc = 'Offset of the text from the bar horizontally',
 				min = -350,
 				max = 350,
@@ -379,7 +355,7 @@ end
 -- OVERRIDE
 function CastBar.prototype:CreateFrame()
 	CastBar.super.prototype.CreateFrame(self)
-	
+
 	self:CreateLagBar()
 end
 
@@ -388,7 +364,7 @@ function CastBar.prototype:CreateLagBar()
 	if not (self.lagBar) then
 		self.lagBar = CreateFrame("Frame", nil, self.frame)
 	end
-	
+
 	self.lagBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.lagBar:SetHeight(self.settings.barHeight)
 
@@ -430,7 +406,7 @@ function CastBar.prototype:SpellCastStart(event, unit, spell, rank)
 	if not self:IsVisible() or not self.actionDuration then
 		return
 	end
-	
+
 	self.lagBar:SetFrameStrata("BACKGROUND")
 	self.lagBar:ClearAllPoints()
 	if not IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse) then
@@ -440,13 +416,13 @@ function CastBar.prototype:SpellCastStart(event, unit, spell, rank)
 	end
 
 	local lag = GetTime() - (self.spellCastSent or 0)
-	
+
 	local pos = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
 	if self.unit == "vehicle" then
 		pos = 0
 	end
 	local y = self.settings.barHeight - (pos * self.settings.barHeight)
-	
+
 	local min_y = 0
 	local max_y = pos
 	if IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse) then
@@ -465,7 +441,7 @@ function CastBar.prototype:SpellCastStart(event, unit, spell, rank)
 	else
 		self.lagBar.bar:Show()
 	end
-	
+
 	self.lagBar:SetHeight(self.settings.barHeight * pos)
 end
 
@@ -478,7 +454,7 @@ function CastBar.prototype:SpellCastChannelStart(event, unit)
 	if not self:IsVisible() or not self.actionDuration then
 		return
 	end
-	
+
 	local lagTop = not IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse)
 	if self.moduleSettings.reverseChannel then
 		lagTop = not lagTop
@@ -518,7 +494,7 @@ function CastBar.prototype:SpellCastChannelStart(event, unit)
 	else
 		self.lagBar.bar:Show()
 	end
-	
+
 	self.lagBar:SetHeight(self.settings.barHeight * pos)
 end
 

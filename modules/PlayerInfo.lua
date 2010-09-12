@@ -29,8 +29,8 @@ function PlayerInfo.prototype:GetOptions()
 
 	opts["hideBlizz"] = {
 		type = "toggle",
-		name = "Hide Blizzard Buff Frame",
-		desc = "Hides Blizzard buffs frame and disables all events related to it",
+		name = "Hide Blizzard Buffs",
+		desc = "Hides Blizzard's default buffs frame and disables all events related to it",
 		get = function()
 			return self.moduleSettings.hideBlizz
 		end,
@@ -204,7 +204,7 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 
 			startingNum = startingNum + 1
 		end
-		
+
 		for i=startingNum, IceCore.BuffLimit do
 			if self.frame.buffFrame.buffs[i]:IsVisible() then
 				self.frame.buffFrame.buffs[i]:Hide()

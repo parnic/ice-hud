@@ -54,7 +54,7 @@ function IceThreat.prototype:GetOptions()
 
 	opts["enabled"] = {
 		type = "toggle",
-		name = "|c" .. self.configColor .. "Enabled|r",
+		name = "Enabled",
 		desc = "Enable/disable module",
 		get = function()
 			return self.moduleSettings.enabled
@@ -70,7 +70,7 @@ function IceThreat.prototype:GetOptions()
 		order = 20
 	}
 
-	opts["aggroAlpha"] = 
+	opts["aggroAlpha"] =
 	{
 		type = 'range',
 		name = 'Aggro Indicator alpha',
@@ -127,8 +127,9 @@ function IceThreat.prototype:GetOptions()
 
 	opts["displaySecondPlaceThreat"] = {
 		type = 'toggle',
-		name = 'Show second place threat',
+		name = 'Show second highest threat',
 		desc = 'When tanking, this toggles whether or not the second-highest threat value found in your party or raid is displayed on top of your actual threat value',
+		width = 'double',
 		get = function()
 			return self.moduleSettings.displaySecondPlaceThreat
 		end,
@@ -141,7 +142,7 @@ function IceThreat.prototype:GetOptions()
 		end,
 		order = 27.8
 	}
-	
+
 	opts["secondPlaceThreatAlpha"] = {
 		type = 'range',
 		name = 'Second place threat alpha',
@@ -184,7 +185,7 @@ end
 -- OVERRIDE
 function IceThreat.prototype:CreateFrame()
 	IceThreat.super.prototype.CreateFrame(self)
-	
+
 	self:CreateAggroBar()
 	self:CreateSecondThreatBar()
 end
@@ -199,9 +200,9 @@ function IceThreat.prototype:CreateAggroBar()
 	if not (self.aggroBar) then
 		self.aggroBar = CreateFrame("Frame", nil, self.frame)
 	end
-	
+
 	local aggroTop = not IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse)
-	
+
 	self.aggroBar:SetFrameStrata("BACKGROUND")
 	self.aggroBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.aggroBar:SetHeight(self.settings.barHeight)
@@ -236,7 +237,7 @@ function IceThreat.prototype:CreateSecondThreatBar()
 	if not (self.secondThreatBar) then
 		self.secondThreatBar = CreateFrame("Frame", nil, self.frame)
 	end
-	
+
 	self.secondThreatBar:SetFrameStrata("MEDIUM")
 	self.secondThreatBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.secondThreatBar:SetHeight(self.settings.barHeight)
@@ -317,7 +318,7 @@ function IceThreat.prototype:Update(unit)
 			end
 			scaledPercent = ((threatValue / rangeMulti) * 100)
 		end
-	end	
+	end
 
 	if not self.combat and (scaledPercent == 0 or rawPercent == 0) then
 		self:Show(false)
@@ -349,7 +350,7 @@ function IceThreat.prototype:Update(unit)
 
 		IceHUD:Debug( "isTanking="..(isTanking or "nil").." threatState="..(threatState or "nil").." scaledPercent="..(scaledPercent or "nil").." rawPercent="..(rawPercent or "nil") )
 	end
-	
+
 	-- set percentage text
 	self:SetBottomText1( IceHUD:MathRound(self.moduleSettings.showScaledThreat and scaledPercent or rawPercent) .. "%" )
 	self:SetBottomText2()
@@ -472,7 +473,7 @@ function IceThreat.prototype:GetSecondHighestThreat()
 			i = i + 1
 		end
 	end
-	
+
 	return secondHighestThreat
 end
 

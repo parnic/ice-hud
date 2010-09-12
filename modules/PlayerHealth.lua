@@ -12,7 +12,7 @@ local incomingHealAmt = 0
 -- Constructor --
 function PlayerHealth.prototype:init()
 	PlayerHealth.super.prototype.init(self, "PlayerHealth", "player")
-	
+
 	self:SetDefaultColor("PlayerHealth", 37, 164, 30)
 	self:SetDefaultColor("PlayerHealthHealAmount", 37, 164, 30)
 end
@@ -50,7 +50,7 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["showPvPIcon"] = true
 	settings["PvPIconOffset"] = {x=95, y=-40}
 	settings["PvPIconScale"] = 0.9
-	
+
 	settings["showPartyRoleIcon"] = true
 	settings["PartyRoleIconOffset"] = {x=90, y=-59}
 	settings["PartyRoleIconScale"] = 0.9
@@ -77,7 +77,7 @@ function PlayerHealth.prototype:Enable(core)
 	self:RegisterEvent("LFG_PROPOSAL_UPDATE", "CheckPartyRole")
 	self:RegisterEvent("LFG_PROPOSAL_FAILED", "CheckPartyRole")
 	self:RegisterEvent("LFG_ROLE_UPDATE", "CheckPartyRole")
-	
+
 	--self:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckPartyFrameStatus")
 
 	self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED", "CheckLootMaster")
@@ -155,7 +155,7 @@ end
 -- OVERRIDE
 function PlayerHealth.prototype:GetOptions()
 	local opts = PlayerHealth.super.prototype.GetOptions(self)
-	
+
 	opts["classColor"] = {
 		type = "toggle",
 		name = "Class color bar",
@@ -172,7 +172,7 @@ function PlayerHealth.prototype:GetOptions()
 		end,
 		order = 40
 	}
-	
+
 	opts["hideBlizz"] = {
 		type = "toggle",
 		name = "Hide Blizzard Frame",
@@ -192,12 +192,12 @@ function PlayerHealth.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 41
-	}	
-	
+	}
+
 	opts["hideBlizzParty"] = {
 			type = "toggle",
-			name = "Hide Blizzard Party Frame",
-			desc = "Hides Blizzard Party frame and disables all events related to it",
+			name = "Hide Blizzard Party",
+			desc = "Hides Blizzard's default party frame and disables all events related to them",
 			get = function()
 				return self.moduleSettings.hideBlizzParty
 			end,
@@ -253,6 +253,7 @@ function PlayerHealth.prototype:GetOptions()
 		type = 'toggle',
 		name = 'Allow click-targeting in combat',
 		desc = 'Whether or not to allow click targeting/casting and the player drop-down menu for this bar while the player is in combat (Note: does not work properly with HiBar, have to click near the base of the bar)',
+		width = 'double',
 		get = function()
 			return self.moduleSettings.allowMouseInteractionCombat
 		end,
@@ -780,7 +781,7 @@ function PlayerHealth.prototype:GetOptions()
 			}
 		}
 	}
-	
+
 	return opts
 end
 
@@ -871,7 +872,7 @@ function PlayerHealth.prototype:CreateHealBar()
 	self.healFrame.bar:SetAllPoints(self.healFrame)
 
 	self.healFrame.bar:SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
-	
+
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.healFrame.bar:SetTexCoord(1, 0, 0, 1)
 	else
@@ -899,8 +900,8 @@ function PlayerHealth.prototype:EnableClickTargeting(bEnable)
 		ClickCastFrames[self.frame.button] = true
 
 -- Parnic - debug code for showing the clickable region on this bar
---		self.frame.button:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
---						edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+--		self.frame.button:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+--						edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
 --						tile = false,
 --						insets = { left = 0, right = 0, top = 0, bottom = 0 }})
 --		self.frame.button:SetBackdropColor(0,0,0,1)
@@ -987,11 +988,11 @@ function PlayerHealth.prototype:CheckPartyRole()
 	local IsLFGParty
 	local mode, submode
 
-	mode, submode= GetLFGMode()	
+	mode, submode= GetLFGMode()
 	IsLFGParty = (mode ~= nil and mode ~= "abandonedInDungeon" and mode ~= "queued")
 
 	if configMode or IsLFGParty then
-		if (configMode or self.moduleSettings.showPartyRoleIcon) and not self.frame.PartyRoleIcon then		
+		if (configMode or self.moduleSettings.showPartyRoleIcon) and not self.frame.PartyRoleIcon then
 			local isTank, isHeal, isDPS
 			local proposalExists, typeID, id, name
 			local texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader
@@ -1015,7 +1016,7 @@ function PlayerHealth.prototype:CheckPartyRole()
 			      isTank = (role == "TANK")
 			      isHeal = (role == "HEALER")
 			      isDPS = (role == "DAMAGER")
-			else   
+			else
 			      IceHUD:Debug("NoProposal")
 			end
 
@@ -1052,13 +1053,13 @@ function PlayerHealth.prototype:CheckPartyRole()
 				IceHUD:Debug("Loading DPS")
 				self.frame.PartyRoleIcon = self:CreateTexCoord(self.frame.PartyRoleIcon, "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES", 20, 20, self.moduleSettings.PartyRoleIconScale, 20/64, 39/64, 22/64, 41/64)
 			elseif configMode then
-				IceHUD:Debug("No Roles==Defaulting to Leader icon")				
+				IceHUD:Debug("No Roles==Defaulting to Leader icon")
 				self.frame.PartyRoleIcon = self:CreateTexCoord(self.frame.PartyRoleIcon, "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES", 20, 20, self.moduleSettings.PartyRoleIconScale, 0/64, 19/64, 1/64, 20/64)
 			else
 				IceHUD:Debug("Clearing Frame")
-				self.frame.PartyRoleIcon = self:DestroyTexFrame(self.frame.PartyRoleIcon)				
+				self.frame.PartyRoleIcon = self:DestroyTexFrame(self.frame.PartyRoleIcon)
 			end
-			self:SetTexLoc(self.frame.PartyRoleIcon, self.moduleSettings.PartyRoleIconOffset['x'], self.moduleSettings.PartyRoleIconOffset['y'])			
+			self:SetTexLoc(self.frame.PartyRoleIcon, self.moduleSettings.PartyRoleIconOffset['x'], self.moduleSettings.PartyRoleIconOffset['y'])
 			self:SetIconAlpha()
 		elseif not configMode and not self.moduleSettings.showPartyRoleIcon and self.frame.PartyRoleIcon then
 			IceHUD:Debug("Clearing Frame")
@@ -1109,9 +1110,9 @@ function PlayerHealth.prototype:CheckLootMaster()
 			self.frame.lootMasterIcon = self:DestroyTexFrame(self.frame.lootMasterIcon)
 		end
 	end
-	
+
 	self:CheckPartyFrameStatus()
-	
+
 end
 
 function PlayerHealth.prototype:CheckPartyFrameStatus()
@@ -1191,7 +1192,7 @@ function PlayerHealth.prototype:Update(unit)
 		local barValue, percent
 
 		if incomingHealAmt > 0 then
-			percent = ((self.health + incomingHealAmt) / self.maxHealth)	
+			percent = ((self.health + incomingHealAmt) / self.maxHealth)
 			barValue = 1-percent
 		else
 			barValue = 1
@@ -1200,7 +1201,7 @@ function PlayerHealth.prototype:Update(unit)
 
 		barValue = IceHUD:Clamp(barValue, 0, 1)
 		percent = IceHUD:Clamp(percent, 0, 1)
-		
+
 		local min_y = barValue
 		local max_y = 1
 		if self.moduleSettings.reverse then
@@ -1214,7 +1215,7 @@ function PlayerHealth.prototype:Update(unit)
 			self.healFrame.bar:SetTexCoord(0, 1, min_y, max_y)
 		end
 		self.healFrame:SetHeight(self.settings.barHeight * percent)
-		
+
 		if percent == 0 then
 			self.healFrame.bar:Hide()
 		else
@@ -1248,7 +1249,7 @@ function PlayerHealth.prototype:SetIconAlpha()
 	if self.frame.PvPIcon then
 		self.frame.PvPIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
 	end
-	
+
 	if self.frame.PartyRoleIcon then
 		self.frame.PartyRoleIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
 	end
@@ -1353,7 +1354,7 @@ function PlayerHealth.prototype:ShowBlizzardParty()
 		frame.Show = nil
 		frame:GetScript("OnLoad")(frame)
 		frame:GetScript("OnEvent")(frame, "PARTY_MEMBERS_CHANGED")
-	
+
 		PartyMemberFrame_UpdateMember(frame)
 	end
 
@@ -1390,7 +1391,7 @@ UIParent:RegisterEvent("RAID_ROSTER_UPDATE")
 --		UnitFrame_OnEvent('PARTY_MEMBERS_CHANGED')
 --	end
 --	UIParent:RegisterEvent('RAID_ROSTER_UPDATE')
---	
+--
 --	ShowPartyFrame() -- Just call Blizzard default method
 --end
 

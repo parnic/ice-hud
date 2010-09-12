@@ -24,6 +24,7 @@ function TargetTargetCast.prototype:GetDefaultSettings()
 	settings["flashInstants"] = "Never"
 	settings["flashFailures"] = "Never"
 	settings["shouldAnimate"] = false
+	settings["hideAnimationSettings"] = true
 	settings["usesDogTagStrings"] = false
 	settings["enabled"] = false
 	settings["barVerticalOffset"] = 35
@@ -43,7 +44,7 @@ end
 
 function TargetTargetCast.prototype:Disable(core)
 	TargetTargetCast.super.prototype.Disable(self, core)
-	
+
 	self:CancelTimer(self.scheduledEvent, true)
 end
 
@@ -52,7 +53,7 @@ function TargetTargetCast.prototype:UpdateTargetTarget()
 		self:StopBar()
 		return
 	end
-	
+
 	if self.moduleSettings.selfDisplayMode == "Hide" and UnitIsUnit("player", self.unit) then
 		self:StopBar()
 		return
@@ -76,31 +77,6 @@ end
 
 function TargetTargetCast.prototype:GetOptions()
 	local opts = TargetTargetCast.super.prototype.GetOptions(self)
-
-	-- Parnic - this exists solely for the console/rock config to work...animating cast bars doesn't make sense
-	opts["shouldAnimate"] =
-	{
-		type = 'toggle',
-		name = 's',
-		desc = 's',
-		set = 's',
-		get = 's',
-		hidden = function()
-			return true
-		end
-	}
-
-	opts["desiredLerpTime"] =
-	{
-		type = 'toggle',
-		name = 'd',
-		desc = 'd',
-		set = 'd',
-		get = 'd',
-		hidden = function()
-			return true
-		end
-	}
 
 	opts["barVisible"] = {
 		type = 'toggle',
@@ -143,7 +119,7 @@ function TargetTargetCast.prototype:GetOptions()
 		end,
 		order = 29
 	}
-	
+
 	opts["selfDisplayMode"] = {
 		type = 'select',
 		name = "Self Display Mode",

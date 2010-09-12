@@ -197,8 +197,8 @@ function IceCastBar.prototype:GetOptions()
 
     opts["reverseChannel"] = {
         type = 'toggle',
-		name = "Reverse channel direction",
-		desc = "Whether or not to reverse the direction of a channel's castbar",
+		name = "Reverse channeling",
+		desc = "Whether or not to reverse the direction of the cast bar when a spell is being channeled. For example, if a normal cast causes this bar to fill up, then checking this option will cause a channeled spell to empty the bar instead.",
 		get = function()
 			return self.moduleSettings.reverseChannel
 		end,

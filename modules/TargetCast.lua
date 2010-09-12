@@ -51,6 +51,7 @@ function TargetCast.prototype:GetDefaultSettings()
 	settings["flashInstants"] = "Never"
 	settings["flashFailures"] = "Never"
 	settings["shouldAnimate"] = false
+	settings["hideAnimationSettings"] = true
 	settings["usesDogTagStrings"] = false
 	settings["displayNonInterruptible"] = true
 
@@ -88,31 +89,6 @@ end
 function TargetCast.prototype:GetOptions()
 	local opts = TargetCast.super.prototype.GetOptions(self)
 
-	-- Parnic - this exists solely for the console/rock config to work...animating cast bars doesn't make sense
-	opts["shouldAnimate"] =
-	{
-		type = 'toggle',
-		name = 's',
-		desc = 's',
-		set = 's',
-		get = 's',
-		hidden = function()
-			return true
-		end
-	}
-
-	opts["desiredLerpTime"] =
-	{
-		type = 'toggle',
-		name = 'd',
-		desc = 'd',
-		set = 'd',
-		get = 'd',
-		hidden = function()
-			return true
-		end
-	}
-
 	opts["barVisible"] = {
 		type = 'toggle',
 		name = 'Bar visible',
@@ -133,7 +109,7 @@ function TargetCast.prototype:GetOptions()
 		end,
 		order = 28
 	}
-			
+
 	opts["bgVisible"] = {
 		type = 'toggle',
 		name = 'Bar background visible',
@@ -154,7 +130,7 @@ function TargetCast.prototype:GetOptions()
 		end,
 		order = 29
 	}
-	
+
 	opts["displayNonInterruptible"] = {
 		type = 'toggle',
 		name = 'Display non-interruptible color',

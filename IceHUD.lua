@@ -9,6 +9,7 @@ local AceSerializer = LibStub("AceSerializer-3.0", 1)
 
 local pendingModuleLoads = {}
 local bReadyToRegisterModules = false
+local lastCustomModule = 1
 
 IceHUD.CurrTagVersion = 3
 IceHUD.debugging = false
@@ -16,6 +17,7 @@ IceHUD.debugging = false
 IceHUD.WowVer = select(4, GetBuildInfo())
 
 IceHUD.validBarList = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc", "BloodGlaives", "ArcHUD", "FangRune" }
+IceHUD.validCustomModules = {"Buff/Debuff watcher", "Buff/Debuff stack counter", "Ability cooldown bar", "Health bar", "Mana bar"}
 
 local function deepcopy(object)
 	local lookup_table = {}
@@ -59,41 +61,41 @@ IceHUD.options =
 				test = {
 					type = 'description',
 					fontSize = "medium",
-					name = [[Thanks for using IceHUD! Below you will find answers to all of the most commonly-asked questions. Be sure to check the addon's page on curse.com and wowinterface.com as well for more discussion and updates!
+					name = [[Thanks for using |cff9999ffIceHUD|r! Below you will find answers to all of the most commonly-asked questions. Be sure to check the addon's page on |cff33ff99curse.com|r and |cff33ff99wowinterface.com|r as well for more discussion and updates! You can also email |cff33ff99icehud@parnic.com|r directly if you prefer.
 
 
-1. How do I hide the default Blizzard player and target unit frames?
-Expand the "Module Settings" section, click "Player Health" or "Target Health," and check "Hide Blizzard Frame"
+|cff9999ff1. How do I hide the default Blizzard player and target unit frames?|r
+Expand the "|cffffdc42Module Settings|r" section, click "PlayerHealth" or "TargetHealth," and check "Hide Blizzard Frame"
 
-2. How do I turn off click-targeting and menus on the player bar?
-Expand the "Module Settings" section, click "Player Health," un-check "Allow click-targeting." Note that as of v1.3, there is now an option to allow click-targeting out of combat, but turn it off while in combat.
+|cff9999ff2. How do I turn off click-targeting and menus on the player bar?|r
+Expand the "|cffffdc42Module Settings|r" section, click "PlayerHealth," un-check "Allow click-targeting." Note that as of v1.3, there is now an option to allow click-targeting out of combat, but turn it off while in combat.
 
-3. How do I hide the HUD or change its transparency based on combat, targeting, etc.?
+|cff9999ff3. How do I hide the HUD or change its transparency based on combat, targeting, etc.?|r
 Check the "Transparency Settings" section. Nearly any combination of states should be available for tweaking.
 
-4. Even if the rest of the HUD is transparent, the health percentages seem to show up. Why?
-Expand the "Module Settings" section, expand "Player Health," click "Text Settings," look for options about keeping the lower/upper text blocks alpha locked. If the text is alpha locked, it will not drop below 100%, otherwise it respects its bar's transparency setting. Player Health/Mana, Target Health/Mana, and pet bars should all have these options.
+|cff9999ff4. Even if the rest of the HUD is transparent, the health percentages seem to show up. Why?|r
+Expand the "|cffffdc42Module Settings|r" section, expand "PlayerHealth," click "Text Settings," look for options about keeping the lower/upper text blocks alpha locked. If the text is alpha locked, it will not drop below 100%, otherwise it respects its bar's transparency setting. PlayerHealth/Mana, TargetHealth/Mana, and pet bars should all have these options.
 
-5. Is there any way to see combo points for Rogues and Druids or sunder applications for Warriors?
-Yes, check the "combo points" and "sunder count" modules in the configuration panel. (Note that these modules may not show up if you're not of the appropriate class to see them. They should be present for their respective classes, however.)
+|cff9999ff5. Is there any way to see combo points for Rogues and Druids or sunder applications for Warriors?|r
+Yes, check the "ComboPoints" and "SunderCount" modules in the configuration panel. (Note that these modules may not show up if you're not of the appropriate class to see them. They should be present for their respective classes, however.)
 
-6. What's this thing at the top of the player's cast bar? It's darker than the rest of the bar.
+|cff9999ff6. What's this thing at the top of the player's cast bar? It's darker than the rest of the bar.|r
 That's the Cast Lag Indicator that shows you when you can start casting a new spell and still be able to finish the current one (based on your lag to the server). You can disable this in the Player Cast Bar module settings.
 
-7. Is there a bar that shows breath underwater and if so, how can I adjust it?
-Yes, this is called the MirrorBarHandler in the module settings. It's called that because it mirrors casting bar behavior, displays more than just breathing (fatigue is one example), and that's what Blizzard calls it. It can be moved/adjusted/resized/etc. as with any other module.
+|cff9999ff7. Is there a bar that shows breath underwater, and if so how can I adjust it?|r
+Yes, this is called the MirrorBarHandler in the |cffffdc42Module Settings|r. It's called that because it mirrors casting bar behavior, displays more than just breathing (fatigue is one example), and that's what Blizzard calls it. It can be moved/adjusted/resized/etc. as with any other module.
 
-8. There's a long green bar that sometimes shows up below everything else. What is it?
+|cff9999ff8. There's a long green bar that sometimes shows up below everything else. What is it?|r
 That would be the TargetOfTarget module. That module is available for people who don't want the full ToT health/mana bars, but do want some sort of ToT representation on the screen.
 
-9. IceHUD needs a bar or counter for buff/debuff X!
-Good news: as of v1.5, you can create as many bars and counters for any buffs or debuffs you want! Click one of the "Create custom ..." buttons above. This will create a module named MyCustomBar# (where # is a number based on how many custom bars you've made so far) or MyCustomCounter#. You can then expand the Module Settings group and modify all sorts of settings on the new custom module. It is highly recommend that you rename the bar as soon as possible to avoid any confusion later. These custom modules are full-featured enough to replace some of the class-specific ones that are already there, but I will leave them so as not to upset people who are already using them.
+|cff9999ff9. IceHUD needs a bar or counter for buff/debuff X!|r
+Good news: as of v1.5, you can create as many bars and counters for any buffs or debuffs you want! Click one of the "Create custom ..." buttons above. This will create a module named MyCustomBar# (where # is a number based on how many custom bars you've made so far) or MyCustomCounter#. You can then expand the |cffffdc42Module Settings|r group and modify all sorts of settings on the new custom module. It is highly recommend that you rename the bar as soon as possible to avoid any confusion later. These custom modules are full-featured enough to replace some of the class-specific ones that are already there, but I will leave them so as not to upset people who are already using them.
 
-10. How do I turn off the resting/combat/PvP/etc. icons on the player or target?
-Expand Module Settings, expand PlayerHealth (or TargetHealth for targets), click Icon Settings. You can control every aspect of the icons there including location, visibility, draw order, etc.
+|cff9999ff10. How do I turn off the resting/combat/PvP/etc. icons on the player or target?|r
+Expand "|cffffdc42Module Settings|r", expand PlayerHealth (or TargetHealth for targets), click Icon Settings. You can control every aspect of the icons there including location, visibility, draw order, etc.
 
-11. How do I turn off buffs/debuffs on the player's or target's bar?
-Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set the number of buffs per row to be 0. These cannot be controlled independently (e.g. you can turn off buffs and debuffs, but not just one or the other).]]
+|cff9999ff11. How do I turn off buffs/debuffs on the player's or target's bar?|r
+Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targets), and set the number of buffs per row to be 0. These cannot be controlled independently (e.g. you can turn off buffs and debuffs, but not just one or the other).]]
 				}
 			}
 		},
@@ -529,12 +531,6 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 			args = {},
 			order = 42
 		},
-
-		headerOther = {
-			type = 'header',
-			name = 'Other',
-			order = 90
-		},
 --[[
 		enabled = {
 			type = "toggle",
@@ -563,94 +559,77 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 			set = function(info, value)
 				IceHUD.IceCore:SetDebug(value)
 			end,
+			hidden =
+				--[===[@non-debug@
+				true
+				--@end-non-debug@]===]
+				--@debug@
+				false
+				--@end-debug@
+			,
+			disabled =
+				-- hello, snooper! this feature doesn't actually work yet, so enabling it won't help you much :)
+				--[===[@non-debug@
+				true
+				--@end-non-debug@]===]
+				--@debug@
+				false
+				--@end-debug@
+			,
 			order = 92
 		},
 
-		reset = {
-			type = 'execute',
-			name = '|cffff0000Reset|r',
-			desc = "Resets all IceHUD options - WARNING: Reloads UI",
-			func = function()
-				StaticPopup_Show("ICEHUD_RESET")
+		customModuleSelect = {
+			type = "select",
+			name = "Create custom module",
+			desc = "Select a custom module that you want to create here, then press the 'Create' button.",
+			get = function(info)
+				return lastCustomModule
 			end,
-			order = 93
+			set = function(info, v)
+				lastCustomModule = v
+			end,
+			values = IceHUD.validCustomModules,
+			order = 94.5,
 		},
 
-		customBar = {
-			type = 'execute',
-			name = 'Create custom bar',
-			desc = 'Creates a new customized bar. This bar allows you to specify a buff or debuff to track on a variety of targets. Once that buff/debuff is applied, you will be able to watch it count down on the bar. You can create as many of these as you like.',
+		customModuleCreate = {
+			type = "execute",
+			name = "Create",
+			desc = "Creates the selected custom module",
 			func = function()
-				local newMod = IceCustomBar:new()
-				IceHUD.IceCore:AddNewDynamicModule(newMod)
-				StaticPopup_Show("ICEHUD_CUSTOM_BAR_CREATED")
-				ConfigDialog:SelectGroup("IceHUD", "modules", newMod.elementName)
+				local v = lastCustomModule
+				local newMod = nil
+				local popupMsg
+				if v == 1 then -- custom bar
+					newMod = IceCustomBar:new()
+					popupMsg = "ICEHUD_CUSTOM_BAR_CREATED"
+				elseif v == 2 then -- custom counter
+					newMod = IceCustomCount:new()
+					popupMsg = "ICEHUD_CUSTOM_COUNTER_CREATED"
+				elseif v == 3 then -- cooldown bar
+					newMod = IceCustomCDBar:new()
+					popupMsg = "ICEHUD_CUSTOM_CD_CREATED"
+				elseif v == 4 then -- custom health bar
+					newMod = IceCustomHealth:new()
+					popupMsg = "ICEHUD_CUSTOM_HEALTH_CREATED"
+				elseif v == 5 then -- custom mana bar
+					newMod = IceCustomMana:new()
+					popupMsg = "ICEHUD_CUSTOM_MANA_CREATED"
+				end
+				if newMod ~= nil then
+					IceHUD.IceCore:AddNewDynamicModule(newMod)
+					ConfigDialog:SelectGroup("IceHUD", "modules", newMod.elementName)
+					StaticPopup_Show(popupMsg)
+				end
 			end,
-			order = 94.5
-		},
-
-		customCount = {
-			type = 'execute',
-			name = 'Create custom counter',
-			desc = 'Creates a new customized counter. This counter allows you to specify a stacking buff or debuff to track on a variety of targets. A number or graphic (whichever you choose) will count the number of applications of the specified buff/debuff. You can create as many of these as you like.',
-			func = function()
-				local newMod = IceCustomCount:new()
-				IceHUD.IceCore:AddNewDynamicModule(newMod)
-				StaticPopup_Show("ICEHUD_CUSTOM_COUNTER_CREATED")
-				ConfigDialog:SelectGroup("IceHUD", "modules", newMod.elementName)
-			end,
-			order = 94.6
-		},
-
-		customCD = {
-			type = 'execute',
-			name = 'Create cooldown bar',
-			desc = 'Creates a new customized ability cooldown bar. This bar will monitor the cooldown of the specified skill/spell so you know when it is available to be used again. You can create as many of these as you like.',
-			func = function()
-				local newMod = IceCustomCDBar:new()
-				IceHUD.IceCore:AddNewDynamicModule(newMod)
-				StaticPopup_Show("ICEHUD_CUSTOM_CD_CREATED")
-				ConfigDialog:SelectGroup("IceHUD", "modules", newMod.elementName)
-			end,
-			order = 94.7
-		},
-
-		customHealth = {
-			type = 'execute',
-			name = 'Custom health bar',
-			desc = 'Creates a new customized health bar. This bar monitors the health of whatever unit you specify. You can create as many of these as you like.',
-			func = function()
-				local newMod = IceCustomHealth:new()
-				IceHUD.IceCore:AddNewDynamicModule(newMod)
-				StaticPopup_Show("ICEHUD_CUSTOM_HEALTH_CREATED")
-				ConfigDialog:SelectGroup("IceHUD", "modules", newMod.elementName)
-			end,
-			hidden = function()
-				return IceCustomHealth == nil
-			end,
-			order = 94.8
-		},
-
-		customMana = {
-			type = 'execute',
-			name = 'Custom mana bar',
-			desc = 'Creates a new customized mana bar. This bar monitors the mana of whatever unit you specify. You can create as many of these as you like.',
-			func = function()
-				local newMod = IceCustomMana:new()
-				IceHUD.IceCore:AddNewDynamicModule(newMod)
-				StaticPopup_Show("ICEHUD_CUSTOM_MANA_CREATED")
-				ConfigDialog:SelectGroup("IceHUD", "modules", newMod.elementName)
-			end,
-			hidden = function()
-				return IceCustomMana == nil
-			end,
-			order = 94.8
+			order = 94.6,
 		},
 
 		configMode = {
 			type = 'toggle',
-			name = '|cffff0000Configuration Mode|r',
-			desc = 'Puts IceHUD into configuration mode so bars can be placed more easily',
+			name = 'Configuration Mode',
+			desc = "Makes all modules visible so you can see where they're placed and find any that are overlapping.",
 			get = function()
 				return IceHUD.IceCore:IsInConfigMode()
 			end,
@@ -663,22 +642,11 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 		useDogTags = {
 			type = 'toggle',
 			name = 'Use Dog Tags',
-			desc = 'Whether or not the addon should use the DogTag library (this will increase the CPU usage of the mod)\n\nNOTE: after changing this option, you must reload the UI or else bad things happen',
+			desc = 'Whether or not the addon should use the DogTag library (this will increase the CPU usage of the mod). DogTag controls all text displayed around bars such as health or mana amounts. Type |cffffff78/dog|r to see all DogTag options.\n\nNOTE: after changing this option, you must reload the UI or else bad things happen',
 			get = function()
 				return IceHUD.IceCore:ShouldUseDogTags()
 			end,
 			set = function(info, v)
-				StaticPopupDialogs["ICEHUD_CHANGED_DOGTAG"] = {
-					text = "This option requires the UI to be reloaded. Do you wish to reload it now?",
-					button1 = "Yes",
-					OnAccept = function()
-						ReloadUI()
-					end,
-					button2 = "No",
-					timeout = 0,
-					whileDead = 1,
-					hideOnEscape = 1
-				};
 				IceHUD.IceCore:SetShouldUseDogTags(v)
 				StaticPopup_Show("ICEHUD_CHANGED_DOGTAG")
 			end,
@@ -876,6 +844,23 @@ StaticPopupDialogs["ICEHUD_DELETE_CUSTOM_MODULE"] =
 	end,
 }
 
+StaticPopupDialogs["ICEHUD_CHANGED_DOGTAG"] = {
+	text = "This option requires the UI to be reloaded. Do you wish to reload it now?",
+	button1 = "Yes",
+	OnShow = function(self)
+		self:SetFrameStrata("TOOLTIP")
+	end,
+	OnHide = function(self)
+		self:SetFrameStrata("DIALOG")
+	end,
+	OnAccept = function()
+		ReloadUI()
+	end,
+	button2 = "No",
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 0
+}
 
 function IceHUD:OnInitialize()
 	self:SetDebugging(false)
@@ -956,6 +941,15 @@ function IceHUD:SetupProfileImportButtons()
 				false
 				--@end-debug@
 			,
+			disabled =
+				-- hello, snooper! this feature doesn't actually work yet, so enabling it won't help you much :)
+				--[===[@non-debug@
+				true
+				--@end-non-debug@]===]
+				--@debug@
+				false
+				--@end-debug@
+			,
 			order = 98.1
 		}
 
@@ -986,6 +980,15 @@ function IceHUD:SetupProfileImportButtons()
 				frame:AddChild(editbox)
 			end,
 			hidden =
+				-- hello, snooper! this feature doesn't actually work yet, so enabling it won't help you much :)
+				--[===[@non-debug@
+				true
+				--@end-non-debug@]===]
+				--@debug@
+				false
+				--@end-debug@
+			,
+			disabled =
 				-- hello, snooper! this feature doesn't actually work yet, so enabling it won't help you much :)
 				--[===[@non-debug@
 				true

@@ -141,7 +141,7 @@ function IceCustomBar.prototype:GetOptions()
 	opts["customHeader"] = {
 		type = 'header',
 		name = "Custom bar settings",
-		order = 20.1,
+		order = 30.1,
 	}
 
 	opts["deleteme"] = {
@@ -154,7 +154,7 @@ function IceCustomBar.prototype:GetOptions()
 				dialog.data = self
 			end
 		end,
-		order = 20.2,
+		order = 20.1,
 	}
 
 	opts["name"] = {
@@ -173,7 +173,7 @@ function IceCustomBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		usage = "<a name for this bar>",
-		order = 20.3,
+		order = 30.3,
 	}
 
 	opts["unitToTrack"] = {
@@ -195,7 +195,7 @@ function IceCustomBar.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 20.4,
+		order = 30.4,
 	}
 
 	opts["buffOrDebuff"] = {
@@ -214,7 +214,7 @@ function IceCustomBar.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
-		order = 20.5,
+		order = 30.5,
 	}
 
 	opts["buffToTrack"] = {
@@ -236,9 +236,9 @@ function IceCustomBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
 		usage = "<which buff to track>",
-		order = 20.6,
+		order = 30.6,
 	}
-	
+
 	opts["exactMatch"] = {
 		type = 'toggle',
 		name = 'Exact match only',
@@ -254,7 +254,7 @@ function IceCustomBar.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
-		order = 20.65,
+		order = 30.65,
 	}
 
 	opts["trackOnlyMine"] = {
@@ -272,7 +272,7 @@ function IceCustomBar.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
-		order = 20.7,
+		order = 30.7,
 	}
 
 	opts["barColor"] = {
@@ -291,7 +291,7 @@ function IceCustomBar.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 20.8,
+		order = 30.8,
 	}
 
 	opts["displayWhenEmpty"] = {
@@ -308,7 +308,7 @@ function IceCustomBar.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 20.9
+		order = 30.9
 	}
 
 	opts["buffTimerDisplay"] = {
@@ -326,7 +326,7 @@ function IceCustomBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		values = validBuffTimers,
-		order = 21
+		order = 31
 	}
 
 	opts["maxDuration"] = {
@@ -347,15 +347,15 @@ function IceCustomBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		usage = "<the maximum duration for a bar>",
-		order = 21.1,
+		order = 31.1,
 	}
-	
+
 	opts["headerIcons"] = {
 		type = 'header',
 		name = 'Icons',
 		order = 40
 	}
-	
+
 	opts["displayAuraIcon"] = {
 		type = 'toggle',
 		name = "Display aura icon",
@@ -378,7 +378,7 @@ function IceCustomBar.prototype:GetOptions()
 		end,
 		order = 40.1,
 	}
-	
+
 	opts["auraIconXOffset"] = {
 		type = 'range',
 		min = -250,
@@ -438,7 +438,7 @@ function IceCustomBar.prototype:GetOptions()
 		end,
 		order = 40.4,
 	}
-	
+
 	return opts
 end
 
@@ -475,7 +475,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 		if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
 			duration = self.moduleSettings.maxDuration
 		end
-		
+
 		if (((self.moduleSettings.exactMatch and buff:upper() == buffName:upper())
 				or (not self.moduleSettings.exactMatch and string.match(buff:upper(), buffName:upper())))
 			and (not self.moduleSettings.trackOnlyMine or isMine)) then

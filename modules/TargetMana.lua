@@ -13,7 +13,7 @@ function IceTargetMana.prototype:init(moduleName, unit)
 	else
 		IceTargetMana.super.prototype.init(self, moduleName, unit)
 	end
-	
+
 	self:SetDefaultColor("TargetMana", 52, 64, 221)
 	self:SetDefaultColor("TargetRage", 235, 44, 26)
 	self:SetDefaultColor("TargetEnergy", 228, 242, 31)
@@ -80,7 +80,7 @@ function IceTargetMana.prototype:Update(unit)
 	if ((not UnitExists(self.unit)) or (self.maxMana == 0)) then
 		self:Show(false)
 		return
-	else	
+	else
 		self:Show(true)
 	end
 
@@ -112,7 +112,7 @@ function IceTargetMana.prototype:Update(unit)
 			self.color = "Tapped"
 		end
 	end
-	
+
 	self:UpdateBar(self.manaPercentage, self.color)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
@@ -147,6 +147,7 @@ function IceTargetMana.prototype:GetOptions()
 		type = 'toggle',
 		name = 'Only show if target uses mana',
 		desc = 'Will only show this bar if the target uses mana (as opposed to rage, energy, runic power, etc.)',
+		width = 'double',
 		get = function()
 			return self.moduleSettings.onlyShowMana
 		end,

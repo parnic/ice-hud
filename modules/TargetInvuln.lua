@@ -31,7 +31,7 @@ local InvulnList= {
 	47585,
 	-- Bladestorm
 	46924,
-	-- Grounding Totem Effect	
+	-- Grounding Totem Effect
 	8178,
 	-- Aura Mastery
 	31821,
@@ -57,7 +57,7 @@ function TargetInvuln.prototype:init(moduleName, unit)
 --	self.moduleSettings.shouldAnimate = false
 
 	self:SetDefaultColor("CC:Invuln", 0.99, 0.99, 0.99)
-	
+
 	self.buffList = {}
 	self:PopulateSpellList(self.buffList, InvulnList,"Invuln")
 
@@ -101,6 +101,7 @@ function TargetInvuln.prototype:GetDefaultSettings()
 
 	settings["enabled"] = false
 	settings["shouldAnimate"] = false
+	settings["hideAnimationSettings"] = true
 	settings["desiredLerpTime"] = nil
 	settings["lowThreshold"] = 0
 	settings["side"] = IceCore.Side.Left
@@ -114,8 +115,6 @@ end
 function TargetInvuln.prototype:GetOptions()
 	local opts = TargetInvuln.super.prototype.GetOptions(self)
 
-	opts["shouldAnimate"] = nil
-	opts["desiredLerpTime"] = nil
 	opts["lowThreshold"] = nil
 	opts["textSettings"].args["upperTextString"] = nil
 	opts["textSettings"].args["lowerTextString"] = nil
@@ -135,9 +134,9 @@ function TargetInvuln.prototype:GetOptions()
 		end,
 	}
 
-	return opts	
+	return opts
 end
-	
+
 -- 'Protected' methods --------------------------------------------------------
 
 function TargetInvuln.prototype:GetMaxbuffDuration(unitName, buffNames)
@@ -150,9 +149,9 @@ function TargetInvuln.prototype:GetMaxbuffDuration(unitName, buffNames)
 	while buff do
 		remaining = endTime - GetTime()
 
-		
+
 		if (duration == 0) and (remaining<0) then
-		
+
 		duration =100000
 		remaining =100000
 		end
@@ -181,20 +180,20 @@ function TargetInvuln.prototype:UpdateTargetBuffs(event, unit, isUpdate)
 	if not isUpdate then
 		self.frame:SetScript("OnUpdate", function() self:UpdateTargetBuffs(nil, self.unit, true) end)
 		self.buffName, self.buffDuration, self.buffRemaining = self:GetMaxbuffDuration(self.unit, self.buffList)
-	       
+
 	else
 		self.buffRemaining = math.max(0, self.buffRemaining - (1.0 / GetFramerate()))
-		
+
 		if self.buffRemaining <= 0 then
 			self.buffName = nil
 			self.frame:SetScript("OnUpdate", nil)
 		end
 	end
-	
+
 	name = self.buffName
 	duration = self.buffDuration
 	remaining = self.buffRemaining
-	
+
 
 
 	local targetName = UnitName(self.unit)

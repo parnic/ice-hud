@@ -7,7 +7,7 @@ ComboPoints.prototype.comboSize = 20
 -- Constructor --
 function ComboPoints.prototype:init()
 	ComboPoints.super.prototype.init(self, "ComboPoints")
-	
+
 	self:SetDefaultColor("ComboPoints", 1, 1, 0)
 	self.scalingEnabled = true
 end
@@ -20,6 +20,12 @@ end
 -- OVERRIDE
 function ComboPoints.prototype:GetOptions()
 	local opts = ComboPoints.super.prototype.GetOptions(self)
+
+	opts["headerLookAndFeel"] = {
+		type = 'header',
+		name = 'Look and Feel',
+		order = 29.9
+	}
 
 	opts["vpos"] = {
 		type = "range",
@@ -179,7 +185,7 @@ end
 -- OVERRIDE
 function ComboPoints.prototype:Redraw()
 	ComboPoints.super.prototype.Redraw(self)
-	
+
 	self:CreateFrame()
 	self:UpdateComboPoints()
 end
@@ -188,7 +194,7 @@ end
 -- OVERRIDE
 function ComboPoints.prototype:Enable(core)
 	ComboPoints.super.prototype.Enable(self, core)
-	
+
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateComboPoints")
 	if IceHUD.WowVer >= 30000 then
 		self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
@@ -223,7 +229,7 @@ function ComboPoints.prototype:CreateFrame()
 	end
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
-	
+
 	self:Show(true)
 
 	self:CreateComboFrame()
@@ -348,7 +354,7 @@ function ComboPoints.prototype:UpdateComboPoints()
 			else
 				self.frame.graphicalBG[i]:Hide()
 			end
-			
+
 			if (points ~= nil and i <= points) then
 				self.frame.graphical[i]:Show()
 			else

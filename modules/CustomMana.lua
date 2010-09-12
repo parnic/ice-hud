@@ -39,7 +39,7 @@ function IceCustomMana.prototype:GetOptions()
 	opts["customHeader"] = {
 		type = 'header',
 		name = "Custom bar settings",
-		order = 20.1,
+		order = 30.1,
 	}
 
 	opts["deleteme"] = {
@@ -52,7 +52,7 @@ function IceCustomMana.prototype:GetOptions()
 				dialog.data = self
 			end
 		end,
-		order = 20.2,
+		order = 20.1,
 	}
 
 	opts["name"] = {
@@ -71,7 +71,7 @@ function IceCustomMana.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		usage = "<a name for this bar>",
-		order = 20.3,
+		order = 30.3,
 	}
 
 	opts["unitToTrack"] = {
@@ -91,7 +91,7 @@ function IceCustomMana.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 20.4,
+		order = 30.4,
 	}
 
 	return opts

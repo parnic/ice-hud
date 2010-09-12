@@ -24,7 +24,7 @@ end
 -- OVERRIDE
 function GlobalCoolDown.prototype:Enable(core)
 	GlobalCoolDown.super.prototype.Enable(self, core)
-	
+
 	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "CooldownStateChanged")
 
 	self.scheduledEvent = self:ScheduleRepeatingTimer("UpdateGlobalCoolDown", 0.05)
@@ -78,6 +78,7 @@ function GlobalCoolDown.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 6
 	settings["shouldAnimate"] = false
+	settings["hideAnimationSettings"] = true
 	settings["desiredLerpTime"] = nil
 	settings["lowThreshold"] = 0
 	settings["barVisible"]["bg"] = false
@@ -90,12 +91,10 @@ end
 function GlobalCoolDown.prototype:GetOptions()
 	local opts = GlobalCoolDown.super.prototype.GetOptions(self)
 
-	opts["shouldAnimate"] = nil
-	opts["desiredLerpTime"] = nil
 	opts["lowThreshold"] = nil
 	opts["textSettings"] = nil
-	
-	return opts	
+
+	return opts
 end
 
 -- 'Protected' methods --------------------------------------------------------

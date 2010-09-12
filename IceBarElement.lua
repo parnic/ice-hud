@@ -112,7 +112,7 @@ function IceBarElement.prototype:GetOptions()
 	opts["side"] =
 	{
 		type = 'select',
-		name =  '|c' .. self.configColor .. 'Side|r',
+		name =  'Side|r',
 		desc = 'Side of the HUD where the bar appears',
 		get = function(info)
 			if (self.moduleSettings.side == IceCore.Side.Right) then
@@ -139,7 +139,7 @@ function IceBarElement.prototype:GetOptions()
 	opts["offset"] =
 	{
 		type = 'range',
-		name = '|c' .. self.configColor .. 'Offset|r',
+		name = 'Offset',
 		desc = 'Offset of the bar',
 		min = -10,
 		max = 15,
@@ -154,13 +154,13 @@ function IceBarElement.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 31
+		order = 30.01
 	}
 
 	opts["scale"] =
 	{
 		type = 'range',
-		name = '|c' .. self.configColor .. 'Scale|r',
+		name = 'Scale',
 		desc = 'Scale of the bar',
 		min = 0.1,
 		max = 2,
@@ -176,7 +176,7 @@ function IceBarElement.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 32
+		order = 30.02
 	}
 
 	opts["inverse"] =
@@ -195,7 +195,7 @@ function IceBarElement.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 32
+		order = 30.03
 	}
 
 	opts["reverse"] =
@@ -214,14 +214,9 @@ function IceBarElement.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 32
+		order = 30.04
 	}
 
-	opts["headerVisibility"] = {
-		type = 'header',
-		name = 'Visibility settings',
-		order = 27
-	}
 	opts["barVisible"] = {
 		type = 'toggle',
 		name = 'Bar visible',
@@ -266,13 +261,13 @@ function IceBarElement.prototype:GetOptions()
 if not self.moduleSettings.hideAnimationSettings then
 	opts["headerAnimation"] = {
 		type = 'header',
-		name = 'Animation settings',
+		name = 'Animation Settings',
 		order = 110
 	}
 	opts["shouldAnimate"] =
 	{
 		type = 'toggle',
-		name = '|c' .. self.configColor .. 'Animate amount changes|r',
+		name = 'Animate changes',
 		desc = 'Whether or not to animate the bar falloffs/gains',
 		get = function()
 			return self.moduleSettings.shouldAnimate
@@ -290,7 +285,7 @@ if not self.moduleSettings.hideAnimationSettings then
 	opts["desiredLerpTime"] =
 	{
 		type = 'range',
-		name = '|c' .. self.configColor .. 'Animation Duration|r',
+		name = 'Animation Duration',
 		desc = 'How long the animation should take to play',
 		min = 0,
 		max = 2,
@@ -311,7 +306,7 @@ end
 	opts["widthModifier"] =
 	{
 		type = 'range',
-		name = '|c' .. self.configColor .. 'Bar width modifier|r',
+		name = 'Bar width modifier',
 		desc = 'Make this bar wider or thinner than others',
 		min = -80,
 		max = 80,
@@ -326,13 +321,13 @@ end
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 33
+		order = 30.05
 	}
 
 	opts["barVerticalOffset"] =
 	{
 		type='range',
-		name = '|c' .. self.configColor .. 'Bar vertical offset|r',
+		name = 'Bar vertical offset',
 		desc = 'Adjust the vertical placement of this bar',
 		min = -400,
 		max = 400,
@@ -347,7 +342,7 @@ end
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 34
+		order = 30.06
 	}
 
 	opts["shouldUseOverride"] =
@@ -366,7 +361,7 @@ end
 		disabled = function()
 			return not self:IsEnabled()
 		end,
-		order = 35
+		order = 30.07
 	}
 
 	opts["barTextureOverride"] =
@@ -385,13 +380,13 @@ end
 			return not self:IsEnabled() or not self.moduleSettings.shouldUseOverride
 		end,
 		values = IceHUD.validBarList,
-		order = 36
+		order = 30.08
 	}
 
 	opts["textSettings"] =
 	{
 		type = 'group',
-		name = '|c' .. self.configColor .. 'Text Settings|r',
+		name = '|c'..self.configColor..'Text Settings|r',
 		desc = 'Settings related to texts',
 		order = 32,
 		disabled = function()
@@ -536,7 +531,7 @@ end
 
 			textVerticalOffset = {
 				type = 'range',
-				name = '|c' .. self.configColor .. 'Text Vertical Offset|r',
+				name = 'Text Vertical Offset',
 				desc = 'Offset of the text from the bar vertically (negative is farther below)',
 				min = -250,
 				max = 350,
@@ -555,7 +550,7 @@ end
 
 			textHorizontalOffset = {
 				type = 'range',
-				name = '|c' .. self.configColor .. 'Text Horizontal Offset|r',
+				name = 'Text Horizontal Offset',
 				desc = 'Offset of the text from the bar horizontally',
 				min = -350,
 				max = 350,

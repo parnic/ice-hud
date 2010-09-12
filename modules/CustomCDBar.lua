@@ -37,7 +37,7 @@ function IceCustomCDBar.prototype:Enable(core)
 	self:UpdateCustomBar()
 	self:UpdateIcon()
 	self:EnableUpdates(false)
-	
+
 	if self.moduleSettings.auraIconXOffset == nil then
 		self.moduleSettings.auraIconXOffset = 40
 	end
@@ -132,7 +132,7 @@ function IceCustomCDBar.prototype:GetOptions()
 	opts["customHeader"] = {
 		type = 'header',
 		name = "Custom CD settings",
-		order = 20.1,
+		order = 30.1,
 	}
 
 	opts["deleteme"] = {
@@ -145,7 +145,7 @@ function IceCustomCDBar.prototype:GetOptions()
 				dialog.data = self
 			end
 		end,
-		order = 20.2,
+		order = 20.1,
 	}
 
 	opts["name"] = {
@@ -164,7 +164,7 @@ function IceCustomCDBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		usage = "<a name for this bar>",
-		order = 20.3,
+		order = 30.3,
 	}
 
 	opts["cooldownToTrack"] = {
@@ -187,7 +187,7 @@ function IceCustomCDBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		usage = "<which spell to track>",
-		order = 20.6,
+		order = 30.6,
 	}
 
 	opts["barColor"] = {
@@ -206,7 +206,7 @@ function IceCustomCDBar.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 20.8,
+		order = 30.8,
 	}
 
 	opts["displayMode"] = {
@@ -224,7 +224,7 @@ function IceCustomCDBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		values = validDisplayModes,
-		order = 20.9
+		order = 30.9
 	}
 
 	opts["cooldownTimerDisplay"] = {
@@ -242,9 +242,9 @@ function IceCustomCDBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		values = validBuffTimers,
-		order = 21
+		order = 31
 	}
-	
+
 	opts["maxDuration"] = {
 		type = 'input',
 		name = "Maximum duration",
@@ -263,15 +263,15 @@ function IceCustomCDBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		usage = "<the maximum duration for a bar>",
-		order = 21.1,
+		order = 31.1,
 	}
-	
+
 	opts["headerIcons"] = {
 		type = 'header',
 		name = 'Icons',
 		order = 40
 	}
-	
+
 	opts["displayAuraIcon"] = {
 		type = 'toggle',
 		name = "Display aura icon",
@@ -288,7 +288,7 @@ function IceCustomCDBar.prototype:GetOptions()
 		end,
 		order = 40.1,
 	}
-	
+
 	opts["auraIconXOffset"] = {
 		type = 'range',
 		min = -250,
@@ -500,7 +500,7 @@ function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
 	end
 
 	self.barFrame.bar:SetVertexColor(self:GetBarColor())
-	
+
 	self.coolingDown = remaining ~= nil and remaining > 0
 end
 
@@ -559,6 +559,6 @@ function IceCustomCDBar.prototype:UseTargetAlpha(scale)
 	if self.moduleSettings.displayMode == "When ready" and scale == 0 then
 		return false
 	end
-	
+
 	return true
 end

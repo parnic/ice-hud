@@ -88,7 +88,7 @@ function IceTargetHealth.prototype:GetOptions()
 
 	opts["npcHostilityColor"] = {
 		type = "toggle",
-		name = "Color NPC's by hostility",
+		name = "Color NPC by hostility",
 		desc = "If you are using the 'class color bar' setting above, then enabling this will color NPC's by their hostility toward you since NPC class isn't very helpful or applicable information.",
 		get = function()
 			return self.moduleSettings.npcHostilityColor
@@ -605,8 +605,8 @@ function IceTargetHealth.prototype:EnableClickTargeting(bEnable)
 		ClickCastFrames[self.frame.button] = true
 
 -- Parnic - debug code for showing the clickable region on this bar
---		self.frame.button:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
---						edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+--		self.frame.button:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+--						edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
 --						tile = false,
 --						insets = { left = 0, right = 0, top = 0, bottom = 0 }});
 --		self.frame.button:SetBackdropColor(0,0,0,1);
@@ -635,7 +635,7 @@ function IceTargetHealth.prototype:Update(unit)
 	if unit and not (UnitExists(unit)) then
 --		self:Show(false)
 		return
-	else	
+	else
 --		self:Show(true)
 	end
 
@@ -681,7 +681,7 @@ function IceTargetHealth.prototype:Update(unit)
 		elseif (reaction and (reaction < 4)) then
 			self.color = "TargetHealthHostile"
 		end
-	
+
 		if (self.moduleSettings.classColor) and (not self.moduleSettings.npcHostilityColor or UnitPlayerControlled("target")) then
 			self.color = self.unitClass
 		end
@@ -887,7 +887,7 @@ function IceTargetHealth.prototype:ShowBlizz()
 	TargetFrame:RegisterEvent("PLAYER_FLAGS_CHANGED")
 	TargetFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
 	TargetFrame:RegisterEvent("RAID_TARGET_UPDATE")
-	
+
 	ComboFrame:Show()
 	ComboFrame:RegisterEvent("PLAYER_TARGET_CHANGED");
 	ComboFrame:RegisterEvent("PLAYER_COMBO_POINTS");
@@ -897,7 +897,7 @@ end
 function IceTargetHealth.prototype:HideBlizz()
 	TargetFrame:Hide()
 	TargetFrame:UnregisterAllEvents()
-	
+
 	ComboFrame:Hide()
 	ComboFrame:UnregisterAllEvents()
 end
