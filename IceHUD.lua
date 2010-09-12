@@ -5,7 +5,7 @@ local ACR = LibStub("AceConfigRegistry-3.0")
 local ConfigDialog = LibStub("AceConfigDialog-3.0")
 local icon = LibStub("LibDBIcon-1.0")
 local AceGUI = LibStub("AceGUI-3.0")
-local AceSerializer = LibStub("AceSerializer-3.0")
+local AceSerializer = LibStub("AceSerializer-3.0", 1)
 
 local pendingModuleLoads = {}
 local bReadyToRegisterModules = false
