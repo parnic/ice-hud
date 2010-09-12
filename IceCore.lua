@@ -183,8 +183,6 @@ end
 
 
 function IceCore.prototype:AddNewDynamicModule(module, hasSettings)
-	self:Register(module)
-
 	if not hasSettings then
 		self.settings.modules[module.elementName] = module:GetDefaultSettings()
 	end
@@ -209,7 +207,7 @@ function IceCore.prototype:GetNumCustomModules(exceptMe, customBarType)
 	local num = 0
 	local foundNum = 0
 
-	for i=0,table.getn(self.elements) do
+	for i=1,table.getn(self.elements) do
 		if (self.elements[i] and self.elements[i] ~= exceptMe and
 			customBarType == self.elements[i].moduleSettings.customBarType) then
 			local str = self.elements[i].elementName:match("MyCustom"..(customBarType).."%d+")
@@ -231,7 +229,7 @@ function IceCore.prototype:DeleteDynamicModule(module)
 	end
 
 	local ndx
-	for i = 0,table.getn(self.elements) do
+	for i = 1,table.getn(self.elements) do
 		if (self.elements[i] == module) then
 			ndx = i
 			break

@@ -4,6 +4,8 @@ local SML = AceLibrary("LibSharedMedia-3.0")
 local ACR = LibStub("AceConfigRegistry-3.0")
 local ConfigDialog = LibStub("AceConfigDialog-3.0")
 local icon = LibStub("LibDBIcon-1.0")
+local AceGUI = LibStub("AceGUI-3.0")
+local AceSerializer = LibStub("AceSerializer-3.0")
 
 local pendingModuleLoads = {}
 local bReadyToRegisterModules = false
@@ -14,6 +16,24 @@ IceHUD.debugging = false
 IceHUD.WowVer = select(4, GetBuildInfo())
 
 IceHUD.validBarList = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc", "BloodGlaives", "ArcHUD", "FangRune" }
+
+local function deepcopy(object)
+	local lookup_table = {}
+	local function _copy(object)
+		if type(object) ~= "table" then
+			return object
+		elseif lookup_table[object] then
+			return lookup_table[object]
+		end
+		local new_table = {}
+		lookup_table[object] = new_table
+		for index, value in pairs(object) do
+			new_table[_copy(index)] = _copy(value)
+		end
+		return setmetatable(new_table, getmetatable(object))
+	end
+	return _copy(object)
+end
 
 IceHUD.Location = "Interface\\AddOns\\IceHUD"
 IceHUD.options =
@@ -561,8 +581,10 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 			name = 'Create custom bar',
 			desc = 'Creates a new customized bar. This bar allows you to specify a buff or debuff to track on a variety of targets. Once that buff/debuff is applied, you will be able to watch it count down on the bar. You can create as many of these as you like.',
 			func = function()
-				IceHUD.IceCore:AddNewDynamicModule(IceCustomBar:new())
+				local newMod = IceCustomBar:new()
+				IceHUD.IceCore:AddNewDynamicModule(newMod)
 				StaticPopup_Show("ICEHUD_CUSTOM_BAR_CREATED")
+				ConfigDialog:SelectGroup("IceHUD", "modules", newMod.elementName)
 			end,
 			order = 94.5
 		},
@@ -572,8 +594,10 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 			name = 'Create custom counter',
 			desc = 'Creates a new customized counter. This counter allows you to specify a stacking buff or debuff to track on a variety of targets. A number or graphic (whichever you choose) will count the number of applications of the specified buff/debuff. You can create as many of these as you like.',
 			func = function()
-				IceHUD.IceCore:AddNewDynamicModule(IceCustomCount:new())
+				local newMod = IceCustomCount:new()
+				IceHUD.IceCore:AddNewDynamicModule(newMod)
 				StaticPopup_Show("ICEHUD_CUSTOM_COUNTER_CREATED")
+				ConfigDialog:SelectGroup("IceHUD", "modules", newMod.elementName)
 			end,
 			order = 94.6
 		},
@@ -583,8 +607,10 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 			name = 'Create cooldown bar',
 			desc = 'Creates a new customized ability cooldown bar. This bar will monitor the cooldown of the specified skill/spell so you know when it is available to be used again. You can create as many of these as you like.',
 			func = function()
-				IceHUD.IceCore:AddNewDynamicModule(IceCustomCDBar:new())
+				local newMod = IceCustomCDBar:new()
+				IceHUD.IceCore:AddNewDynamicModule(newMod)
 				StaticPopup_Show("ICEHUD_CUSTOM_CD_CREATED")
+				ConfigDialog:SelectGroup("IceHUD", "modules", newMod.elementName)
 			end,
 			order = 94.7
 		},
@@ -594,8 +620,10 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 			name = 'Custom health bar',
 			desc = 'Creates a new customized health bar. This bar monitors the health of whatever unit you specify. You can create as many of these as you like.',
 			func = function()
-				IceHUD.IceCore:AddNewDynamicModule(IceCustomHealth:new())
+				local newMod = IceCustomHealth:new()
+				IceHUD.IceCore:AddNewDynamicModule(newMod)
 				StaticPopup_Show("ICEHUD_CUSTOM_HEALTH_CREATED")
+				ConfigDialog:SelectGroup("IceHUD", "modules", newMod.elementName)
 			end,
 			hidden = function()
 				return IceCustomHealth == nil
@@ -608,8 +636,10 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 			name = 'Custom mana bar',
 			desc = 'Creates a new customized mana bar. This bar monitors the mana of whatever unit you specify. You can create as many of these as you like.',
 			func = function()
-				IceHUD.IceCore:AddNewDynamicModule(IceCustomMana:new())
+				local newMod = IceCustomMana:new()
+				IceHUD.IceCore:AddNewDynamicModule(newMod)
 				StaticPopup_Show("ICEHUD_CUSTOM_MANA_CREATED")
+				ConfigDialog:SelectGroup("IceHUD", "modules", newMod.elementName)
 			end,
 			hidden = function()
 				return IceCustomMana == nil
@@ -691,10 +721,46 @@ Expand Module Settings, expand PlayerInfo (or TargetInfo for targets), and set t
 			end,
 			hidden = function() return not icon end,
 			order = 98
-		}
+		},
 	}
 }
 
+function IceHUD:removeDefaults(db, defaults, blocker)
+	-- remove all metatables from the db, so we don't accidentally create new sub-tables through them
+	setmetatable(db, nil)
+	-- loop through the defaults and remove their content
+	for k,v in pairs(defaults) do
+		if type(v) == "table" and type(db[k]) == "table" then
+			-- if a blocker was set, dive into it, to allow multi-level defaults
+			self:removeDefaults(db[k], v, blocker and blocker[k])
+			if next(db[k]) == nil then
+				db[k] = nil
+			end
+		else
+			-- check if the current value matches the default, and that its not blocked by another defaults table
+			if db[k] == defaults[k] and (not blocker or blocker[k] == nil) then
+				db[k] = nil
+			end
+		end
+	end
+end
+
+function IceHUD:populateDefaults(db, defaults, blocker)
+	-- remove all metatables from the db, so we don't accidentally create new sub-tables through them
+	setmetatable(db, nil)
+	-- loop through the defaults and remove their content
+	for k,v in pairs(defaults) do
+		if type(v) == "table" and type(db[k]) == "table" then
+			-- if a blocker was set, dive into it, to allow multi-level defaults
+			self:populateDefaults(db[k], v, blocker and blocker[k])
+		else
+			-- check if the current value matches the default, and that its not blocked by another defaults table
+			if db[k] == nil then
+				db[k] = defaults[k]
+			end
+		end
+	end
+end
 
 StaticPopupDialogs["ICEHUD_RESET"] =
 {
@@ -704,6 +770,12 @@ StaticPopupDialogs["ICEHUD_RESET"] =
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 1,
+	OnShow = function(self)
+		self:SetFrameStrata("TOOLTIP")
+	end,
+	OnHide = function(self)
+		self:SetFrameStrata("DIALOG")
+	end,
 	OnAccept = function()
 		IceHUD:ResetSettings()
 	end
@@ -716,6 +788,12 @@ StaticPopupDialogs["ICEHUD_CUSTOM_BAR_CREATED"] =
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 0,
+	OnShow = function(self)
+		self:SetFrameStrata("TOOLTIP")
+	end,
+	OnHide = function(self)
+		self:SetFrameStrata("DIALOG")
+	end,
 }
 
 StaticPopupDialogs["ICEHUD_CUSTOM_COUNTER_CREATED"] =
@@ -725,6 +803,12 @@ StaticPopupDialogs["ICEHUD_CUSTOM_COUNTER_CREATED"] =
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 0,
+	OnShow = function(self)
+		self:SetFrameStrata("TOOLTIP")
+	end,
+	OnHide = function(self)
+		self:SetFrameStrata("DIALOG")
+	end,
 }
 
 StaticPopupDialogs["ICEHUD_CUSTOM_CD_CREATED"] =
@@ -734,6 +818,12 @@ StaticPopupDialogs["ICEHUD_CUSTOM_CD_CREATED"] =
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 0,
+	OnShow = function(self)
+		self:SetFrameStrata("TOOLTIP")
+	end,
+	OnHide = function(self)
+		self:SetFrameStrata("DIALOG")
+	end,
 }
 
 StaticPopupDialogs["ICEHUD_CUSTOM_HEALTH_CREATED"] =
@@ -743,6 +833,12 @@ StaticPopupDialogs["ICEHUD_CUSTOM_HEALTH_CREATED"] =
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 0,
+	OnShow = function(self)
+		self:SetFrameStrata("TOOLTIP")
+	end,
+	OnHide = function(self)
+		self:SetFrameStrata("DIALOG")
+	end,
 }
 
 StaticPopupDialogs["ICEHUD_CUSTOM_MANA_CREATED"] =
@@ -752,6 +848,12 @@ StaticPopupDialogs["ICEHUD_CUSTOM_MANA_CREATED"] =
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 0,
+	OnShow = function(self)
+		self:SetFrameStrata("TOOLTIP")
+	end,
+	OnHide = function(self)
+		self:SetFrameStrata("DIALOG")
+	end,
 }
 
 StaticPopupDialogs["ICEHUD_DELETE_CUSTOM_MODULE"] =
@@ -762,8 +864,15 @@ StaticPopupDialogs["ICEHUD_DELETE_CUSTOM_MODULE"] =
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 0,
+	OnShow = function(self)
+		self:SetFrameStrata("TOOLTIP")
+	end,
+	OnHide = function(self)
+		self:SetFrameStrata("DIALOG")
+	end,
 	OnAccept = function(self)
 		IceHUD.IceCore:DeleteDynamicModule(self.data)
+		self.data = nil
 	end,
 }
 
@@ -777,7 +886,12 @@ function IceHUD:OnInitialize()
 	self.IceCore:SetupDefaults()
 	bReadyToRegisterModules = true
 
-	self.db = LibStub("AceDB-3.0"):New("IceCoreDB", self.IceCore.defaults, "Default")
+	self.db = LibStub("AceDB-3.0"):New("IceCoreDB", self.IceCore.defaults, true)
+	if not self.db or not self.db.global or not self.db.profile then
+		print("Error: IceHUD database not loaded correctly.  Please exit out of WoW and delete the database file (IceHUD.lua) found in: \\World of Warcraft\\WTF\\Account\\<Account Name>>\\SavedVariables\\")
+		return
+	end
+
 	self.db.RegisterCallback(self, "OnProfileShutdown", "PreProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileChanged", "PostProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileReset", "ProfileReset")
@@ -787,6 +901,7 @@ function IceHUD:OnInitialize()
 	self:GenerateModuleOptions(true)
 	self.options.args.colors.args = self.IceCore:GetColorOptions()
 	self.options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+	self:SetupProfileImportButtons()
 
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("IceHUD", self.options, "/icehudcl")
 
@@ -806,6 +921,82 @@ function IceHUD:NotifyNewDb()
 	self.IceCore:SetModuleDatabases()
 
 	self.IceCore:CheckDisplayUpdateMessage()
+end
+
+
+function IceHUD:SetupProfileImportButtons()
+	if AceSerializer then
+		AceSerializer:Embed(self)
+		self.options.args.profiles.args.export = {
+			type = 'execute',
+			name = 'Export profile',
+			desc = 'Exports your active profile to something you can copy and paste to another user or use on another account.',
+			func = function()
+				local frame = AceGUI:Create("Frame")
+				frame:SetTitle("Profile data")
+				frame:SetStatusText("Exported profile details")
+				frame:SetLayout("Flow")
+				frame:SetCallback("OnClose", function(widget) AceGUI:Release(widget) end)
+				local editbox = AceGUI:Create("MultiLineEditBox")
+				editbox:SetLabel("Profile")
+				editbox:SetFullWidth(true)
+				editbox:SetFullHeight(true)
+				local profileTable = deepcopy(IceHUD.db.profile)
+				IceHUD:removeDefaults(profileTable, IceHUD.IceCore.defaults.profile)
+				editbox:SetText(IceHUD:Serialize(profileTable))
+				editbox:DisableButton(true)
+				frame:AddChild(editbox)
+			end,
+			hidden =
+				-- hello, snooper! this feature doesn't actually work yet, so enabling it won't help you much :)
+				--[===[@non-debug@
+				true
+				--@end-non-debug@]===]
+				--@debug@
+				false
+				--@end-debug@
+			,
+			order = 98.1
+		}
+
+		self.options.args.profiles.args.import = {
+			type = 'execute',
+			name = 'Import profile',
+			desc = "Imports a profile as exported from another user's IceHUD.",
+			func = function()
+				local frame = AceGUI:Create("Frame")
+				frame:SetTitle("Profile data")
+				frame:SetStatusText("Exported profile details")
+				frame:SetLayout("Flow")
+				frame:SetCallback("OnClose", function(widget)
+					local success, newTable = IceHUD:Deserialize(widget.children[1]:GetText())
+					if success then
+						IceHUD:PreProfileChanged()
+						IceHUD:populateDefaults(newTable, IceHUD.IceCore.defaults.profile)
+						IceHUD.db.profile = deepcopy(newTable)
+						IceHUD:PostProfileChanged()
+					end
+					AceGUI:Release(widget)
+				end)
+				local editbox = AceGUI:Create("MultiLineEditBox")
+				editbox:SetLabel("Profile")
+				editbox:SetFullWidth(true)
+				editbox:SetFullHeight(true)
+				editbox:DisableButton(true)
+				frame:AddChild(editbox)
+			end,
+			hidden =
+				-- hello, snooper! this feature doesn't actually work yet, so enabling it won't help you much :)
+				--[===[@non-debug@
+				true
+				--@end-non-debug@]===]
+				--@debug@
+				false
+				--@end-debug@
+			,
+			order = 98.2
+		}
+	end
 end
 
 
@@ -957,7 +1148,7 @@ function IceHUD:HasBuffs(unit, spellIDs)
 		i = i + 1
 		name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i)
 	end
-	
+
 	return retval
 end
 
