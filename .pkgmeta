@@ -30,9 +30,6 @@ externals:
     libs/AceConsole-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
         tag: latest
-    libs/Deformat-2.0:
-        url: svn://svn.wowace.com/wow/deformat/mainline/trunk/Deformat-2.0
-        tag: latest
     libs/LibRangeCheck-2.0:
         url: svn://svn.wowace.com/wow/librangecheck-2-0/mainline/trunk/LibRangeCheck-2.0
     libs/LibSharedMedia-3.0:

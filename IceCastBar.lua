@@ -1,5 +1,4 @@
 local AceOO = AceLibrary("AceOO-2.0")
-local deformat = AceLibrary("Deformat-2.0")
 
 local SPELLINTERRUPTOTHERSELF = SPELLINTERRUPTOTHERSELF
 local SPELLFAILCASTSELF = SPELLFAILCASTSELF
@@ -42,12 +41,9 @@ function IceCastBar.prototype:Enable(core)
 	self:RegisterEvent("UNIT_SPELLCAST_SENT", "SpellCastSent") -- "player", spell, rank, target
 	self:RegisterEvent("UNIT_SPELLCAST_START", "SpellCastStart") -- unit, spell, rank
 	self:RegisterEvent("UNIT_SPELLCAST_STOP", "SpellCastStop") -- unit, spell, rank
-	
+
 	self:RegisterEvent("UNIT_SPELLCAST_FAILED", "SpellCastFailed") -- unit, spell, rank
 	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "SpellCastInterrupted") -- unit, spell, rank
-
-	self:RegisterEvent("CHAT_MSG_SPELL_HOSTILEPLAYER_DAMAGE", "CheckChatInterrupt")
-	self:RegisterEvent("CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE", "CheckChatInterrupt")
 
 	self:RegisterEvent("UNIT_SPELLCAST_DELAYED", "SpellCastDelayed") -- unit, spell, rank
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "SpellCastSucceeded") -- "player", spell, rank
@@ -109,13 +105,13 @@ function IceCastBar.prototype:GetOptions()
 		end,
 		order = 39.999
 	}
-	
+
 	opts["headerIcons"] = {
 		type = 'header',
 		name = 'Icons',
 		order = 50
 	}
-	
+
 	opts["displayAuraIcon"] = {
 		type = 'toggle',
 		name = "Display aura icon",
@@ -138,7 +134,7 @@ function IceCastBar.prototype:GetOptions()
 		end,
 		order = 51,
 	}
-	
+
 	opts["auraIconXOffset"] = {
 		type = 'range',
 		min = -250,
@@ -178,7 +174,7 @@ function IceCastBar.prototype:GetOptions()
 		end,
 		order = 53,
 	}
-	
+
 	opts["auraIconScale"] = {
 		type = 'range',
 		min = 0.1,
@@ -277,7 +273,7 @@ function IceCastBar.prototype:OnUpdate()
 		if (remainingTime < 0) then
 			self:StopBar()
 		end
-		
+
 		-- sanity check to make sure the bar doesn't over/underfill
 		scale = scale > 1 and 1 or scale
 		scale = scale < 0 and 0 or scale
@@ -362,16 +358,16 @@ function IceCastBar.prototype:StartBar(action, message)
 	self.action = action
 	self.actionStartTime = GetTime()
 	self.actionMessage = message
-	
+
 	if (startTime and endTime) then
 		self.actionDuration = (endTime - startTime) / 1000
-		
+
 		-- set start time here in case we start to monitor a cast that is underway already
 		self.actionStartTime = startTime / 1000
 	else
 		self.actionDuration = 1 -- instants/failures
 	end
-	
+
 	if not (message) then
 		self.actionMessage = spell .. (self.moduleSettings.showSpellRank and self:GetShortRank(rank) or "")
 	end
@@ -425,7 +421,7 @@ function IceCastBar.prototype:SpellCastStart(event, unit, spell, rank)
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastStart", unit, spell, rank)
 	--UnitCastingInfo(unit)
-	
+
 	self:StartBar(IceCastBar.Actions.Cast)
 	self.current = spell
 end
@@ -433,12 +429,12 @@ end
 function IceCastBar.prototype:SpellCastStop(event, unit, spell, rank)
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastStop", unit, spell, self.current)
-	
+
 	-- ignore if not coming from current spell
 	if (self.current and spell and self.current ~= spell) then
 		return
 	end
-	
+
 	if (self.action ~= IceCastBar.Actions.Success and
 		self.action ~= IceCastBar.Actions.Failure and
 		self.action ~= IceCastBar.Actions.Channel)
@@ -457,14 +453,14 @@ function IceCastBar.prototype:SpellCastFailed(event, unit, spell, rank)
 	if (self.current and spell and self.current ~= spell) then
 		return
 	end
-	
+
 	-- channeled spells will call ChannelStop, not cast failed
 	if self.action == IceCastBar.Actions.Channel then
 		return
 	end
-	
+
 	self.current = nil
-	
+
 	-- determine if we want to show failed casts
 	if (self.moduleSettings.flashFailures == "Never") then
 		return
@@ -473,22 +469,8 @@ function IceCastBar.prototype:SpellCastFailed(event, unit, spell, rank)
 			return
 		end
 	end
-	
+
 	self:StartBar(IceCastBar.Actions.Failure, "Failed")
-end
-
-function IceCastBar.prototype:CheckChatInterrupt(event, msg)
-	local player, spell = deformat(msg, SPELLINTERRUPTOTHERSELF)
-	IceHUD:Debug("CheckChatInterrupt", msg, self.current)
-
-	if not player then
-		player, spell = deformat(msg, SPELLFAILCASTSELF)
-	end
-
-	if player then
-		self.current = nil
-		self:StartBar(IceCastBar.Actions.Failure, "Interrupted")
-	end
 end
 
 function IceCastBar.prototype:SpellCastInterrupted(event, unit, spell, rank)
@@ -499,18 +481,18 @@ function IceCastBar.prototype:SpellCastInterrupted(event, unit, spell, rank)
 	if (self.current and spell and self.current ~= spell) then
 		return
 	end
-	
+
 	self.current = nil
-	
+
 	self:StartBar(IceCastBar.Actions.Failure, "Interrupted")
 end
 
 function IceCastBar.prototype:SpellCastDelayed(event, unit, delay)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastDelayed", unit, UnitCastingInfo(unit))
-	
+
 	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill = UnitCastingInfo(self.unit)
-	
+
 	if (endTime and self.actionStartTime) then
 		-- apparently this check is needed, got nils during a horrible lag spike
 		self.actionDuration = endTime/1000 - self.actionStartTime
@@ -521,12 +503,12 @@ end
 function IceCastBar.prototype:SpellCastSucceeded(event, unit, spell, rank)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastSucceeded", unit, spell, rank)
-	
+
 	-- never show on channeled (why on earth does this event even fire when channeling starts?)
 	if (self.action == IceCastBar.Actions.Channel) then
 		return
 	end
-	
+
 	-- ignore if not coming from current spell
 	if (self.current and self.current ~= spell) then
 		return
@@ -537,7 +519,7 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, spell, rank)
 		self:StartBar(IceCastBar.Actions.Success, spell.. self:GetShortRank(rank))
 		return
 	end
-	
+
 	-- determine if we want to show instant casts
 	if (self.moduleSettings.flashInstants == "Never") then
 		return
@@ -546,7 +528,7 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, spell, rank)
 			return
 		end
 	end
-	
+
 	self:StartBar(IceCastBar.Actions.Success, spell.. self:GetShortRank(rank))
 end
 
@@ -559,14 +541,14 @@ end
 function IceCastBar.prototype:SpellCastChannelStart(event, unit)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastChannelStart", unit)
-	
+
 	self:StartBar(IceCastBar.Actions.Channel)
 end
 
 function IceCastBar.prototype:SpellCastChannelUpdate(event, unit)
 	if (unit ~= self.unit or not self.actionStartTime) then return end
 	--IceHUD:Debug("SpellCastChannelUpdate", unit, UnitChannelInfo(unit))
-	
+
 	local spell, rank, displayName, icon, startTime, endTime = UnitChannelInfo(unit)
 	self.actionDuration = endTime/1000 - self.actionStartTime
 end
@@ -574,7 +556,7 @@ end
 function IceCastBar.prototype:SpellCastChannelStop(event, unit)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastChannelStop", unit)
-	
+
 	self:StopBar()
 end
 
