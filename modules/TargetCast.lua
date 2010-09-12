@@ -135,6 +135,7 @@ function TargetCast.prototype:GetOptions()
 		type = 'toggle',
 		name = 'Display non-interruptible color',
 		desc = 'Toggles whether or not to show the CastNonInterruptible color for this bar when a cast is non-interruptible',
+		width = 'double',
 		get = function()
 			return self.moduleSettings.displayNonInterruptible
 		end,

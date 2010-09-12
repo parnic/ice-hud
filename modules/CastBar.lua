@@ -163,6 +163,7 @@ function CastBar.prototype:GetOptions()
 		type = 'toggle',
 		name = 'Change color when not in range',
 		desc = 'Changes the bar color to the CastNotInRange color when the target goes out of range for the current spell.',
+		width = 'double',
 		get = function()
 			return self.moduleSettings.rangeColor
 		end,

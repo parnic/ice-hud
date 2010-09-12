@@ -125,6 +125,7 @@ function FocusHealth.prototype:GetOptions()
 		type = "toggle",
 		name = "Lock raid icon to 100% alpha",
 		desc = "With this enabled, the raid icon is always 100% alpha, regardless of the bar's alpha. Otherwise, it assumes the bar's alpha level.",
+		width = 'double',
 		get = function()
 			return self.moduleSettings.lockIconAlpha
 		end,
