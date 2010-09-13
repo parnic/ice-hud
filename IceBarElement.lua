@@ -93,8 +93,10 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["widthModifier"] = 0
 	settings["usesDogTagStrings"] = true
 	settings["barVerticalOffset"] = 0
+	settings["barHorizontalOffset"] = 0
 	settings["forceJustifyText"] = "NONE"
 	settings["shouldUseOverride"] = false
+	settings["rotateBar"] = false
 
 	return settings
 end
@@ -330,13 +332,34 @@ end
 		name = 'Bar vertical offset',
 		desc = 'Adjust the vertical placement of this bar',
 		min = -400,
-		max = 400,
+		max = 600,
 		step = 1,
 		get = function()
 			return self.moduleSettings.barVerticalOffset
 		end,
 		set = function(info, v)
 			self.moduleSettings.barVerticalOffset = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 30.06
+	}
+
+	opts["barHorizontalAdjust"] =
+	{
+		type='range',
+		name = 'Bar horizontal adjust',
+		desc = "This is a per-pixel horizontal adjustment. You should probably use the 'offset' setting above as it is designed to snap bars together. This may be used in the case of a horizontal bar needing to be positioned outside the normal bar locations.",
+		min = -400,
+		max = 600,
+		step = 1,
+		get = function()
+			return self.moduleSettings.barHorizontalOffset
+		end,
+		set = function(info, v)
+			self.moduleSettings.barHorizontalOffset = v
 			self:Redraw()
 		end,
 		disabled = function()
@@ -381,6 +404,28 @@ end
 		end,
 		values = IceHUD.validBarList,
 		order = 30.08
+	}
+
+	opts["barRotate"] =
+	{
+		type = 'toggle',
+		name = 'Rotate 90 degrees',
+		desc = "This will rotate this module by 90 degrees to give a horizontal orientation.\n\nWARNING: This feature is brand new and a bit rough around the edges. You will need to greatly adjust the vertical and horizontal offset of this bar plus move the text around in order for it to look correct.\n\nAnd I mean greatly.",
+		get = function(info)
+			return self.moduleSettings.rotateBar
+		end,
+		set = function(info, v)
+			self.moduleSettings.rotateBar = v
+			if v then
+				self:RotateHorizontal()
+			else
+				self:ResetRotation()
+			end
+		end,
+		disabled = function()
+			return not self:IsEnabled()
+		end,
+		order = 30.09
 	}
 
 	opts["textSettings"] =
@@ -533,7 +578,7 @@ end
 				type = 'range',
 				name = 'Text Vertical Offset',
 				desc = 'Offset of the text from the bar vertically (negative is farther below)',
-				min = -250,
+				min = -450,
 				max = 350,
 				step = 1,
 				get = function()
@@ -623,6 +668,10 @@ function IceBarElement.prototype:CreateFrame()
 		and not self.moduleSettings.isCustomBar and self:RegisterOnUpdate() then
 		self.frame:SetScript("OnUpdate", function() self:MyOnUpdate() end)
 	end
+
+	if self.moduleSettings.rotateBar and self.frame.anim == nil then
+		self:RotateHorizontal()
+	end
 end
 
 function IceBarElement.prototype:RegisterOnUpdate()
@@ -671,6 +720,7 @@ function IceBarElement.prototype:CreateBackground()
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		offx = offx * -1
 	end
+	offx = offx + (self.moduleSettings.barHorizontalOffset or 0)
 
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("BOTTOM"..ownPoint, self.parent, "BOTTOM"..self.moduleSettings.side, offx, self.moduleSettings.barVerticalOffset)
@@ -1014,4 +1064,35 @@ end
 
 function IceBarElement.prototype:MyOnUpdate()
 	self:SetScale(self.DesiredScale)
+end
+
+function IceBarElement.prototype:RotateHorizontal()
+	self:RotateFrame(self.frame)
+	self:RotateFrame(self.barFrame)
+end
+
+function IceBarElement.prototype:ResetRotation()
+	if self.frame.anim then
+		self.frame.anim:Stop()
+	end
+	if self.barFrame.anim then
+		self.barFrame.anim:Stop()
+	end
+end
+
+function IceBarElement.prototype:RotateFrame(frame)
+	if frame.anim == nil then
+		local grp = frame:CreateAnimationGroup()
+		local rot = grp:CreateAnimation("Rotation")
+		rot:SetStartDelay(0)
+		rot:SetEndDelay(5)
+		rot:SetOrder(1)
+		rot:SetDuration(0.001)
+		rot:SetDegrees(-90)
+		rot:SetOrigin("BOTTOMLEFT", 0, 0)
+		rot:SetScript("OnUpdate", function(anim) if anim:GetProgress() >= 1 then anim:Pause() end end)
+		grp.rot = rot
+		frame.anim = grp
+	end
+	frame.anim:Play()
 end
