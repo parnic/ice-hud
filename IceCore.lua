@@ -250,6 +250,8 @@ function IceCore.prototype:RenameDynamicModule(module, newName)
 	module.elementName = newName
 
 	IceHUD:GenerateModuleOptions()
+
+	LibStub("AceConfigDialog-3.0"):SelectGroup("IceHUD", "modules", newName)
 end
 
 
