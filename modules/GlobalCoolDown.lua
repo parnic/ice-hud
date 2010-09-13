@@ -83,6 +83,7 @@ function GlobalCoolDown.prototype:GetDefaultSettings()
 	settings["lowThreshold"] = 0
 	settings["barVisible"]["bg"] = false
 	settings["usesDogTagStrings"] = false
+	settings["bHideMarkerSettings"] = true
 
 	return settings
 end

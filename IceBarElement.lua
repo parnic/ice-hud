@@ -692,8 +692,10 @@ if not self.moduleSettings.bHideMarkerSettings then
 				desc = "Choose a marker to edit. This will place the marker's settings in the fields above here.",
 				values = function()
 					local retval = {}
-					for i=1, #self.moduleSettings.markers do
-						retval[i] = ((self.moduleSettings.markers[i].position + 0.5) * 100) .. "%"
+					if self.moduleSettings.markers then
+						for i=1, #self.moduleSettings.markers do
+							retval[i] = ((self.moduleSettings.markers[i].position + 0.5) * 100) .. "%"
+						end
 					end
 					return retval
 				end,
@@ -714,7 +716,7 @@ if not self.moduleSettings.bHideMarkerSettings then
 				name = "Update",
 				desc = "This will update the marker selected in the 'edit marker' box with the values specified.",
 				func = function()
-					if lastEditMarkerConfig <= #self.moduleSettings.markers then
+					if self.moduleSettings.markers and lastEditMarkerConfig <= #self.moduleSettings.markers then
 						self:EditMarker(lastEditMarkerConfig, lastMarkerPosConfig / 100, lastMarkerColorConfig, lastMarkerHeightConfig)
 					end
 				end,
@@ -725,7 +727,7 @@ if not self.moduleSettings.bHideMarkerSettings then
 				name = "Remove",
 				desc = "This will remove the marker selected in the 'edit marker' box. This action is irreversible.",
 				func = function()
-					if lastEditMarkerConfig <= #self.moduleSettings.markers then
+					if self.moduleSettings.markers and lastEditMarkerConfig <= #self.moduleSettings.markers then
 						self:RemoveMarker(lastEditMarkerConfig)
 					end
 				end,
@@ -1057,9 +1059,11 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 
 	self.frame.bg:SetVertexColor(r, g, b, self.backgroundAlpha)
 	self.barFrame.bar:SetVertexColor(self:GetColor(color))
-	for i=1, #self.Markers do
-		local color = self.moduleSettings.markers[i].color
-		self.Markers[i].bar:SetVertexColor(color.r, color.g, color.b, self.alpha)
+	if self.moduleSettings.markers then
+		for i=1, #self.Markers do
+			local color = self.moduleSettings.markers[i].color
+			self.Markers[i].bar:SetVertexColor(color.r, color.g, color.b, self.alpha)
+		end
 	end
 
 	if self.DesiredScale ~= scale then
@@ -1241,6 +1245,10 @@ function IceBarElement.prototype:NotifyBarOverrideChanged()
 end
 
 function IceBarElement.prototype:AddNewMarker(inPosition, inColor, inHeight)
+	if not self.moduleSettings.markers then
+		self.moduleSettings.markers = {}
+	end
+
 	local idx = #self.moduleSettings.markers + 1
 	self.moduleSettings.markers[idx] = {
 		position = inPosition - 0.5, -- acceptable range is -0.5 to +0.5
