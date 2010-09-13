@@ -1,6 +1,9 @@
 package-as: IceHUD
 
 externals:
+    libs/LibStub:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/LibStub
+        tag: latest
     libs/AceLibrary: svn://svn.wowace.com/wow/ace2/mainline/trunk/AceLibrary
     libs/CallbackHandler-1.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/CallbackHandler-1.0
