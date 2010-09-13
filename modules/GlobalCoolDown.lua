@@ -27,8 +27,6 @@ function GlobalCoolDown.prototype:Enable(core)
 
 	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "CooldownStateChanged")
 
-	self.scheduledEvent = self:ScheduleRepeatingTimer("UpdateGlobalCoolDown", 0.05)
-
 	self:Show(false)
 end
 
@@ -77,9 +75,9 @@ function GlobalCoolDown.prototype:GetDefaultSettings()
 	settings["enabled"] = false
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 6
-	settings["shouldAnimate"] = false
+	settings["shouldAnimate"] = true
 	settings["hideAnimationSettings"] = true
-	settings["desiredLerpTime"] = nil
+	settings["desiredLerpTime"] = 1
 	settings["lowThreshold"] = 0
 	settings["barVisible"]["bg"] = false
 	settings["usesDogTagStrings"] = false
@@ -107,10 +105,17 @@ function GlobalCoolDown.prototype:CooldownStateChanged()
 		self.startTime = start
 		self.duration = dur
 
-		self.CurrScale = 1
+		if self.CurrScale < 0.01 or self.CurrScale == 1 then
+			self:SetScale(1, true)
+			self.LastScale = 1
+			self.DesiredScale = 0
+			self.CurrLerpTime = 0
+			self.moduleSettings.desiredLerpTime = dur or 1
+		end
 		self.frame:SetFrameStrata("TOOLTIP")
 		self:Show(true)
 		self.frame.bg:SetAlpha(0)
+		self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
 	else
 		self.duration = nil
 		self.startTime = nil
@@ -129,7 +134,7 @@ function GlobalCoolDown.prototype:UpdateGlobalCoolDown()
 
 			self:Show(false)
 		else
-			self:UpdateBar(1 - (self.duration ~= 0 and remaining / self.duration or 0), "GlobalCoolDown", 0.8)
+--			self:UpdateBar(1 - (self.duration ~= 0 and remaining / self.duration or 0), "GlobalCoolDown", 0.8)
 		end
 	else
 		self:Show(false)

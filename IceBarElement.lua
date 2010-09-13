@@ -1231,10 +1231,10 @@ function IceBarElement.prototype:RotateFrame(frame)
 		rot:SetDuration(0.001)
 		rot:SetDegrees(-90)
 		rot:SetOrigin("BOTTOMLEFT", 0, 0)
-		rot:SetScript("OnUpdate", function(anim) if anim:GetProgress() >= 1 then anim:Pause() end end)
 		grp.rot = rot
 		frame.anim = grp
 	end
+	frame.anim.rot:SetScript("OnUpdate", function(anim) if anim:GetProgress() >= 1 then anim:Pause() anim:SetScript("OnUpdate", nil) end end)
 	frame.anim:Play()
 end
 
