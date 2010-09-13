@@ -1,7 +1,6 @@
 local AceOO = AceLibrary("AceOO-2.0")
 
 local EclipseBar = AceOO.Class(IceBarElement)
-EclipseBar.prototype.markerHeight = 6
 EclipseBar.prototype.barUpdateColor = "EclipseLunar"
 
 function EclipseBar.prototype:init()
@@ -11,7 +10,6 @@ function EclipseBar.prototype:init()
 	self:SetDefaultColor("EclipseLunarActive", 0, 0, 255)
 	self:SetDefaultColor("EclipseSolar", 190, 210, 31)
 	self:SetDefaultColor("EclipseSolarActive", 238, 251, 31)
-	self:SetDefaultColor("EclipseMarker", 255, 0, 0)
 end
 
 function EclipseBar.prototype:GetOptions()
@@ -32,6 +30,11 @@ function EclipseBar.prototype:GetDefaultSettings()
 	defaults.shouldAnimate = false
 	defaults.hideAnimationSettings = true
 	defaults.lockUpperTextAlpha = false
+	defaults.markers[1] = {
+		position = 0,
+		color = {r=1, g=0, b=0, a=1},
+		height = 6,
+	}
 
 	return defaults
 end
@@ -57,7 +60,6 @@ function EclipseBar.prototype:CreateFrame()
 	EclipseBar.super.prototype.CreateFrame(self)
 
 	self:CreateSolarBar()
-	self:CreateMarker()
 	self:UpdateShown()
 	self:UpdateAlpha()
 end
@@ -110,53 +112,6 @@ function EclipseBar.prototype:CreateSolarBar()
 	self.solarBar:SetHeight(self.settings.barHeight * pos)
 end
 
-function EclipseBar.prototype:CreateMarker()
-	local bIsNewBar = false
-	if not (self.markerBar) then
-		self.markerBar = CreateFrame("Frame", nil, self.frame)
-		bIsNewBar = true
-	end
-
-	self.markerBar:SetFrameStrata("LOW")
-	self.markerBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
-	self.markerBar:SetHeight(self.markerHeight)
-	self.markerBar:ClearAllPoints()
-
-	if not (self.markerBar.bar) then
-		self.markerBar.bar = self.markerBar:CreateTexture(nil, "LOW")
-	end
-
-	self.markerBar.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	self.markerBar.bar:SetAllPoints(self.markerBar)
-
-	self.markerBar.bar:SetVertexColor(self:GetColor("EclipseMarker", 1))
-
-	if bIsNewBar then
-		self:PositionMarker(0)
-	end
-end
-
-function EclipseBar.prototype:PositionMarker(pos)
-	if self.moduleSettings.inverse then
-		pos = pos * -1
-	end
-	local coordPos = 0.5 + pos
-	local adjustedBarHeight = self.settings.barHeight - (self.markerHeight)
-	local heightScale = (self.markerHeight / self.settings.barHeight) / 2
-
-	local min_y = 1-coordPos-heightScale
-	local max_y = 1-coordPos+heightScale
-
-	if self.moduleSettings.side == IceCore.Side.Left then
-		self.markerBar.bar:SetTexCoord(1, 0, min_y, max_y)
-	else
-		self.markerBar.bar:SetTexCoord(0, 1, min_y, max_y)
-	end
-
-	self.markerBar.bar:Show()
-	self.markerBar:SetPoint("CENTER", self.frame, "CENTER", 0, (self.settings.barHeight * pos))
-end
-
 function EclipseBar.prototype:UpdateShown()
 	local form  = GetShapeshiftFormID();
 
@@ -199,7 +154,7 @@ function EclipseBar.prototype:UpdateEclipsePower()
 	self:SetBottomText1(abs((power/maxPower) * 100))
 
 	local pos = (power/maxPower) / 2
-	self:PositionMarker(pos)
+	self:PositionMarker(1, pos)
 end
 
 function EclipseBar.prototype:Update()

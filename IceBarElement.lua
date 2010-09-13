@@ -13,7 +13,12 @@ IceBarElement.prototype.CurrLerpTime = 0
 IceBarElement.prototype.LastScale = 1
 IceBarElement.prototype.DesiredScale = 1
 IceBarElement.prototype.CurrScale = 1
+IceBarElement.prototype.Markers = {}
 
+local lastMarkerPosConfig = 50
+local lastMarkerColorConfig = {r=1, b=0, g=0, a=1}
+local lastMarkerHeightConfig = 6
+local lastEditMarkerConfig = 1
 
 -- Constructor --
 function IceBarElement.prototype:init(name)
@@ -97,6 +102,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["forceJustifyText"] = "NONE"
 	settings["shouldUseOverride"] = false
 	settings["rotateBar"] = false
+	settings["markers"] = {}
 
 	return settings
 end
@@ -379,6 +385,8 @@ end
 		set = function(info, value)
 			self.moduleSettings.shouldUseOverride = value
 			IceHUD:NotifyOptionsChange()
+
+			self:NotifyBarOverrideChanged()
 			self:Redraw()
 		end,
 		disabled = function()
@@ -397,6 +405,7 @@ end
 		end,
 		set = function(info, value)
 			self.moduleSettings.barTextureOverride = info.option.values[value]
+			self:NotifyBarOverrideChanged()
 			self:Redraw()
 		end,
 		disabled = function()
@@ -614,6 +623,117 @@ end
 		}
 	}
 
+	opts["markerSettings"] =
+	{
+		type = 'group',
+		name = '|c'..self.configColor..'Marker Settings|r',
+		desc = 'Create or remove markers at various points along the bar here',
+		order = 32,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		args = {
+			markerPos = {
+				type = "range",
+				min = 0,
+				max = 100,
+				step = 1,
+				name = "Position (percent)",
+				desc = "This specifies at what point along the bar this marker should be displayed. Remember to press ENTER when you are done typing.\n\nExample: if you wanted a marker at 40 energy and you have 100 total energy, then this would be 40. If you want it at 40 energy and you have 120 total energy, then this would be 33.",
+				get = function()
+					return lastMarkerPosConfig
+				end,
+				set = function(info, v)
+					lastMarkerPosConfig = math.floor(v)
+				end,
+				order = 20,
+			},
+			markerColor = {
+				type = "color",
+				name = "Color",
+				desc = "The color this marker should be.",
+				width = "half",
+				get = function()
+					return lastMarkerColorConfig.r, lastMarkerColorConfig.g, lastMarkerColorConfig.b, lastMarkerColorConfig.a
+				end,
+				set = function(info, r, g, b, a)
+					lastMarkerColorConfig = {r=r, g=g, b=b, a=a}
+				end,
+				order = 30,
+			},
+			markerHeight = {
+				type = "range",
+				min = 1,
+				step = 1,
+				max = self.settings.barHeight,
+				name = "Height",
+				desc = "The height of the marker on the bar.",
+				get = function()
+					return lastMarkerHeightConfig
+				end,
+				set = function(info, v)
+					lastMarkerHeightConfig = v
+				end,
+				order = 40,
+			},
+			createMarker = {
+				type = "execute",
+				name = "Create marker",
+				desc = "Creates a new marker with the chosen settings.",
+				width = "full",
+				func = function()
+					self:AddNewMarker(lastMarkerPosConfig / 100, lastMarkerColorConfig, lastMarkerHeightConfig)
+				end,
+				order = 10,
+			},
+			listMarkers = {
+				type = "select",
+				name = "Edit Marker",
+				desc = "Choose a marker to edit. This will place the marker's settings in the fields above here.",
+				values = function()
+					local retval = {}
+					for i=1, #self.moduleSettings.markers do
+						retval[i] = ((self.moduleSettings.markers[i].position + 0.5) * 100) .. "%"
+					end
+					return retval
+				end,
+				get = function(info)
+					return lastEditMarkerConfig
+				end,
+				set = function(info, v)
+					lastEditMarkerConfig = v
+					lastMarkerPosConfig = (self.moduleSettings.markers[v].position + 0.5) * 100
+					local color = self.moduleSettings.markers[v].color
+					lastMarkerColorConfig = {r=color.r, g=color.g, b=color.b, a=color.a}
+					lastMarkerHeightConfig = self.moduleSettings.markers[v].height
+				end,
+				order = 50,
+			},
+			editMarker = {
+				type = "execute",
+				name = "Update",
+				desc = "This will update the marker selected in the 'edit marker' box with the values specified.",
+				func = function()
+					if lastEditMarkerConfig <= #self.moduleSettings.markers then
+						self:EditMarker(lastEditMarkerConfig, lastMarkerPosConfig / 100, lastMarkerColorConfig, lastMarkerHeightConfig)
+					end
+				end,
+				order = 60,
+			},
+			deleteMarker = {
+				type = "execute",
+				name = "Remove",
+				desc = "This will remove the marker selected in the 'edit marker' box. This action is irreversible.",
+				func = function()
+					if lastEditMarkerConfig <= #self.moduleSettings.markers then
+						self:RemoveMarker(lastEditMarkerConfig)
+					end
+				end,
+				order = 70,
+			},
+		}
+	}
+
 	return opts
 end
 
@@ -659,6 +779,13 @@ function IceBarElement.prototype:CreateFrame()
 	self:CreateBackground()
 	self:CreateBar()
 	self:CreateTexts()
+	if #self.Markers == 0 then
+		self:LoadMarkers()
+	else
+		for i=1, #self.Markers do
+			self:UpdateMarker(i)
+		end
+	end
 
 	self.frame:SetScale(self.moduleSettings.scale)
 	-- never register the OnUpdate for the mirror bar since it's handled internally
@@ -930,6 +1057,10 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 
 	self.frame.bg:SetVertexColor(r, g, b, self.backgroundAlpha)
 	self.barFrame.bar:SetVertexColor(self:GetColor(color))
+	for i=1, #self.Markers do
+		local color = self.moduleSettings.markers[i].color
+		self.Markers[i].bar:SetVertexColor(color.r, color.g, color.b, self.alpha)
+	end
 
 	if self.DesiredScale ~= scale then
 		self.DesiredScale = scale
@@ -1069,6 +1200,9 @@ end
 function IceBarElement.prototype:RotateHorizontal()
 	self:RotateFrame(self.frame)
 	self:RotateFrame(self.barFrame)
+	for i=1, #self.Markers do
+		self.Markers[i]:Hide()
+	end
 end
 
 function IceBarElement.prototype:ResetRotation()
@@ -1077,6 +1211,9 @@ function IceBarElement.prototype:ResetRotation()
 	end
 	if self.barFrame.anim then
 		self.barFrame.anim:Stop()
+	end
+	for i=1, #self.Markers do
+		self.Markers[i]:Show()
 	end
 end
 
@@ -1095,4 +1232,104 @@ function IceBarElement.prototype:RotateFrame(frame)
 		frame.anim = grp
 	end
 	frame.anim:Play()
+end
+
+function IceBarElement.prototype:NotifyBarOverrideChanged()
+	for i=1, #self.Markers do
+		self.Markers[i].bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+	end
+end
+
+function IceBarElement.prototype:AddNewMarker(inPosition, inColor, inHeight)
+	local idx = #self.moduleSettings.markers + 1
+	self.moduleSettings.markers[idx] = {
+		position = inPosition - 0.5, -- acceptable range is -0.5 to +0.5
+		color = {r=inColor.r, g=inColor.g, b=inColor.b, a=1},
+		height = inHeight,
+	}
+	self:CreateMarker(idx)
+end
+
+function IceBarElement.prototype:EditMarker(idx, inPosition, inColor, inHeight)
+	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
+		"Bad marker passed to EditMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
+	self.moduleSettings.markers[idx] = {
+		position = inPosition - 0.5, -- acceptable range is -0.5 to +0.5
+		color = {r=inColor.r, g=inColor.g, b=inColor.b, a=1},
+		height = inHeight,
+	}
+	self:CreateMarker(idx)
+end
+
+function IceBarElement.prototype:RemoveMarker(idx)
+	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
+		"Bad marker passed to RemoveMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
+	self.Markers[idx]:Hide()
+	table.remove(self.Markers, idx)
+	table.remove(self.moduleSettings.markers, idx)
+end
+
+function IceBarElement.prototype:CreateMarker(idx)
+	if self.Markers[idx] ~= nil then
+		self.Markers[idx]:Hide()
+		self.Markers[idx].bar = nil
+		self.Markers[idx] = nil
+	end
+
+	self.Markers[idx] = CreateFrame("Frame", nil, self.barFrame)
+	local marker = self.Markers[idx]
+
+	marker:SetFrameStrata("LOW")
+	marker:ClearAllPoints()
+
+	marker.bar = marker:CreateTexture(nil, "LOW")
+	marker.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+	marker.bar:SetAllPoints(marker)
+	local color = self.moduleSettings.markers[idx].color
+	marker.bar:SetVertexColor(color.r, color.g, color.b, color.a)
+
+	self:UpdateMarker(idx)
+	self:PositionMarker(idx, self.moduleSettings.markers[idx].position)
+end
+
+function IceBarElement.prototype:UpdateMarker(idx)
+	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
+		"Bad marker passed to UpdateMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
+	self.Markers[idx]:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
+	self.Markers[idx]:SetHeight(self.moduleSettings.markers[idx].height)
+end
+
+function IceBarElement.prototype:PositionMarker(idx, pos)
+	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
+		"Bad marker passed to PositionMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
+	if self.moduleSettings.inverse then
+		pos = pos * -1
+	end
+	local coordPos = 0.5 + pos
+	local adjustedBarHeight = self.settings.barHeight - (self.moduleSettings.markers[idx].height)
+	local heightScale = (self.moduleSettings.markers[idx].height / self.settings.barHeight) / 2
+
+	local min_y = 1-coordPos-heightScale
+	local max_y = 1-coordPos+heightScale
+
+	if self.moduleSettings.side == IceCore.Side.Left then
+		self.Markers[idx].bar:SetTexCoord(1, 0, min_y, max_y)
+	else
+		self.Markers[idx].bar:SetTexCoord(0, 1, min_y, max_y)
+	end
+
+	self.Markers[idx].bar:Show()
+	self.Markers[idx]:SetPoint("CENTER", self.frame, "CENTER", 0, (self.settings.barHeight * pos))
+end
+
+function IceBarElement.prototype:LoadMarkers()
+	self.Markers = {}
+
+	if not self.moduleSettings.markers then
+		return
+	end
+
+	for i=1, #self.moduleSettings.markers do
+		self:CreateMarker(i)
+	end
 end
