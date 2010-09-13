@@ -622,7 +622,7 @@ end
 			}
 		}
 	}
-
+if not self.moduleSettings.bHideMarkerSettings then
 	opts["markerSettings"] =
 	{
 		type = 'group',
@@ -733,7 +733,7 @@ end
 			},
 		}
 	}
-
+end
 	return opts
 end
 

@@ -30,6 +30,7 @@ function EclipseBar.prototype:GetDefaultSettings()
 	defaults.shouldAnimate = false
 	defaults.hideAnimationSettings = true
 	defaults.lockUpperTextAlpha = false
+	defaults.bHideMarkerSettings = true
 	defaults.markers[1] = {
 		position = 0,
 		color = {r=1, g=0, b=0, a=1},
