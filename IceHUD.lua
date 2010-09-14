@@ -897,6 +897,9 @@ function IceHUD:OnInitialize()
 	self:SyncSettingsVersions()
 
 	self:InitLDB()
+	if SML then
+		SML.RegisterCallback(self, "LibSharedMedia_Registered", "UpdateMedia")
+	end
 end
 
 
@@ -1229,4 +1232,20 @@ function IceHUD:RegisterPendingModules()
 		self.IceCore:Register(pendingModuleLoads[i])
 	end
 	pendingModuleLoads = {}
+end
+
+function IceHUD:UpdateMedia(event, mediatype, key)
+	if not self.db.profile or not self.IceCore.enabled then
+		return
+	end
+
+	if mediatype == "font" then
+		if key == self.db.profile.fontFamily then
+			IceHUD.IceCore:SetFontFamily(key)
+		end
+	elseif mediatype == "statusbar" then
+		if self.TargetOfTarget and self.TargetOfTarget.enabled and key == self.TargetOfTarget.moduleSettings.texture then
+			self.TargetOfTarget:Redraw()
+		end
+	end
 end
