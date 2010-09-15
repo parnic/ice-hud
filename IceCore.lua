@@ -39,6 +39,7 @@ function IceCore.prototype:SetupDefaults()
 	local defaultPreset = "RoundBar"
 	self.defaults = {
 		profile = {
+			enable = true,
 			gap = 150,
 			verticalPos = -110,
 			horizontalPos = 0,
@@ -118,7 +119,11 @@ function IceCore.prototype:CheckDisplayUpdateMessage()
 end
 
 
-function IceCore.prototype:Enable()
+function IceCore.prototype:Enable(userToggle)
+	if userToggle then
+		self.settings.enable = true
+	end
+
 	self:DrawFrame()
 
 	for i = 1, table.getn(self.elements) do
@@ -269,7 +274,11 @@ function IceCore.prototype:SetModuleDatabases()
 end
 
 
-function IceCore.prototype:Disable()
+function IceCore.prototype:Disable(userToggle)
+	if userToggle then
+		self.settings.enable = false
+	end
+
 	self:ConfigModeToggle(false)
 
 	for i = 1, table.getn(self.elements) do

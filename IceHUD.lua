@@ -377,6 +377,7 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 				IceHUD.IceCore:SetFontFamily(info.option.values[value])
 			end,
 			values = SML:List('font'),
+			order = 94.75,
 		},
 
 		barSettings = {
@@ -531,24 +532,24 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 			args = {},
 			order = 42
 		},
---[[
+
 		enabled = {
 			type = "toggle",
-			name = "|cff11aa11Enabled|r",
+			name = "Enabled",
 			desc = "Enable/disable IceHUD",
 			get = function()
 				return IceHUD.IceCore:IsEnabled()
 			end,
 			set = function(info, value)
 				if (value) then
-					IceHUD.IceCore:Enable()
+					IceHUD.IceCore:Enable(true)
 				else
-					IceHUD.IceCore:Disable()
+					IceHUD.IceCore:Disable(true)
 				end
 			end,
 			order = 91
 		},
-]]
+
 		debug = {
 			type = "toggle",
 			name = "Debugging",
@@ -1021,7 +1022,9 @@ end
 function IceHUD:OnEnable(isFirst)
 	self:Debug("IceHUD:OnEnable()")
 
-	self.IceCore:Enable()
+	if self.db.profile.enable then
+		self.IceCore:Enable()
+	end
 
 	if isFirst then
 		self:SetDebugging(self.IceCore:GetDebug())
