@@ -113,6 +113,14 @@ function PlayerHealth.prototype:Enable(core)
 	--self:Update(self.unit)
 end
 
+function PlayerHealth.prototype:Disable(core)
+	PlayerHealth.super.prototype.Disable(self, core)
+
+	if self.moduleSettings.hideBlizz then
+		self:ShowBlizz()
+	end
+end
+
 function PlayerHealth.prototype:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...)
 	local bFoundMe = false
 	for i=1, select("#", ...) do
@@ -288,7 +296,7 @@ function PlayerHealth.prototype:GetOptions()
 			self:Update()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not HealComm
+			return not (self.moduleSettings.enabled and (IceHUD.WowVer >= 40000 or HealComm))
 		end,
 		order = 43.6
 	}
@@ -1303,22 +1311,7 @@ end
 
 function PlayerHealth.prototype:ShowBlizz()
 	PlayerFrame:Show()
-
-	PlayerFrame:RegisterEvent("UNIT_LEVEL")
-	PlayerFrame:RegisterEvent("UNIT_COMBAT")
-	PlayerFrame:RegisterEvent("UNIT_FACTION")
-	PlayerFrame:RegisterEvent("UNIT_MAXMANA")
-	PlayerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-	PlayerFrame:RegisterEvent("PLAYER_ENTER_COMBAT")
-	PlayerFrame:RegisterEvent("PLAYER_LEAVE_COMBAT")
-	PlayerFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-	PlayerFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-	PlayerFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
-	PlayerFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
-	PlayerFrame:RegisterEvent("PARTY_LEADER_CHANGED")
-	PlayerFrame:RegisterEvent("PARTY_LOOT_METHOD_CHANGED")
-	PlayerFrame:RegisterEvent("RAID_ROSTER_UPDATE")
-	PlayerFrame:RegisterEvent("PLAYTIME_CHANGED")
+	PlayerFrame:GetScript("OnLoad")(PlayerFrame)
 end
 
 
@@ -1349,18 +1342,20 @@ end
 
 function PlayerHealth.prototype:ShowBlizzardParty()
 	-- Both Pitbull 4 and Xperl use these exact code, so we use it too.
-	for i = 1, 4 do
+	for i = 1, MAX_PARTY_MEMBERS do
 		local frame = _G["PartyMemberFrame"..i]
-		frame.Show = nil
-		frame:GetScript("OnLoad")(frame)
-		frame:GetScript("OnEvent")(frame, "PARTY_MEMBERS_CHANGED")
+		if frame then
+			frame.Show = nil
+			frame:GetScript("OnLoad")(frame)
+			frame:GetScript("OnEvent")(frame, "PARTY_MEMBERS_CHANGED")
 
-		PartyMemberFrame_UpdateMember(frame)
+			PartyMemberFrame_UpdateMember(frame)
+		end
 	end
 
+	UIParent:RegisterEvent("RAID_ROSTER_UPDATE")
 end
 
-UIParent:RegisterEvent("RAID_ROSTER_UPDATE")
 --function PlayerHealth.prototype:ShowBlizzParty()
 	-- This loop exists because we need to unregister for events in case the party composition changes.
 --	for i = 1, MAX_PARTY_MEMBERS do

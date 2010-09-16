@@ -184,7 +184,7 @@ end
 -- OVERRIDE
 function Runes.prototype:Redraw()
 	Runes.super.prototype.Redraw(self)
-	
+
 	self:CreateFrame()
 end
 
@@ -199,6 +199,14 @@ function Runes.prototype:Enable(core)
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
+	end
+end
+
+function Runes.prototype:Disable(core)
+	Runes.super.prototype.Disable(self, core)
+
+	if self.moduleSettings.hideBlizz then
+		self:ShowBlizz()
 	end
 end
 
@@ -381,10 +389,13 @@ end
 function Runes.prototype:ShowBlizz()
 	RuneFrame:Show()
 
-	RuneFrame:RegisterEvent("RUNE_POWER_UPDATE");
-	RuneFrame:RegisterEvent("RUNE_TYPE_UPDATE");
-	RuneFrame:RegisterEvent("RUNE_REGEN_UPDATE");
-	RuneFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
+	RuneFrame:GetScript("OnLoad")(RuneFrame)
+	for i=1, self.numRunes do
+		local frame = _G["RuneButtonIndividual"..i]
+		if frame then
+			frame:GetScript("OnLoad")(frame)
+		end
+	end
 end
 
 

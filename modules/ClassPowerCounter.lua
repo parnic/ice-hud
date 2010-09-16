@@ -147,7 +147,7 @@ function IceClassPowerCounter.prototype:GetOptions()
 		end,
 		order = 35
 	}
-	
+
 	opts["inactiveDisplayMode"] = {
 		type = 'select',
 		name = 'Inactive mode',
@@ -216,7 +216,7 @@ end
 -- OVERRIDE
 function IceClassPowerCounter.prototype:Redraw()
 	IceClassPowerCounter.super.prototype.Redraw(self)
-	
+
 	self:CreateFrame()
 end
 
@@ -231,6 +231,14 @@ function IceClassPowerCounter.prototype:Enable(core)
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
+	end
+end
+
+function IceClassPowerCounter.prototype:Disable(core)
+	IceClassPowerCounter.super.prototype.Disable(self, core)
+
+	if self.moduleSettings.hideBlizz then
+		self:ShowBlizz()
 	end
 end
 
@@ -294,7 +302,7 @@ function IceClassPowerCounter.prototype:CreateFrame()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
 
 	self:CreateRuneFrame()
-	
+
 	self:SetDisplayMode()
 end
 

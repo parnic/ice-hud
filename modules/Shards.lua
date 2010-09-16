@@ -39,9 +39,7 @@ end
 function ShardCounter.prototype:ShowBlizz()
 	ShardBarFrame:Show()
 
-	ShardBarFrame:RegisterEvent("UNIT_POWER");
-	ShardBarFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
-	ShardBarFrame:RegisterEvent("UNIT_DISPLAYPOWER");
+	ShardBarFrame:GetScript("OnLoad")(ShardBarFrame)
 end
 
 function ShardCounter.prototype:HideBlizz()

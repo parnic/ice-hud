@@ -45,7 +45,7 @@ function PlayerInfo.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 41
+		order = 33.1,
 	}
 
 	return opts
@@ -116,7 +116,7 @@ function PlayerInfo.prototype:ShowBlizz()
 	BuffFrame:Show()
 	TemporaryEnchantFrame:Show()
 
-	BuffFrame:RegisterEvent("UNIT_AURA");
+	BuffFrame:GetScript("OnLoad")(BuffFrame)
 end
 
 

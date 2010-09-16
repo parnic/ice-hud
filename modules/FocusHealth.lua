@@ -313,6 +313,10 @@ end
 
 function FocusHealth.prototype:Disable(core)
 	FocusHealth.super.prototype.Disable(self, core)
+
+	if self.moduleSettings.hideBlizz then
+		self:ShowBlizz()
+	end
 end
 
 function FocusHealth.prototype:UpdateEvent(event, unit)
@@ -445,16 +449,7 @@ end
 function FocusHealth.prototype:ShowBlizz()
 	FocusFrame:Show()
 
-	FocusFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
-	FocusFrame:RegisterEvent("PLAYER_FOCUS_CHANGED");
-	FocusFrame:RegisterEvent("UNIT_HEALTH");
-	FocusFrame:RegisterEvent("UNIT_LEVEL");
-	FocusFrame:RegisterEvent("UNIT_FACTION");
-	FocusFrame:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
-	FocusFrame:RegisterEvent("UNIT_AURA");
-	FocusFrame:RegisterEvent("PLAYER_FLAGS_CHANGED");
-	FocusFrame:RegisterEvent("PARTY_MEMBERS_CHANGED");
-	FocusFrame:RegisterEvent("RAID_TARGET_UPDATE");
+	FocusFrame:GetScript("OnLoad")(FocusFrame)
 end
 
 

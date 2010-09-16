@@ -549,6 +549,10 @@ function IceTargetHealth.prototype:Disable(core)
 	IceTargetHealth.super.prototype.Disable(self, core)
 
 	UnregisterUnitWatch(self.frame)
+
+	if self.moduleSettings.hideBlizz then
+		self:ShowBlizz()
+	end
 end
 
 
@@ -878,19 +882,10 @@ end
 
 function IceTargetHealth.prototype:ShowBlizz()
 	TargetFrame:Show()
-	TargetFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
-	TargetFrame:RegisterEvent("UNIT_HEALTH")
-	TargetFrame:RegisterEvent("UNIT_LEVEL")
-	TargetFrame:RegisterEvent("UNIT_FACTION")
-	TargetFrame:RegisterEvent("UNIT_CLASSIFICATION_CHANGED")
-	TargetFrame:RegisterEvent("UNIT_AURA")
-	TargetFrame:RegisterEvent("PLAYER_FLAGS_CHANGED")
-	TargetFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
-	TargetFrame:RegisterEvent("RAID_TARGET_UPDATE")
+	TargetFrame:GetScript("OnLoad")(TargetFrame)
 
 	ComboFrame:Show()
-	ComboFrame:RegisterEvent("PLAYER_TARGET_CHANGED");
-	ComboFrame:RegisterEvent("PLAYER_COMBO_POINTS");
+	ComboFrame:GetScript("OnLoad")(ComboFrame)
 end
 
 

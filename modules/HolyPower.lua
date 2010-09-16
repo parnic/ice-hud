@@ -37,10 +37,7 @@ end
 function HolyPower.prototype:ShowBlizz()
 	PaladinPowerBar:Show()
 
-	PaladinPowerBar:RegisterEvent("UNIT_POWER");
-	PaladinPowerBar:RegisterEvent("PLAYER_ENTERING_WORLD");
-	PaladinPowerBar:RegisterEvent("UNIT_DISPLAYPOWER");
-	PaladinPowerBar:RegisterEvent("UNIT_AURA");
+	PaladinPowerBar:GetScript("OnLoad")(PaladinPowerBar)
 end
 
 function HolyPower.prototype:HideBlizz()

@@ -124,7 +124,7 @@ function Totems.prototype:GetOptions()
 		end,
 		order = 35
 	}
-
+--[[
 	opts["cooldownMode"] = {
 		type = 'select',
 		name = 'Totem cooldown mode',
@@ -142,7 +142,7 @@ function Totems.prototype:GetOptions()
 		end,
 		order = 36
 	}
-
+]]--
 	opts["totemGap"] = {
 		type = 'range',
 		name = 'Totem gap',
@@ -187,7 +187,7 @@ end
 -- OVERRIDE
 function Totems.prototype:Redraw()
 	Totems.super.prototype.Redraw(self)
-	
+
 	self:CreateFrame()
 end
 
@@ -198,8 +198,16 @@ function Totems.prototype:Enable(core)
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE", "UpdateTotem");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ResetTotemAvailability");
 
-	if (self.moduleSettings.hideBlizz) then
+	if self.moduleSettings.hideBlizz then
 		self:HideBlizz()
+	end
+end
+
+function Totems.prototype:Disable(core)
+	Totems.super.prototype.Disable(self, core)
+
+	if self.moduleSettings.hideBlizz then
+		self:ShowBlizz()
 	end
 end
 
@@ -220,7 +228,7 @@ function Totems.prototype:UpdateTotem(event, totem, ...)
 		self.frame.graphical[totem].cd:SetCooldown(startTime, duration)
 		self.frame.graphical[totem].cd:Show()
 		self.frame.graphical[totem]:Show()
-	else		
+	else
 		self.frame.graphical[totem].cd:Hide()
 		self.frame.graphical[totem]:Hide()
 	end
@@ -267,8 +275,7 @@ end
 
 function Totems.prototype:ShowBlizz()
 	TotemFrame:Show()
-	TotemFrame:RegisterEvent("PLAYER_TOTEM_UPDATE");
-	TotemFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
+	TotemFrame:GetScript("OnLoad")(TotemFrame)
 end
 
 
@@ -327,7 +334,7 @@ function Totems.prototype:CreateTotem(i, name)
 		self.frame.graphical[i]:SetPoint("TOPLEFT", 0, -1 * ((i-1) * (self.totemSize-(MAX_TOTEMS - 1)) + (i-1) + ((i-1) * self.moduleSettings.totemGap)))
 	end
 
-	
+
 
 	self.frame.graphical[i].cd:SetFrameStrata("BACKGROUND")
 	self.frame.graphical[i].cd:SetFrameLevel(self.frame.graphical[i]:GetFrameLevel()+1)
@@ -338,7 +345,7 @@ function Totems.prototype:CreateTotem(i, name)
 		self.frame.graphical[i].cd:Show()
 		self.frame.graphical[i]:Show()
 	end
-	
+
 	self.frame.graphical[i].shine:SetTexture("Interface\\ComboFrame\\ComboPoint")
 	self.frame.graphical[i].shine:SetBlendMode("ADD")
 	self.frame.graphical[i].shine:SetTexCoord(0.5625, 1, 0, 1)
@@ -347,7 +354,7 @@ function Totems.prototype:CreateTotem(i, name)
 	self.frame.graphical[i].shine:SetWidth(self.totemSize + 25)
 	self.frame.graphical[i].shine:SetHeight(self.totemSize + 10)
 	self.frame.graphical[i].shine:Hide()
-	
+
 	self.frame.graphical[i]:EnableMouse(true)
 	self.frame.graphical[i].slot = i;
 	self.frame.graphical[i]:SetScript("OnEnter", function(button) GameTooltip:SetOwner(button); GameTooltip:SetTotem(button.slot) end)
