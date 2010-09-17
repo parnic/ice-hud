@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local SliceAndDice = AceOO.Class(IceUnitBar)
+local SliceAndDice = IceCore_CreateClass(IceUnitBar)
 
 local NetherbladeItemIdList = {29044, 29045, 29046, 29047, 29048}
 -- Parnic - bah, have to abandon the more robust string representation of each slot because of loc issues...
@@ -39,7 +37,7 @@ end
 -- OVERRIDE
 function SliceAndDice.prototype:Enable(core)
 	SliceAndDice.super.prototype.Enable(self, core)
-	
+
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
 	self:RegisterEvent("UNIT_AURA", "UpdateSliceAndDice")
 	self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateDurationBar")
@@ -125,7 +123,7 @@ function SliceAndDice.prototype:GetOptions()
             return not self.moduleSettings.enabled
         end
     }
-    
+
     return opts
 end
 
@@ -288,7 +286,7 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 		self.durationFrame.bar:SetTexCoord(0, 1, 1-scale, 1)
 	end
 	self.durationFrame.bar:SetHeight(self.settings.barHeight * scale)
-	
+
 	if scale == 0 then
 		self.durationFrame.bar:Hide()
 	else

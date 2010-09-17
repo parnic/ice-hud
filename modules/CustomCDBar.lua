@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-IceCustomCDBar = AceOO.Class(IceUnitBar)
+IceCustomCDBar = IceCore_CreateClass(IceUnitBar)
 
 
 local validDisplayModes = {"Always", "When ready", "When cooling down"}

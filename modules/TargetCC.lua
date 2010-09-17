@@ -1,7 +1,5 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
 -- needs to not be local so that we can inherit from it
-TargetCC = AceOO.Class(IceUnitBar)
+TargetCC = IceCore_CreateClass(IceUnitBar)
 
 TargetCC.prototype.debuffName = nil
 TargetCC.prototype.debuffRemaining = 0

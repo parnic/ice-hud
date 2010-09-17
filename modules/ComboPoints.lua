@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local ComboPoints = AceOO.Class(IceElement)
+local ComboPoints = IceCore_CreateClass(IceElement)
 
 ComboPoints.prototype.comboSize = 20
 

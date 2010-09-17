@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local PlayerHealth = AceOO.Class(IceUnitBar)
+local PlayerHealth = IceCore_CreateClass(IceUnitBar)
 
 PlayerHealth.prototype.resting = nil
 PlayerHealth.prototype.pendingBlizzardPartyHide = false
@@ -90,8 +88,8 @@ function PlayerHealth.prototype:Enable(core)
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
 
 	if IceHUD.WowVer < 40000 then
-		if AceLibrary:HasInstance("LibHealComm-4.0") then
-			HealComm = AceLibrary("LibHealComm-4.0")
+		HealComm = LibStub("LibHealComm-4.0", true)
+		if HealComm then
 			HealComm.RegisterCallback(self, "HealComm_HealStarted", function(event, casterGUID, spellID, spellType, endTime, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...) end)
 			HealComm.RegisterCallback(self, "HealComm_HealUpdated", function(event, casterGUID, spellID, spellType, endTime, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...) end)
 			HealComm.RegisterCallback(self, "HealComm_HealDelayed", function(event, casterGUID, spellID, spellType, endTime, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...) end)
@@ -1417,4 +1415,4 @@ function PlayerHealth.prototype:OutCombat()
 end
 
 -- Load us up
-IceHUD.PlayerHealth = PlayerHealth:new()
+IceHUD.PlayerHealth = PlayerHealth.new()

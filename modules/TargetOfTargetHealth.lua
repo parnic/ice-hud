@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local TargetTargetHealth = AceOO.Class(IceTargetHealth)
+local TargetTargetHealth = IceCore_CreateClass(IceTargetHealth)
 TargetTargetHealth.prototype.scheduledEvent = nil
 
 local SelfDisplayModeOptions = {"Color as SelfColor", "Hide", "Normal"}
@@ -151,7 +149,7 @@ function TargetTargetHealth.prototype:Update(unit)
 			return
 		end
 	end
-	
+
 	if self.moduleSettings.selfDisplayMode == "Hide" then
 		self:Show(UnitExists(self.unit))
 	end

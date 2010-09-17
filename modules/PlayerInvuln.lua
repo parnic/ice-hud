@@ -1,8 +1,6 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
 -- changed to inherit from the TargetInvuln bar since the only difference is the unit and the default placement
 -- helps keep changes in one place and we don't have to duplicate the Invuln spell tables and they don't have to be globals
-local PlayerInvuln = AceOO.Class(TargetInvuln)
+local PlayerInvuln = IceCore_CreateClass(TargetInvuln)
 
 -- Constructor --
 function PlayerInvuln.prototype:init()
@@ -17,7 +15,7 @@ function PlayerInvuln.prototype:GetDefaultSettings()
 
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 3
-    
+
 	return settings
 end
 

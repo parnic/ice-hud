@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-IceTargetMana = AceOO.Class(IceUnitBar)
+IceTargetMana = IceCore_CreateClass(IceUnitBar)
 IceTargetMana.prototype.registerEvents = true
 IceTargetHealth.prototype.color = nil
 IceTargetMana.prototype.determineColor = true

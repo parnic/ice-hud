@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-IceCustomHealth = AceOO.Class(IceTargetHealth)
+IceCustomHealth = IceCore_CreateClass(IceTargetHealth)
 IceCustomHealth.prototype.scheduledEvent = nil
 
 -- Constructor --

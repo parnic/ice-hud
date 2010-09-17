@@ -1,12 +1,10 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local FocusMana = AceOO.Class(IceUnitBar)
+local FocusMana = IceCore_CreateClass(IceUnitBar)
 
 
 -- Constructor --
 function FocusMana.prototype:init()
 	FocusMana.super.prototype.init(self, "FocusMana", "focus")
-	
+
 	self:SetDefaultColor("FocusMana", 52, 64, 221)
 	self:SetDefaultColor("FocusRage", 235, 44, 26)
 	self:SetDefaultColor("FocusEnergy", 228, 242, 31)
@@ -65,17 +63,17 @@ function FocusMana.prototype:Update(unit)
 	if (unit and (unit ~= self.unit)) then
 		return
 	end
-	
+
 	if ((not UnitExists(unit)) or (self.maxMana == 0)) then
 		self:Show(false)
 		return
-	else	
+	else
 		self:Show(true)
 	end
 
 
 	local manaType = UnitPowerType(self.unit)
-	
+
 	local color = "FocusMana"
 	if (self.moduleSettings.scaleManaColor) then
 		color = "ScaledManaColor"
@@ -87,11 +85,11 @@ function FocusMana.prototype:Update(unit)
 	elseif (manaType == SPELL_POWER_ENERGY) then
 		color = "FocusEnergy"
 	end
-	
+
 	if (self.tapped) then
 		color = "Tapped"
 	end
-	
+
 	self:UpdateBar(self.manaPercentage, color)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then

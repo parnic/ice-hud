@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local IceFocusThreat = AceOO.Class(IceThreat)
+local IceFocusThreat = IceCore_CreateClass(IceThreat)
 
 -- constructor
 function IceFocusThreat.prototype:init()

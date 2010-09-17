@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-IceCustomMana = AceOO.Class(IceTargetMana)
+IceCustomMana = IceCore_CreateClass(IceTargetMana)
 IceCustomMana.prototype.scheduledEvent = nil
 
 -- Constructor --

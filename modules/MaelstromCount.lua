@@ -1,13 +1,11 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local MaelstromCount = AceOO.Class(IceElement)
+local MaelstromCount = IceCore_CreateClass(IceElement)
 
 MaelstromCount.prototype.maelstromSize = 20
 
 -- Constructor --
 function MaelstromCount.prototype:init()
 	MaelstromCount.super.prototype.init(self, "MaelstromCount")
-	
+
 	self:SetDefaultColor("MaelstromCount", 1, 1, 0)
 	self.scalingEnabled = true
 end
@@ -139,7 +137,7 @@ end
 -- OVERRIDE
 function MaelstromCount.prototype:Redraw()
 	MaelstromCount.super.prototype.Redraw(self)
-	
+
 	self:CreateFrame()
 	self:UpdateMaelstromCount()
 end
@@ -148,7 +146,7 @@ end
 -- OVERRIDE
 function MaelstromCount.prototype:Enable(core)
 	MaelstromCount.super.prototype.Enable(self, core)
-	
+
 	self:RegisterEvent("UNIT_AURA", "UpdateMaelstromCount")
 
 	self:CreateMaelstromFrame(true)
@@ -167,7 +165,7 @@ function MaelstromCount.prototype:CreateFrame()
 	self.frame:SetHeight(1)
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
-	
+
 	self:Show(true)
 
 	self:CreateMaelstromFrame()
@@ -289,7 +287,7 @@ function MaelstromCount.prototype:UpdateMaelstromCount(event, unit)
 			else
 				self.frame.graphicalBG[i]:Hide()
 			end
-			
+
 			if (points ~= nil and i <= points) then
 				self.frame.graphical[i]:Show()
 			else

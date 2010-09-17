@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local Totems = AceOO.Class(IceElement)
+local Totems = IceCore_CreateClass(IceElement)
 
 -- the below block is copied from TotemFrame.lua
 local FIRE_TOTEM_SLOT = 1;

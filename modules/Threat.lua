@@ -4,9 +4,7 @@ Author: Caryna/Turalyon EU (Alliance) (updated for Threat-2.0 by 'acapela' of Wo
 Description: adds a threat bar to IceHUD
 ]]
 
-local AceOO = AceLibrary("AceOO-2.0")
-
-IceThreat = AceOO.Class(IceUnitBar)
+IceThreat = IceCore_CreateClass(IceUnitBar)
 
 IceThreat.prototype.color = nil
 IceThreat.aggroBar = nil

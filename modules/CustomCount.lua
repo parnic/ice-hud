@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-IceCustomCount = AceOO.Class(IceElement)
+IceCustomCount = IceCore_CreateClass(IceElement)
 
 IceCustomCount.prototype.countSize = 20
 

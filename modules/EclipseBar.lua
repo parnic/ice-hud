@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local EclipseBar = AceOO.Class(IceBarElement)
+local EclipseBar = IceCore_CreateClass(IceBarElement)
 EclipseBar.prototype.barUpdateColor = "EclipseLunar"
 
 function EclipseBar.prototype:init()

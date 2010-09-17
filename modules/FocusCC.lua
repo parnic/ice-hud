@@ -1,8 +1,6 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
 -- changed to inherit from the TargetCC bar since the only difference is the unit and the default placement
 -- helps keep changes in one place and we don't have to duplicate the CC spell tables and they don't have to be globals
-local FocusCC = AceOO.Class(TargetCC)
+local FocusCC = IceCore_CreateClass(TargetCC)
 
 -- Constructor --
 function FocusCC.prototype:init()
@@ -17,7 +15,7 @@ function FocusCC.prototype:GetDefaultSettings()
 
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 5
-    
+
 	return settings
 end
 

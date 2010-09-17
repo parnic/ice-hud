@@ -1,7 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-IceUnitBar = AceOO.Class(IceBarElement)
-IceUnitBar.virtual = true
+IceUnitBar = IceCore_CreateClass(IceBarElement)
 
 IceUnitBar.prototype.unit = nil
 IceUnitBar.prototype.alive = nil

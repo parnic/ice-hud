@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local TargetTargetMana = AceOO.Class(IceTargetMana)
+local TargetTargetMana = IceCore_CreateClass(IceTargetMana)
 TargetTargetMana.prototype.scheduledEvent = nil
 
 local SelfDisplayModeOptions = {"Hide", "Normal"}
@@ -51,7 +49,7 @@ function TargetTargetMana.prototype:GetOptions()
 		values = SelfDisplayModeOptions,
 		order = 44,
 	}
-	
+
 	return opts
 end
 

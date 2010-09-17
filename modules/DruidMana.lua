@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local DruidMana = AceOO.Class(IceUnitBar)
+local DruidMana = IceCore_CreateClass(IceUnitBar)
 
 DruidMana.prototype.druidMana = nil
 DruidMana.prototype.druidManaMax = nil
@@ -13,7 +11,7 @@ function DruidMana.prototype:init()
 
 	self.side = IceCore.Side.Right
 	self.offset = 0
-	
+
 	self:SetDefaultColor("DruidMana", 87, 82, 141)
 end
 

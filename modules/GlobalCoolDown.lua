@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local GlobalCoolDown = AceOO.Class(IceBarElement)
+local GlobalCoolDown = IceCore_CreateClass(IceBarElement)
 GlobalCoolDown.prototype.scheduledEvent = nil
 
 -- Constructor --

@@ -1,7 +1,5 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
 -- needs to not be local so that we can inherit from it
-TargetInvuln = AceOO.Class(IceUnitBar)
+TargetInvuln = IceCore_CreateClass(IceUnitBar)
 
 TargetInvuln.prototype.buffName = nil
 TargetInvuln.prototype.buffRemaining = 0

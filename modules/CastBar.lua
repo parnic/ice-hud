@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local CastBar = AceOO.Class(IceCastBar)
+local CastBar = IceCore_CreateClass(IceCastBar)
 
 CastBar.prototype.lagBar = nil
 CastBar.prototype.spellCastSent = nil

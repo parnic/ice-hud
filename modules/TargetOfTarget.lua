@@ -1,7 +1,6 @@
-local AceOO = AceLibrary("AceOO-2.0")
-local SML = AceLibrary("LibSharedMedia-3.0")
+local SML = LibStub("LibSharedMedia-3.0")
 
-local TargetOfTarget = AceOO.Class(IceElement)
+local TargetOfTarget = IceCore_CreateClass(IceElement)
 
 TargetOfTarget.prototype.stackedDebuffs = nil
 TargetOfTarget.prototype.buffSize = nil
@@ -28,7 +27,7 @@ end
 -- OVERRIDE
 function TargetOfTarget.prototype:GetOptions()
 	local opts = TargetOfTarget.super.prototype.GetOptions(self)
-	
+
 	opts["vpos"] = {
 		type = "range",
 		name = "Vertical Position",
@@ -85,7 +84,7 @@ function TargetOfTarget.prototype:GetOptions()
 		end,
 		order = 32
 	}
-	
+
 	opts["fontSize"] = {
 		type = 'range',
 		name = 'Font Size',
@@ -105,7 +104,7 @@ function TargetOfTarget.prototype:GetOptions()
 		end,
 		order = 33
 	}
-	
+
 	opts["mouse"] = {
 		type = 'toggle',
 		name = 'Mouseover',
@@ -122,7 +121,7 @@ function TargetOfTarget.prototype:GetOptions()
 		end,
 		order = 34
 	}
-	
+
 	opts["texture"] = {
 		type = 'select',
 		name = 'Texture',
@@ -178,7 +177,7 @@ function TargetOfTarget.prototype:GetOptions()
 			return self.moduleSettings.sizeToGap
 		end
 	}
-	
+
 	return opts
 end
 
@@ -210,19 +209,19 @@ end
 
 function TargetOfTarget.prototype:Enable(core)
 	TargetOfTarget.super.prototype.Enable(self, core)
-	
+
 	self.scheduledEvent = self:ScheduleRepeatingTimer("Update", 0.2)
 	RegisterUnitWatch(self.frame)
-	
+
 	self:Update()
 end
 
 
 function TargetOfTarget.prototype:Disable(core)
 	TargetOfTarget.super.prototype.Disable(self, core)
-	
+
 	self:CancelTimer(self.scheduledEvent, true)
-	
+
 	UnregisterUnitWatch(self.frame)
 end
 
@@ -245,14 +244,14 @@ function TargetOfTarget.prototype:CreateFrame()
 	self.frame:SetHeight(self.height)
 	self.frame:SetPoint("TOP", self.parent, "TOP", self.moduleSettings.hpos, self.moduleSettings.vpos)
 	self.frame:SetScale(self.moduleSettings.scale)
-	
-	
+
+
 	self.frame.unit = self.unit -- for blizz default tooltip handling
-	
+
 	if (self.moduleSettings.mouse) then
 		self.frame:EnableMouse(true)
 		self.frame:RegisterForClicks("AnyUp")
-		
+
 		self.frame:SetScript("OnEnter", function(frame) self:OnEnter(frame) end)
 		self.frame:SetScript("OnLeave", function(frame) self:OnLeave(frame) end)
 	else
@@ -262,7 +261,7 @@ function TargetOfTarget.prototype:CreateFrame()
 		self.frame:SetScript("OnLeave", nil)
 	end
 
-	
+
 	self.frame:SetAttribute("type1", "target")
 	self.frame:SetAttribute("unit", self.unit)
 
@@ -271,7 +270,7 @@ function TargetOfTarget.prototype:CreateFrame()
 	self:CreateToTFrame()
 	self:CreateToTHPFrame()
 	self:CreateDebuffFrame()
-	
+
 	-- click casting support
 	ClickCastFrames = ClickCastFrames or {}
 	ClickCastFrames[self.frame] = true
@@ -309,8 +308,8 @@ function TargetOfTarget.prototype:CreateBarFrame()
 	self.frame.bar.texture:SetTexture(SML:Fetch(SML.MediaType.STATUSBAR, self.moduleSettings.texture))
 	self.frame.bar.texture:SetAllPoints(self.frame.bar)
 	self.frame.bar:SetStatusBarTexture(self.frame.bar.texture)
-	
-	
+
+
 	if (not self.frame.bar.highLight) then
 		self.frame.bar.highLight = self.frame.bar:CreateTexture(nil, "OVERLAY")
 	end
@@ -327,7 +326,7 @@ end
 
 function TargetOfTarget.prototype:CreateToTFrame()
 	self.frame.totName = self:FontFactory(self.moduleSettings.fontSize, self.frame.bar, self.frame.totName)
-	
+
 	if self.moduleSettings.sizeToGap then
 		self.frame.totName:SetWidth(self.settings.gap-40)
 	else
@@ -382,14 +381,14 @@ function TargetOfTarget.prototype:CreateIconFrames(parent)
 		buffs[i]:SetHeight(self.buffSize)
 		buffs[i]:SetPoint("LEFT", (i-1) * self.buffSize + (i-1), 0)
 		buffs[i]:Show()
-		
+
 		buffs[i].texture = buffs[i]:CreateTexture()
 		buffs[i].texture:SetTexture(nil)
 		buffs[i].texture:SetAllPoints(buffs[i])
-		
+
 		buffs[i].stack = self:FontFactory(11, buffs[i], buffs[i].stack, "OUTLINE")
 		buffs[i].stack:SetPoint("BOTTOMRIGHT" , buffs[i], "BOTTOMRIGHT", 2, -1)
-		
+
 		if (self.moduleSettings.mouse) then
 			buffs[i]:EnableMouse(true)
 			buffs[i]:SetScript("OnEnter", function(this) self:BuffOnEnter(this) end)
@@ -399,7 +398,7 @@ function TargetOfTarget.prototype:CreateIconFrames(parent)
 			buffs[i]:SetScript("OnEnter", nil)
 			buffs[i]:SetScript("OnLeave", nil)
 		end
-		
+
 		buffs[i].unit = self.unit
 	end
 	return buffs
@@ -408,7 +407,7 @@ end
 
 function TargetOfTarget.prototype:UpdateBuffs()
 	local debuffs = 0
-	
+
 	if (self.moduleSettings.showDebuffs) then
 		for i = 1, IceCore.BuffLimit do
 			local buffName, buffRank, buffTexture, buffApplications = UnitDebuff(self.unit, i)
@@ -419,14 +418,14 @@ function TargetOfTarget.prototype:UpdateBuffs()
 				if not (self.stackedDebuffs[debuffs]) then
 					self.stackedDebuffs[debuffs] = {}
 				end
-				
+
 				self.stackedDebuffs[debuffs].texture = buffTexture
 				self.stackedDebuffs[debuffs].count = buffApplications
 				self.stackedDebuffs[debuffs].id = i
 			end
 		end
 	end
-	
+
 	for i = 1, IceCore.BuffLimit do
 		if (self.moduleSettings.showDebuffs and (i <= debuffs)) then
 			self.frame.debuffFrame.buffs[i]:Show()
@@ -449,15 +448,15 @@ function TargetOfTarget.prototype:Update()
 			return
 		end
 		self.hadTarget = false
-		
+
 		self.frame.totName:SetText()
 		self.frame.totHealth:SetText()
 		self:UpdateBuffs()
 		return
 	end
-	
+
 	self.hadTarget = true
-	
+
 	self:UpdateBuffs()
 
 	local _, unitClass = UnitClass(self.unit)

@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local Runes = AceOO.Class(IceElement)
+local Runes = IceCore_CreateClass(IceElement)
 
 -- blizzard cracks me up. the below block is copied verbatim from RuneFrame.lua ;)
 --Readability == win

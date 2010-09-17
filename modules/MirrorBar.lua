@@ -1,5 +1,3 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
 -- 2 classes in the same file.. ugly but keeps the idea of
 -- "1 module = 1 file" intact
 
@@ -8,7 +6,7 @@ local AceOO = AceLibrary("AceOO-2.0")
 -- MirrorBar                                                                 --
 -------------------------------------------------------------------------------
 
-local MirrorBar = AceOO.Class(IceBarElement)
+local MirrorBar = IceCore_CreateClass(IceBarElement)
 
 MirrorBar.prototype.timer = nil
 MirrorBar.prototype.value = nil
@@ -155,7 +153,7 @@ end
 -------------------------------------------------------------------------------
 
 
-local MirrorBarHandler = AceOO.Class(IceElement)
+local MirrorBarHandler = IceCore_CreateClass(IceElement)
 
 MirrorBarHandler.prototype.bars = nil
 

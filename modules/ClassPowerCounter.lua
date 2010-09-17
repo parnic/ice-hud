@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-IceClassPowerCounter = AceOO.Class(IceElement)
+IceClassPowerCounter = IceCore_CreateClass(IceElement)
 
 IceClassPowerCounter.prototype.runeHeight = 22
 IceClassPowerCounter.prototype.runeWidth = 36

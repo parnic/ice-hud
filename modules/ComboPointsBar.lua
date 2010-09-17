@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local ComboPointsBar = AceOO.Class(IceBarElement)
+local ComboPointsBar = IceCore_CreateClass(IceBarElement)
 
 function ComboPointsBar.prototype:init()
 	ComboPointsBar.super.prototype.init(self, "ComboPointsBar")
@@ -56,7 +54,7 @@ end
 
 function ComboPointsBar.prototype:CreateFrame()
 	ComboPointsBar.super.prototype.CreateFrame(self)
-	
+
 	self:UpdateComboPoints()
 end
 

@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local ShardCounter = AceOO.Class(IceClassPowerCounter)
+local ShardCounter = IceCore_CreateClass(IceClassPowerCounter)
 
 function ShardCounter.prototype:init()
 	ShardCounter.super.prototype.init(self, "ShardCounter")

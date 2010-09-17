@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local TargetTargetCast = AceOO.Class(IceCastBar)
+local TargetTargetCast = IceCore_CreateClass(IceCastBar)
 TargetTargetCast.prototype.scheduledEvent = nil
 
 local SelfDisplayModeOptions = {"Hide", "Normal"}

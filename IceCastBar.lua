@@ -1,9 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local SPELLINTERRUPTOTHERSELF = SPELLINTERRUPTOTHERSELF
-local SPELLFAILCASTSELF = SPELLFAILCASTSELF
-
-IceCastBar = AceOO.Class(IceBarElement)
+IceCastBar = IceCore_CreateClass(IceBarElement)
 
 
 IceCastBar.Actions = { None = 0, Cast = 1, Channel = 2, Instant = 3, Success = 4, Failure = 5 }

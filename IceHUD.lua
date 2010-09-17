@@ -1,6 +1,6 @@
 IceHUD = LibStub("AceAddon-3.0"):NewAddon("IceHUD", "AceConsole-3.0")
 
-local SML = AceLibrary("LibSharedMedia-3.0")
+local SML = LibStub("LibSharedMedia-3.0")
 local ACR = LibStub("AceConfigRegistry-3.0")
 local ConfigDialog = LibStub("AceConfigDialog-3.0")
 local icon = LibStub("LibDBIcon-1.0")
@@ -652,7 +652,7 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 				StaticPopup_Show("ICEHUD_CHANGED_DOGTAG")
 			end,
 			hidden = function()
-				return not AceLibrary:HasInstance("LibDogTag-3.0")
+				return not LibStub("LibDogTag-3.0", true)
 			end,
 			order = 96
 		},

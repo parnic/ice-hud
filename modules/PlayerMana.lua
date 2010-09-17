@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local PlayerMana = AceOO.Class(IceUnitBar)
+local PlayerMana = IceCore_CreateClass(IceUnitBar)
 
 PlayerMana.prototype.manaType = nil
 PlayerMana.prototype.tickStart = nil
@@ -9,7 +7,7 @@ PlayerMana.prototype.previousEnergy = nil
 -- Constructor --
 function PlayerMana.prototype:init()
 	PlayerMana.super.prototype.init(self, "PlayerMana", "player")
-	
+
 	self:SetDefaultColor("PlayerMana", 62, 54, 152)
 	self:SetDefaultColor("PlayerRage", 171, 59, 59)
 	self:SetDefaultColor("PlayerEnergy", 218, 231, 31)
@@ -54,8 +52,8 @@ if self:ShouldUseTicker() then
 		end,
 		order = 51
 	}
-	
-	opts["tickerAlpha"] = 
+
+	opts["tickerAlpha"] =
 	{
 		type = 'range',
 		name = 'Energy Ticker Alpha',
@@ -92,7 +90,7 @@ end
 		end,
 		order = 53
 	}
-	
+
 	return opts
 end
 
@@ -116,7 +114,7 @@ function PlayerMana.prototype:Enable(core)
 		self:RegisterEvent("UNIT_ENERGY", "UpdateEnergy")
 		self:RegisterEvent("UNIT_RUNIC_POWER", "UpdateEvent")
 	end
-	
+
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
 
@@ -226,7 +224,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 	if (unit and (unit ~= self.unit)) then
 		return
 	end
-	
+
 	if powertype ~= nil and powertype == "ENERGY" then
 		self:UpdateEnergy(nil, unit)
 	end
@@ -234,7 +232,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 	if self.unit == "vehicle" and ((not UnitExists(unit)) or (self.maxMana == 0)) then
 		self:Show(false)
 		return
-	else	
+	else
 		self:Show(true)
 	end
 
@@ -246,7 +244,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 	if (self.manaType ~= SPELL_POWER_ENERGY and self:ShouldUseTicker()) then
 		self.tickerFrame:Hide()
 	end
-	
+
 	local color = "PlayerMana"
 	if (self.moduleSettings.scaleManaColor) then
 		color = "ScaledManaColor"
@@ -264,7 +262,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 			color = "PlayerFocus"
 		end
 	end
-	
+
 	self:UpdateBar(self.manaPercentage, color)
 
 	local powerType = UnitPowerType(self.unit)
@@ -343,24 +341,24 @@ function PlayerMana.prototype:EnergyTick()
 		self.tickerFrame:Hide()
 		return
 	end
-	
+
 	local now = GetTime()
 	local elapsed = now - self.tickStart
-	
+
 	if (elapsed > 2) then
 		self.tickStart = now
 	end
-	
+
 	local pos = elapsed / 2
 	local y = pos * (self.settings.barHeight-2)
-	
+
 	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.tickerFrame.spark:SetTexCoord(1, 0, 1-pos-0.01, 1-pos)
 	else
 		self.tickerFrame.spark:SetTexCoord(0, 1, 1-pos-0.01, 1-pos)
 	end
 	self.tickerFrame.spark:SetHeight(self.settings.barHeight * 0.01)
-	
+
 	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", 0, y)
 end
 
@@ -373,16 +371,16 @@ function PlayerMana.prototype:CreateTickerFrame()
 	if not (self.tickerFrame) then
 		self.tickerFrame = CreateFrame("Frame", nil, self.barFrame)
 	end
-	
+
 	self.tickerFrame:SetFrameStrata("BACKGROUND")
 	self.tickerFrame:SetWidth(self.settings.barWidth)
 	self.tickerFrame:SetHeight(self.settings.barHeight)
-	
+
 	if not (self.tickerFrame.spark) then
 		self.tickerFrame.spark = self.tickerFrame:CreateTexture(nil, "BACKGROUND")
 		self.tickerFrame:Hide()
 	end
-	
+
 	self.tickerFrame.spark:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	self.tickerFrame.spark:SetBlendMode("ADD")
 	self.tickerFrame.spark:ClearAllPoints()
@@ -391,7 +389,7 @@ function PlayerMana.prototype:CreateTickerFrame()
 	self.tickerFrame.spark:SetHeight(0)
 
 	self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
-	
+
 	self.tickerFrame:ClearAllPoints()
 	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", 0, 0)
 end

@@ -1,13 +1,11 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local LacerateCount = AceOO.Class(IceElement)
+local LacerateCount = IceCore_CreateClass(IceElement)
 
 LacerateCount.prototype.lacerateSize = 20
 
 -- Constructor --
 function LacerateCount.prototype:init()
 	LacerateCount.super.prototype.init(self, "LacerateCount")
-	
+
 	self:SetDefaultColor("LacerateCount", 1, 1, 0)
 	self.scalingEnabled = true
 end
@@ -160,7 +158,7 @@ end
 -- OVERRIDE
 function LacerateCount.prototype:Redraw()
 	LacerateCount.super.prototype.Redraw(self)
-	
+
 	self:CreateFrame()
 	self:UpdateLacerateCount()
 end
@@ -169,7 +167,7 @@ end
 -- OVERRIDE
 function LacerateCount.prototype:Enable(core)
 	LacerateCount.super.prototype.Enable(self, core)
-	
+
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateLacerateCount")
 	self:RegisterEvent("UNIT_AURA", "UpdateLacerateCount")
 
@@ -193,7 +191,7 @@ function LacerateCount.prototype:CreateFrame()
 	self.frame:SetHeight(1)
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
-	
+
 	self:Show(true)
 
 	self:CreateLacerateFrame()
@@ -311,7 +309,7 @@ function LacerateCount.prototype:UpdateLacerateCount()
 			else
 				self.frame.graphicalBG[i]:Hide()
 			end
-			
+
 			if (points ~= nil and i <= points) then
 				self.frame.graphical[i]:Show()
 			else

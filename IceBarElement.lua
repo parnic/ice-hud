@@ -1,9 +1,6 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
 local DogTag = nil
 
-IceBarElement = AceOO.Class(IceElement)
-IceBarElement.virtual = true
+IceBarElement = IceCore_CreateClass(IceElement)
 
 IceBarElement.BarTextureWidth = 128
 
@@ -14,6 +11,7 @@ IceBarElement.prototype.LastScale = 1
 IceBarElement.prototype.DesiredScale = 1
 IceBarElement.prototype.CurrScale = 1
 IceBarElement.prototype.Markers = {}
+IceBarElement.prototype.IsBarElement = true -- cheating to avoid crawling up the 'super' references looking for this class. see IceCore.lua
 
 local lastMarkerPosConfig = 50
 local lastMarkerColorConfig = {r=1, b=0, g=0, a=1}
@@ -33,9 +31,11 @@ end
 function IceBarElement.prototype:Enable()
 	IceBarElement.super.prototype.Enable(self)
 
-	if IceHUD.IceCore:ShouldUseDogTags() and AceLibrary:HasInstance("LibDogTag-3.0") then
-		DogTag = AceLibrary("LibDogTag-3.0")
-		AceLibrary("LibDogTag-Unit-3.0")
+	if IceHUD.IceCore:ShouldUseDogTags() then
+		DogTag = LibStub("LibDogTag-3.0", true)
+		if DogTag then
+			LibStub("LibDogTag-Unit-3.0", true)
+		end
 	end
 
 	if self.moduleSettings.myTagVersion < IceHUD.CurrTagVersion then

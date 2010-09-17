@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local RangeCheck = AceOO.Class(IceElement)
+local RangeCheck = IceCore_CreateClass(IceElement)
 RangeCheck.prototype.scheduledEvent = nil
 
 local LibRange = nil
@@ -9,19 +7,17 @@ local DogTag = nil
 -- Constructor --
 function RangeCheck.prototype:init()
 	RangeCheck.super.prototype.init(self, "RangeCheck")
-	
+
 	self.scalingEnabled = true
 
-	if AceLibrary:HasInstance("LibRangeCheck-2.0") then
-		LibRange = AceLibrary("LibRangeCheck-2.0")
-	end
+	LibRange = LibStub("LibRangeCheck-2.0", true)
 end
 
 function RangeCheck.prototype:Enable(core)
 	RangeCheck.super.prototype.Enable(self, core)
 
 	if IceHUD.IceCore:ShouldUseDogTags() then
-		DogTag = AceLibrary("LibDogTag-3.0")
+		DogTag = LibStub("LibDogTag-3.0", true)
 		self:RegisterFontStrings()
 	else
 		self.scheduledEvent = self:ScheduleRepeatingTimer("UpdateRange", 0.1)
@@ -167,7 +163,7 @@ function RangeCheck.prototype:UpdateRange()
 		else
 			self.frame.rangeFontString:SetText("Unknown")
 		end
-		
+
 		self.frame.rangeFontString:SetWidth(0)
 	else
 		self.frame.rangeFontString:SetText()

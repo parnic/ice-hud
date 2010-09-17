@@ -1,8 +1,6 @@
-local AceOO = AceLibrary("AceOO-2.0")
-local SML = AceLibrary("LibSharedMedia-3.0")
+local SML = LibStub("LibSharedMedia-3.0")
 
-IceElement = AceOO.Class()
-IceElement.virtual = true
+IceElement = IceCore_CreateClass()
 
 IceElement.TexturePath = IceHUD.Location .. "\\textures\\"
 
@@ -31,7 +29,6 @@ IceElement.prototype.bIsVisible = true
 -- Therefore we can wait for IceCore to load and then register our
 -- module to the core with another event.
 function IceElement.prototype:init(name)
-	IceElement.super.prototype.init(self)
 	assert(name, "IceElement must have a name")
 
 	self.elementName = name

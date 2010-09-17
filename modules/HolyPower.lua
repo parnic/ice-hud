@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local HolyPower = AceOO.Class(IceClassPowerCounter)
+local HolyPower = IceCore_CreateClass(IceClassPowerCounter)
 
 function HolyPower.prototype:init()
 	HolyPower.super.prototype.init(self, "HolyPower")

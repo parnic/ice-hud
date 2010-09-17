@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local HungerForBlood = AceOO.Class(IceUnitBar)
+local HungerForBlood = IceCore_CreateClass(IceUnitBar)
 
 local hfbEndTime = 0
 local hfbDuration = 0
@@ -25,7 +23,7 @@ end
 -- OVERRIDE
 function HungerForBlood.prototype:Enable(core)
 	HungerForBlood.super.prototype.Enable(self, core)
-	
+
 	if IceHUD.WowVer >= 30000 then
 		self:RegisterEvent("UNIT_AURA", "UpdateHungerForBlood")
 	else
@@ -71,7 +69,7 @@ function HungerForBlood.prototype:GetOptions()
     local opts = HungerForBlood.super.prototype.GetOptions(self)
 
     opts["textSettings"].args["upperTextString"]["desc"] = "The text to display under this bar. # will be replaced with the number of Slice and Dice seconds remaining."
-    	
+
 	opts["allowClickCast"] = {
 		type = 'toggle',
 		name = 'Allow click casting',

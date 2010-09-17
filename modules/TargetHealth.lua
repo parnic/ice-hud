@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-IceTargetHealth = AceOO.Class(IceUnitBar)
+IceTargetHealth = IceCore_CreateClass(IceUnitBar)
 
 IceTargetHealth.prototype.color = nil
 IceTargetHealth.prototype.determineColor = true

@@ -1,5 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-local PetInfo = AceOO.Class(IceTargetInfo)
+local PetInfo = IceCore_CreateClass(IceTargetInfo)
 
 -- Constructor --
 function PetInfo.prototype:init()

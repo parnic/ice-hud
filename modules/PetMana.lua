@@ -1,16 +1,14 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local PetMana = AceOO.Class(IceUnitBar)
+local PetMana = IceCore_CreateClass(IceUnitBar)
 
 -- Constructor --
 function PetMana.prototype:init()
 	PetMana.super.prototype.init(self, "PetMana", "pet")
-	
+
 	self:SetDefaultColor("PetMana", 62, 54, 152)
 	self:SetDefaultColor("PetRage", 171, 59, 59)
 	self:SetDefaultColor("PetEnergy", 218, 231, 31)
 	self:SetDefaultColor("PetFocus", 242, 149, 98)
-	
+
 	self.scalingEnabled = true
 end
 
@@ -42,7 +40,7 @@ function PetMana.prototype:CreateFrame()
 	else
 		point = "BOTTOMRIGHT"
 	end
-	
+
 	self.frame.bottomUpperText:ClearAllPoints()
 	self.frame.bottomUpperText:SetPoint(point, relativeTo, relativePoint, 0, 0)
 end
@@ -95,7 +93,7 @@ function PetMana.prototype:ManaType(event, unit)
 	if (unit ~= self.unit) then
 		return
 	end
-	
+
 	self.manaType = UnitPowerType(self.unit)
 	self:Update(self.unit)
 end

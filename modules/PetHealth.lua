@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local PetHealth = AceOO.Class(IceUnitBar)
+local PetHealth = IceCore_CreateClass(IceUnitBar)
 
 PetHealth.prototype.happiness = nil
 

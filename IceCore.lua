@@ -1,6 +1,22 @@
-local AceOO = AceLibrary("AceOO-2.0")
+function IceCore_CreateClass(parent)
+	local class = { prototype = {} }
+	if parent then
+		class.super = parent
+		setmetatable(class.prototype, { __index = parent.prototype })
+	end
+	local mt = { __index = class.prototype }
+	function class.new(...)
+		local self = setmetatable({}, mt)
+		if self.init then
+			self:init(...)
+		end
+		return self
+	end
 
-IceCore = AceOO.Class()
+	return class
+end
+
+IceCore = IceCore_CreateClass()
 
 IceCore.Side = { Left = "LEFT", Right = "RIGHT" }
 
@@ -27,7 +43,6 @@ IceCore.prototype.bConfigMode = false
 
 -- Constructor --
 function IceCore.prototype:init()
-	IceCore.super.prototype.init(self)
 	IceHUD:Debug("IceCore.prototype:init()")
 
 	self.IceHUDFrame = CreateFrame("Frame","IceHUDFrame", UIParent)
@@ -617,7 +632,7 @@ function IceCore.prototype:ConfigModeToggle(bWantConfig)
 			if self.elements[i]:IsEnabled() then
 				self.elements[i].frame:Show()
 				self.elements[i]:Redraw()
-				if AceOO.inherits(self.elements[i], IceBarElement) then
+				if self.elements[i].IsBarElement then
 					self.elements[i]:SetBottomText1(self.elements[i].elementName)
 				end
 			end
@@ -629,7 +644,7 @@ function IceCore.prototype:ConfigModeToggle(bWantConfig)
 			end
 
 			-- blank the bottom text that we set before. if the module uses this text, it will reset itself on redraw
-			if AceOO.inherits(self.elements[i], IceBarElement) then
+			if self.elements[i].IsBarElement then
 				self.elements[i]:SetBottomText1()
 			end
 
@@ -639,7 +654,7 @@ function IceCore.prototype:ConfigModeToggle(bWantConfig)
 end
 
 function IceCore.prototype:ShouldUseDogTags()
-	return AceLibrary:HasInstance("LibDogTag-3.0") and self.settings.bShouldUseDogTags
+	return LibStub("LibDogTag-3.0", true) and self.settings.bShouldUseDogTags
 end
 
 function IceCore.prototype:SetShouldUseDogTags(should)

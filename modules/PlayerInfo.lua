@@ -1,5 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-local PlayerInfo = AceOO.Class(IceTargetInfo)
+local PlayerInfo = IceCore_CreateClass(IceTargetInfo)
 
 local EPSILON = 0.5
 

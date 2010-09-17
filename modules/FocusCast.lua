@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local FocusCast = AceOO.Class(IceCastBar)
+local FocusCast = IceCore_CreateClass(IceCastBar)
 
 -- Constructor --
 function FocusCast.prototype:init()

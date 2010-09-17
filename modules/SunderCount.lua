@@ -1,13 +1,11 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local SunderCount = AceOO.Class(IceElement)
+local SunderCount = IceCore_CreateClass(IceElement)
 
 SunderCount.prototype.sunderSize = 20
 
 -- Constructor --
 function SunderCount.prototype:init()
 	SunderCount.super.prototype.init(self, "SunderCount")
-	
+
 	self:SetDefaultColor("SunderCount", 1, 1, 0)
 	self.scalingEnabled = true
 end
@@ -139,7 +137,7 @@ end
 -- OVERRIDE
 function SunderCount.prototype:Redraw()
 	SunderCount.super.prototype.Redraw(self)
-	
+
 	self:CreateFrame()
 	self:UpdateSunderCount()
 end
@@ -148,7 +146,7 @@ end
 -- OVERRIDE
 function SunderCount.prototype:Enable(core)
 	SunderCount.super.prototype.Enable(self, core)
-	
+
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateSunderCount")
 	self:RegisterEvent("UNIT_AURA", "UpdateSunderCount")
 
@@ -172,7 +170,7 @@ function SunderCount.prototype:CreateFrame()
 	self.frame:SetHeight(1)
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
-	
+
 	self:Show(true)
 
 	self:CreateSunderFrame()
@@ -290,7 +288,7 @@ function SunderCount.prototype:UpdateSunderCount()
 			else
 				self.frame.graphicalBG[i]:Hide()
 			end
-			
+
 			if (points ~= nil and i <= points) then
 				self.frame.graphical[i]:Show()
 			else

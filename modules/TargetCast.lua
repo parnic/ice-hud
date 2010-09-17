@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local TargetCast = AceOO.Class(IceCastBar)
+local TargetCast = IceCore_CreateClass(IceCastBar)
 
 TargetCast.prototype.notInterruptible = false
 

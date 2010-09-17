@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-local FocusHealth = AceOO.Class(IceUnitBar)
+local FocusHealth = IceCore_CreateClass(IceUnitBar)
 
 FocusHealth.prototype.color = nil
 

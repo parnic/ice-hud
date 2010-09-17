@@ -1,6 +1,4 @@
-local AceOO = AceLibrary("AceOO-2.0")
-
-IceTargetInfo = AceOO.Class(IceElement)
+IceTargetInfo = IceCore_CreateClass(IceElement)
 
 local DogTag = nil
 
@@ -40,7 +38,7 @@ function IceTargetInfo.prototype:init(moduleName, unit)
 	else
 		IceTargetInfo.super.prototype.init(self, moduleName)
 	end
-	
+
 	self.scalingEnabled = true
 end
 
@@ -53,8 +51,10 @@ function IceTargetInfo.prototype:Enable(core)
 	IceTargetInfo.super.prototype.Enable(self, core)
 
 	if IceHUD.IceCore:ShouldUseDogTags() then
-		DogTag = AceLibrary("LibDogTag-3.0")
-		AceLibrary("LibDogTag-Unit-3.0")
+		DogTag = LibStub("LibDogTag-3.0", true)
+		if DogTag then
+			LibStub("LibDogTag-Unit-3.0")
+		end
 	end
 
 	self:RegisterEvent("UNIT_AURA", "AuraChanged")
@@ -78,7 +78,7 @@ function IceTargetInfo.prototype:Enable(core)
 		self.moduleSettings.line3tag = origDefaults["line3tag"]
 		self.moduleSettings.myTagVersion = IceHUD.CurrTagVersion
 	end
-	
+
 	if self.moduleSettings.filterBuffs == nil
 		and self.moduleSettings.filterDebuffs == nil
 		and self.moduleSettings.filter ~= nil then
@@ -94,7 +94,7 @@ end
 -- OVERRIDE
 function IceTargetInfo.prototype:Disable(core)
 	IceTargetInfo.super.prototype.Disable(self, core)
-	
+
 	UnregisterUnitWatch(self.frame)
 
 	self:UnregisterFontStrings()
@@ -170,7 +170,7 @@ function IceTargetInfo.prototype:GetOptions()
 		end,
 		order = 32
 	}
-	
+
 	opts["stackFontSize"] = {
 		type = 'range',
 		name = 'Stack Font Size',
@@ -190,7 +190,7 @@ function IceTargetInfo.prototype:GetOptions()
 		end,
 		order = 32
 	}
-	
+
 	opts["zoom"] = {
 		type = 'range',
 		name = 'Buff zoom',
@@ -257,7 +257,7 @@ function IceTargetInfo.prototype:GetOptions()
 		end,
 		order = 35
 	}
-	
+
 	opts["showBuffs"] = {
 		type = 'toggle',
 		name = 'Show buffs',
@@ -274,7 +274,7 @@ function IceTargetInfo.prototype:GetOptions()
 		end,
 		order = 36
 	}
-	
+
 	opts["filterBuffs"] = {
 		type = 'select',
 		name = 'Only show buffs by me',
@@ -292,7 +292,7 @@ function IceTargetInfo.prototype:GetOptions()
 		values = { "Never", "In Combat", "Always" },
 		order = 36.1
 	}
-	
+
 	opts["showDebuffs"] = {
 		type = 'toggle',
 		name = 'Show debuffs',
@@ -309,7 +309,7 @@ function IceTargetInfo.prototype:GetOptions()
 		end,
 		order = 36.2
 	}
-	
+
 	opts["filterDebuffs"] = {
 		type = 'select',
 		name = 'Only show debuffs by me',
@@ -327,7 +327,7 @@ function IceTargetInfo.prototype:GetOptions()
 		values = { "Never", "In Combat", "Always" },
 		order = 36.3
 	}
-	
+
 	opts["perRow"] = {
 		type = 'range',
 		name = 'Buffs / row',
@@ -517,7 +517,7 @@ function IceTargetInfo.prototype:GetOptions()
 		name = 'Mouse settings',
 		order = 37.9
 	}
-	
+
 	opts["mouseTarget"] = {
 		type = 'toggle',
 		name = 'Mouseover for target',
@@ -534,7 +534,7 @@ function IceTargetInfo.prototype:GetOptions()
 		end,
 		order = 38
 	}
-	
+
 	opts["mouseBuff"] = {
 		type = 'toggle',
 		name = 'Mouseover for buffs',
@@ -743,7 +743,7 @@ function IceTargetInfo.prototype:RedrawBuffs()
 	if (self.moduleSettings.enabled) then
 		self:CreateBuffFrame(false)
 		self:CreateDebuffFrame(false)
-		
+
 		self:TargetChanged()
 	end
 end
@@ -875,7 +875,7 @@ function IceTargetInfo.prototype:CreateRaidIconFrame()
 	if (not self.frame.raidIcon) then
 		self.frame.raidIcon = CreateFrame("Frame", nil, self.frame)
 	end
-	
+
 	if (not self.frame.raidIcon.icon) then
 		self.frame.raidIcon.icon = self.frame.raidIcon:CreateTexture(nil, "BACKGROUND")
 		self.frame.raidIcon.icon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
@@ -884,7 +884,7 @@ function IceTargetInfo.prototype:CreateRaidIconFrame()
 	self.frame.raidIcon:SetPoint("BOTTOM", self.frame, "TOP", 0, 1)
 	self.frame.raidIcon:SetWidth(16)
 	self.frame.raidIcon:SetHeight(16)
-	
+
 	self.frame.raidIcon.icon:SetAllPoints(self.frame.raidIcon)
 	SetRaidTargetIconTexture(self.frame.raidIcon.icon, 0)
 	self.frame.raidIcon:Hide()
@@ -898,7 +898,7 @@ function IceTargetInfo.prototype:CreateBuffFrame(redraw)
 		self.frame.buffFrame:SetFrameStrata("BACKGROUND")
 		self.frame.buffFrame:SetWidth(1)
 		self.frame.buffFrame:SetHeight(1)
-	
+
 		self.frame.buffFrame:Show()
 
 		self.frame.buffFrame.buffs = {}
@@ -906,7 +906,7 @@ function IceTargetInfo.prototype:CreateBuffFrame(redraw)
 
 	self.frame.buffFrame:ClearAllPoints()
 	self.frame.buffFrame:SetPoint("TOPRIGHT", self.frame, self.moduleSettings.buffAnchorTo, self.moduleSettings.buffOffset['x'], self.moduleSettings.buffOffset['y'])
-	
+
 	if (not redraw) then
 		local direction = self.moduleSettings.buffGrowDirection == "Left" and -1 or 1
 		self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, direction, self.frame.buffFrame.buffs, "buff")
@@ -927,7 +927,7 @@ function IceTargetInfo.prototype:CreateDebuffFrame(redraw)
 		self.frame.debuffFrame:SetFrameStrata("BACKGROUND")
 		self.frame.debuffFrame:SetWidth(1)
 		self.frame.debuffFrame:SetHeight(1)
-	
+
 		self.frame.debuffFrame:Show()
 
 		self.frame.debuffFrame.buffs = {}
@@ -935,7 +935,7 @@ function IceTargetInfo.prototype:CreateDebuffFrame(redraw)
 
 	self.frame.debuffFrame:ClearAllPoints()
 	self.frame.debuffFrame:SetPoint("TOPLEFT", self.frame, self.moduleSettings.debuffAnchorTo, self.moduleSettings.debuffOffset['x'], self.moduleSettings.debuffOffset['y'])
-	
+
 	if (not redraw) then
 		local direction = self.moduleSettings.debuffGrowDirection == "Left" and -1 or 1
 		self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame, direction, self.frame.debuffFrame.buffs, "debuff")
@@ -968,7 +968,7 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 			buffs[i]:SetWidth(self.moduleSettings.buffSize)
 			buffs[i]:SetHeight(self.moduleSettings.buffSize)
 		end
-		
+
 		buffs[i].icon:SetFrameStrata("BACKGROUND")
 		if buffs[i].fromPlayer then
 			buffs[i].icon:SetWidth(self.moduleSettings.ownBuffSize-2)
@@ -977,7 +977,7 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 			buffs[i].icon:SetWidth(self.moduleSettings.buffSize-2)
 			buffs[i].icon:SetHeight(self.moduleSettings.buffSize-2)
 		end
-		
+
 		buffs[i].cd:SetFrameStrata("BACKGROUND")
 		buffs[i].cd:SetFrameLevel(buffs[i].icon:GetFrameLevel()+1)
 		buffs[i].cd:SetReverse(true)
@@ -1064,7 +1064,7 @@ function IceTargetInfo.prototype:UpdateBuffs()
 			filterBuffs = true
 		end
 	end
-	
+
 	if (self.moduleSettings.filterDebuffs == "Always") then
 		filterDebuffs = true
 	elseif (self.moduleSettings.filterDebuffs == "In Combat") then
@@ -1219,7 +1219,7 @@ function IceTargetInfo.prototype:TargetChanged()
 	if (not UnitExists(self.unit)) then
 		--self.frame:Hide()
 		--self.frame.target:Hide()
-		
+
 		self.frame.targetName:SetText()
 		self.frame.targetInfo:SetText()
 		self.frame.targetGuild:SetText()
@@ -1307,7 +1307,7 @@ end
 function IceTargetInfo.prototype:TargetReaction(unit)
 	if (unit == self.unit or unit == internal) then
 		self.reaction = UnitReaction(self.unit, "player")
-		
+
 		-- if we don't get reaction, unit is out of range - has to be friendly
 		-- to be targettable (party/raid)
 		if (not self.reaction) then
