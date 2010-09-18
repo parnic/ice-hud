@@ -933,11 +933,15 @@ function PlayerHealth.prototype:Resting()
 
 	-- moved icon logic above :Update so that it will trigger the alpha settings properly
 	if (self.resting) then
-		if self.moduleSettings.showStatusIcon and self.moduleSettings.showStatusResting and not self.frame.statusIcon then
-			self.frame.statusIcon = self:CreateTexCoord(self.frame.statusIcon, "Interface\\CharacterFrame\\UI-StateIcon", 20, 20,
+		if self.moduleSettings.showStatusIcon and self.moduleSettings.showStatusResting then
+			if not self.frame.statusIcon then
+				self.frame.statusIcon = self:CreateTexCoord(self.frame.statusIcon, "Interface\\CharacterFrame\\UI-StateIcon", 20, 20,
 						self.moduleSettings.statusIconScale, 0.0625, 0.4475, 0.0625, 0.4375)
-			self:SetTexLoc(self.frame.statusIcon, self.moduleSettings.statusIconOffset['x'], self.moduleSettings.statusIconOffset['y'])
-			self:SetIconAlpha()
+				self:SetTexLoc(self.frame.statusIcon, self.moduleSettings.statusIconOffset['x'], self.moduleSettings.statusIconOffset['y'])
+				self:SetIconAlpha()
+			else
+				self.frame.statusIcon:SetTexCoord(0.0625, 0.4475, 0.0625, 0.4375)
+			end
 		elseif (not self.moduleSettings.showStatusIcon or not self.moduleSettings.showStatusResting) and self.frame.statusIcon and not self.combat then
 			self.frame.statusIcon = self:DestroyTexFrame(self.frame.statusIcon)
 		end
@@ -975,17 +979,23 @@ function PlayerHealth.prototype:CheckCombat()
 	end
 
 	if self.combat or configMode then
-		if (configMode or (self.moduleSettings.showStatusIcon and self.moduleSettings.showStatusCombat)) and not self.frame.statusIcon then
-			self.frame.statusIcon = self:CreateTexCoord(self.frame.statusIcon, "Interface\\CharacterFrame\\UI-StateIcon", 20, 20,
+		if (configMode or (self.moduleSettings.showStatusIcon and self.moduleSettings.showStatusCombat)) then
+			if not self.frame.statusIcon then
+				self.frame.statusIcon = self:CreateTexCoord(self.frame.statusIcon, "Interface\\CharacterFrame\\UI-StateIcon", 20, 20,
 						self.moduleSettings.statusIconScale, 0.5625, 0.9375, 0.0625, 0.4375)
-			self:SetTexLoc(self.frame.statusIcon, self.moduleSettings.statusIconOffset['x'], self.moduleSettings.statusIconOffset['y'])
-			self:SetIconAlpha()
+				self:SetTexLoc(self.frame.statusIcon, self.moduleSettings.statusIconOffset['x'], self.moduleSettings.statusIconOffset['y'])
+				self:SetIconAlpha()
+			else
+				self.frame.statusIcon:SetTexCoord(0.5625, 0.9375, 0.0625, 0.4375)
+			end
 		elseif not configMode and not self.resting and (not self.moduleSettings.showStatusIcon or not self.moduleSettings.showStatusCombat) and self.frame.statusIcon then
 			self.frame.statusIcon = self:DestroyTexFrame(self.frame.statusIcon)
 		end
 	else
-		if not self.resting and self.frame.statusIcon then
+		if (not self.resting or not self.moduleSettings.showStatusResting) and self.frame.statusIcon then
 			self.frame.statusIcon = self:DestroyTexFrame(self.frame.statusIcon)
+		elseif self.resting then
+			self:Resting()
 		end
 	end
 end
