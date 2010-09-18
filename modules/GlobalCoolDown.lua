@@ -1,14 +1,8 @@
 local GlobalCoolDown = IceCore_CreateClass(IceBarElement)
-GlobalCoolDown.prototype.scheduledEvent = nil
 
 -- Constructor --
 function GlobalCoolDown.prototype:init()
-	GlobalCoolDown.super.prototype.init(self, "GlobalCoolDown", "player")
-
-	self.moduleSettings = {}
-	self.moduleSettings.barVisible = {bar = true, bg = false}
-	self.moduleSettings.desiredLerpTime = 0
-	self.moduleSettings.shouldAnimate = false
+	GlobalCoolDown.super.prototype.init(self, "GlobalCoolDown")
 
 	self.unit = "player"
 	self.startTime = nil
@@ -17,51 +11,33 @@ function GlobalCoolDown.prototype:init()
 	self:SetDefaultColor("GlobalCoolDown", 0.1, 0.1, 0.1)
 end
 
--- 'Public' methods -----------------------------------------------------------
-
 -- OVERRIDE
 function GlobalCoolDown.prototype:Enable(core)
 	GlobalCoolDown.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "CooldownStateChanged")
 
+	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
+	self.frame.bg:SetVertexColor(r, g, b, 0.6)
 	self:Show(false)
-end
 
-function GlobalCoolDown.prototype:Disable(core)
-	GlobalCoolDown.super.prototype.Disable(self, core)
-
-	self:CancelTimer(self.scheduledEvent, true)
+	self.frame:SetFrameStrata("TOOLTIP")
+	self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
 end
 
 function GlobalCoolDown.prototype:GetSpellId()
-	local defaultSpells;
-	if (IceHUD.WowVer >= 30000) then
-		defaultSpells = {
-			ROGUE=1752, -- sinister strike
-			PRIEST=139, -- renew
-			DRUID=774, -- rejuvenation
-			WARRIOR=6673, -- battle shout
-			MAGE=168, -- frost armor
-			WARLOCK=1454, -- life tap
-			PALADIN=1152, -- purify
-			SHAMAN=324, -- lightning shield
-			HUNTER=1978, -- serpent sting
-			DEATHKNIGHT=47541 -- death coil
-		}
-	else
-		defaultSpells = {
-			ROGUE=1752, -- sinister strike
-			PRIEST=139, -- renew
-			DRUID=774, -- rejuvenation
-			WARRIOR=6673, -- battle shout
-			MAGE=168, -- frost armor
-			WARLOCK=1454, -- life tap
-			PALADIN=1152, -- purify
-			SHAMAN=324, -- lightning shield
-			HUNTER=1978 -- serpent sting
-		}
-	end
+	local defaultSpells = {
+		ROGUE=1752, -- sinister strike
+		PRIEST=139, -- renew
+		DRUID=774, -- rejuvenation
+		WARRIOR=6673, -- battle shout
+		MAGE=168, -- frost armor
+		WARLOCK=1454, -- life tap
+		PALADIN=1152, -- purify
+		SHAMAN=324, -- lightning shield
+		HUNTER=1978, -- serpent sting
+		DEATHKNIGHT=47541 -- death coil
+	}
 	local _, unitClass = UnitClass("player")
 	return defaultSpells[unitClass]
 end
@@ -90,11 +66,10 @@ function GlobalCoolDown.prototype:GetOptions()
 
 	opts["lowThreshold"] = nil
 	opts["textSettings"] = nil
+	opts.alwaysFullAlpha = nil
 
 	return opts
 end
-
--- 'Protected' methods --------------------------------------------------------
 
 function GlobalCoolDown.prototype:CooldownStateChanged()
 	local start, dur = GetSpellCooldown(self:GetSpellId())
@@ -110,10 +85,7 @@ function GlobalCoolDown.prototype:CooldownStateChanged()
 			self.CurrLerpTime = 0
 			self.moduleSettings.desiredLerpTime = dur or 1
 		end
-		self.frame:SetFrameStrata("TOOLTIP")
 		self:Show(true)
-		self.frame.bg:SetAlpha(0)
-		self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
 	else
 		self.duration = nil
 		self.startTime = nil
@@ -122,19 +94,11 @@ function GlobalCoolDown.prototype:CooldownStateChanged()
 	end
 end
 
-function GlobalCoolDown.prototype:UpdateGlobalCoolDown()
-	if (self.duration ~= nil) and (self.startTime ~= nil) then
-		remaining = GetTime() - self.startTime
+function GlobalCoolDown.prototype:MyOnUpdate()
+	GlobalCoolDown.super.prototype.MyOnUpdate(self)
 
-		if (remaining > self.duration) then
-			self.duration = nil
-			self.startTime = nil
-
-			self:Show(false)
-		else
---			self:UpdateBar(1 - (self.duration ~= 0 and remaining / self.duration or 0), "GlobalCoolDown", 0.8)
-		end
-	else
+	if self:IsVisible() and self.startTime ~= nil and self.duration ~= nil
+		and self.startTime + self.duration <= GetTime() then
 		self:Show(false)
 	end
 end

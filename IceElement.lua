@@ -42,7 +42,7 @@ function IceElement.prototype:init(name, skipRegister)
 	LibStub("AceEvent-3.0"):Embed(self)
 	LibStub("AceTimer-3.0"):Embed(self)
 
-	if not skipRegister then
+	if skipRegister ~= true then
 		IceHUD:Register(self)
 	end
 end
