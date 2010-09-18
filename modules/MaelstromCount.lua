@@ -32,7 +32,7 @@ function MaelstromCount.prototype:GetOptions()
 		end,
 		min = -300,
 		max = 200,
-		step = 10,
+		step = 1,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,

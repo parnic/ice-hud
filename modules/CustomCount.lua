@@ -204,9 +204,9 @@ function IceCustomCount.prototype:GetOptions()
 			self.moduleSettings.vpos = v
 			self:Redraw()
 		end,
-		min = -300,
-		max = 200,
-		step = 10,
+		min = -400,
+		max = 700,
+		step = 1,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -226,7 +226,7 @@ function IceCustomCount.prototype:GetOptions()
 		end,
 		min = -700,
 		max = 700,
-		step = 10,
+		step = 1,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,

@@ -41,7 +41,7 @@ function TargetOfTarget.prototype:GetOptions()
 		end,
 		min = -600,
 		max = 600,
-		step = 10,
+		step = 1,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -61,7 +61,7 @@ function TargetOfTarget.prototype:GetOptions()
 		end,
 		min = -500,
 		max = 500,
-		step = 10,
+		step = 1,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,

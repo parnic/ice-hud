@@ -118,7 +118,7 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 					end,
 					min = -700,
 					max = 700,
-					step = 10,
+					step = 1,
 					order = 11
 				},
 
@@ -134,7 +134,7 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 					end,
 					min = -2000,
 					max = 2000,
-					step = 10,
+					step = 1,
 					order = 12
 				},
 
