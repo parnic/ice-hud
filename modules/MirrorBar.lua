@@ -18,7 +18,7 @@ MirrorBar.prototype.label = nil
 
 -- Constructor --
 function MirrorBar.prototype:init(side, offset, name, db)
-	MirrorBar.super.prototype.init(self, name)
+	MirrorBar.super.prototype.init(self, name, true)
 	self.settings = db
 	self.moduleSettings = {}
 	self.moduleSettings.side = side
@@ -29,10 +29,6 @@ function MirrorBar.prototype:init(side, offset, name, db)
 	self.moduleSettings.barVerticalOffset = 0
 	-- avoid nil warnings here
 	self.moduleSettings.myTagVersion = IceHUD.CurrTagVersion
-
-	-- unregister the event superclass registered, we don't want to register
-	-- this to the core
-	self:UnregisterEvent(IceCore.Loaded)
 end
 
 

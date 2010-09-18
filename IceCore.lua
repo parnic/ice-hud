@@ -5,7 +5,7 @@ function IceCore_CreateClass(parent)
 		setmetatable(class.prototype, { __index = parent.prototype })
 	end
 	local mt = { __index = class.prototype }
-	function class.new(...)
+	function class:new(...)
 		local self = setmetatable({}, mt)
 		if self.init then
 			self:init(...)

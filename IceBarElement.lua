@@ -19,8 +19,8 @@ local lastMarkerHeightConfig = 6
 local lastEditMarkerConfig = 1
 
 -- Constructor --
-function IceBarElement.prototype:init(name)
-	IceBarElement.super.prototype.init(self, name)
+function IceBarElement.prototype:init(name, ...)
+	IceBarElement.super.prototype.init(self, name, ...)
 end
 
 

@@ -28,7 +28,7 @@ IceElement.prototype.bIsVisible = true
 -- IceElements are to be instantiated before IceCore is loaded.
 -- Therefore we can wait for IceCore to load and then register our
 -- module to the core with another event.
-function IceElement.prototype:init(name)
+function IceElement.prototype:init(name, skipRegister)
 	assert(name, "IceElement must have a name")
 
 	self.elementName = name
@@ -42,7 +42,9 @@ function IceElement.prototype:init(name)
 	LibStub("AceEvent-3.0"):Embed(self)
 	LibStub("AceTimer-3.0"):Embed(self)
 
-	IceHUD:Register(self)
+	if not skipRegister then
+		IceHUD:Register(self)
+	end
 end
 
 
