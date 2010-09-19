@@ -16,7 +16,7 @@ IceTargetHealth.prototype.RareEliteTexture = IceElement.TexturePath .. "RareElit
 IceTargetHealth.prototype.RareTexture = IceElement.TexturePath .. "Rare"
 IceTargetHealth.prototype.DisplayClickTargetOption = true
 
-local configMode = false
+IceTargetHealth.prototype.configMode = false
 
 -- Constructor --
 function IceTargetHealth.prototype:init(moduleName, unit)
@@ -58,6 +58,9 @@ function IceTargetHealth.prototype:GetDefaultSettings()
 	settings["PvPIconOnTop"] = false
 	settings["allowMouseInteraction"] = false
 	settings["npcHostilityColor"] = false
+	settings["showPartyRoleIcon"] = false
+	settings["PartyRoleIconOffset"] = {x=33, y=-8}
+	settings["PartyRoleIconScale"] = 0.9
 
 	return settings
 end
@@ -188,12 +191,13 @@ end
 				name = "Icon config mode",
 				desc = "With this enabled, all icons draw so you can configure their placement\n\nNote: the combat and status icons are actually the same texture so you'll only see combat in config mode (unless you're already resting)",
 				get = function()
-					return configMode
+					return self.configMode
 				end,
 				set = function(info, v)
-					configMode = v
+					self.configMode = v
 					self:CheckPvP()
 					self:UpdateRaidTargetIcon()
+					self:CheckPartyRole()
 					self:Redraw()
 				end,
 				order = 5
@@ -510,6 +514,85 @@ end
 				end,
 				order = 63
 			},
+
+			headerPartyRoleIcon = {
+				type = 'header',
+				name = "Party Role icon",
+				order = 65
+			},
+			PartyRoleIcon = {
+				type = "toggle",
+				name = "Show Party Role icon",
+				desc = "Whether or not to show the Party Role icon",
+				get = function()
+					return self.moduleSettings.showPartyRoleIcon
+				end,
+				set = function(info, value)
+					self.moduleSettings.showPartyRoleIcon = value
+					self:CheckPartyRole()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				order = 66
+			},
+			PartyRoleIconOffsetX = {
+				type = "range",
+				name = "Party Role Icon Horizontal Offset",
+				desc = "How much to offset the Party Role icon from the bar horizontally",
+				min = 0,
+				max = 250,
+				step = 1,
+				get = function()
+					return self.moduleSettings.PartyRoleIconOffset['x']
+				end,
+				set = function(info, v)
+					self.moduleSettings.PartyRoleIconOffset['x'] = v
+					self:SetTexLoc(self.frame.PartyRoleIcon, self.moduleSettings.PartyRoleIconOffset['x'], self.moduleSettings.PartyRoleIconOffset['y'])
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.showPartyRoleIcon
+				end,
+				order = 67
+			},
+			PartyRoleIconOffsetY = {
+				type = "range",
+				name = "Party Role Icon Vertical Offset",
+				desc = "How much to offset the Party Role icon from the bar vertically",
+				min = -300,
+				max = 50,
+				step = 1,
+				get = function()
+					return self.moduleSettings.PartyRoleIconOffset['y']
+				end,
+				set = function(info, v)
+					self.moduleSettings.PartyRoleIconOffset['y'] = v
+					self:SetTexLoc(self.frame.PartyRoleIcon, self.moduleSettings.PartyRoleIconOffset['x'], self.moduleSettings.PartyRoleIconOffset['y'])
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.showPartyRoleIcon
+				end,
+				order = 68
+			},
+			PartyRoleIconScale = {
+				type = "range",
+				name = "Party Role Icon Scale",
+				desc = "How much to scale the Party Role icon",
+				min = 0.05,
+				max = 2,
+				step = 0.05,
+				get = function()
+					return self.moduleSettings.PartyRoleIconScale
+				end,
+				set = function(info, v)
+					self.moduleSettings.PartyRoleIconScale = v
+					self:SetTexScale(self.frame.PartyRoleIcon, 20, 20, v)
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.showPartyRoleIcon
+				end,
+				order = 69
+			}
 		}
 	}
 
@@ -529,6 +612,9 @@ function IceTargetHealth.prototype:Enable(core)
 		self:RegisterEvent("UPDATE_FACTION", "CheckPvP")
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", "CheckPvP")
 		self:RegisterEvent("UNIT_FACTION", "CheckPvP")
+		self:RegisterEvent("LFG_PROPOSAL_UPDATE", "CheckPartyRole")
+		self:RegisterEvent("LFG_PROPOSAL_FAILED", "CheckPartyRole")
+		self:RegisterEvent("LFG_ROLE_UPDATE", "CheckPartyRole")
 	end
 
 	if (self.moduleSettings.hideBlizz) then
@@ -662,7 +748,7 @@ function IceTargetHealth.prototype:Update(unit)
 		self.barFrame.classIcon:Show()
 		self.barFrame.classIcon:SetAlpha(self.alpha == 0 and 0 or math.min(1, self.alpha + 0.2))
 
-		if configMode or IceHUD.IceCore:IsInConfigMode() or classification == "worldboss" or classification == "elite" then
+		if self.configMode or IceHUD.IceCore:IsInConfigMode() or classification == "worldboss" or classification == "elite" then
 			self.barFrame.classIcon:SetTexture(self.EliteTexture)
 		elseif classification == "rareelite" then
 			self.barFrame.classIcon:SetTexture(self.RareEliteTexture)
@@ -715,6 +801,7 @@ function IceTargetHealth.prototype:Update(unit)
 	end
 
 	self:CheckPvP()
+	self:CheckPartyRole()
 	self:SetIconAlpha()
 end
 
@@ -800,12 +887,12 @@ function IceTargetHealth.prototype:UpdateRaidTargetIcon()
 		self.frame.raidIcon:SetFrameStrata("LOW")
 	end
 
-	if not self.moduleSettings.showRaidIcon or (not UnitExists(self.unit) and (not configMode and not IceHUD.IceCore:IsInConfigMode())) then
+	if not self.moduleSettings.showRaidIcon or (not UnitExists(self.unit) and (not self.configMode and not IceHUD.IceCore:IsInConfigMode())) then
 		self.frame.raidIcon:Hide()
 		return
 	end
 
-	local index = (IceHUD.IceCore:IsInConfigMode() or configMode) and 1 or GetRaidTargetIndex(self.unit);
+	local index = (IceHUD.IceCore:IsInConfigMode() or self.configMode) and 1 or GetRaidTargetIndex(self.unit);
 
 	if (index and (index > 0)) then
 		SetRaidTargetIconTexture(self.frame.raidIcon.icon, index)
@@ -835,7 +922,7 @@ function IceTargetHealth.prototype:CheckPvP()
 	local pvpMode = nil
 	local minx, maxx, miny, maxy
 
-	if configMode or UnitIsPVPFreeForAll(self.unit) then
+	if self.configMode or UnitIsPVPFreeForAll(self.unit) then
 		pvpMode = "FFA"
 
 		minx, maxx, miny, maxy = 0.05, 0.605, 0.015, 0.57
@@ -850,7 +937,7 @@ function IceTargetHealth.prototype:CheckPvP()
 	end
 
 	if pvpMode then
-		if configMode or self.moduleSettings.showPvPIcon then
+		if self.configMode or self.moduleSettings.showPvPIcon then
 			self.barFrame.PvPIcon = self:CreateTexCoord(self.barFrame.PvPIcon, "Interface\\TargetingFrame\\UI-PVP-"..pvpMode, 20, 20,
 						self.moduleSettings.PvPIconScale, minx, maxx, miny, maxy)
 			self:SetTexLoc(self.barFrame.PvPIcon, self.moduleSettings.PvPIconOffset['x'], self.moduleSettings.PvPIconOffset['y'])
@@ -873,6 +960,9 @@ end
 function IceTargetHealth.prototype:SetIconAlpha()
 	if self.barFrame.PvPIcon then
 		self.barFrame.PvPIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
+	end
+	if self.frame.PartyRoleIcon then
+		self.frame.PartyRoleIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
 	end
 end
 
@@ -908,7 +998,73 @@ function IceTargetHealth.prototype:UpdateBar(scale, color, alpha)
 ]]
 end
 
+function IceTargetHealth.prototype:CheckPartyRole()
+	local IsLFGParty
+	local mode, submode
 
+	mode, submode= GetLFGMode()
+	IsLFGParty = (mode ~= nil and mode ~= "abandonedInDungeon" and mode ~= "queued")
+
+	if self.configMode or IsLFGParty then
+		if self.configMode or self.moduleSettings.showPartyRoleIcon then
+			local isTank, isHeal, isDPS
+			local proposalExists, typeID, id, name
+			local texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader
+			proposalExists, typeID, id, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader = GetLFGProposal()
+
+			local p = self.unit
+			if IceHUD.WowVer < 40000 then
+				isTank, isHeal, isDPS = UnitGroupRolesAssigned(p)
+			else
+				local grpRole = UnitGroupRolesAssigned(p)
+				isTank = (grpRole == "TANK")
+				isHeal = (grpRole == "HEALER")
+				isDPS = (grpRole == "DAMAGER")
+			end
+
+			if proposalExists == true then
+			      isTank = (role == "TANK")
+			      isHeal = (role == "HEALER")
+			      isDPS = (role == "DAMAGER")
+			end
+
+			if proposalExists == nil then
+				hasResponded = false
+				proposalExists = false
+			end
+
+			if hasResponded == false then
+				if proposalExists == true then
+					isTank = (role == "TANK")
+					isHeal = (role == "HEALER")
+					isDPS = (role == "DAMAGER")
+				end
+			else
+				isTank = not hasResponded
+				isHeal = not hasResponded
+				isDPS = not hasResponded
+			end
+
+			if isTank then
+				self.frame.PartyRoleIcon = self:CreateTexCoord(self.frame.PartyRoleIcon, "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES", 20, 20, self.moduleSettings.PartyRoleIconScale, 0/64, 19/64, 22/64, 41/64)
+			elseif isHeal then
+				self.frame.PartyRoleIcon = self:CreateTexCoord(self.frame.PartyRoleIcon, "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES", 20, 20, self.moduleSettings.PartyRoleIconScale, 20/64, 39/64, 1/64, 20/64)
+			elseif isDPS then
+				self.frame.PartyRoleIcon = self:CreateTexCoord(self.frame.PartyRoleIcon, "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES", 20, 20, self.moduleSettings.PartyRoleIconScale, 20/64, 39/64, 22/64, 41/64)
+			elseif self.configMode then
+				self.frame.PartyRoleIcon = self:CreateTexCoord(self.frame.PartyRoleIcon, "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES", 20, 20, self.moduleSettings.PartyRoleIconScale, 0/64, 19/64, 1/64, 20/64)
+			else
+				self.frame.PartyRoleIcon = self:DestroyTexFrame(self.frame.PartyRoleIcon)
+			end
+			self:SetTexLoc(self.frame.PartyRoleIcon, self.moduleSettings.PartyRoleIconOffset['x'], self.moduleSettings.PartyRoleIconOffset['y'])
+			self:SetIconAlpha()
+		elseif not self.configMode and not self.moduleSettings.showPartyRoleIcon then
+			self.frame.PartyRoleIcon = self:DestroyTexFrame(self.frame.PartyRoleIcon)
+		end
+	else
+		self.frame.PartyRoleIcon = self:DestroyTexFrame(self.frame.PartyRoleIcon)
+	end
+end
 
 -- Load us up
 IceHUD.TargetHealth = IceTargetHealth:new()
