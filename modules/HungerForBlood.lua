@@ -227,6 +227,6 @@ end
 
 local _, unitClass = UnitClass("player")
 -- Load us up
-if unitClass == "ROGUE" then
+if unitClass == "ROGUE" and IceHUD.WowVer < 40000 then
     IceHUD.HungerForBlood = HungerForBlood:new()
 end
