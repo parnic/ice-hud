@@ -348,93 +348,93 @@ function IceCustomBar.prototype:GetOptions()
 		order = 31.1,
 	}
 
-	opts["headerIcons"] = {
-		type = 'header',
-		name = 'Icons',
-		order = 40
-	}
+	opts["iconSettings"] = {
+		type = 'group',
+		name = '|c'..self.configColor..'Icon Settings|r',
+		args = {
+			displayAuraIcon = {
+				type = 'toggle',
+				name = "Display aura icon",
+				desc = "Whether or not to display an icon for the aura that this bar is tracking",
+				get = function()
+					return self.moduleSettings.displayAuraIcon
+				end,
+				set = function(info, v)
+					self.moduleSettings.displayAuraIcon = v
+					if self.barFrame.icon then
+						if v then
+							self.barFrame.icon:Show()
+						else
+							self.barFrame.icon:Hide()
+						end
+					end
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				order = 40.1,
+			},
 
-	opts["displayAuraIcon"] = {
-		type = 'toggle',
-		name = "Display aura icon",
-		desc = "Whether or not to display an icon for the aura that this bar is tracking",
-		get = function()
-			return self.moduleSettings.displayAuraIcon
-		end,
-		set = function(info, v)
-			self.moduleSettings.displayAuraIcon = v
-			if self.barFrame.icon then
-				if v then
-					self.barFrame.icon:Show()
-				else
-					self.barFrame.icon:Hide()
-				end
-			end
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 40.1,
-	}
+			auraIconXOffset = {
+				type = 'range',
+				min = -250,
+				max = 250,
+				step = 1,
+				name = "Aura icon horizontal offset",
+				desc = "Adjust the horizontal position of the aura icon",
+				get = function()
+					return self.moduleSettings.auraIconXOffset
+				end,
+				set = function(info, v)
+					self.moduleSettings.auraIconXOffset = v
+					self:PositionIcons()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+				end,
+				order = 40.2,
+			},
 
-	opts["auraIconXOffset"] = {
-		type = 'range',
-		min = -250,
-		max = 250,
-		step = 1,
-		name = "Aura icon horizontal offset",
-		desc = "Adjust the horizontal position of the aura icon",
-		get = function()
-			return self.moduleSettings.auraIconXOffset
-		end,
-		set = function(info, v)
-			self.moduleSettings.auraIconXOffset = v
-			self:PositionIcons()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
-		end,
-		order = 40.2,
-	}
+			auraIconYOffset = {
+				type = 'range',
+				min = -250,
+				max = 250,
+				step = 1,
+				name = "Aura icon vertical offset",
+				desc = "Adjust the vertical position of the aura icon",
+				get = function()
+					return self.moduleSettings.auraIconYOffset
+				end,
+				set = function(info, v)
+					self.moduleSettings.auraIconYOffset = v
+					self:PositionIcons()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+				end,
+				order = 40.3,
+			},
 
-	opts["auraIconYOffset"] = {
-		type = 'range',
-		min = -250,
-		max = 250,
-		step = 1,
-		name = "Aura icon vertical offset",
-		desc = "Adjust the vertical position of the aura icon",
-		get = function()
-			return self.moduleSettings.auraIconYOffset
-		end,
-		set = function(info, v)
-			self.moduleSettings.auraIconYOffset = v
-			self:PositionIcons()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
-		end,
-		order = 40.3,
-	}
-
-	opts["auraIconScale"] = {
-		type = 'range',
-		min = 0.1,
-		max = 3.0,
-		step = 0.05,
-		name = 'Aura icon scale',
-		desc = 'Adjusts the size of the aura icon for this bar',
-		get = function()
-			return self.moduleSettings.auraIconScale
-		end,
-		set = function(info, v)
-			self.moduleSettings.auraIconScale = v
-			self:PositionIcons()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
-		end,
-		order = 40.4,
+			auraIconScale = {
+				type = 'range',
+				min = 0.1,
+				max = 3.0,
+				step = 0.05,
+				name = 'Aura icon scale',
+				desc = 'Adjusts the size of the aura icon for this bar',
+				get = function()
+					return self.moduleSettings.auraIconScale
+				end,
+				set = function(info, v)
+					self.moduleSettings.auraIconScale = v
+					self:PositionIcons()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+				end,
+				order = 40.4,
+			},
+		},
 	}
 
 	return opts

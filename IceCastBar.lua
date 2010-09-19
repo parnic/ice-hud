@@ -101,97 +101,97 @@ function IceCastBar.prototype:GetOptions()
 		order = 39.999
 	}
 
-	opts["headerIcons"] = {
-		type = 'header',
-		name = 'Icons',
-		order = 50
+	opts["iconSettings"] = {
+		type = 'group',
+		name = '|c'..self.configColor..'Icon Settings|r',
+		args = {
+			displayAuraIcon = {
+				type = 'toggle',
+				name = "Display aura icon",
+				desc = "Whether or not to display an icon for the aura that this bar is tracking",
+				get = function()
+					return self.moduleSettings.displayAuraIcon
+				end,
+				set = function(info, v)
+					self.moduleSettings.displayAuraIcon = v
+					if self.barFrame.icon then
+						if v then
+							self.barFrame.icon:Show()
+						else
+							self.barFrame.icon:Hide()
+						end
+					end
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				order = 51,
+			},
+
+			auraIconXOffset = {
+				type = 'range',
+				min = -250,
+				max = 250,
+				step = 1,
+				name = "Aura icon horizontal offset",
+				desc = "Adjust the horizontal position of the aura icon",
+				get = function()
+					return self.moduleSettings.auraIconXOffset
+				end,
+				set = function(info, v)
+					self.moduleSettings.auraIconXOffset = v
+					self:PositionIcons()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+				end,
+				order = 52,
+			},
+
+			auraIconYOffset = {
+				type = 'range',
+				min = -250,
+				max = 250,
+				step = 1,
+				name = "Aura icon vertical offset",
+				desc = "Adjust the vertical position of the aura icon",
+				get = function()
+					return self.moduleSettings.auraIconYOffset
+				end,
+				set = function(info, v)
+					self.moduleSettings.auraIconYOffset = v
+					self:PositionIcons()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+				end,
+				order = 53,
+			},
+
+			auraIconScale = {
+				type = 'range',
+				min = 0.1,
+				max = 3.0,
+				step = 0.05,
+				name = 'Aura icon scale',
+				desc = 'Adjusts the size of the aura icon for this bar',
+				get = function()
+					return self.moduleSettings.auraIconScale
+				end,
+				set = function(info, v)
+					self.moduleSettings.auraIconScale = v
+					self:PositionIcons()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+				end,
+				order = 54,
+			},
+		},
 	}
 
-	opts["displayAuraIcon"] = {
+	opts["reverseChannel"] = {
 		type = 'toggle',
-		name = "Display aura icon",
-		desc = "Whether or not to display an icon for the aura that this bar is tracking",
-		get = function()
-			return self.moduleSettings.displayAuraIcon
-		end,
-		set = function(info, v)
-			self.moduleSettings.displayAuraIcon = v
-			if self.barFrame.icon then
-				if v then
-					self.barFrame.icon:Show()
-				else
-					self.barFrame.icon:Hide()
-				end
-			end
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 51,
-	}
-
-	opts["auraIconXOffset"] = {
-		type = 'range',
-		min = -250,
-		max = 250,
-		step = 1,
-		name = "Aura icon horizontal offset",
-		desc = "Adjust the horizontal position of the aura icon",
-		get = function()
-			return self.moduleSettings.auraIconXOffset
-		end,
-		set = function(info, v)
-			self.moduleSettings.auraIconXOffset = v
-			self:PositionIcons()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
-		end,
-		order = 52,
-	}
-
-	opts["auraIconYOffset"] = {
-		type = 'range',
-		min = -250,
-		max = 250,
-		step = 1,
-		name = "Aura icon vertical offset",
-		desc = "Adjust the vertical position of the aura icon",
-		get = function()
-			return self.moduleSettings.auraIconYOffset
-		end,
-		set = function(info, v)
-			self.moduleSettings.auraIconYOffset = v
-			self:PositionIcons()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
-		end,
-		order = 53,
-	}
-
-	opts["auraIconScale"] = {
-		type = 'range',
-		min = 0.1,
-		max = 3.0,
-		step = 0.05,
-		name = 'Aura icon scale',
-		desc = 'Adjusts the size of the aura icon for this bar',
-		get = function()
-			return self.moduleSettings.auraIconScale
-		end,
-		set = function(info, v)
-			self.moduleSettings.auraIconScale = v
-			self:PositionIcons()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
-		end,
-		order = 54,
-	}
-
-    opts["reverseChannel"] = {
-        type = 'toggle',
 		name = "Reverse channeling",
 		desc = "Whether or not to reverse the direction of the cast bar when a spell is being channeled. For example, if a normal cast causes this bar to fill up, then checking this option will cause a channeled spell to empty the bar instead.",
 		get = function()
@@ -204,7 +204,7 @@ function IceCastBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 32.5,
-    }
+	}
 
 	return opts
 end

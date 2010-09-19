@@ -96,104 +96,104 @@ function FocusHealth.prototype:GetOptions()
 		order = 43
 	}
 
-	opts["headerIcons"] = {
-		type = 'header',
-		name = 'Icons',
-		order = 50
-	}
+	opts["iconSettings"] = {
+		type = 'group',
+		name = '|c'..self.configColor..'Icon Settings|r',
+		args = {
+			showRaidIcon = {
+				type = "toggle",
+				name = "Show Raid Icon",
+				desc = "Whether or not to show the raid icon above this bar",
+				get = function()
+					return self.moduleSettings.showRaidIcon
+				end,
+				set = function(info, value)
+					self.moduleSettings.showRaidIcon = value
+					self:UpdateRaidFocusIcon()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				order = 50.1
+			},
 
-	opts["showRaidIcon"] = {
-		type = "toggle",
-		name = "Show Raid Icon",
-		desc = "Whether or not to show the raid icon above this bar",
-		get = function()
-			return self.moduleSettings.showRaidIcon
-		end,
-		set = function(info, value)
-			self.moduleSettings.showRaidIcon = value
-			self:UpdateRaidFocusIcon()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 50.1
-	}
+			lockIconAlpha = {
+				type = "toggle",
+				name = "Lock raid icon to 100% alpha",
+				desc = "With this enabled, the raid icon is always 100% alpha, regardless of the bar's alpha. Otherwise, it assumes the bar's alpha level.",
+				width = 'double',
+				get = function()
+					return self.moduleSettings.lockIconAlpha
+				end,
+				set = function(info, value)
+					self.moduleSettings.lockIconAlpha = value
+					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				order = 51
+			},
 
-	opts["lockIconAlpha"] = {
-		type = "toggle",
-		name = "Lock raid icon to 100% alpha",
-		desc = "With this enabled, the raid icon is always 100% alpha, regardless of the bar's alpha. Otherwise, it assumes the bar's alpha level.",
-		width = 'double',
-		get = function()
-			return self.moduleSettings.lockIconAlpha
-		end,
-		set = function(info, value)
-			self.moduleSettings.lockIconAlpha = value
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 51
-	}
+			raidIconOnTop = {
+				type = "toggle",
+				name = "Draw Raid Icon On Top",
+				desc = "Whether to draw the raid icon in front of or behind this bar",
+				get = function()
+					return self.moduleSettings.raidIconOnTop
+				end,
+				set = function(info, value)
+					self.moduleSettings.raidIconOnTop = value
+					self:UpdateRaidFocusIcon()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.showRaidIcon
+				end,
+				order = 52
+			},
 
-	opts["raidIconOnTop"] = {
-		type = "toggle",
-		name = "Draw Raid Icon On Top",
-		desc = "Whether to draw the raid icon in front of or behind this bar",
-		get = function()
-			return self.moduleSettings.raidIconOnTop
-		end,
-		set = function(info, value)
-			self.moduleSettings.raidIconOnTop = value
-			self:UpdateRaidFocusIcon()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.showRaidIcon
-		end,
-		order = 52
-	}
+			raidIconXOffset = {
+				type = "range",
+				name = "Raid Icon X Offset",
+				desc = "How far to push the raid icon right or left",
+				min = -300,
+				max = 300,
+				step = 1,
+				get = function()
+					return self.moduleSettings.raidIconXOffset
+				end,
+				set = function(info, value)
+					self.moduleSettings.raidIconXOffset = value
+					self:SetRaidIconPlacement()
+					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				order = 53
+			},
 
-	opts["raidIconXOffset"] = {
-		type = "range",
-		name = "Raid Icon X Offset",
-		desc = "How far to push the raid icon right or left",
-		min = -300,
-		max = 300,
-		step = 1,
-		get = function()
-			return self.moduleSettings.raidIconXOffset
-		end,
-		set = function(info, value)
-			self.moduleSettings.raidIconXOffset = value
-			self:SetRaidIconPlacement()
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 53
-	}
-
-	opts["raidIconYOffset"] = {
-		type = "range",
-		name = "Raid Icon Y Offset",
-		desc = "How far to push the raid icon up or down",
-		min = -300,
-		max = 300,
-		step = 1,
-		get = function()
-			return self.moduleSettings.raidIconYOffset
-		end,
-		set = function(info, value)
-			self.moduleSettings.raidIconYOffset = value
-			self:SetRaidIconPlacement()
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 54
+			raidIconYOffset = {
+				type = "range",
+				name = "Raid Icon Y Offset",
+				desc = "How far to push the raid icon up or down",
+				min = -300,
+				max = 300,
+				step = 1,
+				get = function()
+					return self.moduleSettings.raidIconYOffset
+				end,
+				set = function(info, value)
+					self.moduleSettings.raidIconYOffset = value
+					self:SetRaidIconPlacement()
+					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				order = 54
+			},
+		},
 	}
 
 	opts["shortenHealth"] = {
