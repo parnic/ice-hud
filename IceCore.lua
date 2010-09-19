@@ -19,17 +19,9 @@ end
 IceCore = IceCore_CreateClass()
 
 IceCore.Side = { Left = "LEFT", Right = "RIGHT" }
-
 IceCore.BuffLimit = 40
 
 IceCore.prototype.defaults = {}
-
--- Events modules should register/trigger during load
-IceCore.Loaded = "IceCore_Loaded"
-IceCore.RegisterModule = "IceCore_RegisterModule"
-
-
--- Private variables --
 IceCore.prototype.settings = nil
 IceCore.prototype.IceHUDFrame = nil
 IceCore.prototype.updatees = {}
@@ -38,7 +30,6 @@ IceCore.prototype.update_elapsed = 0
 IceCore.prototype.elements = {}
 IceCore.prototype.enabled = nil
 IceCore.prototype.presets = {}
-IceCore.prototype.settingsHash = nil
 IceCore.prototype.bConfigMode = false
 
 -- Constructor --

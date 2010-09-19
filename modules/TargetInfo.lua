@@ -561,7 +561,7 @@ function IceTargetInfo.prototype:GetOptions()
 	opts["line1Tag"] = {
 		type = 'input',
 		name = 'Line 1 tag',
-		desc = 'DogTag-formatted string to use for the top text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press ENTER after filling out this box or it will not save.',
+		desc = 'DogTag-formatted string to use for the top text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save.',
 		get = function()
 			return self.moduleSettings.line1Tag
 		end,
@@ -574,7 +574,6 @@ function IceTargetInfo.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled or DogTag == nil
 		end,
-		usage = '',
 		multiline = true,
 		order = 39.1
 	}
@@ -582,7 +581,7 @@ function IceTargetInfo.prototype:GetOptions()
 	opts["line2Tag"] = {
 		type = 'input',
 		name = 'Line 2 tag',
-		desc = 'DogTag-formatted string to use for the second text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press ENTER after filling out this box or it will not save.',
+		desc = 'DogTag-formatted string to use for the second text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save.',
 		get = function()
 			return self.moduleSettings.line2Tag
 		end,
@@ -595,7 +594,6 @@ function IceTargetInfo.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled or DogTag == nil
 		end,
-		usage = '',
 		multiline = true,
 		order = 39.2
 	}
@@ -603,7 +601,7 @@ function IceTargetInfo.prototype:GetOptions()
 	opts["line3Tag"] = {
 		type = 'input',
 		name = 'Line 3 tag',
-		desc = 'DogTag-formatted string to use for the third text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press ENTER after filling out this box or it will not save.',
+		desc = 'DogTag-formatted string to use for the third text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save.',
 		get = function()
 			return self.moduleSettings.line3Tag
 		end,
@@ -616,7 +614,6 @@ function IceTargetInfo.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled or DogTag == nil
 		end,
-		usage = '',
 		multiline = true,
 		order = 39.3
 	}
@@ -624,7 +621,7 @@ function IceTargetInfo.prototype:GetOptions()
 	opts["line4Tag"] = {
 		type = 'input',
 		name = 'Line 4 tag',
-		desc = 'DogTag-formatted string to use for the bottom text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press ENTER after filling out this box or it will not save.',
+		desc = 'DogTag-formatted string to use for the bottom text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save.',
 		get = function()
 			return self.moduleSettings.line4Tag
 		end,
@@ -637,7 +634,6 @@ function IceTargetInfo.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled or DogTag == nil
 		end,
-		usage = '',
 		multiline = true,
 		order = 39.4
 	}

@@ -22,7 +22,6 @@ function GlobalCoolDown.prototype:Enable(core)
 	self:Show(false)
 
 	self.frame:SetFrameStrata("TOOLTIP")
-	self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
 end
 
 function GlobalCoolDown.prototype:GetSpellId()
@@ -85,6 +84,7 @@ function GlobalCoolDown.prototype:CooldownStateChanged()
 			self.CurrLerpTime = 0
 			self.moduleSettings.desiredLerpTime = dur or 1
 		end
+		self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
 		self:Show(true)
 	else
 		self.duration = nil

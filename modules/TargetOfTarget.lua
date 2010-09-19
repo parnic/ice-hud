@@ -1,4 +1,5 @@
 local SML = LibStub("LibSharedMedia-3.0")
+local DogTag = nil
 
 local TargetOfTarget = IceCore_CreateClass(IceElement)
 
@@ -178,6 +179,51 @@ function TargetOfTarget.prototype:GetOptions()
 		end
 	}
 
+	opts.textSettings = {
+		type = 'group',
+		name = "|c"..self.configColor.."Text Settings|r",
+		args = {
+			leftTag = {
+				type = 'input',
+				name = 'Left Tag',
+				desc = 'DogTag-formatted string to use for the left side of the bar.\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save.',
+				get = function()
+					return self.moduleSettings.leftTag
+				end,
+				set = function(info, v)
+					v = DogTag:CleanCode(v)
+					self.moduleSettings.leftTag = v
+					self:RegisterFontStrings()
+					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or DogTag == nil
+				end,
+				multiline = true,
+				order = 10,
+			},
+			rightTag = {
+				type = 'input',
+				name = 'Right Tag',
+				desc = 'DogTag-formatted string to use for the right side of the bar.\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save.',
+				get = function()
+					return self.moduleSettings.rightTag
+				end,
+				set = function(info, v)
+					v = DogTag:CleanCode(v)
+					self.moduleSettings.rightTag = v
+					self:RegisterFontStrings()
+					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or DogTag == nil
+				end,
+				multiline = true,
+				order = 10,
+			},
+		},
+	}
+
 	return opts
 end
 
@@ -193,6 +239,8 @@ function TargetOfTarget.prototype:GetDefaultSettings()
 	defaults["texture"] = "Blizzard"
 	defaults["sizeToGap"] = true
 	defaults["totWidth"] = 200
+	defaults["leftTag"] = "[Name]"
+	defaults["rightTag"] = "[PercentHP]%"
 	return defaults
 end
 
@@ -210,8 +258,16 @@ end
 function TargetOfTarget.prototype:Enable(core)
 	TargetOfTarget.super.prototype.Enable(self, core)
 
+	if IceHUD.IceCore:ShouldUseDogTags() then
+		DogTag = LibStub("LibDogTag-3.0", true)
+		if DogTag then
+			LibStub("LibDogTag-Unit-3.0")
+		end
+	end
+
 	self.scheduledEvent = self:ScheduleRepeatingTimer("Update", 0.2)
 	RegisterUnitWatch(self.frame)
+	self:RegisterFontStrings()
 
 	self:Update()
 end
@@ -223,6 +279,7 @@ function TargetOfTarget.prototype:Disable(core)
 	self:CancelTimer(self.scheduledEvent, true)
 
 	UnregisterUnitWatch(self.frame)
+	self:UnregisterFontStrings()
 end
 
 
@@ -230,7 +287,7 @@ end
 
 -- OVERRIDE
 function TargetOfTarget.prototype:CreateFrame()
-	if not (self.frame) then
+	if not self.frame then
 		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.parent, "SecureUnitButtonTemplate")
 		self.frame:SetAttribute("unit", self.unit)
 	end
@@ -261,10 +318,8 @@ function TargetOfTarget.prototype:CreateFrame()
 		self.frame:SetScript("OnLeave", nil)
 	end
 
-
 	self.frame:SetAttribute("type1", "target")
 	self.frame:SetAttribute("unit", self.unit)
-
 
 	self:CreateBarFrame()
 	self:CreateToTFrame()
@@ -281,7 +336,7 @@ function TargetOfTarget.prototype:CreateBarFrame()
 	if not self.frame.bg then
 		self.frame.bg = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
-	if (not self.frame.bar) then
+	if not self.frame.bar then
 		self.frame.bar = CreateFrame("StatusBar", nil, self.frame)
 	end
 
@@ -302,7 +357,7 @@ function TargetOfTarget.prototype:CreateBarFrame()
 	self.frame.bg:SetPoint("LEFT", self.frame.bar, "LEFT", -1, 0)
 	self.frame.bar:SetPoint("LEFT", self.frame, "LEFT", 0, 0)
 
-	if (not self.frame.bar.texture) then
+	if not self.frame.bar.texture then
 		self.frame.bar.texture = self.frame.bar:CreateTexture()
 	end
 	self.frame.bar.texture:SetTexture(SML:Fetch(SML.MediaType.STATUSBAR, self.moduleSettings.texture))
@@ -310,7 +365,7 @@ function TargetOfTarget.prototype:CreateBarFrame()
 	self.frame.bar:SetStatusBarTexture(self.frame.bar.texture)
 
 
-	if (not self.frame.bar.highLight) then
+	if not self.frame.bar.highLight then
 		self.frame.bar.highLight = self.frame.bar:CreateTexture(nil, "OVERLAY")
 	end
 	self.frame.bar.highLight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
@@ -325,13 +380,10 @@ end
 
 
 function TargetOfTarget.prototype:CreateToTFrame()
-	self.frame.totName = self:FontFactory(self.moduleSettings.fontSize, self.frame.bar, self.frame.totName)
-
-	if self.moduleSettings.sizeToGap then
-		self.frame.totName:SetWidth(self.settings.gap-40)
-	else
-		self.frame.totName:SetWidth(self.moduleSettings.totWidth-40)
+	if not self.frame.totName then
+		self.frame.totName = self:FontFactory(self.moduleSettings.fontSize, self.frame.bar, self.frame.totName)
 	end
+
 	self.frame.totName:SetHeight(self.height)
 	self.frame.totName:SetJustifyH("LEFT")
 	self.frame.totName:SetJustifyV("CENTER")
@@ -342,9 +394,10 @@ end
 
 
 function TargetOfTarget.prototype:CreateToTHPFrame()
-	self.frame.totHealth = self:FontFactory(self.moduleSettings.fontSize, self.frame.bar, self.frame.totHealth)
+	if not self.frame.totHealth then
+		self.frame.totHealth = self:FontFactory(self.moduleSettings.fontSize, self.frame.bar, self.frame.totHealth)
+	end
 
-	self.frame.totHealth:SetWidth(40)
 	self.frame.totHealth:SetHeight(self.height)
 	self.frame.totHealth:SetJustifyH("RIGHT")
 	self.frame.totHealth:SetJustifyV("CENTER")
@@ -443,8 +496,8 @@ end
 
 
 function TargetOfTarget.prototype:Update()
-	if not (UnitExists(self.unit)) then
-		if not (self.hadTarget) then
+	if not UnitExists(self.unit) then
+		if not self.hadTarget then
 			return
 		end
 		self.hadTarget = false
@@ -459,37 +512,56 @@ function TargetOfTarget.prototype:Update()
 
 	self:UpdateBuffs()
 
-	local _, unitClass = UnitClass(self.unit)
-	local name = UnitName(self.unit)
-	local reaction = UnitReaction(self.unit, "player")
-
 	local health = UnitHealth(self.unit)
 	local maxHealth = UnitHealthMax(self.unit)
-	local healthPercentage = math.floor( (health/maxHealth)*100 )
 
-	if IceHUD.WowVer >= 30000 then
---		self.frame.totName:SetTextColor(UnitSelectionColor(self.unit))
-		self.frame.totName:SetTextColor(1,1,1)
-		self.frame.totName:SetAlpha(0.9)
+	if not IceHUD.IceCore:ShouldUseDogTags() then
+		local name = UnitName(self.unit)
+		local healthPercentage = math.floor( (health/maxHealth)*100 )
 
---		self.frame.totHealth:SetTextColor(UnitSelectionColor(self.unit))
-		self.frame.totHealth:SetTextColor(1,1,1)
-		self.frame.totHealth:SetAlpha(0.9)
-	else
-		local rColor = UnitReactionColor[reaction or 5]
-		self.frame.totName:SetTextColor(rColor.r, rColor.g, rColor.b, 0.9)
-		self.frame.totHealth:SetTextColor(rColor.r, rColor.g, rColor.b, 0.9)
+		self.frame.totName:SetTextColor(1,1,1, 0.9)
+		self.frame.totHealth:SetTextColor(1,1,1, 0.9)
+
+		self.frame.totName:SetText(name)
+		self.frame.totHealth:SetText(healthPercentage .. "%")
+	elseif DogTag then
+		DogTag:UpdateFontString(self.frame.totName)
+		DogTag:UpdateFontString(self.frame.totHealth)
 	end
 
-	self.frame.totName:SetText(name)
-	self.frame.totHealth:SetText(healthPercentage .. "%")
-
---	self.frame.bar.texture:SetVertexColor(self:GetColor(unitClass, 0.7))
 	self.frame.bar.texture:SetVertexColor(0,1,0)
 	self.frame.bar:SetMinMaxValues(0, maxHealth)
 	self.frame.bar:SetValue(health)
 
 	self:UpdateAlpha()
+end
+
+
+function TargetOfTarget.prototype:RegisterFontStrings()
+	if DogTag ~= nil then
+		if self.frame.totName then
+			if self.moduleSettings.leftTag ~= '' then
+				DogTag:AddFontString(self.frame.totName, self.frame, self.moduleSettings.leftTag, "Unit", { unit = self.unit })
+			else
+				DogTag:RemoveFontString(self.frame.totName)
+			end
+		end
+		if self.frame.totHealth then
+			if self.moduleSettings.rightTag ~= '' then
+				DogTag:AddFontString(self.frame.totHealth, self.frame, self.moduleSettings.rightTag, "Unit", { unit = self.unit })
+			else
+				DogTag:RemoveFontString(self.frame.totHealth)
+			end
+		end
+	end
+end
+
+
+function TargetOfTarget.prototype:UnregisterFontStrings()
+	if DogTag ~= nil then
+		DogTag:RemoveFontString(self.frame.totName)
+		DogTag:RemoveFontString(self.frame.totHealth)
+	end
 end
 
 
