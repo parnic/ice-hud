@@ -126,7 +126,7 @@ function RangeCheck.prototype:CreateFrame(redraw)
 
 	self.frame:SetScale(self.moduleSettings.scale)
 	self.frame:SetFrameStrata("BACKGROUND")
-	self.frame:SetWidth(100)
+	self.frame:SetWidth(200)
 	self.frame:SetHeight(32)
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "TOP", self.moduleSettings.hpos, self.moduleSettings.vpos)

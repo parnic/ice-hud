@@ -17,8 +17,6 @@ function GlobalCoolDown.prototype:Enable(core)
 
 	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "CooldownStateChanged")
 
-	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
-	self.frame.bg:SetVertexColor(r, g, b, 0.6)
 	self:Show(false)
 
 	self.frame:SetFrameStrata("TOOLTIP")
@@ -73,11 +71,12 @@ end
 function GlobalCoolDown.prototype:CooldownStateChanged()
 	local start, dur = GetSpellCooldown(self:GetSpellId())
 
-	if dur ~= nil and dur > 0 and dur <= 1.5 then
+	if start and dur ~= nil and dur > 0 and dur <= 1.5 then
+		local bRestart = not self.startTime or start > self.startTime + dur
 		self.startTime = start
 		self.duration = dur
 
-		if self.CurrScale < 0.01 or self.CurrScale == 1 then
+		if bRestart then
 			self:SetScale(1, true)
 			self.LastScale = 1
 			self.DesiredScale = 0
@@ -101,6 +100,14 @@ function GlobalCoolDown.prototype:MyOnUpdate()
 		and self.startTime + self.duration <= GetTime() then
 		self:Show(false)
 	end
+end
+
+function GlobalCoolDown.prototype:CreateFrame()
+	GlobalCoolDown.super.prototype.CreateFrame(self)
+
+	self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
+	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
+	self.frame.bg:SetVertexColor(r, g, b, 0.6)
 end
 
 -- Load us up
