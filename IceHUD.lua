@@ -1049,8 +1049,9 @@ function IceHUD:InitLDB()
 		local ldbButton = LDB:NewDataObject("IceHUD", {
 			type = "launcher",
 			text = "IceHUD",
+			label = "IceHUD",
 			icon = "Interface\\Icons\\Spell_Frost_Frost",
-			OnClick = function(_, msg)
+			OnClick = function(button, msg)
 				if not (UnitAffectingCombat("player")) then
 					IceHUD:OpenConfig()
 				else
@@ -1061,6 +1062,13 @@ function IceHUD:InitLDB()
 
 		if icon then
 			icon:Register("IceHUD", ldbButton, self.db.profile.minimap)
+		end
+
+		if ldbButton then
+			function ldbButton:OnTooltipShow()
+				self:AddLine("IceHUD @project-version@")
+				self:AddLine("Click to open IceHUD options.", 1, 1, 1)
+			end
 		end
 	end
 end
