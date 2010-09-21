@@ -25,7 +25,6 @@ IceCore.prototype.defaults = {}
 IceCore.prototype.settings = nil
 IceCore.prototype.IceHUDFrame = nil
 IceCore.prototype.updatees = {}
-IceCore.prototype.updatee_count = 0
 IceCore.prototype.update_elapsed = 0
 IceCore.prototype.elements = {}
 IceCore.prototype.enabled = nil
@@ -295,6 +294,13 @@ function IceCore.prototype:Disable(userToggle)
 
 	self.IceHUDFrame:Hide()
 	self:EmptyUpdates()
+
+	for i=#self.elements, 1, -1 do
+		if self.elements[i].moduleSettings.customBarType ~= nil then
+			table.remove(self.elements, i)
+		end
+	end
+
 	self.enabled = false
 end
 
@@ -661,8 +667,9 @@ function IceCore.prototype:SetUpdatePeriod(period)
 end
 
 -- For elements that want to receive updates even when hidden
-function IceCore.HandleUpdates(frame, elapsed)
+function IceCore.HandleUpdates()
 	local update_period = IceHUD.IceCore:UpdatePeriod()
+	local elapsed = 1 / GetFramerate()
 	IceCore.prototype.update_elapsed = IceCore.prototype.update_elapsed + elapsed
 	if (IceCore.prototype.update_elapsed > update_period) then
 		for frame, func in pairs(IceCore.prototype.updatees)
@@ -678,23 +685,18 @@ function IceCore.HandleUpdates(frame, elapsed)
 end
 
 function IceCore.prototype:RequestUpdates(frame, func)
-	if self.updatees[frame] then
-		if not func then
-			self.updatee_count = self.updatee_count - 1
-		end
-	else
-		if func then
-			self.updatee_count = self.updatee_count + 1
-		end
+	self.updatees[frame] = func
+
+	local count = 0
+	for k,v in pairs(self.updatees) do
+		count = count + 1
 	end
 
-	if (self.updatee_count == 0) then
+	if (count == 0) then
 		self.IceHUDFrame:SetScript("OnUpdate", nil)
 	else
 		self.IceHUDFrame:SetScript("OnUpdate", IceCore.HandleUpdates)
 	end
-
-	self.updatees[frame] = func
 end
 
 function IceCore.prototype:IsUpdateSubscribed(frame)
@@ -704,7 +706,6 @@ end
 function IceCore.prototype:EmptyUpdates()
 	self.IceHUDFrame:SetScript("OnUpdate", nil)
 	self.updatees = {}
-	self.updatee_count = 0
 end
 
 -------------------------------------------------------------------------------

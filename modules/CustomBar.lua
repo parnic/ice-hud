@@ -33,7 +33,7 @@ function IceCustomBar.prototype:Enable(core)
 	self:Show(true)
 
 	self.unit = self.moduleSettings.myUnit
-	self:CheckShouldSubscribe()
+	self:ConditionalSubscribe()
 
 	self:UpdateCustomBar(self.unit)
 
@@ -45,12 +45,16 @@ function IceCustomBar.prototype:Enable(core)
 	end
 end
 
-function IceCustomBar.prototype:CheckShouldSubscribe()
-	if self.unit == "focustarget" or self.unit == "pettarget" then
+function IceCustomBar.prototype:ConditionalSubscribe()
+	if self:ShouldAlwaysSubscribe() then
 		IceHUD.IceCore:RequestUpdates(self.frame, function() self:UpdateCustomBar() end)
 	else
 		IceHUD.IceCore:RequestUpdates(self.frame, nil)
 	end
+end
+
+function IceCustomBar.prototype:ShouldAlwaysSubscribe()
+	return self.unit == "focustarget" or self.unit == "pettarget"
 end
 
 function IceCustomBar.prototype:TargetChanged()
@@ -185,7 +189,7 @@ function IceCustomBar.prototype:GetOptions()
 		set = function(info, v)
 			self.moduleSettings.myUnit = info.option.values[v]
 			self.unit = info.option.values[v]
-			self:CheckShouldSubscribe()
+			self:ConditionalSubscribe()
 			self:Redraw()
 			self:UpdateCustomBar(self.unit)
 			IceHUD:NotifyOptionsChange()
@@ -536,9 +540,8 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 	end
 
 	if self.auraEndTime ~= nil and (self.auraEndTime == 0 or self.auraEndTime >= now) then
-		if not fromUpdate and not IceHUD.IceCore:IsUpdateSubscribed(self.frame) then
+		if not self:ShouldAlwaysSubscribe() and not fromUpdate and not IceHUD.IceCore:IsUpdateSubscribed(self.frame) then
 			IceHUD.IceCore:RequestUpdates(self.frame, function() self:UpdateCustomBar(self.unit, true) end)
-			--self.frame:SetScript("OnUpdate", function() self:UpdateCustomBar(self.unit, true) end)
 		end
 
 		self:Show(true)
@@ -555,7 +558,9 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 	else
 		self:UpdateBar(0, "undef")
 		self:Show(false)
-		self.frame:SetScript("OnUpdate", nil)
+		if not self:ShouldAlwaysSubscribe() then
+			IceHUD.IceCore:RequestUpdates(self.frame, nil)
+		end
 	end
 
 	if (remaining ~= nil) then

@@ -61,6 +61,12 @@ function IceBarElement.prototype:Enable()
 	self:RegisterFontStrings()
 end
 
+function IceBarElement.prototype:Disable(core)
+	IceBarElement.super.prototype.Disable(self, core)
+
+	self.frame:SetScript("OnUpdate", nil)
+end
+
 
 function IceBarElement.prototype:RegisterFontStrings()
 	if DogTag ~= nil and self.moduleSettings ~= nil and self.moduleSettings.usesDogTagStrings then
