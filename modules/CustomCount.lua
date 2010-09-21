@@ -1,6 +1,7 @@
 IceCustomCount = IceCore_CreateClass(IceElement)
 
 IceCustomCount.prototype.countSize = 20
+IceCustomCount.prototype.lastPoints = 0
 
 local validUnits = {"player", "target", "focus", "pet", "vehicle", "targettarget", "main hand weapon", "off hand weapon"}
 local buffOrDebuff = {"buff", "debuff"}
@@ -543,6 +544,8 @@ function IceCustomCount.prototype:UpdateCustomCount()
 			self.unit, self.moduleSettings.auraName, self.moduleSettings.onlyMine, true)
 	end
 
+	self.lastPoints = points
+
 	if (points == 0) then
 		points = nil
 	end
@@ -572,4 +575,10 @@ function IceCustomCount.prototype:UpdateCustomCount()
 			end
 		end
 	end
+
+	self:Update()
+end
+
+function IceCustomCount.prototype:UseTargetAlpha(scale)
+	return self.lastPoints ~= nil and self.lastPoints > 0
 end
