@@ -863,6 +863,20 @@ StaticPopupDialogs["ICEHUD_CHANGED_DOGTAG"] = {
 	hideOnEscape = 0
 }
 
+StaticPopupDialogs["ICEHUD_CHANGED_PROFILE_COMBAT"] = {
+	text = "You have changed IceHUD profiles while in combat. This can cause problems due to Blizzard's secure frame policy. You may need to reload your UI to repair IceHUD.",
+	button1 = OKAY,
+	OnShow = function(self)
+		self:SetFrameStrata("TOOLTIP")
+	end,
+	OnHide = function(self)
+		self:SetFrameStrata("DIALOG")
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 0
+}
+
 function IceHUD:OnInitialize()
 	self:SetDebugging(false)
 	self:Debug("IceHUD:OnInitialize()")
@@ -892,7 +906,13 @@ function IceHUD:OnInitialize()
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("IceHUD", self.options, "/icehudcl")
 
 	ConfigDialog:SetDefaultSize("IceHUD", 750, 650)
-	self:RegisterChatCommand("icehud", function() IceHUD:OpenConfig() end)
+	self:RegisterChatCommand("icehud", function()
+			if not UnitAffectingCombat("player") then
+				IceHUD:OpenConfig()
+			else
+				DEFAULT_CHAT_FRAME:AddMessage("|cff8888ffIceHUD|r: Combat lockdown restriction. Leave combat and try again.")
+			end
+		end)
 	self:RegisterChatCommand("rl", function() ReloadUI() end)
 
 	self:SyncSettingsVersions()
@@ -1052,7 +1072,7 @@ function IceHUD:InitLDB()
 			label = "IceHUD",
 			icon = "Interface\\Icons\\Spell_Frost_Frost",
 			OnClick = function(button, msg)
-				if not (UnitAffectingCombat("player")) then
+				if not UnitAffectingCombat("player") then
 					IceHUD:OpenConfig()
 				else
 					DEFAULT_CHAT_FRAME:AddMessage("|cff8888ffIceHUD|r: Combat lockdown restriction. Leave combat and try again.")
@@ -1174,6 +1194,9 @@ function IceHUD:OnDisable()
 end
 
 function IceHUD:PreProfileChanged(db)
+	if UnitAffectingCombat("player") then
+		StaticPopup_Show("ICEHUD_CHANGED_PROFILE_COMBAT")
+	end
 	self.IceCore:Disable()
 end
 

@@ -98,7 +98,7 @@ function IceElement.prototype:Disable(core)
 	if (not core) then
 		self.moduleSettings.enabled = false
 	end
-	self:Show(false)
+	self:Show(false, true)
 	self:UnregisterAllEvents()
 end
 
