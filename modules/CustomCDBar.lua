@@ -32,9 +32,9 @@ function IceCustomCDBar.prototype:Enable(core)
 		self.moduleSettings.auraIconScale = 1
 	end
 
+	self:EnableUpdates(false)
 	self:UpdateCustomBar()
 	self:UpdateIcon()
-	self:EnableUpdates(false)
 
 	if self.moduleSettings.auraIconXOffset == nil then
 		self.moduleSettings.auraIconXOffset = 40

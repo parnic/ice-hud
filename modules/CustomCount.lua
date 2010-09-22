@@ -388,6 +388,7 @@ function IceCustomCount.prototype:Enable(core)
 	self.unit = self.moduleSettings.auraTarget
 
 	self:CreateCustomFrame(true)
+	self:UpdateCustomCount()
 end
 
 
