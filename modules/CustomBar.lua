@@ -64,6 +64,8 @@ function IceCustomBar.prototype:TargetChanged()
 end
 
 function IceCustomBar.prototype:Disable(core)
+	IceHUD.IceCore:RequestUpdates(self.frame, nil)
+
 	IceCustomBar.super.prototype.Disable(self, core)
 end
 

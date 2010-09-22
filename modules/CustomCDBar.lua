@@ -55,6 +55,8 @@ end
 
 
 function IceCustomCDBar.prototype:Disable(core)
+	IceHUD.IceCore:RequestUpdates(self.frame, nil)
+
 	IceCustomCDBar.super.prototype.Disable(self, core)
 end
 
