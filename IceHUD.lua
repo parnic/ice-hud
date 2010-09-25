@@ -901,7 +901,16 @@ function IceHUD:OnInitialize()
 	self:GenerateModuleOptions(true)
 	self.options.args.colors.args = self.IceCore:GetColorOptions()
 	self.options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+	-- Add dual-spec support
+	local LibDualSpec = LibStub('LibDualSpec-1.0', true)
+	if LibDualSpec then
+		LibDualSpec:EnhanceDatabase(self.db, "IceHUD")
+		LibDualSpec:EnhanceOptions(self.options.args.profiles, self.db)
+	end
+
+	--@debug@
 	self:SetupProfileImportButtons()
+	--@end-debug@
 
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("IceHUD", self.options, "/icehudcl")
 
