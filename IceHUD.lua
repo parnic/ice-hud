@@ -9,7 +9,7 @@ local AceSerializer = LibStub("AceSerializer-3.0", 1)
 
 local pendingModuleLoads = {}
 local bReadyToRegisterModules = false
-local lastCustomModule = 1
+local lastCustomModule = "Bar"
 
 IceHUD.CurrTagVersion = 3
 IceHUD.debugging = false
@@ -17,7 +17,7 @@ IceHUD.debugging = false
 IceHUD.WowVer = select(4, GetBuildInfo())
 
 IceHUD.validBarList = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc", "BloodGlaives", "ArcHUD", "FangRune" }
-IceHUD.validCustomModules = {"Buff/Debuff watcher", "Buff/Debuff stack counter", "Ability cooldown bar", "Health bar", "Mana bar"}
+IceHUD.validCustomModules = {Bar="Buff/Debuff watcher", Counter="Buff/Debuff stack counter", CD="Ability cooldown bar", Health="Health bar", Mana="Mana bar"}
 
 local function deepcopy(object)
 	local lookup_table = {}
@@ -36,6 +36,8 @@ local function deepcopy(object)
 	end
 	return _copy(object)
 end
+
+IceHUD.deepcopy = deepcopy
 
 IceHUD.Location = "Interface\\AddOns\\IceHUD"
 IceHUD.options =
@@ -599,30 +601,7 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 			name = "Create",
 			desc = "Creates the selected custom module",
 			func = function()
-				local v = lastCustomModule
-				local newMod = nil
-				local popupMsg
-				if v == 1 then -- custom bar
-					newMod = IceCustomBar:new()
-					popupMsg = "ICEHUD_CUSTOM_BAR_CREATED"
-				elseif v == 2 then -- custom counter
-					newMod = IceCustomCount:new()
-					popupMsg = "ICEHUD_CUSTOM_COUNTER_CREATED"
-				elseif v == 3 then -- cooldown bar
-					newMod = IceCustomCDBar:new()
-					popupMsg = "ICEHUD_CUSTOM_CD_CREATED"
-				elseif v == 4 then -- custom health bar
-					newMod = IceCustomHealth:new()
-					popupMsg = "ICEHUD_CUSTOM_HEALTH_CREATED"
-				elseif v == 5 then -- custom mana bar
-					newMod = IceCustomMana:new()
-					popupMsg = "ICEHUD_CUSTOM_MANA_CREATED"
-				end
-				if newMod ~= nil then
-					IceHUD.IceCore:AddNewDynamicModule(newMod)
-					ConfigDialog:SelectGroup("IceHUD", "modules", newMod.elementName)
-					StaticPopup_Show(popupMsg)
-				end
+				IceHUD:CreateCustomModuleAndNotify(lastCustomModule)
 			end,
 			order = 94.6,
 		},
@@ -1290,5 +1269,32 @@ function IceHUD:UpdateMedia(event, mediatype, key)
 		if self.TargetOfTarget and self.TargetOfTarget.enabled and key == self.TargetOfTarget.moduleSettings.texture then
 			self.TargetOfTarget:Redraw()
 		end
+	end
+end
+
+function IceHUD:CreateCustomModuleAndNotify(moduleKey, settings)
+	local newMod = nil
+	local popupMsg
+	if moduleKey == "Bar" then -- custom bar
+		newMod = IceCustomBar:new()
+		popupMsg = "ICEHUD_CUSTOM_BAR_CREATED"
+	elseif moduleKey == "Counter" then -- custom counter
+		newMod = IceCustomCount:new()
+		popupMsg = "ICEHUD_CUSTOM_COUNTER_CREATED"
+	elseif moduleKey == "CD" then -- cooldown bar
+		newMod = IceCustomCDBar:new()
+		popupMsg = "ICEHUD_CUSTOM_CD_CREATED"
+	elseif moduleKey == "Health" then -- custom health bar
+		newMod = IceCustomHealth:new()
+		popupMsg = "ICEHUD_CUSTOM_HEALTH_CREATED"
+	elseif moduleKey == "Mana" then -- custom mana bar
+		newMod = IceCustomMana:new()
+		popupMsg = "ICEHUD_CUSTOM_MANA_CREATED"
+	end
+
+	if newMod ~= nil then
+		IceHUD.IceCore:AddNewDynamicModule(newMod, settings)
+		ConfigDialog:SelectGroup("IceHUD", "modules", newMod.elementName)
+		StaticPopup_Show(popupMsg)
 	end
 end

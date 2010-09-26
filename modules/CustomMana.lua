@@ -53,6 +53,16 @@ function IceCustomMana.prototype:GetOptions()
 		order = 20.1,
 	}
 
+	opts["duplicateme"] = {
+		type = 'execute',
+		name = 'Duplicate me',
+		desc = 'Creates a new module of this same type and with all the same settings.',
+		func = function()
+			IceHUD:CreateCustomModuleAndNotify(self.moduleSettings.customBarType, self.moduleSettings)
+		end,
+		order = 20.2,
+	}
+
 	opts["name"] = {
 		type = 'input',
 		name = 'Bar name',

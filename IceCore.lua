@@ -195,11 +195,13 @@ end
 function IceCore.prototype:AddNewDynamicModule(module, hasSettings)
 	if not hasSettings then
 		self.settings.modules[module.elementName] = module:GetDefaultSettings()
+	elseif type(hasSettings) == "table" then
+		self.settings.modules[module.elementName] = IceHUD.deepcopy(hasSettings)
 	end
 
 	module:SetDatabase(self.settings)
 
-	if not hasSettings then
+	if not hasSettings or type(hasSettings) == "table" then
 		local numExisting = self:GetNumCustomModules(module, module:GetDefaultSettings().customBarType)
 		self:RenameDynamicModule(module, "MyCustom"..module:GetDefaultSettings().customBarType..(numExisting+1))
 	end
