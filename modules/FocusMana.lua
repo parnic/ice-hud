@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local FocusMana = IceCore_CreateClass(IceUnitBar)
 
 
@@ -105,8 +106,8 @@ function FocusMana.prototype:GetOptions()
 
 	opts["scaleManaColor"] = {
 		type = "toggle",
-		name = "Color bar by mana %",
-		desc = "Colors the mana bar from MaxManaColor to MinManaColor based on current mana %",
+		name = L["Color bar by mana %"],
+		desc = L["Colors the mana bar from MaxManaColor to MinManaColor based on current mana %"],
 		get = function()
 			return self.moduleSettings.scaleManaColor
 		end,

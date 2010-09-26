@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local MaelstromCount = IceCore_CreateClass(IceElement)
 
 MaelstromCount.prototype.maelstromSize = 20
@@ -21,8 +22,8 @@ function MaelstromCount.prototype:GetOptions()
 
 	opts["vpos"] = {
 		type = "range",
-		name = "Vertical Position",
-		desc = "Vertical Position",
+		name = L["Vertical Position"],
+		desc = L["Vertical Position"],
 		get = function()
 			return self.moduleSettings.vpos
 		end,
@@ -41,8 +42,8 @@ function MaelstromCount.prototype:GetOptions()
 
 	opts["maelstromFontSize"] = {
 		type = "range",
-		name = "Maelstrom Count Font Size",
-		desc = "Maelstrom Count Font Size",
+		name = L["Maelstrom Count Font Size"],
+		desc = L["Maelstrom Count Font Size"],
 		get = function()
 			return self.moduleSettings.maelstromFontSize
 		end,
@@ -61,8 +62,8 @@ function MaelstromCount.prototype:GetOptions()
 
 	opts["maelstromMode"] = {
 		type = 'select',
-		name = "Display Mode",
-		desc = "Show graphical or numeric maelstroms",
+		name = L["Display Mode"],
+		desc = L["Show graphical or numeric maelstroms"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.maelstromMode)
 		end,
@@ -81,8 +82,8 @@ function MaelstromCount.prototype:GetOptions()
 
 	opts["maelstromGap"] = {
 		type = 'range',
-		name = 'Maelstrom gap',
-		desc = 'Spacing between each maelstrom point (only works for graphical mode)',
+		name = L["Maelstrom gap"],
+		desc = L["Spacing between each maelstrom point (only works for graphical mode)"],
 		min = 0,
 		max = 100,
 		step = 1,
@@ -101,8 +102,8 @@ function MaelstromCount.prototype:GetOptions()
 
 	opts["gradient"] = {
 		type = "toggle",
-		name = "Change color",
-		desc = "1 maelstrom: yellow, 5 maelstroms: red",
+		name = L["Change color"],
+		desc = L["1 maelstrom: yellow, 5 maelstroms: red"],
 		get = function()
 			return self.moduleSettings.gradient
 		end,

@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local GlobalCoolDown = IceCore_CreateClass(IceBarElement)
 
 -- Constructor --

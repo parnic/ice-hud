@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local SML = LibStub("LibSharedMedia-3.0")
 
 IceElement = IceCore_CreateClass()
@@ -118,8 +119,8 @@ function IceElement.prototype:GetOptions()
 
 	opts["enabled"] = {
 		type = "toggle",
-		name = "Enabled",
-		desc = "Enable/disable module",
+		name = L["Enabled"],
+		desc = L["Enable/disable module"],
 		get = function()
 			return self.moduleSettings.enabled
 		end,
@@ -136,15 +137,15 @@ function IceElement.prototype:GetOptions()
 
 	opts["headerVisibility"] = {
 		type = 'header',
-		name = 'Visibility Settings',
+		name = L["Visibility Settings"],
 		order = 27
 	}
 
 	opts["scale"] =
 	{
 		type = 'range',
-		name = "Scale",
-		desc = 'Scale of the element',
+		name = L["Scale"],
+		desc = L["Scale of the element"],
 		min = 0.2,
 		max = 2,
 		step = 0.1,
@@ -166,8 +167,8 @@ function IceElement.prototype:GetOptions()
 	opts["alwaysFullAlpha"] =
 	{
 		type = 'toggle',
-		name = 'Always show at 100% alpha',
-		desc = 'Whether to always show this module at 100% alpha or not',
+		name = L["Always show at 100% alpha"],
+		desc = L["Whether to always show this module at 100% alpha or not"],
 		width = 'double',
 		get = function()
 			return self.moduleSettings.alwaysFullAlpha

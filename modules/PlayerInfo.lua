@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local PlayerInfo = IceCore_CreateClass(IceTargetInfo)
 
 local EPSILON = 0.5
@@ -28,8 +29,8 @@ function PlayerInfo.prototype:GetOptions()
 
 	opts["hideBlizz"] = {
 		type = "toggle",
-		name = "Hide Blizzard Buffs",
-		desc = "Hides Blizzard's default buffs frame and disables all events related to it",
+		name = L["Hide Blizzard Buffs"],
+		desc = L["Hides Blizzard's default buffs frame and disables all events related to it"],
 		get = function()
 			return self.moduleSettings.hideBlizz
 		end,

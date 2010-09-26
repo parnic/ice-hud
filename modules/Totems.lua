@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local Totems = IceCore_CreateClass(IceElement)
 
 -- the below block is copied from TotemFrame.lua
@@ -46,8 +47,8 @@ function Totems.prototype:GetOptions()
 
 	opts["vpos"] = {
 		type = "range",
-		name = "Vertical Position",
-		desc = "Vertical Position",
+		name = L["Vertical Position"],
+		desc = L["Vertical Position"],
 		get = function()
 			return self.moduleSettings.vpos
 		end,
@@ -66,8 +67,8 @@ function Totems.prototype:GetOptions()
 
 	opts["hpos"] = {
 		type = "range",
-		name = "Horizontal Position",
-		desc = "Horizontal Position",
+		name = L["Horizontal Position"],
+		desc = L["Horizontal Position"],
 		get = function()
 			return self.moduleSettings.hpos
 		end,
@@ -86,8 +87,8 @@ function Totems.prototype:GetOptions()
 --[[
 	opts["hideBlizz"] = {
 		type = "toggle",
-		name = "Hide Blizzard Frame",
-		desc = "Hides Blizzard Rune frame and disables all events related to it",
+		name = L["Hide Blizzard Frame"],
+		desc = L["Hides Blizzard Rune frame and disables all events related to it"],
 		get = function()
 			return self.moduleSettings.hideBlizz
 		end,
@@ -107,8 +108,8 @@ function Totems.prototype:GetOptions()
 --]]
 	opts["displayMode"] = {
 		type = 'select',
-		name = 'Totem orientation',
-		desc = 'Whether the totems should draw side-by-side or on top of one another',
+		name = L["Totem orientation"],
+		desc = L["Whether the totems should draw side-by-side or on top of one another"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.displayMode)
 		end,
@@ -125,8 +126,8 @@ function Totems.prototype:GetOptions()
 --[[
 	opts["cooldownMode"] = {
 		type = 'select',
-		name = 'Totem cooldown mode',
-		desc = 'Choose whether the totems use a cooldown-style wipe or simply an alpha fade to show availability.',
+		name = L["Totem cooldown mode"],
+		desc = L["Choose whether the totems use a cooldown-style wipe or simply an alpha fade to show availability."],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.cooldownMode)
 		end,
@@ -143,8 +144,8 @@ function Totems.prototype:GetOptions()
 ]]--
 	opts["totemGap"] = {
 		type = 'range',
-		name = 'Totem gap',
-		desc = 'Spacing between each totem (only works for graphical mode)',
+		name = L["Totem gap"],
+		desc = L["Spacing between each totem (only works for graphical mode)"],
 		min = 0,
 		max = 100,
 		step = 1,

@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceHUD = LibStub("AceAddon-3.0"):NewAddon("IceHUD", "AceConsole-3.0")
 
 local SML = LibStub("LibSharedMedia-3.0")
@@ -43,21 +44,21 @@ IceHUD.Location = "Interface\\AddOns\\IceHUD"
 IceHUD.options =
 {
 	type = 'group',
-	name = "IceHUD",
-	desc = "IceHUD",
+	name = L["IceHUD"],
+	desc = L["IceHUD"],
 	icon = "Interface\\Icons\\Spell_Frost_Frost",
 	args =
 	{
 		headerGeneral = {
 			type = 'header',
-			name = "General Settings",
+			name = L["General Settings"],
 			order = 10
 		},
 
 		faq = {
 			type = 'group',
-			name = 'FAQs',
-			desc = 'Answers to questions that are frequently asked.',
+			name = L["FAQs"],
+			desc = L["Answers to questions that are frequently asked."],
 			order = 1,
 			args = {
 				test = {
@@ -104,14 +105,14 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 		positioningSettings = {
 			type = 'group',
-			name = 'Positioning Settings',
-			desc = 'Settings related to positioning and alpha',
+			name = L["Positioning Settings"],
+			desc = L["Settings related to positioning and alpha"],
 			order = 11,
 			args = {
 				vpos = {
 					type = 'range',
-					name = 'Vertical position',
-					desc = 'Vertical position',
+					name = L["Vertical position"],
+					desc = L["Vertical position"],
 					get = function()
 						return IceHUD.IceCore:GetVerticalPos()
 					end,
@@ -126,8 +127,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				hpos = {
 					type = 'range',
-					name = 'Horizontal position',
-					desc = 'Horizontal position (for you dual screen freaks)',
+					name = L["Horizontal position"],
+					desc = L["Horizontal position (for you dual screen freaks)"],
 					get = function()
 						return IceHUD.IceCore:GetHorizontalPos()
 					end,
@@ -142,8 +143,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				gap = {
 					type = 'range',
-					name = 'Gap',
-					desc = 'Distance between the left and right bars',
+					name = L["Gap"],
+					desc = L["Distance between the left and right bars"],
 					get = function()
 						return IceHUD.IceCore:GetGap()
 					end,
@@ -158,8 +159,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				scale = {
 					type = 'range',
-					name = 'Scale',
-					desc = 'HUD scale',
+					name = L["Scale"],
+					desc = L["HUD scale"],
 					get = function()
 						return IceHUD.IceCore:GetScale()
 					end,
@@ -178,20 +179,20 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 		alphaSettings = {
 			type = 'group',
-			name = 'Transparency Settings',
-			desc = 'Settings for bar transparencies',
+			name = L["Transparency Settings"],
+			desc = L["Settings for bar transparencies"],
 			order = 12,
 			args = {
 				headerAlpha = {
 					type = 'header',
-					name = "Bar Alpha",
+					name = L["Bar Alpha"],
 					order = 10
 				},
 
 				alphaic = {
 					type = 'range',
-					name = 'Alpha in combat',
-					desc = 'Bar alpha In Combat',
+					name = L["Alpha in combat"],
+					desc = L["Bar alpha In Combat"],
 					get = function()
 						return IceHUD.IceCore:GetAlpha("IC")
 					end,
@@ -207,8 +208,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				alphaooc = {
 					type = 'range',
-					name = 'Alpha out of combat',
-					desc = 'Bar alpha Out Of Combat without target',
+					name = L["Alpha out of combat"],
+					desc = L["Bar alpha Out Of Combat without target"],
 					get = function()
 						return IceHUD.IceCore:GetAlpha("OOC")
 					end,
@@ -224,8 +225,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				alphaTarget = {
 					type = 'range',
-					name = 'Alpha OOC and Target',
-					desc = 'Bar alpha Out Of Combat with target accuired (takes precedence over Not Full)',
+					name = L["Alpha OOC and Target"],
+					desc = L["Bar alpha Out Of Combat with target accuired (takes precedence over Not Full)"],
 					get = function()
 						return IceHUD.IceCore:GetAlpha("Target")
 					end,
@@ -241,8 +242,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				alphaNotFull = {
 					type = 'range',
-					name = 'Alpha OOC and not full',
-					desc = 'Bar alpha Out Of Combat with target accuired or bar not full (Target takes precedence over this)',
+					name = L["Alpha OOC and not full"],
+					desc = L["Bar alpha Out Of Combat with target accuired or bar not full (Target takes precedence over this)"],
 					get = function()
 						return IceHUD.IceCore:GetAlpha("NotFull")
 					end,
@@ -259,14 +260,14 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				headerAlphaBackground = {
 					type = 'header',
-					name = "Background Alpha",
+					name = L["Background Alpha"],
 					order = 20
 				},
 
 				alphaicbg = {
 					type = 'range',
-					name = 'BG Alpha in combat',
-					desc = 'Background alpha for bars IC',
+					name = L["BG Alpha in combat"],
+					desc = L["Background alpha for bars IC"],
 					get = function()
 						return IceHUD.IceCore:GetAlphaBG("IC")
 					end,
@@ -282,8 +283,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				alphaoocbg = {
 					type = 'range',
-					name = 'BG Alpha out of combat',
-					desc = 'Background alpha for bars OOC without target',
+					name = L["BG Alpha out of combat"],
+					desc = L["Background alpha for bars OOC without target"],
 					get = function()
 						return IceHUD.IceCore:GetAlphaBG("OOC")
 					end,
@@ -299,8 +300,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				alphaTargetbg = {
 					type = 'range',
-					name = 'BG Alpha OOC and Target',
-					desc = 'Background alpha for bars OOC and target accuired (takes precedence over Not Full)',
+					name = L["BG Alpha OOC and Target"],
+					desc = L["Background alpha for bars OOC and target accuired (takes precedence over Not Full)"],
 					get = function()
 						return IceHUD.IceCore:GetAlphaBG("Target")
 					end,
@@ -316,8 +317,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				alphaNotFullbg = {
 					type = 'range',
-					name = 'BG Alpha OOC and not Full',
-					desc = 'Background alpha for bars OOC and bar not full (Target takes precedence over this)',
+					name = L["BG Alpha OOC and not Full"],
+					desc = L["Background alpha for bars OOC and bar not full (Target takes precedence over this)"],
 					get = function()
 						return IceHUD.IceCore:GetAlphaBG("NotFull")
 					end,
@@ -334,14 +335,14 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				headerBarAdvanced = {
 					type = 'header',
-					name = "Other",
+					name = L["Other"],
 					order = 30
 				},
 
 				backgroundToggle = {
 					type = "toggle",
-					name = "Contextual Background",
-					desc = "Toggles contextual background coloring",
+					name = L["Contextual Background"],
+					desc = L["Toggles contextual background coloring"],
 					get = function()
 						return IceHUD.IceCore:GetBackgroundToggle()
 					end,
@@ -353,8 +354,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				backgroundColor = {
 					type = 'color',
-					name = 'Background Color',
-					desc = 'Background Color',
+					name = L["Background Color"],
+					desc = L["Background Color"],
 					get = function()
 						return IceHUD.IceCore:GetBackgroundColor()
 					end,
@@ -369,8 +370,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 		textSettings = {
 			type = 'select',
-			name =  'Font',
-			desc = 'IceHUD Font',
+			name = L["Font"],
+			desc = L["IceHUD Font"],
 			order = 19,
 			get = function(info)
 				return IceHUD:GetSelectValue(info, IceHUD.IceCore:GetFontFamily())
@@ -384,14 +385,14 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 		barSettings = {
 			type = 'group',
-			name = 'Bar Settings',
-			desc = 'Settings related to bars',
+			name = L["Bar Settings"],
+			desc = L["Settings related to bars"],
 			order = 20,
 			args = {
 				barPresets = {
 					type = 'select',
-					name = 'Presets',
-					desc = 'Predefined settings for different bars',
+					name = L["Presets"],
+					desc = L["Predefined settings for different bars"],
 					get = function(info)
 						return IceHUD:GetSelectValue(info, IceHUD.IceCore:GetBarPreset())
 					end,
@@ -405,14 +406,14 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				headerBarAdvanced = {
 					type = 'header',
-					name = "Advanced Bar Settings",
+					name = L["Advanced Bar Settings"],
 					order = 10
 				},
 
 				barTexture = {
 					type = 'select',
-					name = 'Bar Texture',
-					desc = 'IceHUD Bar Texture',
+					name = L["Bar Texture"],
+					desc = L["IceHUD Bar Texture"],
 					get = function(info)
 						return IceHUD:GetSelectValue(info, IceHUD.IceCore:GetBarTexture())
 					end,
@@ -425,8 +426,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				barWidth = {
 					type = 'range',
-					name = 'Bar Width',
-					desc = 'Bar texture width (not the actual bar!)',
+					name = L["Bar Width"],
+					desc = L["Bar texture width (not the actual bar!)"],
 					get = function()
 						return IceHUD.IceCore:GetBarWidth()
 					end,
@@ -441,8 +442,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				barHeight = {
 					type = 'range',
-					name = 'Bar Height',
-					desc = 'Bar texture height (not the actual bar!)',
+					name = L["Bar Height"],
+					desc = L["Bar texture height (not the actual bar!)"],
 					get = function()
 						return IceHUD.IceCore:GetBarHeight()
 					end,
@@ -457,8 +458,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				barProportion = {
 					type = 'range',
-					name = 'Bar Proportion',
-					desc = 'Determines the bar width compared to the whole texture width',
+					name = L["Bar Proportion"],
+					desc = L["Determines the bar width compared to the whole texture width"],
 					get = function()
 						return IceHUD.IceCore:GetBarProportion()
 					end,
@@ -474,8 +475,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				barSpace = {
 					type = 'range',
-					name = 'Bar Space',
-					desc = 'Space between bars on the same side',
+					name = L["Bar Space"],
+					desc = L["Space between bars on the same side"],
 					get = function()
 						return IceHUD.IceCore:GetBarSpace()
 					end,
@@ -490,8 +491,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				bgBlendMode = {
 					type = 'select',
-					name = 'Bar Background Blend Mode',
-					desc = 'IceHUD Bar Background Blend mode',
+					name = L["Bar Background Blend Mode"],
+					desc = L["IceHUD Bar Background Blend mode"],
 					get = function(info)
 						return IceHUD.IceCore:GetBarBgBlendMode()
 					end,
@@ -504,8 +505,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 				barBlendMode = {
 					type = 'select',
-					name = 'Bar Blend Mode',
-					desc = 'IceHUD Bar Blend mode',
+					name = L["Bar Blend Mode"],
+					desc = L["IceHUD Bar Blend mode"],
 					get = function(info)
 						return IceHUD.IceCore:GetBarBlendMode()
 					end,
@@ -521,24 +522,24 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 		modules = {
 			type='group',
-			desc = 'Module configuration options',
-			name = 'Module Settings',
+			desc = L["Module configuration options"],
+			name = L["Module Settings"],
 			args = {},
 			order = 41
 		},
 
 		colors = {
 			type='group',
-			desc = 'Module color configuration options',
-			name = 'Colors',
+			desc = L["Module color configuration options"],
+			name = L["Colors"],
 			args = {},
 			order = 42
 		},
 
 		enabled = {
 			type = "toggle",
-			name = "Enabled",
-			desc = "Enable/disable IceHUD",
+			name = L["Enabled"],
+			desc = L["Enable/disable IceHUD"],
 			get = function()
 				return IceHUD.IceCore:IsEnabled()
 			end,
@@ -554,8 +555,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 		debug = {
 			type = "toggle",
-			name = "Debugging",
-			desc = "Enable/disable debug messages",
+			name = L["Debugging"],
+			desc = L["Enable/disable debug messages"],
 			get = function()
 				return IceHUD.IceCore:GetDebug()
 			end,
@@ -584,8 +585,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 		customModuleSelect = {
 			type = "select",
-			name = "Create custom module",
-			desc = "Select a custom module that you want to create here, then press the 'Create' button.",
+			name = L["Create custom module"],
+			desc = L["Select a custom module that you want to create here, then press the 'Create' button."],
 			get = function(info)
 				return lastCustomModule
 			end,
@@ -598,8 +599,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 		customModuleCreate = {
 			type = "execute",
-			name = "Create",
-			desc = "Creates the selected custom module",
+			name = L["Create"],
+			desc = L["Creates the selected custom module"],
 			func = function()
 				IceHUD:CreateCustomModuleAndNotify(lastCustomModule)
 			end,
@@ -608,8 +609,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 		configMode = {
 			type = 'toggle',
-			name = 'Configuration Mode',
-			desc = "Makes all modules visible so you can see where they're placed and find any that are overlapping.",
+			name = L["Configuration Mode"],
+			desc = L["Makes all modules visible so you can see where they're placed and find any that are overlapping."],
 			get = function()
 				return IceHUD.IceCore:IsInConfigMode()
 			end,
@@ -621,8 +622,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 		useDogTags = {
 			type = 'toggle',
-			name = 'Use Dog Tags',
-			desc = 'Whether or not the addon should use the DogTag library (this will increase the CPU usage of the mod). DogTag controls all text displayed around bars such as health or mana amounts. Type |cffffff78/dog|r to see all DogTag options.\n\nNOTE: after changing this option, you must reload the UI or else bad things happen',
+			name = L["Use Dog Tags"],
+			desc = L["Whether or not the addon should use the DogTag library (this will increase the CPU usage of the mod). DogTag controls all text displayed around bars such as health or mana amounts. Type |cffffff78/dog|r to see all DogTag options.\n\nNOTE: after changing this option, you must reload the UI or else bad things happen"],
 			get = function()
 				return IceHUD.IceCore:ShouldUseDogTags()
 			end,
@@ -638,8 +639,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 		updatePeriod = {
 			type = 'range',
-			name = 'Update Period',
-			desc = 'Time between display updates in seconds',
+			name = L["Update Period"],
+			desc = L["Time between display updates in seconds"],
 			get = function()
 				return IceHUD.IceCore:UpdatePeriod()
 			end,
@@ -654,8 +655,8 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 		showMinimap = {
 			type = 'toggle',
-			name = "Show Minimap Icon",
-			desc = "Whether or not to show an IceHUD icon on the minimap.",
+			name = L["Show Minimap Icon"],
+			desc = L["Whether or not to show an IceHUD icon on the minimap."],
 			get = function(info)
 				return not IceHUD.db.profile.minimap.hide
 			end,
@@ -926,8 +927,8 @@ function IceHUD:SetupProfileImportButtons()
 		AceSerializer:Embed(self)
 		self.options.args.profiles.args.export = {
 			type = 'execute',
-			name = 'Export profile',
-			desc = 'Exports your active profile to something you can copy and paste to another user or use on another account.',
+			name = L["Export profile"],
+			desc = L["Exports your active profile to something you can copy and paste to another user or use on another account."],
 			func = function()
 				local frame = AceGUI:Create("Frame")
 				frame:SetTitle("Profile data")
@@ -967,8 +968,8 @@ function IceHUD:SetupProfileImportButtons()
 
 		self.options.args.profiles.args.import = {
 			type = 'execute',
-			name = 'Import profile',
-			desc = "Imports a profile as exported from another user's IceHUD.",
+			name = L["Import profile"],
+			desc = L["Imports a profile as exported from another user's IceHUD."],
 			func = function()
 				local frame = AceGUI:Create("Frame")
 				frame:SetTitle("Profile data")

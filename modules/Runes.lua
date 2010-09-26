@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local Runes = IceCore_CreateClass(IceElement)
 
 -- blizzard cracks me up. the below block is copied verbatim from RuneFrame.lua ;)
@@ -41,8 +42,8 @@ function Runes.prototype:GetOptions()
 
 	opts["vpos"] = {
 		type = "range",
-		name = "Vertical Position",
-		desc = "Vertical Position",
+		name = L["Vertical Position"],
+		desc = L["Vertical Position"],
 		get = function()
 			return self.moduleSettings.vpos
 		end,
@@ -61,8 +62,8 @@ function Runes.prototype:GetOptions()
 
 	opts["hpos"] = {
 		type = "range",
-		name = "Horizontal Position",
-		desc = "Horizontal Position",
+		name = L["Horizontal Position"],
+		desc = L["Horizontal Position"],
 		get = function()
 			return self.moduleSettings.hpos
 		end,
@@ -81,8 +82,8 @@ function Runes.prototype:GetOptions()
 
 	opts["hideBlizz"] = {
 		type = "toggle",
-		name = "Hide Blizzard Frame",
-		desc = "Hides Blizzard Rune frame and disables all events related to it",
+		name = L["Hide Blizzard Frame"],
+		desc = L["Hides Blizzard Rune frame and disables all events related to it"],
 		get = function()
 			return self.moduleSettings.hideBlizz
 		end,
@@ -102,8 +103,8 @@ function Runes.prototype:GetOptions()
 
 	opts["displayMode"] = {
 		type = 'select',
-		name = 'Rune orientation',
-		desc = 'Whether the runes should draw side-by-side or on top of one another',
+		name = L["Rune orientation"],
+		desc = L["Whether the runes should draw side-by-side or on top of one another"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.displayMode)
 		end,
@@ -120,8 +121,8 @@ function Runes.prototype:GetOptions()
 
 	opts["cooldownMode"] = {
 		type = 'select',
-		name = 'Rune cooldown mode',
-		desc = 'Choose whether the runes use a cooldown-style wipe, simply an alpha fade to show availability or both.',
+		name = L["Rune cooldown mode"],
+		desc = L["Choose whether the runes use a cooldown-style wipe, simply an alpha fade to show availability or both."],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.cooldownMode)
 		end,
@@ -138,8 +139,8 @@ function Runes.prototype:GetOptions()
 
 	opts["runeGap"] = {
 		type = 'range',
-		name = 'Rune gap',
-		desc = 'Spacing between each rune (only works for graphical mode)',
+		name = L["Rune gap"],
+		desc = L["Spacing between each rune (only works for graphical mode)"],
 		min = 0,
 		max = 100,
 		step = 1,

@@ -15,6 +15,9 @@
 embeds.xml
 #@end-no-lib-strip@
 
+# Localization
+loc\loc.xml
+
 # IceHUD core functionality
 IceCore.lua
 IceHUD.lua

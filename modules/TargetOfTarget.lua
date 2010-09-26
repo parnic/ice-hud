@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local SML = LibStub("LibSharedMedia-3.0")
 local DogTag = nil
 
@@ -31,8 +32,8 @@ function TargetOfTarget.prototype:GetOptions()
 
 	opts["vpos"] = {
 		type = "range",
-		name = "Vertical Position",
-		desc = "Vertical Position",
+		name = L["Vertical Position"],
+		desc = L["Vertical Position"],
 		get = function()
 			return self.moduleSettings.vpos
 		end,
@@ -51,8 +52,8 @@ function TargetOfTarget.prototype:GetOptions()
 
 	opts["hpos"] = {
 		type = "range",
-		name = "Horizontal Position",
-		desc = "Horizontal Position",
+		name = L["Horizontal Position"],
+		desc = L["Horizontal Position"],
 		get = function()
 			return self.moduleSettings.hpos
 		end,
@@ -71,8 +72,8 @@ function TargetOfTarget.prototype:GetOptions()
 
 	opts["showDebuffs"] = {
 		type = "toggle",
-		name = "Show stacking debuffs",
-		desc = "Show stacking debuffs in ToT info",
+		name = L["Show stacking debuffs"],
+		desc = L["Show stacking debuffs in ToT info"],
 		get = function()
 			return self.moduleSettings.showDebuffs
 		end,
@@ -88,8 +89,8 @@ function TargetOfTarget.prototype:GetOptions()
 
 	opts["fontSize"] = {
 		type = 'range',
-		name = 'Font Size',
-		desc = 'Font Size',
+		name = L["Font Size"],
+		desc = L["Font Size"],
 		get = function()
 			return self.moduleSettings.fontSize
 		end,
@@ -108,8 +109,8 @@ function TargetOfTarget.prototype:GetOptions()
 
 	opts["mouse"] = {
 		type = 'toggle',
-		name = 'Mouseover',
-		desc = 'Toggle mouseover on/off',
+		name = L["Mouseover"],
+		desc = L["Toggle mouseover on/off"],
 		get = function()
 			return self.moduleSettings.mouse
 		end,
@@ -125,8 +126,8 @@ function TargetOfTarget.prototype:GetOptions()
 
 	opts["texture"] = {
 		type = 'select',
-		name = 'Texture',
-		desc = 'ToT frame texture',
+		name = L["Texture"],
+		desc = L["ToT frame texture"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.texture)
 		end,
@@ -143,8 +144,8 @@ function TargetOfTarget.prototype:GetOptions()
 
 	opts["sizeToGap"] = {
 		type = 'toggle',
-		name = 'Size to gap',
-		desc = "Automatically size this module to the addon's 'gap' setting",
+		name = L["Size to gap"],
+		desc = L["Automatically size this module to the addon's 'gap' setting"],
 		get = function()
 			return self.moduleSettings.sizeToGap
 		end,
@@ -159,8 +160,8 @@ function TargetOfTarget.prototype:GetOptions()
 
 	opts["totWidth"] = {
 		type = 'range',
-		name = 'Width',
-		desc = "Sets the width of this module if 'size to gap' is not set",
+		name = L["Width"],
+		desc = L["Sets the width of this module if 'size to gap' is not set"],
 		min = 100,
 		max = 600,
 		step = 1,
@@ -181,12 +182,12 @@ function TargetOfTarget.prototype:GetOptions()
 
 	opts.textSettings = {
 		type = 'group',
-		name = "|c"..self.configColor.."Text Settings|r",
+		name = "|c"..self.configColor..L["Text Settings"].."|r",
 		args = {
 			leftTag = {
 				type = 'input',
-				name = 'Left Tag',
-				desc = 'DogTag-formatted string to use for the left side of the bar.\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save.',
+				name = L["Left Tag"],
+				desc = L["DogTag-formatted string to use for the left side of the bar.\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save."],
 				get = function()
 					return self.moduleSettings.leftTag
 				end,
@@ -204,8 +205,8 @@ function TargetOfTarget.prototype:GetOptions()
 			},
 			rightTag = {
 				type = 'input',
-				name = 'Right Tag',
-				desc = 'DogTag-formatted string to use for the right side of the bar.\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save.',
+				name = L["Right Tag"],
+				desc = L["DogTag-formatted string to use for the right side of the bar.\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save."],
 				get = function()
 					return self.moduleSettings.rightTag
 				end,

@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local ComboPointsBar = IceCore_CreateClass(IceBarElement)
 
 function ComboPointsBar.prototype:init()
@@ -12,8 +13,8 @@ function ComboPointsBar.prototype:GetOptions()
 
 	opts["alwaysDisplay"] = {
 		type = "toggle",
-		name = "Always display bar",
-		desc = "Whether this bar should hide when the player has 0 combo points or stay visible",
+		name = L["Always display bar"],
+		desc = L["Whether this bar should hide when the player has 0 combo points or stay visible"],
 		get = function()
 			return self.moduleSettings.alwaysDisplay
 		end,

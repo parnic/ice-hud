@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 -- needs to not be local so that we can inherit from it
 TargetInvuln = IceCore_CreateClass(IceUnitBar)
 
@@ -119,8 +120,8 @@ function TargetInvuln.prototype:GetOptions()
 
 	opts["alertParty"] = {
 		type = "toggle",
-		name = "Alert Party",
-		desc = "Broadcasts crowd control effects you apply to your target via the party chat channel",
+		name = L["Alert Party"],
+		desc = L["Broadcasts crowd control effects you apply to your target via the party chat channel"],
 		get = function()
 			return self.moduleSettings.alertParty
 		end,

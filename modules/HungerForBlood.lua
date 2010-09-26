@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local HungerForBlood = IceCore_CreateClass(IceUnitBar)
 
 local hfbEndTime = 0
@@ -72,8 +73,8 @@ function HungerForBlood.prototype:GetOptions()
 
 	opts["allowClickCast"] = {
 		type = 'toggle',
-		name = 'Allow click casting',
-		desc = 'Whether or not to allow click casting of Hunger For Blood',
+		name = L["Allow click casting"],
+		desc = L["Whether or not to allow click casting of Hunger For Blood"],
 		get = function()
 			return self.moduleSettings.allowMouseInteraction
 		end,

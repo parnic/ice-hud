@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceCustomMana = IceCore_CreateClass(IceTargetMana)
 IceCustomMana.prototype.scheduledEvent = nil
 
@@ -36,14 +37,14 @@ function IceCustomMana.prototype:GetOptions()
 
 	opts["customHeader"] = {
 		type = 'header',
-		name = "Custom bar settings",
+		name = L["Custom bar settings"],
 		order = 30.1,
 	}
 
 	opts["deleteme"] = {
 		type = 'execute',
-		name = 'Delete me',
-		desc = 'Deletes this custom module and all associated settings. Cannot be undone!',
+		name = L["Delete me"],
+		desc = L["Deletes this custom module and all associated settings. Cannot be undone!"],
 		func = function()
 			local dialog = StaticPopup_Show("ICEHUD_DELETE_CUSTOM_MODULE")
 			if dialog then
@@ -55,8 +56,8 @@ function IceCustomMana.prototype:GetOptions()
 
 	opts["duplicateme"] = {
 		type = 'execute',
-		name = 'Duplicate me',
-		desc = 'Creates a new module of this same type and with all the same settings.',
+		name = L["Duplicate me"],
+		desc = L["Creates a new module of this same type and with all the same settings."],
 		func = function()
 			IceHUD:CreateCustomModuleAndNotify(self.moduleSettings.customBarType, self.moduleSettings)
 		end,
@@ -65,8 +66,8 @@ function IceCustomMana.prototype:GetOptions()
 
 	opts["name"] = {
 		type = 'input',
-		name = 'Bar name',
-		desc = 'The name of this bar (must be unique!).\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.',
+		name = L["Bar name"],
+		desc = L["The name of this bar (must be unique!).\n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
 		get = function()
 			return self.elementName
 		end,
@@ -84,8 +85,8 @@ function IceCustomMana.prototype:GetOptions()
 
 	opts["unitToTrack"] = {
 		type = 'input',
-		name = 'Unit to track',
-		desc = 'Enter which unit that this bar should be monitoring the mana of (e.g.: focustarget, pettarget, etc.)\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.',
+		name = L["Unit to track"],
+		desc = L["Enter which unit that this bar should be monitoring the mana of (e.g.: focustarget, pettarget, etc.)\n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
 		get = function()
 			return self.moduleSettings.unitToTrack
 		end,

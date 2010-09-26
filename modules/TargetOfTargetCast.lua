@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local TargetTargetCast = IceCore_CreateClass(IceCastBar)
 TargetTargetCast.prototype.scheduledEvent = nil
 
@@ -78,8 +79,8 @@ function TargetTargetCast.prototype:GetOptions()
 
 	opts["barVisible"] = {
 		type = 'toggle',
-		name = 'Bar visible',
-		desc = 'Toggle bar visibility',
+		name = L["Bar visible"],
+		desc = L["Toggle bar visibility"],
 		get = function()
 			return self.moduleSettings.barVisible['bar']
 		end,
@@ -99,8 +100,8 @@ function TargetTargetCast.prototype:GetOptions()
 
 	opts["bgVisible"] = {
 		type = 'toggle',
-		name = 'Bar background visible',
-		desc = 'Toggle bar background visibility',
+		name = L["Bar background visible"],
+		desc = L["Toggle bar background visibility"],
 		get = function()
 			return self.moduleSettings.barVisible['bg']
 		end,
@@ -120,8 +121,8 @@ function TargetTargetCast.prototype:GetOptions()
 
 	opts["selfDisplayMode"] = {
 		type = 'select',
-		name = "Self Display Mode",
-		desc = "What this bar should do whenever the player is the TargetOfTarget",
+		name = L["Self Display Mode"],
+		desc = L["What this bar should do whenever the player is the TargetOfTarget"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.selfDisplayMode)
 		end,

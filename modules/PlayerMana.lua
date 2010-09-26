@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local PlayerMana = IceCore_CreateClass(IceUnitBar)
 
 PlayerMana.prototype.manaType = nil
@@ -38,8 +39,8 @@ function PlayerMana.prototype:GetOptions()
 if self:ShouldUseTicker() then
 	opts["tickerEnabled"] = {
 		type = "toggle",
-		name = "Show rogue/cat energy ticker",
-		desc = "Show rogue/cat energy ticker",
+		name = L["Show rogue/cat energy ticker"],
+		desc = L["Show rogue/cat energy ticker"],
 		get = function()
 			return self.moduleSettings.tickerEnabled
 		end,
@@ -56,8 +57,8 @@ if self:ShouldUseTicker() then
 	opts["tickerAlpha"] =
 	{
 		type = 'range',
-		name = 'Energy Ticker Alpha',
-		desc = 'Energy Ticker Alpha',
+		name = L["Energy Ticker Alpha"],
+		desc = L["Energy Ticker Alpha"],
 		min = 0.1,
 		max = 1,
 		step = 0.05,
@@ -76,8 +77,8 @@ if self:ShouldUseTicker() then
 end
 	opts["scaleManaColor"] = {
 		type = "toggle",
-		name = "Color bar by mana %",
-		desc = "Colors the mana bar from MaxManaColor to MinManaColor based on current mana %",
+		name = L["Color bar by mana %"],
+		desc = L["Colors the mana bar from MaxManaColor to MinManaColor based on current mana %"],
 		get = function()
 			return self.moduleSettings.scaleManaColor
 		end,

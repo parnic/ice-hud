@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 --[[
 Name: IceThreat
 Author: Caryna/Turalyon EU (Alliance) (updated for Threat-2.0 by 'acapela' of WoWI and merged into IceHUD by Parnic)
@@ -52,8 +53,8 @@ function IceThreat.prototype:GetOptions()
 
 	opts["enabled"] = {
 		type = "toggle",
-		name = "Enabled",
-		desc = "Enable/disable module",
+		name = L["Enabled"],
+		desc = L["Enable/disable module"],
 		get = function()
 			return self.moduleSettings.enabled
 		end,
@@ -71,8 +72,8 @@ function IceThreat.prototype:GetOptions()
 	opts["aggroAlpha"] =
 	{
 		type = 'range',
-		name = 'Aggro Indicator alpha',
-		desc = 'Aggro indicator alpha (0 is disabled)',
+		name = L["Aggro Indicator alpha"],
+		desc = L["Aggro indicator alpha (0 is disabled)"],
 		min = 0,
 		max = 1,
 		step = 0.1,
@@ -91,8 +92,8 @@ function IceThreat.prototype:GetOptions()
 
 	opts["onlyShowInGroups"] = {
 		type = 'toggle',
-		name = 'Only show in groups',
-		desc = 'Only show the threat bar if you are in a group or you have an active pet',
+		name = L["Only show in groups"],
+		desc = L["Only show the threat bar if you are in a group or you have an active pet"],
 		get = function()
 			return self.moduleSettings.onlyShowInGroups
 		end,
@@ -108,8 +109,8 @@ function IceThreat.prototype:GetOptions()
 
 	opts["showScaledThreat"] = {
 		type = 'toggle',
-		name = 'Show scaled threat',
-		desc = 'Whether to show threat in scaled values or raw values. Scaled threat means that you will pull aggro when it hits 100%. Raw threat means you will pull aggro at either 110% (melee) or 130% (ranged). Omen uses raw threat which can cause this mod to disagree with Omen if it is in scaled mode.',
+		name = L["Show scaled threat"],
+		desc = L["Whether to show threat in scaled values or raw values. Scaled threat means that you will pull aggro when it hits 100%. Raw threat means you will pull aggro at either 110% (melee) or 130% (ranged). Omen uses raw threat which can cause this mod to disagree with Omen if it is in scaled mode."],
 		get = function()
 			return self.moduleSettings.showScaledThreat
 		end,
@@ -125,8 +126,8 @@ function IceThreat.prototype:GetOptions()
 
 	opts["displaySecondPlaceThreat"] = {
 		type = 'toggle',
-		name = 'Show second highest threat',
-		desc = 'When tanking, this toggles whether or not the second-highest threat value found in your party or raid is displayed on top of your actual threat value',
+		name = L["Show second highest threat"],
+		desc = L["When tanking, this toggles whether or not the second-highest threat value found in your party or raid is displayed on top of your actual threat value"],
 		width = 'double',
 		get = function()
 			return self.moduleSettings.displaySecondPlaceThreat
@@ -143,8 +144,8 @@ function IceThreat.prototype:GetOptions()
 
 	opts["secondPlaceThreatAlpha"] = {
 		type = 'range',
-		name = 'Second place threat alpha',
-		desc = "The alpha value for the second-place threat bar to be (this is multiplied by the bar's alpha so it's always proportionate)",
+		name = L["Second place threat alpha"],
+		desc = L["The alpha value for the second-place threat bar to be (this is multiplied by the bar's alpha so it's always proportionate)"],
 		get = function()
 			return self.moduleSettings.secondPlaceThreatAlpha
 		end,

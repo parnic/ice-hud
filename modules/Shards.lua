@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local ShardCounter = IceCore_CreateClass(IceClassPowerCounter)
 
 function ShardCounter.prototype:init()

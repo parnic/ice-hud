@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local TargetCast = IceCore_CreateClass(IceCastBar)
 
 TargetCast.prototype.notInterruptible = false
@@ -89,8 +90,8 @@ function TargetCast.prototype:GetOptions()
 
 	opts["barVisible"] = {
 		type = 'toggle',
-		name = 'Bar visible',
-		desc = 'Toggle bar visibility',
+		name = L["Bar visible"],
+		desc = L["Toggle bar visibility"],
 		get = function()
 			return self.moduleSettings.barVisible['bar']
 		end,
@@ -110,8 +111,8 @@ function TargetCast.prototype:GetOptions()
 
 	opts["bgVisible"] = {
 		type = 'toggle',
-		name = 'Bar background visible',
-		desc = 'Toggle bar background visibility',
+		name = L["Bar background visible"],
+		desc = L["Toggle bar background visibility"],
 		get = function()
 			return self.moduleSettings.barVisible['bg']
 		end,
@@ -131,8 +132,8 @@ function TargetCast.prototype:GetOptions()
 
 	opts["displayNonInterruptible"] = {
 		type = 'toggle',
-		name = 'Display non-interruptible color',
-		desc = 'Toggles whether or not to show the CastNonInterruptible color for this bar when a cast is non-interruptible',
+		name = L["Display non-interruptible color"],
+		desc = L["Toggles whether or not to show the CastNonInterruptible color for this bar when a cast is non-interruptible"],
 		width = 'double',
 		get = function()
 			return self.moduleSettings.displayNonInterruptible

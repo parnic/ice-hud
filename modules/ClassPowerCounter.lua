@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceClassPowerCounter = IceCore_CreateClass(IceElement)
 
 IceClassPowerCounter.prototype.runeHeight = 22
@@ -24,8 +25,8 @@ function IceClassPowerCounter.prototype:GetOptions()
 
 	opts["vpos"] = {
 		type = "range",
-		name = "Vertical Position",
-		desc = "Vertical Position",
+		name = L["Vertical Position"],
+		desc = L["Vertical Position"],
 		get = function()
 			return self.moduleSettings.vpos
 		end,
@@ -44,8 +45,8 @@ function IceClassPowerCounter.prototype:GetOptions()
 
 	opts["hpos"] = {
 		type = "range",
-		name = "Horizontal Position",
-		desc = "Horizontal Position",
+		name = L["Horizontal Position"],
+		desc = L["Horizontal Position"],
 		get = function()
 			return self.moduleSettings.hpos
 		end,
@@ -64,8 +65,8 @@ function IceClassPowerCounter.prototype:GetOptions()
 
 	opts["hideBlizz"] = {
 		type = "toggle",
-		name = "Hide Blizzard Frame",
-		desc = "Hides Blizzard frame and disables all events related to it.\n\nNOTE: Blizzard attaches this UI to the player's unitframe, so if you have that hidden in PlayerHealth, then this won't do anything.",
+		name = L["Hide Blizzard Frame"],
+		desc = L["Hides Blizzard frame and disables all events related to it.\n\nNOTE: Blizzard attaches this UI to the player's unitframe, so if you have that hidden in PlayerHealth, then this won't do anything."],
 		get = function()
 			return self.moduleSettings.hideBlizz
 		end,
@@ -85,8 +86,8 @@ function IceClassPowerCounter.prototype:GetOptions()
 
 	opts["displayMode"] = {
 		type = 'select',
-		name = 'Display mode',
-		desc = "Choose whether you'd like a graphical or numeric representation of the runes.\n\nNOTE: The color of 'Numeric' mode can be controlled by the HolyPowerNumeric color.",
+		name = L["Display mode"],
+		desc = L["Choose whether you'd like a graphical or numeric representation of the runes.\n\nNOTE: The color of 'Numeric' mode can be controlled by the HolyPowerNumeric color."],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.runeMode)
 		end,
@@ -104,8 +105,8 @@ function IceClassPowerCounter.prototype:GetOptions()
 
 	opts["runeGap"] = {
 		type = 'range',
-		name = 'Rune gap',
-		desc = 'Spacing between each rune (only works for graphical mode)',
+		name = L["Rune gap"],
+		desc = L["Spacing between each rune (only works for graphical mode)"],
 		min = 0,
 		max = 100,
 		step = 1,
@@ -127,8 +128,8 @@ function IceClassPowerCounter.prototype:GetOptions()
 
 	opts["runeOrientation"] = {
 		type = 'select',
-		name = 'Rune orientation',
-		desc = 'Whether the runes should draw side-by-side or on top of one another',
+		name = L["Rune orientation"],
+		desc = L["Whether the runes should draw side-by-side or on top of one another"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.displayMode)
 		end,
@@ -148,8 +149,8 @@ function IceClassPowerCounter.prototype:GetOptions()
 
 	opts["inactiveDisplayMode"] = {
 		type = 'select',
-		name = 'Inactive mode',
-		desc = "This controls what happens to runes that are inactive. Darkened means they are visible but colored black, Hidden means they are not displayed.",
+		name = L["Inactive mode"],
+		desc = L["This controls what happens to runes that are inactive. Darkened means they are visible but colored black, Hidden means they are not displayed."],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.inactiveDisplayMode)
 		end,
@@ -170,8 +171,8 @@ function IceClassPowerCounter.prototype:GetOptions()
 
 	opts["flashWhenReady"] = {
 		type = "toggle",
-		name = "Flash when ready",
-		desc = "Shows a flash behind each holy rune when it becomes available.",
+		name = L["Flash when ready"],
+		desc = L["Shows a flash behind each holy rune when it becomes available."],
 		get = function()
 			return self.moduleSettings.flashWhenBecomingReady
 		end,

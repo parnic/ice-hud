@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local RangeCheck = IceCore_CreateClass(IceElement)
 RangeCheck.prototype.scheduledEvent = nil
 
@@ -50,8 +51,8 @@ function RangeCheck.prototype:GetOptions()
 
 	opts["vpos"] = {
 		type = "range",
-		name = "Vertical Position",
-		desc = "Vertical Position",
+		name = L["Vertical Position"],
+		desc = L["Vertical Position"],
 		get = function()
 			return self.moduleSettings.vpos
 		end,
@@ -70,8 +71,8 @@ function RangeCheck.prototype:GetOptions()
 
 	opts["hpos"] = {
 		type = "range",
-		name = "Horizontal Position",
-		desc = "Horizontal Position",
+		name = L["Horizontal Position"],
+		desc = L["Horizontal Position"],
 		get = function()
 			return self.moduleSettings.hpos
 		end,
@@ -90,8 +91,8 @@ function RangeCheck.prototype:GetOptions()
 
 	opts["rangeString"] = {
 		type = 'input',
-		name = 'Range string',
-		desc = 'DogTag-formatted string to use for the range display (only available if LibDogTag is being used)\n\nType /dogtag for a list of available tags',
+		name = L["Range string"],
+		desc = L["DogTag-formatted string to use for the range display (only available if LibDogTag is being used)\n\nType /dogtag for a list of available tags"],
 		get = function()
 			return self.moduleSettings.rangeString
 		end,

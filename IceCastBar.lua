@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceCastBar = IceCore_CreateClass(IceBarElement)
 
 
@@ -70,8 +71,8 @@ function IceCastBar.prototype:GetOptions()
 	opts["showCastTime"] =
 	{
 		type = 'toggle',
-		name = 'Show spell cast time',
-		desc = 'Whether or not to show the remaining cast time of a spell being cast.',
+		name = L["Show spell cast time"],
+		desc = L["Whether or not to show the remaining cast time of a spell being cast."],
 		get = function()
 			return self.moduleSettings.showCastTime
 		end,
@@ -87,8 +88,8 @@ function IceCastBar.prototype:GetOptions()
 	opts["showSpellRank"] =
 	{
 		type = 'toggle',
-		name = 'Show spell rank',
-		desc = 'Whether or not to show the rank of a spell being cast.',
+		name = L["Show spell rank"],
+		desc = L["Whether or not to show the rank of a spell being cast."],
 		get = function()
 			return self.moduleSettings.showSpellRank
 		end,
@@ -103,12 +104,12 @@ function IceCastBar.prototype:GetOptions()
 
 	opts["iconSettings"] = {
 		type = 'group',
-		name = '|c'..self.configColor..'Icon Settings|r',
+		name = "|c"..self.configColor..L["Icon Settings"].."|r",
 		args = {
 			displayAuraIcon = {
 				type = 'toggle',
-				name = "Display aura icon",
-				desc = "Whether or not to display an icon for the aura that this bar is tracking",
+				name = L["Display aura icon"],
+				desc = L["Whether or not to display an icon for the aura that this bar is tracking"],
 				get = function()
 					return self.moduleSettings.displayAuraIcon
 				end,
@@ -133,8 +134,8 @@ function IceCastBar.prototype:GetOptions()
 				min = -250,
 				max = 250,
 				step = 1,
-				name = "Aura icon horizontal offset",
-				desc = "Adjust the horizontal position of the aura icon",
+				name = L["Aura icon horizontal offset"],
+				desc = L["Adjust the horizontal position of the aura icon"],
 				get = function()
 					return self.moduleSettings.auraIconXOffset
 				end,
@@ -153,8 +154,8 @@ function IceCastBar.prototype:GetOptions()
 				min = -250,
 				max = 250,
 				step = 1,
-				name = "Aura icon vertical offset",
-				desc = "Adjust the vertical position of the aura icon",
+				name = L["Aura icon vertical offset"],
+				desc = L["Adjust the vertical position of the aura icon"],
 				get = function()
 					return self.moduleSettings.auraIconYOffset
 				end,
@@ -173,8 +174,8 @@ function IceCastBar.prototype:GetOptions()
 				min = 0.1,
 				max = 3.0,
 				step = 0.05,
-				name = 'Aura icon scale',
-				desc = 'Adjusts the size of the aura icon for this bar',
+				name = L["Aura icon scale"],
+				desc = L["Adjusts the size of the aura icon for this bar"],
 				get = function()
 					return self.moduleSettings.auraIconScale
 				end,
@@ -192,8 +193,8 @@ function IceCastBar.prototype:GetOptions()
 
 	opts["reverseChannel"] = {
 		type = 'toggle',
-		name = "Reverse channeling",
-		desc = "Whether or not to reverse the direction of the cast bar when a spell is being channeled. For example, if a normal cast causes this bar to fill up, then checking this option will cause a channeled spell to empty the bar instead.",
+		name = L["Reverse channeling"],
+		desc = L["Whether or not to reverse the direction of the cast bar when a spell is being channeled. For example, if a normal cast causes this bar to fill up, then checking this option will cause a channeled spell to empty the bar instead."],
 		get = function()
 			return self.moduleSettings.reverseChannel
 		end,

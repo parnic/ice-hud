@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local SunderCount = IceCore_CreateClass(IceElement)
 
 SunderCount.prototype.sunderSize = 20
@@ -21,8 +22,8 @@ function SunderCount.prototype:GetOptions()
 
 	opts["vpos"] = {
 		type = "range",
-		name = "Vertical Position",
-		desc = "Vertical Position",
+		name = L["Vertical Position"],
+		desc = L["Vertical Position"],
 		get = function()
 			return self.moduleSettings.vpos
 		end,
@@ -41,8 +42,8 @@ function SunderCount.prototype:GetOptions()
 
 	opts["sunderFontSize"] = {
 		type = "range",
-		name = "Sunder Count Font Size",
-		desc = "Sunder Count Font Size",
+		name = L["Sunder Count Font Size"],
+		desc = L["Sunder Count Font Size"],
 		get = function()
 			return self.moduleSettings.sunderFontSize
 		end,
@@ -61,8 +62,8 @@ function SunderCount.prototype:GetOptions()
 
 	opts["sunderMode"] = {
 		type = 'select',
-		name = "Display Mode",
-		desc = "Show graphical or numeric sunders",
+		name = L["Display Mode"],
+		desc = L["Show graphical or numeric sunders"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.sunderMode)
 		end,
@@ -81,8 +82,8 @@ function SunderCount.prototype:GetOptions()
 
 	opts["sunderGap"] = {
 		type = 'range',
-		name = 'Sunder gap',
-		desc = 'Spacing between each sunder count (only works for graphical mode)',
+		name = L["Sunder gap"],
+		desc = L["Spacing between each sunder count (only works for graphical mode)"],
 		min = 0,
 		max = 100,
 		step = 1,
@@ -101,8 +102,8 @@ function SunderCount.prototype:GetOptions()
 
 	opts["gradient"] = {
 		type = "toggle",
-		name = "Change color",
-		desc = "1 sunder: yellow, 5 sunders: red",
+		name = L["Change color"],
+		desc = L["1 sunder: yellow, 5 sunders: red"],
 		get = function()
 			return self.moduleSettings.gradient
 		end,

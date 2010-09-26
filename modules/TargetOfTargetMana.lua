@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local TargetTargetMana = IceCore_CreateClass(IceTargetMana)
 TargetTargetMana.prototype.scheduledEvent = nil
 
@@ -34,8 +35,8 @@ function TargetTargetMana.prototype:GetOptions()
 
 	opts["selfDisplayMode"] = {
 		type = 'select',
-		name = "Self Display Mode",
-		desc = "What this bar should do whenever the player is the TargetOfTarget",
+		name = L["Self Display Mode"],
+		desc = L["What this bar should do whenever the player is the TargetOfTarget"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.selfDisplayMode)
 		end,

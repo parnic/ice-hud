@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceTargetInfo = IceCore_CreateClass(IceElement)
 
 local DogTag = nil
@@ -107,14 +108,14 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["targetInfoHeader"] = {
 		type = 'header',
-		name = 'Look and Feel',
+		name = L["Look and Feel"],
 		order = 30.9
 	}
 
 	opts["vpos"] = {
 		type = "range",
-		name = "Vertical Position",
-		desc = "Vertical Position",
+		name = L["Vertical Position"],
+		desc = L["Vertical Position"],
 		get = function()
 			return self.moduleSettings.vpos
 		end,
@@ -133,8 +134,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["hpos"] = {
 		type = "range",
-		name = "Horizontal Position",
-		desc = "Horizontal Position",
+		name = L["Horizontal Position"],
+		desc = L["Horizontal Position"],
 		get = function()
 			return self.moduleSettings.hpos
 		end,
@@ -153,8 +154,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["fontSize"] = {
 		type = 'range',
-		name = 'Font Size',
-		desc = 'Font Size',
+		name = L["Font Size"],
+		desc = L["Font Size"],
 		get = function()
 			return self.moduleSettings.fontSize
 		end,
@@ -173,8 +174,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["stackFontSize"] = {
 		type = 'range',
-		name = 'Stack Font Size',
-		desc = 'Stack Font Size',
+		name = L["Stack Font Size"],
+		desc = L["Stack Font Size"],
 		get = function()
 			return self.moduleSettings.stackFontSize
 		end,
@@ -193,8 +194,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["zoom"] = {
 		type = 'range',
-		name = 'Buff zoom',
-		desc = 'Buff/debuff icon zoom',
+		name = L["Buff zoom"],
+		desc = L["Buff/debuff icon zoom"],
 		get = function()
 			return self.moduleSettings.zoom
 		end,
@@ -214,14 +215,14 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["buffHeader"] = {
 		type = 'header',
-		name = 'Buff/Debuff Settings',
+		name = L["Buff/Debuff Settings"],
 		order = 33.9
 	}
 
 	opts["buffSize"] = {
 		type = 'range',
-		name = 'Buff size',
-		desc = 'Buff/debuff icon size',
+		name = L["Buff size"],
+		desc = L["Buff/debuff icon size"],
 		get = function()
 			return self.moduleSettings.buffSize
 		end,
@@ -240,8 +241,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["ownBuffSize"] = {
 		type = 'range',
-		name = 'Own buff size',
-		desc = 'Buff/debuff size for buffs/debuffs that were applied by you, the player',
+		name = L["Own buff size"],
+		desc = L["Buff/debuff size for buffs/debuffs that were applied by you, the player"],
 		get = function()
 			return self.moduleSettings.ownBuffSize
 		end,
@@ -260,8 +261,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["showBuffs"] = {
 		type = 'toggle',
-		name = 'Show buffs',
-		desc = 'Toggles whether or not buffs are displayed at all',
+		name = L["Show buffs"],
+		desc = L["Toggles whether or not buffs are displayed at all"],
 		get = function()
 			return self.moduleSettings.showBuffs
 		end,
@@ -277,8 +278,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["filterBuffs"] = {
 		type = 'select',
-		name = 'Only show buffs by me',
-		desc = 'Will only show buffs that you cast instead of all buffs active',
+		name = L["Only show buffs by me"],
+		desc = L["Will only show buffs that you cast instead of all buffs active"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.filterBuffs)
 		end,
@@ -295,8 +296,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["showDebuffs"] = {
 		type = 'toggle',
-		name = 'Show debuffs',
-		desc = 'Toggles whether or not debuffs are displayed at all',
+		name = L["Show debuffs"],
+		desc = L["Toggles whether or not debuffs are displayed at all"],
 		get = function()
 			return self.moduleSettings.showDebuffs
 		end,
@@ -312,8 +313,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["filterDebuffs"] = {
 		type = 'select',
-		name = 'Only show debuffs by me',
-		desc = 'Will only show debuffs that you cast instead of all debuffs active',
+		name = L["Only show debuffs by me"],
+		desc = L["Will only show debuffs that you cast instead of all debuffs active"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.filterDebuffs)
 		end,
@@ -330,8 +331,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["perRow"] = {
 		type = 'range',
-		name = 'Buffs / row',
-		desc = 'How many buffs/debuffs is shown on each row',
+		name = L["Buffs / row"],
+		desc = L["How many buffs/debuffs is shown on each row"],
 		get = function()
 			return self.moduleSettings.perRow
 		end,
@@ -350,14 +351,14 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["buffLocHeader"] = {
 		type = 'header',
-		name = 'Buff placement settings',
+		name = L["Buff placement settings"],
 		order = 37.01
 	}
 
 	opts["buffGrowDirection"] = {
 		type = 'select',
-		name = 'Buff grow direction',
-		desc = 'Which direction the buffs should grow from the anchor point',
+		name = L["Buff grow direction"],
+		desc = L["Which direction the buffs should grow from the anchor point"],
 		values = { "Left", "Right" },
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.buffGrowDirection)
@@ -374,8 +375,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["buffAnchorTo"] = {
 		type = 'select',
-		name = 'Buff anchor to',
-		desc = 'The point on the TargetInfo frame that the buff frame gets connected to',
+		name = L["Buff anchor to"],
+		desc = L["The point on the TargetInfo frame that the buff frame gets connected to"],
 		values = ValidAnchors,
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.buffAnchorTo)
@@ -392,8 +393,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["buffXOffset"] = {
 		type = 'range',
-		name = 'Buff horizontal offset',
-		desc = 'How far horizontally the buff frame should be offset from the anchor',
+		name = L["Buff horizontal offset"],
+		desc = L["How far horizontally the buff frame should be offset from the anchor"],
 		min = -500,
 		max = 500,
 		step = 1,
@@ -412,8 +413,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["buffYOffset"] = {
 		type = 'range',
-		name = 'Buff vertical offset',
-		desc = 'How far vertically the buff frame should be offset from the anchor',
+		name = L["Buff vertical offset"],
+		desc = L["How far vertically the buff frame should be offset from the anchor"],
 		min = -500,
 		max = 500,
 		step = 1,
@@ -432,14 +433,14 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["debuffLocHeader"] = {
 		type = 'header',
-		name = 'Debuff placement settings',
+		name = L["Debuff placement settings"],
 		order = 37.801
 	}
 
 	opts["debuffGrowDirection"] = {
 		type = 'select',
-		name = 'Debuff grow direction',
-		desc = 'Which direction the debuffs should grow from the anchor point',
+		name = L["Debuff grow direction"],
+		desc = L["Which direction the debuffs should grow from the anchor point"],
 		values = { "Left", "Right" },
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.debuffGrowDirection)
@@ -456,8 +457,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["debuffAnchorTo"] = {
 		type = 'select',
-		name = 'Debuff anchor to',
-		desc = 'The point on the TargetInfo frame that the debuff frame gets connected to',
+		name = L["Debuff anchor to"],
+		desc = L["The point on the TargetInfo frame that the debuff frame gets connected to"],
 		values = ValidAnchors,
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.debuffAnchorTo)
@@ -474,8 +475,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["debuffXOffset"] = {
 		type = 'range',
-		name = 'Debuff horizontal offset',
-		desc = 'How far horizontally the debuff frame should be offset from the anchor',
+		name = L["Debuff horizontal offset"],
+		desc = L["How far horizontally the debuff frame should be offset from the anchor"],
 		min = -500,
 		max = 500,
 		step = 1,
@@ -494,8 +495,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["debuffYOffset"] = {
 		type = 'range',
-		name = 'Debuff vertical offset',
-		desc = 'How far vertically the debuff frame should be offset from the anchor',
+		name = L["Debuff vertical offset"],
+		desc = L["How far vertically the debuff frame should be offset from the anchor"],
 		min = -500,
 		max = 500,
 		step = 1,
@@ -514,14 +515,14 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["mouseHeader"] = {
 		type = 'header',
-		name = 'Mouse settings',
+		name = L["Mouse settings"],
 		order = 37.9
 	}
 
 	opts["mouseTarget"] = {
 		type = 'toggle',
-		name = 'Mouseover for target',
-		desc = 'Toggle mouseover on/off for target',
+		name = L["Mouseover for target"],
+		desc = L["Toggle mouseover on/off for target"],
 		get = function()
 			return self.moduleSettings.mouseTarget
 		end,
@@ -537,8 +538,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["mouseBuff"] = {
 		type = 'toggle',
-		name = 'Mouseover for buffs',
-		desc = 'Toggle mouseover on/off for buffs/debuffs',
+		name = L["Mouseover for buffs"],
+		desc = L["Toggle mouseover on/off for buffs/debuffs"],
 		get = function()
 			return self.moduleSettings.mouseBuff
 		end,
@@ -554,14 +555,14 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["textHeader"] = {
 		type = 'header',
-		name = 'Text Settings',
+		name = L["Text Settings"],
 		order = 39.01
 	}
 
 	opts["line1Tag"] = {
 		type = 'input',
-		name = 'Line 1 tag',
-		desc = 'DogTag-formatted string to use for the top text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save.',
+		name = L["Line 1 tag"],
+		desc = L["DogTag-formatted string to use for the top text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save."],
 		get = function()
 			return self.moduleSettings.line1Tag
 		end,
@@ -580,8 +581,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["line2Tag"] = {
 		type = 'input',
-		name = 'Line 2 tag',
-		desc = 'DogTag-formatted string to use for the second text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save.',
+		name = L["Line 2 tag"],
+		desc = L["DogTag-formatted string to use for the second text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save."],
 		get = function()
 			return self.moduleSettings.line2Tag
 		end,
@@ -600,8 +601,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["line3Tag"] = {
 		type = 'input',
-		name = 'Line 3 tag',
-		desc = 'DogTag-formatted string to use for the third text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save.',
+		name = L["Line 3 tag"],
+		desc = L["DogTag-formatted string to use for the third text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save."],
 		get = function()
 			return self.moduleSettings.line3Tag
 		end,
@@ -620,8 +621,8 @@ function IceTargetInfo.prototype:GetOptions()
 
 	opts["line4Tag"] = {
 		type = 'input',
-		name = 'Line 4 tag',
-		desc = 'DogTag-formatted string to use for the bottom text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save.',
+		name = L["Line 4 tag"],
+		desc = L["DogTag-formatted string to use for the bottom text line (leave blank to revert to old behavior)\n\nType /dogtag for a list of available tags.\n\nRemember to press Accept after filling out this box or it will not save."],
 		get = function()
 			return self.moduleSettings.line4Tag
 		end,

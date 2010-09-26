@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local PlayerHealth = IceCore_CreateClass(IceUnitBar)
 
 PlayerHealth.prototype.resting = nil
@@ -164,8 +165,8 @@ function PlayerHealth.prototype:GetOptions()
 
 	opts["classColor"] = {
 		type = "toggle",
-		name = "Class color bar",
-		desc = "Use class color as the bar color instead of default color",
+		name = L["Class color bar"],
+		desc = L["Use class color as the bar color instead of default color"],
 		get = function()
 			return self.moduleSettings.classColor
 		end,
@@ -181,8 +182,8 @@ function PlayerHealth.prototype:GetOptions()
 
 	opts["hideBlizz"] = {
 		type = "toggle",
-		name = "Hide Blizzard Frame",
-		desc = "Hides Blizzard Player frame and disables all events related to it",
+		name = L["Hide Blizzard Frame"],
+		desc = L["Hides Blizzard Player frame and disables all events related to it"],
 		get = function()
 			return self.moduleSettings.hideBlizz
 		end,
@@ -202,8 +203,8 @@ function PlayerHealth.prototype:GetOptions()
 
 	opts["hideBlizzParty"] = {
 			type = "toggle",
-			name = "Hide Blizzard Party",
-			desc = "Hides Blizzard's default party frame and disables all events related to them",
+			name = L["Hide Blizzard Party"],
+			desc = L["Hides Blizzard's default party frame and disables all events related to them"],
 			get = function()
 				return self.moduleSettings.hideBlizzParty
 			end,
@@ -223,8 +224,8 @@ function PlayerHealth.prototype:GetOptions()
 
 	opts["scaleHealthColor"] = {
 		type = "toggle",
-		name = "Color bar by health %",
-		desc = "Colors the health bar from MaxHealthColor to MinHealthColor based on current health %",
+		name = L["Color bar by health %"],
+		desc = L["Colors the health bar from MaxHealthColor to MinHealthColor based on current health %"],
 		get = function()
 			return self.moduleSettings.scaleHealthColor
 		end,
@@ -240,8 +241,8 @@ function PlayerHealth.prototype:GetOptions()
 
 	opts["allowClickTarget"] = {
 		type = 'toggle',
-		name = 'Allow click-targeting',
-		desc = 'Whether or not to allow click targeting/casting and the player drop-down menu for this bar (Note: does not work properly with HiBar, have to click near the base of the bar)',
+		name = L["Allow click-targeting"],
+		desc = L["Whether or not to allow click targeting/casting and the player drop-down menu for this bar (Note: does not work properly with HiBar, have to click near the base of the bar)"],
 		get = function()
 			return self.moduleSettings.allowMouseInteraction
 		end,
@@ -257,8 +258,8 @@ function PlayerHealth.prototype:GetOptions()
 
 	opts["allowClickTargetCombat"] = {
 		type = 'toggle',
-		name = 'Allow click-targeting in combat',
-		desc = 'Whether or not to allow click targeting/casting and the player drop-down menu for this bar while the player is in combat (Note: does not work properly with HiBar, have to click near the base of the bar)',
+		name = L["Allow click-targeting in combat"],
+		desc = L["Whether or not to allow click targeting/casting and the player drop-down menu for this bar while the player is in combat (Note: does not work properly with HiBar, have to click near the base of the bar)"],
 		width = 'double',
 		get = function()
 			return self.moduleSettings.allowMouseInteractionCombat
@@ -276,8 +277,8 @@ function PlayerHealth.prototype:GetOptions()
 	opts["showIncomingHeals"] =
 	{
 		type = 'toggle',
-		name = 'Show incoming heals',
-		desc = 'Whether or not to show incoming heals as a lighter-colored bar on top of your current health (requires LibHealComm-4.0 or official patch 4.0)',
+		name = L["Show incoming heals"],
+		desc = L["Whether or not to show incoming heals as a lighter-colored bar on top of your current health (requires LibHealComm-4.0 or official patch 4.0)"],
 		get = function()
 			return self.moduleSettings.showIncomingHeals
 		end,
@@ -302,8 +303,8 @@ function PlayerHealth.prototype:GetOptions()
 	opts["healAlpha"] =
 	{
 		type = "range",
-		name = "Incoming heal bar alpha",
-		desc = "What alpha value to use for the bar that displays how much health you'll have after an incoming heal (This gets multiplied by the bar's current alpha to stay in line with the bar on top of it)",
+		name = L["Incoming heal bar alpha"],
+		desc = L["What alpha value to use for the bar that displays how much health you'll have after an incoming heal (This gets multiplied by the bar's current alpha to stay in line with the bar on top of it)"],
 		min = 0,
 		max = 100,
 		step = 5,
@@ -323,16 +324,16 @@ function PlayerHealth.prototype:GetOptions()
 	opts["iconSettings"] =
 	{
 		type = 'group',
-		name = '|c' .. self.configColor .. 'Icon Settings|r',
-		desc = 'Settings related to icons',
+		name = "|c"..self.configColor..L["Icon Settings"].."|r",
+		desc = L["Settings related to icons"],
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
 		args = {
 			iconConfigMode = {
 				type = "toggle",
-				name = "Icon config mode",
-				desc = "With this enabled, all icons draw so you can configure their placement\n\nNote: the combat and status icons are actually the same texture so you'll only see combat in config mode (unless you're already resting)",
+				name = L["Icon config mode"],
+				desc = L["With this enabled, all icons draw so you can configure their placement\n\nNote: the combat and status icons are actually the same texture so you'll only see combat in config mode (unless you're already resting)"],
 				get = function()
 					return configMode
 				end,
@@ -345,8 +346,8 @@ function PlayerHealth.prototype:GetOptions()
 
 			lockIconAlpha = {
 				type = "toggle",
-				name = "Lock all icons to 100% alpha",
-				desc = "With this enabled, all icons will be 100% visible regardless of the alpha settings for this bar.",
+				name = L["Lock all icons to 100% alpha"],
+				desc = L["With this enabled, all icons will be 100% visible regardless of the alpha settings for this bar."],
 				get = function()
 					return self.moduleSettings.lockIconAlpha
 				end,
@@ -359,13 +360,13 @@ function PlayerHealth.prototype:GetOptions()
 
 			headerStatusIcon = {
 				type = 'header',
-				name = "Status icon",
+				name = L["Status icon"],
 				order = 9.9
 			},
 			statusIcon = {
 				type = "toggle",
-				name = "Show status icon",
-				desc = "Whether or not to show the status icon (resting/combat) above this bar\n\nNote: You can configure resting/combat separately below, but disabling both resting and combat is the same as disabling the icon altogether",
+				name = L["Show status icon"],
+				desc = L["Whether or not to show the status icon (resting/combat) above this bar\n\nNote: You can configure resting/combat separately below, but disabling both resting and combat is the same as disabling the icon altogether"],
 				get = function()
 					return self.moduleSettings.showStatusIcon
 				end,
@@ -381,8 +382,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			showStatusCombat = {
 				type = "toggle",
-				name = "Show combat status",
-				desc = "Whether or not to show the combat status portion of the status icon (for example, if you only care when you're resting, not when you're in combat)",
+				name = L["Show combat status"],
+				desc = L["Whether or not to show the combat status portion of the status icon (for example, if you only care when you're resting, not when you're in combat)"],
 				get = function()
 					return self.moduleSettings.showStatusCombat
 				end,
@@ -398,8 +399,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			showStatusResting = {
 				type = "toggle",
-				name = "Show resting status",
-				desc = "Whether or not to show the resting status portion of the status icon (for example, if you only care when you're in combat, but not when you're resting)",
+				name = L["Show resting status"],
+				desc = L["Whether or not to show the resting status portion of the status icon (for example, if you only care when you're in combat, but not when you're resting)"],
 				get = function()
 					return self.moduleSettings.showStatusResting
 				end,
@@ -415,8 +416,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			statusIconOffsetX = {
 				type = "range",
-				name = "Status Icon Horizontal Offset",
-				desc = "How much to offset the status icon (resting/combat) from the bar horizontally",
+				name = L["Status Icon Horizontal Offset"],
+				desc = L["How much to offset the status icon (resting/combat) from the bar horizontally"],
 				min = 0,
 				max = 250,
 				step = 1,
@@ -434,8 +435,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			statusIconOffsetY = {
 				type = "range",
-				name = "Status Icon Vertical Offset",
-				desc = "How much to offset the status icon (resting/combat) from the bar vertically",
+				name = L["Status Icon Vertical Offset"],
+				desc = L["How much to offset the status icon (resting/combat) from the bar vertically"],
 				min = -300,
 				max = 50,
 				step = 1,
@@ -453,8 +454,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			statusIconScale = {
 				type = "range",
-				name = "Status Icon Scale",
-				desc = "How much to scale the status icon",
+				name = L["Status Icon Scale"],
+				desc = L["How much to scale the status icon"],
 				min = 0.05,
 				max = 2,
 				step = 0.05,
@@ -473,13 +474,13 @@ function PlayerHealth.prototype:GetOptions()
 
 			headerLeaderIcon = {
 				type = 'header',
-				name = "Leader icon",
+				name = L["Leader icon"],
 				order = 19.9
 			},
 			leaderIcon = {
 				type = "toggle",
-				name = "Show leader icon",
-				desc = "Whether or not to show the party leader icon above this bar",
+				name = L["Show leader icon"],
+				desc = L["Whether or not to show the party leader icon above this bar"],
 				get = function()
 					return self.moduleSettings.showLeaderIcon
 				end,
@@ -494,8 +495,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			leaderIconOffsetX = {
 				type = "range",
-				name = "Leader Icon Horizontal Offset",
-				desc = "How much to offset the leader icon from the bar horizontally",
+				name = L["Leader Icon Horizontal Offset"],
+				desc = L["How much to offset the leader icon from the bar horizontally"],
 				min = 0,
 				max = 250,
 				step = 1,
@@ -513,8 +514,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			leaderIconOffsetY = {
 				type = "range",
-				name = "Leader Icon Vertical Offset",
-				desc = "How much to offset the leader icon from the bar vertically",
+				name = L["Leader Icon Vertical Offset"],
+				desc = L["How much to offset the leader icon from the bar vertically"],
 				min = -300,
 				max = 50,
 				step = 1,
@@ -532,8 +533,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			leaderIconScale = {
 				type = "range",
-				name = "Leader Icon Scale",
-				desc = "How much to scale the leader icon",
+				name = L["Leader Icon Scale"],
+				desc = L["How much to scale the leader icon"],
 				min = 0.05,
 				max = 2,
 				step = 0.05,
@@ -552,13 +553,13 @@ function PlayerHealth.prototype:GetOptions()
 
 			headerLootMasterIcon = {
 				type = 'header',
-				name = "Loot Master icon",
+				name = L["Loot Master icon"],
 				order = 29.9
 			},
 			lootMasterIcon = {
 				type = "toggle",
-				name = "Show loot master icon",
-				desc = "Whether or not to show the loot master icon",
+				name = L["Show loot master icon"],
+				desc = L["Whether or not to show the loot master icon"],
 				get = function()
 					return self.moduleSettings.showLootMasterIcon
 				end,
@@ -573,8 +574,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			lootMasterIconOffsetX = {
 				type = "range",
-				name = "Loot Master Icon Horizontal Offset",
-				desc = "How much to offset the loot master icon from the bar horizontally",
+				name = L["Loot Master Icon Horizontal Offset"],
+				desc = L["How much to offset the loot master icon from the bar horizontally"],
 				min = 0,
 				max = 250,
 				step = 1,
@@ -592,8 +593,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			lootMasterIconOffsetY = {
 				type = "range",
-				name = "Loot Master Icon Vertical Offset",
-				desc = "How much to offset the loot master icon from the bar vertically",
+				name = L["Loot Master Icon Vertical Offset"],
+				desc = L["How much to offset the loot master icon from the bar vertically"],
 				min = -300,
 				max = 50,
 				step = 1,
@@ -611,8 +612,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			lootMasterIconScale = {
 				type = "range",
-				name = "Loot Master Icon Scale",
-				desc = "How much to scale the loot master icon",
+				name = L["Loot Master Icon Scale"],
+				desc = L["How much to scale the loot master icon"],
 				min = 0.05,
 				max = 2,
 				step = 0.05,
@@ -631,13 +632,13 @@ function PlayerHealth.prototype:GetOptions()
 
 			headerPvPIcon = {
 				type = 'header',
-				name = "PvP icon",
+				name = L["PvP icon"],
 				order = 39.9
 			},
 			PvPIcon = {
 				type = "toggle",
-				name = "Show PvP icon",
-				desc = "Whether or not to show the PvP icon",
+				name = L["Show PvP icon"],
+				desc = L["Whether or not to show the PvP icon"],
 				get = function()
 					return self.moduleSettings.showPvPIcon
 				end,
@@ -652,8 +653,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			PvPIconOffsetX = {
 				type = "range",
-				name = "PvP Icon Horizontal Offset",
-				desc = "How much to offset the PvP icon from the bar horizontally",
+				name = L["PvP Icon Horizontal Offset"],
+				desc = L["How much to offset the PvP icon from the bar horizontally"],
 				min = 0,
 				max = 250,
 				step = 1,
@@ -671,8 +672,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			PvPIconOffsetY = {
 				type = "range",
-				name = "PvP Icon Vertical Offset",
-				desc = "How much to offset the PvP icon from the bar vertically",
+				name = L["PvP Icon Vertical Offset"],
+				desc = L["How much to offset the PvP icon from the bar vertically"],
 				min = -300,
 				max = 50,
 				step = 1,
@@ -690,8 +691,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			PvPIconScale = {
 				type = "range",
-				name = "PvP Icon Scale",
-				desc = "How much to scale the PvP icon",
+				name = L["PvP Icon Scale"],
+				desc = L["How much to scale the PvP icon"],
 				min = 0.05,
 				max = 2,
 				step = 0.05,
@@ -709,13 +710,13 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			headerPartyRoleIcon = {
 				type = 'header',
-				name = "Party Role icon",
+				name = L["Party Role icon"],
 				order = 49.9
 			},
 			PartyRoleIcon = {
 				type = "toggle",
-				name = "Show Party Role icon",
-				desc = "Whether or not to show the Party Role icon",
+				name = L["Show Party Role icon"],
+				desc = L["Whether or not to show the Party Role icon"],
 				get = function()
 					return self.moduleSettings.showPartyRoleIcon
 				end,
@@ -730,8 +731,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			PartyRoleIconOffsetX = {
 				type = "range",
-				name = "Party Role Icon Horizontal Offset",
-				desc = "How much to offset the Party Role icon from the bar horizontally",
+				name = L["Party Role Icon Horizontal Offset"],
+				desc = L["How much to offset the Party Role icon from the bar horizontally"],
 				min = 0,
 				max = 250,
 				step = 1,
@@ -749,8 +750,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			PartyRoleIconOffsetY = {
 				type = "range",
-				name = "Party Role Icon Vertical Offset",
-				desc = "How much to offset the Party Role icon from the bar vertically",
+				name = L["Party Role Icon Vertical Offset"],
+				desc = L["How much to offset the Party Role icon from the bar vertically"],
 				min = -300,
 				max = 50,
 				step = 1,
@@ -768,8 +769,8 @@ function PlayerHealth.prototype:GetOptions()
 			},
 			PartyRoleIconScale = {
 				type = "range",
-				name = "Party Role Icon Scale",
-				desc = "How much to scale the Party Role icon",
+				name = L["Party Role Icon Scale"],
+				desc = L["How much to scale the Party Role icon"],
 				min = 0.05,
 				max = 2,
 				step = 0.05,

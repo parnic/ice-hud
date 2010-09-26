@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceCustomCDBar = IceCore_CreateClass(IceUnitBar)
 
 
@@ -131,14 +132,14 @@ function IceCustomCDBar.prototype:GetOptions()
 
 	opts["customHeader"] = {
 		type = 'header',
-		name = "Custom CD settings",
+		name = L["Custom CD settings"],
 		order = 30.1,
 	}
 
 	opts["deleteme"] = {
 		type = 'execute',
-		name = 'Delete me',
-		desc = 'Deletes this custom module and all associated settings. Cannot be undone!',
+		name = L["Delete me"],
+		desc = L["Deletes this custom module and all associated settings. Cannot be undone!"],
 		func = function()
 			local dialog = StaticPopup_Show("ICEHUD_DELETE_CUSTOM_MODULE")
 			if dialog then
@@ -150,8 +151,8 @@ function IceCustomCDBar.prototype:GetOptions()
 
 	opts["duplicateme"] = {
 		type = 'execute',
-		name = 'Duplicate me',
-		desc = 'Creates a new module of this same type and with all the same settings.',
+		name = L["Duplicate me"],
+		desc = L["Creates a new module of this same type and with all the same settings."],
 		func = function()
 			IceHUD:CreateCustomModuleAndNotify(self.moduleSettings.customBarType, self.moduleSettings)
 		end,
@@ -160,8 +161,8 @@ function IceCustomCDBar.prototype:GetOptions()
 
 	opts["name"] = {
 		type = 'input',
-		name = 'Bar name',
-		desc = 'The name of this bar (must be unique!).\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.',
+		name = L["Bar name"],
+		desc = L["The name of this bar (must be unique!).\n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
 		get = function()
 			return self.elementName
 		end,
@@ -179,8 +180,8 @@ function IceCustomCDBar.prototype:GetOptions()
 
 	opts["cooldownToTrack"] = {
 		type = 'input',
-		name = "Spell to track",
-		desc = "Which spell cooldown this bar will be tracking.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
+		name = L["Spell to track"],
+		desc = L["Which spell cooldown this bar will be tracking.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
 		get = function()
 			return self.moduleSettings.cooldownToTrack
 		end,
@@ -202,8 +203,8 @@ function IceCustomCDBar.prototype:GetOptions()
 
 	opts["barColor"] = {
 		type = 'color',
-		name = 'Bar color',
-		desc = 'The color for this bar',
+		name = L["Bar color"],
+		desc = L["The color for this bar"],
 		get = function()
 			return self:GetBarColor()
 		end,
@@ -221,8 +222,8 @@ function IceCustomCDBar.prototype:GetOptions()
 
 	opts["displayMode"] = {
 		type = 'select',
-		name = 'Display mode',
-		desc = 'When to display this bar.',
+		name = L["Display mode"],
+		desc = L["When to display this bar."],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.displayMode)
 		end,
@@ -239,8 +240,8 @@ function IceCustomCDBar.prototype:GetOptions()
 
 	opts["cooldownTimerDisplay"] = {
 		type = 'select',
-		name = 'Cooldown timer display',
-		desc = 'How to display the buff timer next to the name of the buff on the bar',
+		name = L["Cooldown timer display"],
+		desc = L["How to display the buff timer next to the name of the buff on the bar"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.cooldownTimerDisplay)
 		end,
@@ -257,8 +258,8 @@ function IceCustomCDBar.prototype:GetOptions()
 
 	opts["maxDuration"] = {
 		type = 'input',
-		name = "Maximum duration",
-		desc = "Maximum Duration for the bar (the bar will remained full if it has longer than maximum remaining).  Leave 0 for spell duration.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
+		name = L["Maximum duration"],
+		desc = L["Maximum Duration for the bar (the bar will remained full if it has longer than maximum remaining).  Leave 0 for spell duration.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
 		get = function()
 			return self.moduleSettings.maxDuration
 		end,
@@ -278,12 +279,12 @@ function IceCustomCDBar.prototype:GetOptions()
 
 	opts["iconSettings"] = {
 		type = 'group',
-		name = '|c'..self.configColor..'Icon Settings|r',
+		name = "|c"..self.configColor..L["Icon Settings"].."|r",
 		args = {
 			displayAuraIcon = {
 				type = 'toggle',
-				name = "Display aura icon",
-				desc = "Whether or not to display an icon for the aura that this bar is tracking",
+				name = L["Display aura icon"],
+				desc = L["Whether or not to display an icon for the aura that this bar is tracking"],
 				get = function()
 					return self.moduleSettings.displayAuraIcon
 				end,
@@ -302,8 +303,8 @@ function IceCustomCDBar.prototype:GetOptions()
 				min = -250,
 				max = 250,
 				step = 1,
-				name = "Aura icon horizontal offset",
-				desc = "Adjust the horizontal position of the aura icon",
+				name = L["Aura icon horizontal offset"],
+				desc = L["Adjust the horizontal position of the aura icon"],
 				get = function()
 					return self.moduleSettings.auraIconXOffset
 				end,
@@ -322,8 +323,8 @@ function IceCustomCDBar.prototype:GetOptions()
 				min = -250,
 				max = 250,
 				step = 1,
-				name = "Aura icon vertical offset",
-				desc = "Adjust the vertical position of the aura icon",
+				name = L["Aura icon vertical offset"],
+				desc = L["Adjust the vertical position of the aura icon"],
 				get = function()
 					return self.moduleSettings.auraIconYOffset
 				end,
@@ -342,8 +343,8 @@ function IceCustomCDBar.prototype:GetOptions()
 				min = 0.1,
 				max = 3.0,
 				step = 0.05,
-				name = 'Aura icon scale',
-				desc = 'Adjusts the size of the aura icon for this bar',
+				name = L["Aura icon scale"],
+				desc = L["Adjusts the size of the aura icon for this bar"],
 				get = function()
 					return self.moduleSettings.auraIconScale
 				end,

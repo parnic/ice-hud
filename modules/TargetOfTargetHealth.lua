@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local TargetTargetHealth = IceCore_CreateClass(IceTargetHealth)
 TargetTargetHealth.prototype.scheduledEvent = nil
 
@@ -41,8 +42,8 @@ function TargetTargetHealth.prototype:GetOptions()
 
 	opts["selfDisplayMode"] = {
 		type = 'select',
-		name = "Self Display Mode",
-		desc = "What this bar should do whenever the player is the TargetOfTarget\n\nNOTE: When this is set to 'hide', then click-targeting is not available due to Blizzard's restrictions",
+		name = L["Self Display Mode"],
+		desc = L["What this bar should do whenever the player is the TargetOfTarget\n\nNOTE: When this is set to 'hide', then click-targeting is not available due to Blizzard's restrictions"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.selfDisplayMode)
 		end,
@@ -68,8 +69,8 @@ function TargetTargetHealth.prototype:GetOptions()
 
 	opts["selfColor"] = {
 		type = "color",
-		name = "Self Color",
-		desc = "Set the color of the TargetTarget bar if you are your target's target.",
+		name = L["Self Color"],
+		desc = L["Set the color of the TargetTarget bar if you are your target's target."],
 		get = function()
 			return self.moduleSettings.selfColor.r, self.moduleSettings.selfColor.g, self.moduleSettings.selfColor.b
 		end,

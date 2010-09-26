@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceUnitBar = IceCore_CreateClass(IceBarElement)
 
 IceUnitBar.prototype.unit = nil
@@ -69,8 +70,8 @@ function IceUnitBar.prototype:GetOptions()
 	opts["lowThreshold"] =
 	{
 		type = 'range',
-		name =  'Low Threshold',
-		desc = 'Threshold of pulsing the bar (0 means never) (for player applies only to mana, not rage/energy/runic power)',
+		name = L["Low Threshold"],
+		desc = L["Threshold of pulsing the bar (0 means never) (for player applies only to mana, not rage/energy/runic power)"],
 		get = function()
 			return self.moduleSettings.lowThreshold
 		end,
@@ -89,8 +90,8 @@ function IceUnitBar.prototype:GetOptions()
 	}
 	opts["lowThresholdFlash"] = {
 		type = 'toggle',
-		name = 'Flash bar below Low Threshold',
-		desc = 'Flashes the bar when it is below the Low Threshold specified above',
+		name = L["Flash bar below Low Threshold"],
+		desc = L["Flashes the bar when it is below the Low Threshold specified above"],
 		width = 'double',
 		get = function()
 			return self.moduleSettings.lowThresholdFlash
@@ -105,8 +106,8 @@ function IceUnitBar.prototype:GetOptions()
 	}
 	opts["lowThresholdColor"] = {
 		type = "toggle",
-		name = "Low Threshold color",
-		desc = "Colors the bar minColor when % is < lowThreshold (requires scaleColor to be enabled)",
+		name = L["Low Threshold color"],
+		desc = L["Colors the bar minColor when % is < lowThreshold (requires scaleColor to be enabled)"],
 		get = function()
 			return self.moduleSettings.lowThresholdColor
 		end,

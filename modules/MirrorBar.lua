@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 -- 2 classes in the same file.. ugly but keeps the idea of
 -- "1 module = 1 file" intact
 
@@ -192,15 +193,15 @@ function MirrorBarHandler.prototype:GetOptions()
 
 	opts["headerLookAndFeel"] = {
 		type = 'header',
-		name = 'Look and Feel',
+		name = L["Look and Feel"],
 		order = 29.9
 	}
 
 	opts["side"] =
 	{
 		type = 'select',
-		name = 'Side',
-		desc = 'Side of the HUD where the bar appears',
+		name = L["Side"],
+		desc = L["Side of the HUD where the bar appears"],
 		get = function(info)
 			if (self.moduleSettings.side == IceCore.Side.Right) then
 				return 2
@@ -223,8 +224,8 @@ function MirrorBarHandler.prototype:GetOptions()
 	opts["offset"] =
 	{
 		type = 'range',
-		name = 'Offset',
-		desc = 'Offset of the bar',
+		name = L["Offset"],
+		desc = L["Offset of the bar"],
 		min = -1,
 		max = 10,
 		step = 1,
@@ -240,8 +241,8 @@ function MirrorBarHandler.prototype:GetOptions()
 
 	opts["barVisible"] = {
 		type = 'toggle',
-		name = 'Bar visible',
-		desc = 'Toggle bar visibility',
+		name = L["Bar visible"],
+		desc = L["Toggle bar visibility"],
 		get = function()
 			return self.moduleSettings.barVisible['bar']
 		end,
@@ -257,8 +258,8 @@ function MirrorBarHandler.prototype:GetOptions()
 
 	opts["bgVisible"] = {
 		type = 'toggle',
-		name = 'Bar background visible',
-		desc = 'Toggle bar background visibility',
+		name = L["Bar background visible"],
+		desc = L["Toggle bar background visibility"],
 		get = function()
 			return self.moduleSettings.barVisible['bg']
 		end,
@@ -275,8 +276,8 @@ function MirrorBarHandler.prototype:GetOptions()
 	opts["barVerticalOffset"] =
 	{
 		type='range',
-		name = 'Bar vertical offset',
-		desc = 'Adjust the vertical placement of this bar',
+		name = L["Bar vertical offset"],
+		desc = L["Adjust the vertical placement of this bar"],
 		min = -400,
 		max = 400,
 		step = 1,
@@ -296,14 +297,14 @@ function MirrorBarHandler.prototype:GetOptions()
 	opts["textSettings"] =
 	{
 		type = 'group',
-		name = '|c' .. self.configColor .. 'Text Settings|r',
-		desc = 'Settings related to texts',
+		name = "|c"..self.configColor..L["Text Settings"].."|r",
+		desc = L["Settings related to texts"],
 		order = 32,
 		args = {
 			fontsize = {
 				type = 'range',
-				name = 'Bar Font Size',
-				desc = 'Bar Font Size',
+				name = L["Bar Font Size"],
+				desc = L["Bar Font Size"],
 				get = function()
 					return self.moduleSettings.barFontSize
 				end,
@@ -319,8 +320,8 @@ function MirrorBarHandler.prototype:GetOptions()
 
 			fontBold = {
 				type = 'toggle',
-				name = 'Bar Font Bold',
-				desc = 'If you have game default font selected, this option has no effect',
+				name = L["Bar Font Bold"],
+				desc = L["If you have game default font selected, this option has no effect"],
 				get = function()
 					return self.moduleSettings.barFontBold
 				end,
@@ -333,8 +334,8 @@ function MirrorBarHandler.prototype:GetOptions()
 
 			lockFontAlpha = {
 				type = "toggle",
-				name = "Lock Bar Text Alpha",
-				desc = "Locks upper text alpha to 100%",
+				name = L["Lock Bar Text Alpha"],
+				desc = L["Locks upper text alpha to 100%"],
 				get = function()
 					return self.moduleSettings.lockTextAlpha
 				end,
@@ -347,8 +348,8 @@ function MirrorBarHandler.prototype:GetOptions()
 
 			upperTextVisible = {
 				type = 'toggle',
-				name = 'Upper text visible',
-				desc = 'Toggle upper text visibility',
+				name = L["Upper text visible"],
+				desc = L["Toggle upper text visibility"],
 				get = function()
 					return self.moduleSettings.textVisible['upper']
 				end,
@@ -361,8 +362,8 @@ function MirrorBarHandler.prototype:GetOptions()
 
 			lowerTextVisible = {
 				type = 'toggle',
-				name = 'Lower text visible',
-				desc = 'Toggle lower text visibility',
+				name = L["Lower text visible"],
+				desc = L["Toggle lower text visibility"],
 				get = function()
 					return self.moduleSettings.textVisible['lower']
 				end,
@@ -375,8 +376,8 @@ function MirrorBarHandler.prototype:GetOptions()
 
 			textVerticalOffset = {
 				type = 'range',
-				name = 'Text Vertical Offset',
-				desc = 'Offset of the text from the bar vertically (negative is farther below)',
+				name = L["Text Vertical Offset"],
+				desc = L["Offset of the text from the bar vertically (negative is farther below)"],
 				min = -250,
 				max = 350,
 				step = 1,
@@ -394,8 +395,8 @@ function MirrorBarHandler.prototype:GetOptions()
 
 			textHorizontalOffset = {
 				type = 'range',
-				name = 'Text Horizontal Offset',
-				desc = 'Offset of the text from the bar horizontally',
+				name = L["Text Horizontal Offset"],
+				desc = L["Offset of the text from the bar horizontally"],
 				min = -50,
 				max = 50,
 				step = 1,

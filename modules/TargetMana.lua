@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceTargetMana = IceCore_CreateClass(IceUnitBar)
 IceTargetMana.prototype.registerEvents = true
 IceTargetHealth.prototype.color = nil
@@ -126,8 +127,8 @@ function IceTargetMana.prototype:GetOptions()
 
 	opts["scaleManaColor"] = {
 		type = "toggle",
-		name = "Color bar by mana %",
-		desc = "Colors the mana bar from MaxManaColor to MinManaColor based on current mana %",
+		name = L["Color bar by mana %"],
+		desc = L["Colors the mana bar from MaxManaColor to MinManaColor based on current mana %"],
 		get = function()
 			return self.moduleSettings.scaleManaColor
 		end,
@@ -143,8 +144,8 @@ function IceTargetMana.prototype:GetOptions()
 
 	opts["onlyShowMana"] = {
 		type = 'toggle',
-		name = 'Only show if target uses mana',
-		desc = 'Will only show this bar if the target uses mana (as opposed to rage, energy, runic power, etc.)',
+		name = L["Only show if target uses mana"],
+		desc = L["Will only show this bar if the target uses mana (as opposed to rage, energy, runic power, etc.)"],
 		width = 'double',
 		get = function()
 			return self.moduleSettings.onlyShowMana

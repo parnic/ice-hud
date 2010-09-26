@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceCustomCount = IceCore_CreateClass(IceElement)
 
 IceCustomCount.prototype.countSize = 20
@@ -20,14 +21,14 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["customHeader"] = {
 		type = 'header',
-		name = "Aura settings",
+		name = L["Aura settings"],
 		order = 30.1,
 	}
 
 	opts["deleteme"] = {
 		type = 'execute',
-		name = 'Delete me',
-		desc = 'Deletes this custom module and all associated settings. Cannot be undone!',
+		name = L["Delete me"],
+		desc = L["Deletes this custom module and all associated settings. Cannot be undone!"],
 		func = function()
 			local dialog = StaticPopup_Show("ICEHUD_DELETE_CUSTOM_MODULE")
 			if dialog then
@@ -39,8 +40,8 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["duplicateme"] = {
 		type = 'execute',
-		name = 'Duplicate me',
-		desc = 'Creates a new module of this same type and with all the same settings.',
+		name = L["Duplicate me"],
+		desc = L["Creates a new module of this same type and with all the same settings."],
 		func = function()
 			IceHUD:CreateCustomModuleAndNotify(self.moduleSettings.customBarType, self.moduleSettings)
 		end,
@@ -49,8 +50,8 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["name"] = {
 		type = 'input',
-		name = 'Counter name',
-		desc = 'The name of this counter (must be unique!). \n\nRemember to press ENTER after filling out this box with the name you want or it will not save.',
+		name = L["Counter name"],
+		desc = L["The name of this counter (must be unique!). \n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
 		get = function()
 			return self.elementName
 		end,
@@ -69,8 +70,8 @@ function IceCustomCount.prototype:GetOptions()
 	opts["auraTarget"] = {
 		type = 'select',
 		values = validUnits,
-		name = 'Unit to track',
-		desc = 'Select which unit that this bar should be looking for buffs/debuffs on',
+		name = L["Unit to track"],
+		desc = L["Select which unit that this bar should be looking for buffs/debuffs on"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.auraTarget)
 		end,
@@ -89,8 +90,8 @@ function IceCustomCount.prototype:GetOptions()
 	opts["auraType"] = {
 		type = 'select',
 		values = buffOrDebuff,
-		name = 'Buff or debuff?',
-		desc = 'Whether we are tracking a buff or debuff',
+		name = L["Buff or debuff?"],
+		desc = L["Whether we are tracking a buff or debuff"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.auraType)
 		end,
@@ -106,8 +107,8 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["auraName"] = {
 		type = 'input',
-		name = "Aura to track",
-		desc = "Which buff/debuff this counter will be tracking. \n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
+		name = L["Aura to track"],
+		desc = L["Which buff/debuff this counter will be tracking. \n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
 		get = function()
 			return self.moduleSettings.auraName
 		end,
@@ -124,8 +125,8 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["trackOnlyMine"] = {
 		type = 'toggle',
-		name = 'Only track auras by me',
-		desc = 'Checking this means that only buffs or debuffs that the player applied will trigger this bar',
+		name = L["Only track auras by me"],
+		desc = L["Checking this means that only buffs or debuffs that the player applied will trigger this bar"],
 		get = function()
 			return self.moduleSettings.onlyMine
 		end,
@@ -141,8 +142,8 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["countColor"] = {
 		type = 'color',
-		name = 'Count color',
-		desc = 'The color for this counter',
+		name = L["Count color"],
+		desc = L["The color for this counter"],
 		get = function()
 			return self:GetCustomColor()
 		end,
@@ -160,8 +161,8 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["countMinColor"] = {
 		type = 'color',
-		name = 'Count minimum color',
-		desc = 'The minimum color for this counter (only used if Change Color is enabled)',
+		name = L["Count minimum color"],
+		desc = L["The minimum color for this counter (only used if Change Color is enabled)"],
 		get = function()
 			return self:GetCustomMinColor()
 		end,
@@ -179,8 +180,8 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["maxCount"] = {
 		type = 'input',
-		name = "Maximum applications",
-		desc = "How many total applications of this buff/debuff can be applied. For example, only 5 sunders can ever be on a target, so this would be set to 5 for tracking Sunder.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
+		name = L["Maximum applications"],
+		desc = L["How many total applications of this buff/debuff can be applied. For example, only 5 sunders can ever be on a target, so this would be set to 5 for tracking Sunder.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
 		get = function()
 			return self.moduleSettings.maxCount
 		end,
@@ -200,14 +201,14 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["normalHeader"] = {
 		type = 'header',
-		name = "Counter look and feel",
+		name = L["Counter look and feel"],
 		order = 31,
 	}
 
 	opts["vpos"] = {
 		type = "range",
-		name = "Vertical Position",
-		desc = "Vertical Position",
+		name = L["Vertical Position"],
+		desc = L["Vertical Position"],
 		get = function()
 			return self.moduleSettings.vpos
 		end,
@@ -226,8 +227,8 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["hpos"] = {
 		type = "range",
-		name = "Horizontal Position",
-		desc = "Horizontal Position",
+		name = L["Horizontal Position"],
+		desc = L["Horizontal Position"],
 		get = function()
 			return self.moduleSettings.hpos
 		end,
@@ -246,8 +247,8 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["CustomFontSize"] = {
 		type = "range",
-		name = "Font Size",
-		desc = "Font Size",
+		name = L["Font Size"],
+		desc = L["Font Size"],
 		get = function()
 			return self.moduleSettings.countFontSize
 		end,
@@ -266,8 +267,8 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["CustomMode"] = {
 		type = 'select',
-		name = "Display Mode",
-		desc = "Show graphical or numeric counts",
+		name = L["Display Mode"],
+		desc = L["Show graphical or numeric counts"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.countMode)
 		end,
@@ -286,8 +287,8 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["graphicalLayout"] = {
 		type = 'select',
-		name = 'Layout',
-		desc = 'How the graphical counter should be displayed',
+		name = L["Layout"],
+		desc = L["How the graphical counter should be displayed"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.graphicalLayout)
 		end,
@@ -304,8 +305,8 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["countGap"] = {
 		type = 'range',
-		name = 'Icon gap',
-		desc = 'Spacing between each icon (only works for graphical mode)',
+		name = L["Icon gap"],
+		desc = L["Spacing between each icon (only works for graphical mode)"],
 		min = 0,
 		max = 100,
 		step = 1,
@@ -324,8 +325,8 @@ function IceCustomCount.prototype:GetOptions()
 
 	opts["gradient"] = {
 		type = "toggle",
-		name = "Change color",
-		desc = "This will fade the bars or numeric representation from the min color specified to the regular color\n\n(e.g. if the min color is yellow, the color is red, and there are 3 total applications, then the first would be yellow, second orange, and third red)",
+		name = L["Change color"],
+		desc = L["This will fade the bars or numeric representation from the min color specified to the regular color\n\n(e.g. if the min color is yellow, the color is red, and there are 3 total applications, then the first would be yellow, second orange, and third red)"],
 		get = function()
 			return self.moduleSettings.gradient
 		end,

@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local FocusCast = IceCore_CreateClass(IceCastBar)
 
 -- Constructor --
@@ -64,8 +65,8 @@ function FocusCast.prototype:GetOptions()
 
 	opts["barVisible"] = {
 		type = 'toggle',
-		name = 'Bar visible',
-		desc = 'Toggle bar visibility',
+		name = L["Bar visible"],
+		desc = L["Toggle bar visibility"],
 		get = function()
 			return self.moduleSettings.barVisible['bar']
 		end,
@@ -85,8 +86,8 @@ function FocusCast.prototype:GetOptions()
 
 	opts["bgVisible"] = {
 		type = 'toggle',
-		name = 'Bar background visible',
-		desc = 'Toggle bar background visibility',
+		name = L["Bar background visible"],
+		desc = L["Toggle bar background visibility"],
 		get = function()
 			return self.moduleSettings.barVisible['bg']
 		end,

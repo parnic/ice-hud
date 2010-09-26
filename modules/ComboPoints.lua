@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local ComboPoints = IceCore_CreateClass(IceElement)
 
 ComboPoints.prototype.comboSize = 20
@@ -21,14 +22,14 @@ function ComboPoints.prototype:GetOptions()
 
 	opts["headerLookAndFeel"] = {
 		type = 'header',
-		name = 'Look and Feel',
+		name = L["Look and Feel"],
 		order = 29.9
 	}
 
 	opts["vpos"] = {
 		type = "range",
-		name = "Vertical Position",
-		desc = "Vertical Position",
+		name = L["Vertical Position"],
+		desc = L["Vertical Position"],
 		get = function()
 			return self.moduleSettings.vpos
 		end,
@@ -47,8 +48,8 @@ function ComboPoints.prototype:GetOptions()
 
 	opts["hpos"] = {
 		type = "range",
-		name = "Horizontal Position",
-		desc = "Horizontal Position",
+		name = L["Horizontal Position"],
+		desc = L["Horizontal Position"],
 		get = function()
 			return self.moduleSettings.hpos
 		end,
@@ -67,8 +68,8 @@ function ComboPoints.prototype:GetOptions()
 
 	opts["comboFontSize"] = {
 		type = "range",
-		name = "Combo Points Font Size",
-		desc = "Combo Points Font Size",
+		name = L["Combo Points Font Size"],
+		desc = L["Combo Points Font Size"],
 		get = function()
 			return self.moduleSettings.comboFontSize
 		end,
@@ -87,8 +88,8 @@ function ComboPoints.prototype:GetOptions()
 
 	opts["comboMode"] = {
 		type = 'select',
-		name = "Display Mode",
-		desc = "Show graphical or numeric combo points",
+		name = L["Display Mode"],
+		desc = L["Show graphical or numeric combo points"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.comboMode)
 		end,
@@ -107,8 +108,8 @@ function ComboPoints.prototype:GetOptions()
 
 	opts["graphicalLayout"] = {
 		type = 'select',
-		name = 'Layout',
-		desc = 'How the graphical combo points should be displayed',
+		name = L["Layout"],
+		desc = L["How the graphical combo points should be displayed"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.graphicalLayout)
 		end,
@@ -125,8 +126,8 @@ function ComboPoints.prototype:GetOptions()
 
 	opts["comboGap"] = {
 		type = 'range',
-		name = 'Combo gap',
-		desc = 'Spacing between each combo point (only works for graphical mode)',
+		name = L["Combo gap"],
+		desc = L["Spacing between each combo point (only works for graphical mode)"],
 		min = 0,
 		max = 100,
 		step = 1,
@@ -145,8 +146,8 @@ function ComboPoints.prototype:GetOptions()
 
 	opts["gradient"] = {
 		type = "toggle",
-		name = "Change color",
-		desc = "1 combo point: yellow, 5 combo points: red",
+		name = L["Change color"],
+		desc = L["1 combo point: yellow, 5 combo points: red"],
 		get = function()
 			return self.moduleSettings.gradient
 		end,

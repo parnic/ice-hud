@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 function IceCore_CreateClass(parent)
 	local class = { prototype = {} }
 	if parent then
@@ -336,7 +337,7 @@ function IceCore.prototype:GetModuleOptions()
 	options["aaaClickPlus"] = {
 		type = 'description',
 		fontSize = 'large',
-		name = 'Click the + next to |cffffdc42Module Settings|r to see the available modules that you can tweak.\n\nAlso notice that some modules have a + next to them. This will open up additional settings such as text tweaks and icon tweaks on that module.',
+		name = L["Click the + next to |cffffdc42Module Settings|r to see the available modules that you can tweak.\n\nAlso notice that some modules have a + next to them. This will open up additional settings such as text tweaks and icon tweaks on that module."],
 		order = 1
 	}
 
@@ -345,7 +346,7 @@ function IceCore.prototype:GetModuleOptions()
 		local opt = self.elements[i]:GetOptions()
 		options[modName] =  {
 			type = 'group',
-			desc = 'Module options',
+			desc = L["Module options"],
 			name = modName,
 			args = opt
 		}

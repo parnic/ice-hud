@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local LacerateCount = IceCore_CreateClass(IceElement)
 
 LacerateCount.prototype.lacerateSize = 20
@@ -21,8 +22,8 @@ function LacerateCount.prototype:GetOptions()
 
 	opts["vpos"] = {
 		type = "range",
-		name = "Vertical Position",
-		desc = "Vertical Position",
+		name = L["Vertical Position"],
+		desc = L["Vertical Position"],
 		get = function()
 			return self.moduleSettings.vpos
 		end,
@@ -41,8 +42,8 @@ function LacerateCount.prototype:GetOptions()
 
 	opts["hpos"] = {
 		type = "range",
-		name = "Horizontal Position",
-		desc = "Horizontal Position",
+		name = L["Horizontal Position"],
+		desc = L["Horizontal Position"],
 		get = function()
 			return self.moduleSettings.hpos
 		end,
@@ -61,8 +62,8 @@ function LacerateCount.prototype:GetOptions()
 
 	opts["lacerateFontSize"] = {
 		type = "range",
-		name = "Lacerate Count Font Size",
-		desc = "Lacerate Count Font Size",
+		name = L["Lacerate Count Font Size"],
+		desc = L["Lacerate Count Font Size"],
 		get = function()
 			return self.moduleSettings.lacerateFontSize
 		end,
@@ -81,8 +82,8 @@ function LacerateCount.prototype:GetOptions()
 
 	opts["lacerateMode"] = {
 		type = 'select',
-		name = "Display Mode",
-		desc = "Show graphical or numeric lacerates",
+		name = L["Display Mode"],
+		desc = L["Show graphical or numeric lacerates"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.lacerateMode)
 		end,
@@ -101,8 +102,8 @@ function LacerateCount.prototype:GetOptions()
 
 	opts["lacerateGap"] = {
 		type = 'range',
-		name = 'Lacerate gap',
-		desc = 'Spacing between each lacerate count (only works for graphical mode)',
+		name = L["Lacerate gap"],
+		desc = L["Spacing between each lacerate count (only works for graphical mode)"],
 		min = 0,
 		max = 100,
 		step = 1,
@@ -121,8 +122,8 @@ function LacerateCount.prototype:GetOptions()
 
 	opts["gradient"] = {
 		type = "toggle",
-		name = "Change color",
-		desc = "1 lacerate: yellow, 5 lacerates: red",
+		name = L["Change color"],
+		desc = L["1 lacerate: yellow, 5 lacerates: red"],
 		get = function()
 			return self.moduleSettings.gradient
 		end,

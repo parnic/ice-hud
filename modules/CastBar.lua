@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local CastBar = IceCore_CreateClass(IceCastBar)
 
 CastBar.prototype.lagBar = nil
@@ -43,8 +44,8 @@ function CastBar.prototype:GetOptions()
 	opts["flashInstants"] =
 	{
 		type = 'select',
-		name =  "Flash Instant Spells",
-		desc = "Defines when cast bar should flash on instant spells",
+		name = L["Flash Instant Spells"],
+		desc = L["Defines when cast bar should flash on instant spells"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.flashInstants)
 		end,
@@ -61,8 +62,8 @@ function CastBar.prototype:GetOptions()
 	opts["flashFailures"] =
 	{
 		type = 'select',
-		name = "Flash on Spell Failures",
-		desc = "Defines when cast bar should flash on failed spells",
+		name = L["Flash on Spell Failures"],
+		desc = L["Defines when cast bar should flash on failed spells"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.flashFailures)
 		end,
@@ -79,8 +80,8 @@ function CastBar.prototype:GetOptions()
 	opts["lagAlpha"] =
 	{
 		type = 'range',
-		name = 'Lag Indicator alpha',
-		desc = 'Lag indicator alpha (0 is disabled)',
+		name = L["Lag Indicator alpha"],
+		desc = L["Lag indicator alpha (0 is disabled)"],
 		min = 0,
 		max = 1,
 		step = 0.1,
@@ -100,8 +101,8 @@ function CastBar.prototype:GetOptions()
 	opts["showBlizzCast"] =
 	{
 		type = 'toggle',
-		name = 'Show default cast bar',
-		desc = 'Whether or not to show the default cast bar.',
+		name = L["Show default cast bar"],
+		desc = L["Whether or not to show the default cast bar."],
 		get = function()
 			return self.moduleSettings.showBlizzCast
 		end,
@@ -117,8 +118,8 @@ function CastBar.prototype:GetOptions()
 
 	opts["barVisible"] = {
 		type = 'toggle',
-		name = 'Bar visible',
-		desc = 'Toggle bar visibility',
+		name = L["Bar visible"],
+		desc = L["Toggle bar visibility"],
 		get = function()
 			return self.moduleSettings.barVisible['bar']
 		end,
@@ -138,8 +139,8 @@ function CastBar.prototype:GetOptions()
 
 	opts["bgVisible"] = {
 		type = 'toggle',
-		name = 'Bar background visible',
-		desc = 'Toggle bar background visibility',
+		name = L["Bar background visible"],
+		desc = L["Toggle bar background visibility"],
 		get = function()
 			return self.moduleSettings.barVisible['bg']
 		end,
@@ -159,8 +160,8 @@ function CastBar.prototype:GetOptions()
 
 	opts["rangeColor"] = {
 		type = 'toggle',
-		name = 'Change color when not in range',
-		desc = 'Changes the bar color to the CastNotInRange color when the target goes out of range for the current spell.',
+		name = L["Change color when not in range"],
+		desc = L["Changes the bar color to the CastNotInRange color when the target goes out of range for the current spell."],
 		width = 'double',
 		get = function()
 			return self.moduleSettings.rangeColor
@@ -177,8 +178,8 @@ function CastBar.prototype:GetOptions()
 	opts["textSettings"] =
 	{
 		type = 'group',
-		name = '|c' .. self.configColor .. 'Text Settings|r',
-		desc = 'Settings related to texts',
+		name = "|c"..self.configColor..L["Text Settings"].."|r",
+		desc = L["Settings related to texts"],
 		order = 32,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -186,8 +187,8 @@ function CastBar.prototype:GetOptions()
 		args = {
 			fontsize = {
 				type = 'range',
-				name = 'Bar Font Size',
-				desc = 'Bar Font Size',
+				name = L["Bar Font Size"],
+				desc = L["Bar Font Size"],
 				get = function()
 					return self.moduleSettings.barFontSize
 				end,
@@ -203,8 +204,8 @@ function CastBar.prototype:GetOptions()
 
 			lockFontAlpha = {
 				type = "toggle",
-				name = "Lock Bar Text Alpha",
-				desc = "Locks text alpha to 100%",
+				name = L["Lock Bar Text Alpha"],
+				desc = L["Locks text alpha to 100%"],
 				get = function()
 					return self.moduleSettings.lockUpperTextAlpha
 				end,
@@ -217,8 +218,8 @@ function CastBar.prototype:GetOptions()
 
 			upperTextVisible = {
 				type = 'toggle',
-				name = 'Spell cast text visible',
-				desc = 'Toggle spell cast text visibility',
+				name = L["Spell cast text visible"],
+				desc = L["Toggle spell cast text visibility"],
 				get = function()
 					return self.moduleSettings.textVisible['upper']
 				end,
@@ -231,8 +232,8 @@ function CastBar.prototype:GetOptions()
 
 			textVerticalOffset = {
 				type = 'range',
-				name = 'Text Vertical Offset',
-				desc = 'Offset of the text from the bar vertically (negative is farther below)',
+				name = L["Text Vertical Offset"],
+				desc = L["Offset of the text from the bar vertically (negative is farther below)"],
 				min = -250,
 				max = 350,
 				step = 1,
@@ -250,8 +251,8 @@ function CastBar.prototype:GetOptions()
 
 			textHorizontalOffset = {
 				type = 'range',
-				name = 'Text Horizontal Offset',
-				desc = 'Offset of the text from the bar horizontally',
+				name = L["Text Horizontal Offset"],
+				desc = L["Offset of the text from the bar horizontally"],
 				min = -350,
 				max = 350,
 				step = 1,
@@ -269,8 +270,8 @@ function CastBar.prototype:GetOptions()
 
 			forceJustifyText = {
 				type = 'select',
-				name =  'Force Text Justification',
-				desc = 'This sets the alignment for the text on this bar',
+				name = L["Force Text Justification"],
+				desc = L["This sets the alignment for the text on this bar"],
 				get = function()
 					return self.moduleSettings.forceJustifyText
 				end,

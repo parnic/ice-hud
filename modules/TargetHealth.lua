@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceTargetHealth = IceCore_CreateClass(IceUnitBar)
 
 IceTargetHealth.prototype.color = nil
@@ -72,8 +73,8 @@ function IceTargetHealth.prototype:GetOptions()
 
 	opts["classColor"] = {
 		type = "toggle",
-		name = "Class color bar",
-		desc = "Use class color as the bar color instead of reaction color\n\n(Note: The 'color bar by health %' setting overrides this)",
+		name = L["Class color bar"],
+		desc = L["Use class color as the bar color instead of reaction color\n\n(Note: The 'color bar by health %' setting overrides this)"],
 		get = function()
 			return self.moduleSettings.classColor
 		end,
@@ -89,8 +90,8 @@ function IceTargetHealth.prototype:GetOptions()
 
 	opts["npcHostilityColor"] = {
 		type = "toggle",
-		name = "Color NPC by hostility",
-		desc = "If you are using the 'class color bar' setting above, then enabling this will color NPC's by their hostility toward you since NPC class isn't very helpful or applicable information.",
+		name = L["Color NPC by hostility"],
+		desc = L["If you are using the 'class color bar' setting above, then enabling this will color NPC's by their hostility toward you since NPC class isn't very helpful or applicable information."],
 		get = function()
 			return self.moduleSettings.npcHostilityColor
 		end,
@@ -106,8 +107,8 @@ function IceTargetHealth.prototype:GetOptions()
 
 	opts["hideBlizz"] = {
 		type = "toggle",
-		name = "Hide Blizzard Frame",
-		desc = "Hides Blizzard Target frame and disables all events related to it",
+		name = L["Hide Blizzard Frame"],
+		desc = L["Hides Blizzard Target frame and disables all events related to it"],
 		get = function()
 			return self.moduleSettings.hideBlizz
 		end,
@@ -127,8 +128,8 @@ function IceTargetHealth.prototype:GetOptions()
 
 	opts["allowClickTarget"] = {
 		type = 'toggle',
-		name = 'Allow click-targeting',
-		desc = 'Whether or not to allow click targeting/casting and the target drop-down menu for this bar (Note: does not work properly with HiBar, have to click near the base of the bar)',
+		name = L["Allow click-targeting"],
+		desc = L["Whether or not to allow click targeting/casting and the target drop-down menu for this bar (Note: does not work properly with HiBar, have to click near the base of the bar)"],
 		get = function()
 			return self.moduleSettings.allowMouseInteraction
 		end,
@@ -144,8 +145,8 @@ function IceTargetHealth.prototype:GetOptions()
 
 	opts["scaleHealthColor"] = {
 		type = "toggle",
-		name = "Color bar by health %",
-		desc = "Colors the health bar from MaxHealthColor to MinHealthColor based on current health %\n\n(Note: This overrides the 'class color bar' setting. Disable this to use class coloring)",
+		name = L["Color bar by health %"],
+		desc = L["Colors the health bar from MaxHealthColor to MinHealthColor based on current health %\n\n(Note: This overrides the 'class color bar' setting. Disable this to use class coloring)"],
 		get = function()
 			return self.moduleSettings.scaleHealthColor
 		end,
@@ -162,8 +163,8 @@ function IceTargetHealth.prototype:GetOptions()
 if not IceHUD.IceCore:ShouldUseDogTags() then
 	opts["shortenHealth"] = {
 		type = 'toggle',
-		name = 'Abbreviate estimated health',
-		desc = 'If this is checked, then a health value of 1100 will display as 1.1k, otherwise it shows the number',
+		name = L["Abbreviate estimated health"],
+		desc = L["If this is checked, then a health value of 1100 will display as 1.1k, otherwise it shows the number"],
 		get = function()
 			return self.moduleSettings.abbreviateHealth
 		end,
@@ -180,16 +181,16 @@ end
 	opts["iconSettings"] =
 	{
 		type = 'group',
-		name = '|c' .. self.configColor .. 'Icon Settings|r',
-		desc = 'Settings related to icons',
+		name = "|c"..self.configColor..L["Icon Settings"].."|r",
+		desc = L["Settings related to icons"],
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
 		args = {
 			iconConfigMode = {
 				type = "toggle",
-				name = "Icon config mode",
-				desc = "With this enabled, all icons draw so you can configure their placement\n\nNote: the combat and status icons are actually the same texture so you'll only see combat in config mode (unless you're already resting)",
+				name = L["Icon config mode"],
+				desc = L["With this enabled, all icons draw so you can configure their placement\n\nNote: the combat and status icons are actually the same texture so you'll only see combat in config mode (unless you're already resting)"],
 				get = function()
 					return self.configMode
 				end,
@@ -205,8 +206,8 @@ end
 
 			lockIconAlpha = {
 				type = "toggle",
-				name = "Lock all icons to 100% alpha",
-				desc = "With this enabled, all icons will be 100% visible regardless of the alpha settings for this bar.",
+				name = L["Lock all icons to 100% alpha"],
+				desc = L["With this enabled, all icons will be 100% visible regardless of the alpha settings for this bar."],
 				get = function()
 					return self.moduleSettings.lockIconAlpha
 				end,
@@ -219,14 +220,14 @@ end
 
 			PvPHeader = {
 				type = 'header',
-				name = 'PvP icon',
+				name = L["PvP icon"],
 				order = 39.9
 			},
 
 			PvPIcon = {
 				type = "toggle",
-				name = "Show PvP icon",
-				desc = "Whether or not to show the PvP icon",
+				name = L["Show PvP icon"],
+				desc = L["Whether or not to show the PvP icon"],
 				get = function()
 					return self.moduleSettings.showPvPIcon
 				end,
@@ -241,8 +242,8 @@ end
 			},
 			PvPIconOnTop = {
 				type = "toggle",
-				name = "Draw PVP Icon on top",
-				desc = "Whether to draw the PvP icon in front of or behind this bar",
+				name = L["Draw PVP Icon on top"],
+				desc = L["Whether to draw the PvP icon in front of or behind this bar"],
 				get = function()
 					return self.moduleSettings.PvPIconOnTop
 				end,
@@ -257,8 +258,8 @@ end
 			},
 			PvPIconOffsetX = {
 				type = "range",
-				name = "PvP Icon Horizontal Offset",
-				desc = "How much to offset the PvP icon from the bar horizontally",
+				name = L["PvP Icon Horizontal Offset"],
+				desc = L["How much to offset the PvP icon from the bar horizontally"],
 				min = 0,
 				max = 250,
 				step = 1,
@@ -276,8 +277,8 @@ end
 			},
 			PvPIconOffsetY = {
 				type = "range",
-				name = "PvP Icon Vertical Offset",
-				desc = "How much to offset the PvP icon from the bar vertically",
+				name = L["PvP Icon Vertical Offset"],
+				desc = L["How much to offset the PvP icon from the bar vertically"],
 				min = -300,
 				max = 50,
 				step = 1,
@@ -295,8 +296,8 @@ end
 			},
 			PvPIconScale = {
 				type = "range",
-				name = "PvP Icon Scale",
-				desc = "How much to scale the PvP icon",
+				name = L["PvP Icon Scale"],
+				desc = L["How much to scale the PvP icon"],
 				min = 0.05,
 				max = 2,
 				step = 0.05,
@@ -315,14 +316,14 @@ end
 
 			RaidHeader = {
 				type = 'header',
-				name = 'Raid icon',
+				name = L["Raid icon"],
 				order = 49.9
 			},
 
 			showRaidIcon = {
 				type = "toggle",
-				name = "Show Raid Icon",
-				desc = "Whether or not to show the raid icon above this bar",
+				name = L["Show Raid Icon"],
+				desc = L["Whether or not to show the raid icon above this bar"],
 				get = function()
 					return self.moduleSettings.showRaidIcon
 				end,
@@ -338,8 +339,8 @@ end
 
 			raidIconOnTop = {
 				type = "toggle",
-				name = "Draw Raid Icon On Top",
-				desc = "Whether to draw the raid icon in front of or behind this bar",
+				name = L["Draw Raid Icon On Top"],
+				desc = L["Whether to draw the raid icon in front of or behind this bar"],
 				get = function()
 					return self.moduleSettings.raidIconOnTop
 				end,
@@ -355,8 +356,8 @@ end
 
 			raidIconXOffset = {
 				type = "range",
-				name = "Raid Icon X Offset",
-				desc = "How far to push the raid icon right or left",
+				name = L["Raid Icon X Offset"],
+				desc = L["How far to push the raid icon right or left"],
 				min = -300,
 				max = 300,
 				step = 1,
@@ -376,8 +377,8 @@ end
 
 			raidIconYOffset = {
 				type = "range",
-				name = "Raid Icon Y Offset",
-				desc = "How far to push the raid icon up or down",
+				name = L["Raid Icon Y Offset"],
+				desc = L["How far to push the raid icon up or down"],
 				min = -300,
 				max = 300,
 				step = 1,
@@ -397,8 +398,8 @@ end
 
 			raidIconScale = {
 				type = "range",
-				name = "Raid Icon Scale",
-				desc = "How much to scale the raid icon",
+				name = L["Raid Icon Scale"],
+				desc = L["How much to scale the raid icon"],
 				min = 0.05,
 				max = 2,
 				step = 0.05,
@@ -417,14 +418,14 @@ end
 
 			ClassificationHeader = {
 				type = 'header',
-				name = 'Classification icon',
+				name = L["Classification icon"],
 				order = 59.9
 			},
 
 			showClassificationIcon = {
 				type = "toggle",
-				name = "Show Elite Icon",
-				desc = "Whether or not to show the rare/elite icon above this bar",
+				name = L["Show Elite Icon"],
+				desc = L["Whether or not to show the rare/elite icon above this bar"],
 				get = function()
 					return self.moduleSettings.showClassificationIcon
 				end,
@@ -440,8 +441,8 @@ end
 
 			classIconOnTop = {
 				type = "toggle",
-				name = "Draw Elite Icon On Top",
-				desc = "Whether to draw the elite icon in front of or behind this bar",
+				name = L["Draw Elite Icon On Top"],
+				desc = L["Whether to draw the elite icon in front of or behind this bar"],
 				get = function()
 					return self.moduleSettings.classIconOnTop
 				end,
@@ -457,8 +458,8 @@ end
 
 			classIconXOffset = {
 				type = "range",
-				name = "Elite Icon X Offset",
-				desc = "How far to push the elite icon right or left",
+				name = L["Elite Icon X Offset"],
+				desc = L["How far to push the elite icon right or left"],
 				min = -300,
 				max = 300,
 				step = 1,
@@ -477,8 +478,8 @@ end
 
 			classIconYOffset = {
 				type = "range",
-				name = "Elite Icon Y Offset",
-				desc = "How far to push the elite icon up or down",
+				name = L["Elite Icon Y Offset"],
+				desc = L["How far to push the elite icon up or down"],
 				min = -300,
 				max = 300,
 				step = 1,
@@ -497,8 +498,8 @@ end
 
 			classIconScale = {
 				type = "range",
-				name = "Elite Icon Scale",
-				desc = "How much to scale the elite icon",
+				name = L["Elite Icon Scale"],
+				desc = L["How much to scale the elite icon"],
 				min = 0.05,
 				max = 2,
 				step = 0.05,
@@ -517,13 +518,13 @@ end
 
 			headerPartyRoleIcon = {
 				type = 'header',
-				name = "Party Role icon",
+				name = L["Party Role icon"],
 				order = 65
 			},
 			PartyRoleIcon = {
 				type = "toggle",
-				name = "Show Party Role icon",
-				desc = "Whether or not to show the Party Role icon",
+				name = L["Show Party Role icon"],
+				desc = L["Whether or not to show the Party Role icon"],
 				get = function()
 					return self.moduleSettings.showPartyRoleIcon
 				end,
@@ -538,8 +539,8 @@ end
 			},
 			PartyRoleIconOffsetX = {
 				type = "range",
-				name = "Party Role Icon Horizontal Offset",
-				desc = "How much to offset the Party Role icon from the bar horizontally",
+				name = L["Party Role Icon Horizontal Offset"],
+				desc = L["How much to offset the Party Role icon from the bar horizontally"],
 				min = 0,
 				max = 250,
 				step = 1,
@@ -557,8 +558,8 @@ end
 			},
 			PartyRoleIconOffsetY = {
 				type = "range",
-				name = "Party Role Icon Vertical Offset",
-				desc = "How much to offset the Party Role icon from the bar vertically",
+				name = L["Party Role Icon Vertical Offset"],
+				desc = L["How much to offset the Party Role icon from the bar vertically"],
 				min = -300,
 				max = 50,
 				step = 1,
@@ -576,8 +577,8 @@ end
 			},
 			PartyRoleIconScale = {
 				type = "range",
-				name = "Party Role Icon Scale",
-				desc = "How much to scale the Party Role icon",
+				name = L["Party Role Icon Scale"],
+				desc = L["How much to scale the Party Role icon"],
 				min = 0.05,
 				max = 2,
 				step = 0.05,

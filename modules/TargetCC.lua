@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 -- needs to not be local so that we can inherit from it
 TargetCC = IceCore_CreateClass(IceUnitBar)
 
@@ -268,8 +269,8 @@ function TargetCC.prototype:GetOptions()
 
 	opts["alertParty"] = {
 		type = "toggle",
-		name = "Alert Party",
-		desc = "Broadcasts crowd control effects you apply to your target via the party chat channel",
+		name = L["Alert Party"],
+		desc = L["Broadcasts crowd control effects you apply to your target via the party chat channel"],
 		get = function()
 			return self.moduleSettings.alertParty
 		end,
@@ -283,8 +284,8 @@ function TargetCC.prototype:GetOptions()
 
 	opts["onlyShowForMyDebuffs"] = {
 		type = 'toggle',
-		name = 'Only show for my debuffs',
-		desc = 'With this checked, the bar will only activate for your own CC spells and not those of others.',
+		name = L["Only show for my debuffs"],
+		desc = L["With this checked, the bar will only activate for your own CC spells and not those of others."],
 		width = 'double',
 		get = function()
 			return self.moduleSettings.onlyShowForMyDebuffs

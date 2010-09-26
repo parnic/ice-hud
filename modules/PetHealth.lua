@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local PetHealth = IceCore_CreateClass(IceUnitBar)
 
 PetHealth.prototype.happiness = nil
@@ -141,8 +142,8 @@ function PetHealth.prototype:GetOptions()
 
 	opts["scaleHealthColor"] = {
 		type = "toggle",
-		name = "Color bar by health %",
-		desc = "Colors the health bar from MaxHealthColor to MinHealthColor based on current health %",
+		name = L["Color bar by health %"],
+		desc = L["Colors the health bar from MaxHealthColor to MinHealthColor based on current health %"],
 		get = function()
 			return self.moduleSettings.scaleHealthColor
 		end,
@@ -158,8 +159,8 @@ function PetHealth.prototype:GetOptions()
 
 	opts["allowClickTarget"] = {
 		type = 'toggle',
-		name = 'Allow click-targeting',
-		desc = 'Whether or not to allow click targeting/casting for this bar (Note: does not work properly with HiBar, have to click near the base of the bar)',
+		name = L["Allow click-targeting"],
+		desc = L["Whether or not to allow click targeting/casting for this bar (Note: does not work properly with HiBar, have to click near the base of the bar)"],
 		get = function()
 			return self.moduleSettings.allowMouseInteraction
 		end,

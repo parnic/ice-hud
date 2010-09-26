@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local SliceAndDice = IceCore_CreateClass(IceUnitBar)
 
 local NetherbladeItemIdList = {29044, 29045, 29046, 29047, 29048}
@@ -91,8 +92,8 @@ function SliceAndDice.prototype:GetOptions()
     opts["showAsPercentOfMax"] =
     {
         type = 'toggle',
-        name = 'Show bar as % of maximum',
-        desc = 'If this is checked, then the SnD buff time shows as a percent of the maximum attainable (taking set bonuses and talents into account). Otherwise, the bar always goes from full to empty when applying SnD no matter the duration.',
+        name = L["Show bar as % of maximum"],
+        desc = L["If this is checked, then the SnD buff time shows as a percent of the maximum attainable (taking set bonuses and talents into account). Otherwise, the bar always goes from full to empty when applying SnD no matter the duration."],
         get = function()
             return self.moduleSettings.showAsPercentOfMax
         end,
@@ -107,8 +108,8 @@ function SliceAndDice.prototype:GetOptions()
     opts["durationAlpha"] =
     {
         type = "range",
-        name = "Potential SnD time bar alpha",
-        desc = "What alpha value to use for the bar that displays how long your SnD will last if you activate it. (This gets multiplied by the bar's current alpha to stay in line with the bar on top of it)",
+        name = L["Potential SnD time bar alpha"],
+        desc = L["What alpha value to use for the bar that displays how long your SnD will last if you activate it. (This gets multiplied by the bar's current alpha to stay in line with the bar on top of it)"],
         min = 0,
         max = 100,
         step = 5,

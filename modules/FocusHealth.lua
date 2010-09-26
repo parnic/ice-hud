@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local FocusHealth = IceCore_CreateClass(IceUnitBar)
 
 FocusHealth.prototype.color = nil
@@ -43,8 +44,8 @@ function FocusHealth.prototype:GetOptions()
 
 	opts["classColor"] = {
 		type = "toggle",
-		name = "Class color bar",
-		desc = "Use class color as the bar color instead of reaction color",
+		name = L["Class color bar"],
+		desc = L["Use class color as the bar color instead of reaction color"],
 		get = function()
 			return self.moduleSettings.classColor
 		end,
@@ -60,8 +61,8 @@ function FocusHealth.prototype:GetOptions()
 
 	opts["hideBlizz"] = {
 		type = "toggle",
-		name = "Hide Blizzard Frame",
-		desc = "Hides Blizzard Focus frame and disables all events related to it",
+		name = L["Hide Blizzard Frame"],
+		desc = L["Hides Blizzard Focus frame and disables all events related to it"],
 		get = function()
 			return self.moduleSettings.hideBlizz
 		end,
@@ -81,8 +82,8 @@ function FocusHealth.prototype:GetOptions()
 
 	opts["scaleHealthColor"] = {
 		type = "toggle",
-		name = "Color bar by health %",
-		desc = "Colors the health bar from MaxHealthColor to MinHealthColor based on current health %",
+		name = L["Color bar by health %"],
+		desc = L["Colors the health bar from MaxHealthColor to MinHealthColor based on current health %"],
 		get = function()
 			return self.moduleSettings.scaleHealthColor
 		end,
@@ -98,12 +99,12 @@ function FocusHealth.prototype:GetOptions()
 
 	opts["iconSettings"] = {
 		type = 'group',
-		name = '|c'..self.configColor..'Icon Settings|r',
+		name = "|c"..self.configColor..L["Icon Settings"].."|r",
 		args = {
 			showRaidIcon = {
 				type = "toggle",
-				name = "Show Raid Icon",
-				desc = "Whether or not to show the raid icon above this bar",
+				name = L["Show Raid Icon"],
+				desc = L["Whether or not to show the raid icon above this bar"],
 				get = function()
 					return self.moduleSettings.showRaidIcon
 				end,
@@ -119,8 +120,8 @@ function FocusHealth.prototype:GetOptions()
 
 			lockIconAlpha = {
 				type = "toggle",
-				name = "Lock raid icon to 100% alpha",
-				desc = "With this enabled, the raid icon is always 100% alpha, regardless of the bar's alpha. Otherwise, it assumes the bar's alpha level.",
+				name = L["Lock raid icon to 100% alpha"],
+				desc = L["With this enabled, the raid icon is always 100% alpha, regardless of the bar's alpha. Otherwise, it assumes the bar's alpha level."],
 				width = 'double',
 				get = function()
 					return self.moduleSettings.lockIconAlpha
@@ -137,8 +138,8 @@ function FocusHealth.prototype:GetOptions()
 
 			raidIconOnTop = {
 				type = "toggle",
-				name = "Draw Raid Icon On Top",
-				desc = "Whether to draw the raid icon in front of or behind this bar",
+				name = L["Draw Raid Icon On Top"],
+				desc = L["Whether to draw the raid icon in front of or behind this bar"],
 				get = function()
 					return self.moduleSettings.raidIconOnTop
 				end,
@@ -154,8 +155,8 @@ function FocusHealth.prototype:GetOptions()
 
 			raidIconXOffset = {
 				type = "range",
-				name = "Raid Icon X Offset",
-				desc = "How far to push the raid icon right or left",
+				name = L["Raid Icon X Offset"],
+				desc = L["How far to push the raid icon right or left"],
 				min = -300,
 				max = 300,
 				step = 1,
@@ -175,8 +176,8 @@ function FocusHealth.prototype:GetOptions()
 
 			raidIconYOffset = {
 				type = "range",
-				name = "Raid Icon Y Offset",
-				desc = "How far to push the raid icon up or down",
+				name = L["Raid Icon Y Offset"],
+				desc = L["How far to push the raid icon up or down"],
 				min = -300,
 				max = 300,
 				step = 1,
@@ -198,8 +199,8 @@ function FocusHealth.prototype:GetOptions()
 
 	opts["shortenHealth"] = {
 		type = 'toggle',
-		name = 'Abbreviate health',
-		desc = 'If this is checked, then a health value of 1100 will display as 1.1k, otherwise it shows the number\n\nNote: this only applies if you are NOT using DogTag',
+		name = L["Abbreviate health"],
+		desc = L["If this is checked, then a health value of 1100 will display as 1.1k, otherwise it shows the number\n\nNote: this only applies if you are NOT using DogTag"],
 		get = function()
 			return self.moduleSettings.abbreviateHealth
 		end,
@@ -214,8 +215,8 @@ function FocusHealth.prototype:GetOptions()
 
 	opts["allowClickTarget"] = {
 		type = 'toggle',
-		name = 'Allow click-targeting',
-		desc = 'Whether or not to allow click targeting/casting for this bar (Note: does not work properly with HiBar, have to click near the base of the bar)',
+		name = L["Allow click-targeting"],
+		desc = L["Whether or not to allow click targeting/casting for this bar (Note: does not work properly with HiBar, have to click near the base of the bar)"],
 		get = function()
 			return self.moduleSettings.allowMouseInteraction
 		end,

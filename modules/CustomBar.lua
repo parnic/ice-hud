@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceCustomBar = IceCore_CreateClass(IceUnitBar)
 
 local validUnits = {"player", "target", "focus", "focustarget", "pet", "pettarget", "vehicle", "targettarget", "main hand weapon", "off hand weapon"}
@@ -144,14 +145,14 @@ function IceCustomBar.prototype:GetOptions()
 
 	opts["customHeader"] = {
 		type = 'header',
-		name = "Custom bar settings",
+		name = L["Custom bar settings"],
 		order = 30.1,
 	}
 
 	opts["deleteme"] = {
 		type = 'execute',
-		name = 'Delete me',
-		desc = 'Deletes this custom module and all associated settings. Cannot be undone!',
+		name = L["Delete me"],
+		desc = L["Deletes this custom module and all associated settings. Cannot be undone!"],
 		func = function()
 			local dialog = StaticPopup_Show("ICEHUD_DELETE_CUSTOM_MODULE")
 			if dialog then
@@ -163,8 +164,8 @@ function IceCustomBar.prototype:GetOptions()
 
 	opts["duplicateme"] = {
 		type = 'execute',
-		name = 'Duplicate me',
-		desc = 'Creates a new module of this same type and with all the same settings.',
+		name = L["Duplicate me"],
+		desc = L["Creates a new module of this same type and with all the same settings."],
 		func = function()
 			IceHUD:CreateCustomModuleAndNotify(self.moduleSettings.customBarType, self.moduleSettings)
 		end,
@@ -173,8 +174,8 @@ function IceCustomBar.prototype:GetOptions()
 
 	opts["name"] = {
 		type = 'input',
-		name = 'Bar name',
-		desc = 'The name of this bar (must be unique!).\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.',
+		name = L["Bar name"],
+		desc = L["The name of this bar (must be unique!).\n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
 		get = function()
 			return self.elementName
 		end,
@@ -193,8 +194,8 @@ function IceCustomBar.prototype:GetOptions()
 	opts["unitToTrack"] = {
 		type = 'select',
 		values = validUnits,
-		name = 'Unit to track',
-		desc = 'Select which unit that this bar should be looking for buffs/debuffs on',
+		name = L["Unit to track"],
+		desc = L["Select which unit that this bar should be looking for buffs/debuffs on"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.myUnit)
 		end,
@@ -215,8 +216,8 @@ function IceCustomBar.prototype:GetOptions()
 	opts["buffOrDebuff"] = {
 		type = 'select',
 		values = buffOrDebuff,
-		name = 'Buff or debuff?',
-		desc = 'Whether we are tracking a buff or debuff',
+		name = L["Buff or debuff?"],
+		desc = L["Whether we are tracking a buff or debuff"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.buffOrDebuff)
 		end,
@@ -233,8 +234,8 @@ function IceCustomBar.prototype:GetOptions()
 
 	opts["buffToTrack"] = {
 		type = 'input',
-		name = "Aura to track",
-		desc = "Which buff/debuff this bar will be tracking.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
+		name = L["Aura to track"],
+		desc = L["Which buff/debuff this bar will be tracking.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
 		get = function()
 			return self.moduleSettings.buffToTrack
 		end,
@@ -255,8 +256,8 @@ function IceCustomBar.prototype:GetOptions()
 
 	opts["exactMatch"] = {
 		type = 'toggle',
-		name = 'Exact match only',
-		desc = 'If this is checked, then the buff name must be entered exactly as the full buff name. Otherwise, you can use only a portion of the name such as "Sting" to track all stings.',
+		name = L["Exact match only"],
+		desc = L["If this is checked, then the buff name must be entered exactly as the full buff name. Otherwise, you can use only a portion of the name such as 'Sting' to track all stings."],
 		get = function()
 			return self.moduleSettings.exactMatch
 		end,
@@ -273,8 +274,8 @@ function IceCustomBar.prototype:GetOptions()
 
 	opts["trackOnlyMine"] = {
 		type = 'toggle',
-		name = 'Only track auras by me',
-		desc = 'Checking this means that only buffs or debuffs that the player applied will trigger this bar',
+		name = L["Only track auras by me"],
+		desc = L["Checking this means that only buffs or debuffs that the player applied will trigger this bar"],
 		get = function()
 			return self.moduleSettings.trackOnlyMine
 		end,
@@ -291,8 +292,8 @@ function IceCustomBar.prototype:GetOptions()
 
 	opts["barColor"] = {
 		type = 'color',
-		name = 'Bar color',
-		desc = 'The color for this bar',
+		name = L["Bar color"],
+		desc = L["The color for this bar"],
 		get = function()
 			return self:GetBarColor()
 		end,
@@ -310,8 +311,8 @@ function IceCustomBar.prototype:GetOptions()
 
 	opts["displayWhenEmpty"] = {
 		type = 'toggle',
-		name = 'Display when empty',
-		desc = 'Whether or not to display this bar even if the buff/debuff specified is not present.',
+		name = L["Display when empty"],
+		desc = L["Whether or not to display this bar even if the buff/debuff specified is not present."],
 		get = function()
 			return self.moduleSettings.displayWhenEmpty
 		end,
@@ -327,8 +328,8 @@ function IceCustomBar.prototype:GetOptions()
 
 	opts["buffTimerDisplay"] = {
 		type = 'select',
-		name = 'Buff timer display',
-		desc = 'How to display the buff timer next to the name of the buff on the bar',
+		name = L["Buff timer display"],
+		desc = L["How to display the buff timer next to the name of the buff on the bar"],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.buffTimerDisplay)
 		end,
@@ -345,8 +346,8 @@ function IceCustomBar.prototype:GetOptions()
 
 	opts["maxDuration"] = {
 		type = 'input',
-		name = "Maximum duration",
-		desc = "Maximum Duration for the bar (the bar will remained full if it has longer than maximum remaining).  Leave 0 for spell duration.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save.",
+		name = L["Maximum duration"],
+		desc = L["Maximum Duration for the bar (the bar will remained full if it has longer than maximum remaining).  Leave 0 for spell duration.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
 		get = function()
 			return self.moduleSettings.maxDuration
 		end,
@@ -366,12 +367,12 @@ function IceCustomBar.prototype:GetOptions()
 
 	opts["iconSettings"] = {
 		type = 'group',
-		name = '|c'..self.configColor..'Icon Settings|r',
+		name = "|c"..self.configColor..L["Icon Settings"].."|r",
 		args = {
 			displayAuraIcon = {
 				type = 'toggle',
-				name = "Display aura icon",
-				desc = "Whether or not to display an icon for the aura that this bar is tracking",
+				name = L["Display aura icon"],
+				desc = L["Whether or not to display an icon for the aura that this bar is tracking"],
 				get = function()
 					return self.moduleSettings.displayAuraIcon
 				end,
@@ -396,8 +397,8 @@ function IceCustomBar.prototype:GetOptions()
 				min = -250,
 				max = 250,
 				step = 1,
-				name = "Aura icon horizontal offset",
-				desc = "Adjust the horizontal position of the aura icon",
+				name = L["Aura icon horizontal offset"],
+				desc = L["Adjust the horizontal position of the aura icon"],
 				get = function()
 					return self.moduleSettings.auraIconXOffset
 				end,
@@ -416,8 +417,8 @@ function IceCustomBar.prototype:GetOptions()
 				min = -250,
 				max = 250,
 				step = 1,
-				name = "Aura icon vertical offset",
-				desc = "Adjust the vertical position of the aura icon",
+				name = L["Aura icon vertical offset"],
+				desc = L["Adjust the vertical position of the aura icon"],
 				get = function()
 					return self.moduleSettings.auraIconYOffset
 				end,
@@ -436,8 +437,8 @@ function IceCustomBar.prototype:GetOptions()
 				min = 0.1,
 				max = 3.0,
 				step = 0.05,
-				name = 'Aura icon scale',
-				desc = 'Adjusts the size of the aura icon for this bar',
+				name = L["Aura icon scale"],
+				desc = L["Adjusts the size of the aura icon for this bar"],
 				get = function()
 					return self.moduleSettings.auraIconScale
 				end,

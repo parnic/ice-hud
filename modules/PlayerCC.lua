@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 -- changed to inherit from the TargetCC bar since the only difference is the unit and the default placement
 -- helps keep changes in one place and we don't have to duplicate the CC spell tables and they don't have to be globals
 local PlayerCC = IceCore_CreateClass(TargetCC)
