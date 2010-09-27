@@ -711,28 +711,9 @@ function IceHUD:populateDefaults(db, defaults, blocker)
 	end
 end
 
-StaticPopupDialogs["ICEHUD_RESET"] =
-{
-	text = "Are you sure you want to reset IceHUD settings?",
-	button1 = OKAY,
-	button2 = CANCEL,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 1,
-	OnShow = function(self)
-		self:SetFrameStrata("TOOLTIP")
-	end,
-	OnHide = function(self)
-		self:SetFrameStrata("DIALOG")
-	end,
-	OnAccept = function()
-		IceHUD:ResetSettings()
-	end
-}
-
 StaticPopupDialogs["ICEHUD_CUSTOM_BAR_CREATED"] =
 {
-	text = "A custom bar has been created and can be configured through Module Settings => MyCustomBar. It is highly recommended that you change the bar name of this module so that it's easier to identify.",
+	text = L["A custom bar has been created and can be configured through Module Settings => MyCustomBar. It is highly recommended that you change the bar name of this module so that it's easier to identify."],
 	button1 = OKAY,
 	timeout = 0,
 	whileDead = 1,
@@ -747,7 +728,7 @@ StaticPopupDialogs["ICEHUD_CUSTOM_BAR_CREATED"] =
 
 StaticPopupDialogs["ICEHUD_CUSTOM_COUNTER_CREATED"] =
 {
-	text = "A custom counter has been created and can be configured through Module Settings => MyCustomCounter. It is highly recommended that you change the bar name of this module so that it's easier to identify.",
+	text = L["A custom counter has been created and can be configured through Module Settings => MyCustomCounter. It is highly recommended that you change the bar name of this module so that it's easier to identify."],
 	button1 = OKAY,
 	timeout = 0,
 	whileDead = 1,
@@ -762,7 +743,7 @@ StaticPopupDialogs["ICEHUD_CUSTOM_COUNTER_CREATED"] =
 
 StaticPopupDialogs["ICEHUD_CUSTOM_CD_CREATED"] =
 {
-	text = "A custom cooldown bar has been created and can be configured through Module Settings => MyCustomCD. It is highly recommended that you change the bar name of this module so that it's easier to identify.",
+	text = L["A custom cooldown bar has been created and can be configured through Module Settings => MyCustomCD. It is highly recommended that you change the bar name of this module so that it's easier to identify."],
 	button1 = OKAY,
 	timeout = 0,
 	whileDead = 1,
@@ -777,7 +758,7 @@ StaticPopupDialogs["ICEHUD_CUSTOM_CD_CREATED"] =
 
 StaticPopupDialogs["ICEHUD_CUSTOM_HEALTH_CREATED"] =
 {
-	text = "A custom health bar has been created and can be configured through Module Settings => MyCustomHealth. It is highly recommended that you change the bar name of this module so that it's easier to identify.",
+	text = L["A custom health bar has been created and can be configured through Module Settings => MyCustomHealth. It is highly recommended that you change the bar name of this module so that it's easier to identify."],
 	button1 = OKAY,
 	timeout = 0,
 	whileDead = 1,
@@ -792,7 +773,7 @@ StaticPopupDialogs["ICEHUD_CUSTOM_HEALTH_CREATED"] =
 
 StaticPopupDialogs["ICEHUD_CUSTOM_MANA_CREATED"] =
 {
-	text = "A custom mana bar has been created and can be configured through Module Settings => MyCustomMana. It is highly recommended that you change the bar name of this module so that it's easier to identify.",
+	text = L["A custom mana bar has been created and can be configured through Module Settings => MyCustomMana. It is highly recommended that you change the bar name of this module so that it's easier to identify."],
 	button1 = OKAY,
 	timeout = 0,
 	whileDead = 1,
@@ -807,9 +788,9 @@ StaticPopupDialogs["ICEHUD_CUSTOM_MANA_CREATED"] =
 
 StaticPopupDialogs["ICEHUD_DELETE_CUSTOM_MODULE"] =
 {
-	text = "Are you sure you want to delete this module? This will remove all settings associated with it and cannot be un-done.",
-	button1 = "Yes",
-	button2 = "No",
+	text = L["Are you sure you want to delete this module? This will remove all settings associated with it and cannot be un-done."],
+	button1 = YES,
+	button2 = NO,
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 0,
@@ -826,8 +807,8 @@ StaticPopupDialogs["ICEHUD_DELETE_CUSTOM_MODULE"] =
 }
 
 StaticPopupDialogs["ICEHUD_CHANGED_DOGTAG"] = {
-	text = "This option requires the UI to be reloaded. Do you wish to reload it now?",
-	button1 = "Yes",
+	text = L["This option requires the UI to be reloaded. Do you wish to reload it now?"],
+	button1 = YES,
 	OnShow = function(self)
 		self:SetFrameStrata("TOOLTIP")
 	end,
@@ -837,14 +818,14 @@ StaticPopupDialogs["ICEHUD_CHANGED_DOGTAG"] = {
 	OnAccept = function()
 		ReloadUI()
 	end,
-	button2 = "No",
+	button2 = NO,
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = 0
 }
 
 StaticPopupDialogs["ICEHUD_CHANGED_PROFILE_COMBAT"] = {
-	text = "You have changed IceHUD profiles while in combat. This can cause problems due to Blizzard's secure frame policy. You may need to reload your UI to repair IceHUD.",
+	text = L["You have changed IceHUD profiles while in combat. This can cause problems due to Blizzard's secure frame policy. You may need to reload your UI to repair IceHUD."],
 	button1 = OKAY,
 	OnShow = function(self)
 		self:SetFrameStrata("TOOLTIP")
@@ -868,7 +849,7 @@ function IceHUD:OnInitialize()
 
 	self.db = LibStub("AceDB-3.0"):New("IceCoreDB", self.IceCore.defaults, true)
 	if not self.db or not self.db.global or not self.db.profile then
-		print("Error: IceHUD database not loaded correctly.  Please exit out of WoW and delete the database file (IceHUD.lua) found in: \\World of Warcraft\\WTF\\Account\\<Account Name>>\\SavedVariables\\")
+		print(L["Error: IceHUD database not loaded correctly.  Please exit out of WoW and delete the database file (IceHUD.lua) found in: \\World of Warcraft\\WTF\\Account\\<Account Name>>\\SavedVariables\\"])
 		return
 	end
 
@@ -899,7 +880,7 @@ function IceHUD:OnInitialize()
 			if not UnitAffectingCombat("player") then
 				IceHUD:OpenConfig()
 			else
-				DEFAULT_CHAT_FRAME:AddMessage("|cff8888ffIceHUD|r: Combat lockdown restriction. Leave combat and try again.")
+				DEFAULT_CHAT_FRAME:AddMessage(L["|cff8888ffIceHUD|r: Combat lockdown restriction. Leave combat and try again."])
 			end
 		end)
 	self:RegisterChatCommand("rl", function() ReloadUI() end)
@@ -1057,14 +1038,14 @@ function IceHUD:InitLDB()
 	if (LDB) then
 		local ldbButton = LDB:NewDataObject("IceHUD", {
 			type = "launcher",
-			text = "IceHUD",
-			label = "IceHUD",
+			text = L["IceHUD"],
+			label = L["IceHUD"],
 			icon = "Interface\\Icons\\Spell_Frost_Frost",
 			OnClick = function(button, msg)
 				if not UnitAffectingCombat("player") then
 					IceHUD:OpenConfig()
 				else
-					DEFAULT_CHAT_FRAME:AddMessage("|cff8888ffIceHUD|r: Combat lockdown restriction. Leave combat and try again.")
+					DEFAULT_CHAT_FRAME:AddMessage(L["|cff8888ffIceHUD|r: Combat lockdown restriction. Leave combat and try again."])
 				end
 			end,
 		})
@@ -1075,8 +1056,8 @@ function IceHUD:InitLDB()
 
 		if ldbButton then
 			function ldbButton:OnTooltipShow()
-				self:AddLine("IceHUD @project-version@")
-				self:AddLine("Click to open IceHUD options.", 1, 1, 1)
+				self:AddLine(L["IceHUD"] .. " @project-version@")
+				self:AddLine(L["Click to open IceHUD options."], 1, 1, 1)
 			end
 		end
 	end
