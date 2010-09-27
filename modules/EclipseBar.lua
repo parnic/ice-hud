@@ -116,7 +116,7 @@ function EclipseBar.prototype:UpdateShown()
 	local form  = GetShapeshiftFormID();
 
 	if form == MOONKIN_FORM or not form then
-		if GetMasteryIndex(GetActiveTalentGroup(false, false)) == 1 then
+		if GetPrimaryTalentTree() == 1 then
 			self:Show(true)
 		else
 			self:Show(false)
