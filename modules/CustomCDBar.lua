@@ -25,7 +25,7 @@ function IceCustomCDBar.prototype:Enable(core)
 	IceCustomCDBar.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN", "UpdateCustomBarEvent")
-	self:RegisterEvent("SPELL_UPDATE_USEABLE", "UpdateCustomBarEvent")
+	self:RegisterEvent("SPELL_UPDATE_USABLE", "UpdateCustomBarEvent")
 
 	self:Show(true)
 
@@ -372,11 +372,13 @@ end
 function IceCustomCDBar.prototype:GetCooldownDuration(buffName)
 	local now = GetTime()
 	local localDuration = nil
-	local localStart, localRemaining, hasCooldown = GetSpellCooldown(self.moduleSettings.cooldownToTrack)
+	local localStart, localRemaining, hasCooldown = GetSpellCooldown(buffName)
 
 	if (hasCooldown == 1) then
 		-- the item has a potential cooldown
-		if (localStart > now) then
+		if localStart == 0 and localRemaining == 0 then
+			return nil, nil
+		elseif (localStart > now) then
 			localRemaining = localRemaining + (localStart - now)
 			localDuration = localRemaining
 		else
@@ -391,7 +393,7 @@ function IceCustomCDBar.prototype:GetCooldownDuration(buffName)
 		if localDuration > 1.5  then
 			return localDuration, localRemaining
 		else
-			localRemaining = self.cooldownEndTime - now
+			localRemaining = (self.cooldownEndTime or now) - now
 			if localRemaining > 0 then
 				return self.cooldownDuration, localRemaining
 			else
@@ -462,7 +464,7 @@ function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
 			self:GetCooldownDuration(self.moduleSettings.cooldownToTrack)
 
 		if not remaining then
-			self.cooldownEndTime = 0
+			self.cooldownEndTime = nil
 		else
 			self.cooldownEndTime = remaining + now
 		end
