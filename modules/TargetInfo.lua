@@ -1077,7 +1077,7 @@ function IceTargetInfo.prototype:UpdateBuffs()
 		for i = 1, IceCore.BuffLimit do
 			local buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe, unitCaster;
 			if IceHUD.WowVer >= 30000 then
-				buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, unitCaster
+				buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, unitCaster, isStealable
 					= UnitAura(self.unit, i, "HELPFUL" .. (filterBuffs and "|PLAYER" or "")) --UnitBuff(self.unit, i, filterBuffs and not hostile)
 
 				isFromMe = (unitCaster == "player")

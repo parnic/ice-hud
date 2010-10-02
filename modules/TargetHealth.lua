@@ -260,8 +260,8 @@ end
 				type = "range",
 				name = L["PvP Icon Horizontal Offset"],
 				desc = L["How much to offset the PvP icon from the bar horizontally"],
-				min = 0,
-				max = 250,
+				min = -300,
+				max = 300,
 				step = 1,
 				get = function()
 					return self.moduleSettings.PvPIconOffset['x']
@@ -541,8 +541,8 @@ end
 				type = "range",
 				name = L["Party Role Icon Horizontal Offset"],
 				desc = L["How much to offset the Party Role icon from the bar horizontally"],
-				min = 0,
-				max = 250,
+				min = -300,
+				max = 300,
 				step = 1,
 				get = function()
 					return self.moduleSettings.PartyRoleIconOffset['x']
