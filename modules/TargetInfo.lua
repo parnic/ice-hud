@@ -28,6 +28,7 @@ IceTargetInfo.prototype.reaction = nil
 IceTargetInfo.prototype.tapped = nil
 
 IceTargetInfo.prototype.isPlayer = nil
+IceTargetInfo.prototype.playerClass = nil
 
 
 -- Constructor --
@@ -50,6 +51,8 @@ end
 -- OVERRIDE
 function IceTargetInfo.prototype:Enable(core)
 	IceTargetInfo.super.prototype.Enable(self, core)
+
+	_, self.playerClass = UnitClass("player")
 
 	if IceHUD.IceCore:ShouldUseDogTags() then
 		DogTag = LibStub("LibDogTag-3.0", true)
@@ -946,7 +949,7 @@ function IceTargetInfo.prototype:CreateDebuffFrame(redraw)
 end
 
 
-function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
+function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type, skipSize)
 	local lastX = 0
 	local lastBuffSize = 0
 
@@ -967,12 +970,14 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 		end
 
 		buffs[i].icon:SetFrameStrata("BACKGROUND")
-		if buffs[i].fromPlayer then
-			buffs[i].icon:SetWidth(self.moduleSettings.ownBuffSize-2)
-			buffs[i].icon:SetHeight(self.moduleSettings.ownBuffSize-2)
-		else
-			buffs[i].icon:SetWidth(self.moduleSettings.buffSize-2)
-			buffs[i].icon:SetHeight(self.moduleSettings.buffSize-2)
+		if not skipSize then
+			if buffs[i].fromPlayer then
+				buffs[i].icon:SetWidth(self.moduleSettings.ownBuffSize-2)
+				buffs[i].icon:SetHeight(self.moduleSettings.ownBuffSize-2)
+			else
+				buffs[i].icon:SetWidth(self.moduleSettings.buffSize-2)
+				buffs[i].icon:SetHeight(self.moduleSettings.buffSize-2)
+			end
 		end
 
 		buffs[i].cd:SetFrameStrata("BACKGROUND")
@@ -1075,7 +1080,7 @@ function IceTargetInfo.prototype:UpdateBuffs()
 
 	if self.moduleSettings.showBuffs then
 		for i = 1, IceCore.BuffLimit do
-			local buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe, unitCaster;
+			local buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe, unitCaster, isStealable;
 			if IceHUD.WowVer >= 30000 then
 				buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, unitCaster, isStealable
 					= UnitAura(self.unit, i, "HELPFUL" .. (filterBuffs and "|PLAYER" or "")) --UnitBuff(self.unit, i, filterBuffs and not hostile)
@@ -1089,7 +1094,7 @@ function IceTargetInfo.prototype:UpdateBuffs()
 			end
 
 			if (buffTexture) then
-				self:SetUpBuff(i, buffTexture, buffDuration, buffTimeLeft, isFromMe, buffApplications)
+				self:SetUpBuff(i, buffTexture, buffDuration, buffTimeLeft, isFromMe, buffApplications, buffType, isStealable)
 			else
 				self.frame.buffFrame.buffs[i]:Hide()
 			end
@@ -1097,7 +1102,7 @@ function IceTargetInfo.prototype:UpdateBuffs()
 	end
 
 	local direction = self.moduleSettings.buffGrowDirection == "Left" and -1 or 1
-	self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, direction, self.frame.buffFrame.buffs, "buff")
+	self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, direction, self.frame.buffFrame.buffs, "buff", true)
 
 	if self.moduleSettings.showDebuffs then
 		for i = 1, IceCore.BuffLimit do
@@ -1107,10 +1112,10 @@ function IceTargetInfo.prototype:UpdateBuffs()
 			local isFromMe = (unitCaster == "player")
 
 			if (buffTexture and (not hostile or not filterDebuffs or (filterDebuffs and debuffDuration))) then
-
-				local color = debuffDispelType and DebuffTypeColor[debuffDispelType] or DebuffTypeColor["none"]
 				local alpha = buffTexture and 1 or 0
 				self.frame.debuffFrame.buffs[i].texture:SetTexture(1, 1, 1, alpha)
+
+				local color = debuffDispelType and DebuffTypeColor[debuffDispelType] or DebuffTypeColor["none"]
 				self.frame.debuffFrame.buffs[i].texture:SetVertexColor(color.r, color.g, color.b)
 
 				-- cooldown frame
@@ -1153,15 +1158,33 @@ function IceTargetInfo.prototype:UpdateBuffs()
 end
 
 
-function IceTargetInfo.prototype:SetUpBuff(i, buffTexture, buffDuration, buffTimeLeft, isFromMe, buffApplications, buffType)
+function IceTargetInfo.prototype:SetUpBuff(i, buffTexture, buffDuration, buffTimeLeft, isFromMe, buffApplications, buffType, isStealable)
 	local zoom = self.moduleSettings.zoom
+
+	if isStealable and self.playerClass == "MAGE" then
+		self.frame.buffFrame.buffs[i].texture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
+		if isFromMe then
+			self.frame.buffFrame.buffs[i].icon:SetWidth(self.moduleSettings.ownBuffSize-8)
+			self.frame.buffFrame.buffs[i].icon:SetHeight(self.moduleSettings.ownBuffSize-8)
+		else
+			self.frame.buffFrame.buffs[i].icon:SetWidth(self.moduleSettings.buffSize-8)
+			self.frame.buffFrame.buffs[i].icon:SetHeight(self.moduleSettings.buffSize-8)
+		end
+	else
+		local alpha = buffTexture and 0.5 or 0
+		self.frame.buffFrame.buffs[i].texture:SetTexture(0, 0, 0, alpha)
+		if isFromMe then
+			self.frame.buffFrame.buffs[i].icon:SetWidth(self.moduleSettings.ownBuffSize-2)
+			self.frame.buffFrame.buffs[i].icon:SetHeight(self.moduleSettings.ownBuffSize-2)
+		else
+			self.frame.buffFrame.buffs[i].icon:SetWidth(self.moduleSettings.buffSize-2)
+			self.frame.buffFrame.buffs[i].icon:SetHeight(self.moduleSettings.buffSize-2)
+		end
+	end
 
 	self.frame.buffFrame.buffs[i].type = buffType
 	self.frame.buffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
 	self.frame.buffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
-
-	local alpha = buffTexture and 0.5 or 0
-	self.frame.buffFrame.buffs[i].texture:SetTexture(0, 0, 0, alpha)
 
 	-- cooldown frame
 	if (buffDuration and buffDuration > 0 and
