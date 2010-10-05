@@ -96,7 +96,7 @@ function IceClassPowerCounter.prototype:GetOptions()
 			self:SetDisplayMode()
 			self:UpdateRunePower()
 		end,
-		values = { "Graphical", "Numeric" },
+		values = { "Graphical", "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Clean Circle", "Graphical Glow" },
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
@@ -121,7 +121,7 @@ function IceClassPowerCounter.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		hidden = function()
-			return self.moduleSettings.runeMode ~= "Graphical"
+			return self.moduleSettings.runeMode == "Numeric"
 		end,
 		order = 34.1
 	}
@@ -142,7 +142,7 @@ function IceClassPowerCounter.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		hidden = function()
-			return self.moduleSettings.runeMode ~= "Graphical"
+			return self.moduleSettings.runeMode == "Numeric"
 		end,
 		order = 35
 	}
@@ -164,7 +164,7 @@ function IceClassPowerCounter.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		hidden = function()
-			return self.moduleSettings.runeMode ~= "Graphical"
+			return self.moduleSettings.runeMode == "Numeric"
 		end,
 		order = 36
 	}
@@ -183,9 +183,73 @@ function IceClassPowerCounter.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		hidden = function()
-			return self.moduleSettings.runeMode ~= "Graphical"
+			return self.moduleSettings.runeMode == "Numeric"
 		end,
 		order = 37
+	}
+
+	opts["customColor"] = {
+		type = 'color',
+		name = L["Custom color"],
+		desc = L["The color for this counter"],
+		get = function()
+			return self:GetCustomColor()
+		end,
+		set = function(info, r,g,b)
+			self.moduleSettings.customColor.r = r
+			self.moduleSettings.customColor.g = g
+			self.moduleSettings.customColor.b = b
+			self:UpdateRunePower()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return self.moduleSettings.runeMode == "Numeric" or self.moduleSettings.runeMode == "Graphical"
+		end,
+		order = 38,
+	}
+
+	opts["customMinColor"] = {
+		type = 'color',
+		name = L["Custom minimum color"],
+		desc = L["The minimum color for this counter (only used if Change Color is enabled)"],
+		get = function()
+			return self:GetCustomMinColor()
+		end,
+		set = function(info, r,g,b)
+			self.moduleSettings.customMinColor.r = r
+			self.moduleSettings.customMinColor.g = g
+			self.moduleSettings.customMinColor.b = b
+			self:UpdateRunePower()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not self.moduleSettings.gradient
+		end,
+		hidden = function()
+			return self.moduleSettings.runeMode == "Numeric" or self.moduleSettings.runeMode == "Graphical"
+		end,
+		order = 39,
+	}
+
+	opts["gradient"] = {
+		type = "toggle",
+		name = L["Change color"],
+		desc = L["This will fade the graphical representation from the min color specified to the regular color\n\n(e.g. if the min color is yellow, the color is red, and there are 3 total applications, then the first would be yellow, second orange, and third red)"],
+		get = function()
+			return self.moduleSettings.gradient
+		end,
+		set = function(info, v)
+			self.moduleSettings.gradient = v
+			self:UpdateRunePower()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return self.moduleSettings.runeMode == "Numeric" or self.moduleSettings.runeMode == "Graphical"
+		end,
+		order = 40,
 	}
 
 	return opts
@@ -207,6 +271,9 @@ function IceClassPowerCounter.prototype:GetDefaultSettings()
 	defaults["runeGap"] = 0
 	defaults["flashWhenBecomingReady"] = true
 	defaults["inactiveDisplayMode"] = "Darkened"
+	defaults["gradient"] = true
+	defaults["customMinColor"] = {r=1, g=1, b=0, a=1}
+	defaults["customColor"] = {r=1, g=0, b=0, a=1}
 
 	return defaults
 end
@@ -217,6 +284,14 @@ function IceClassPowerCounter.prototype:Redraw()
 	IceClassPowerCounter.super.prototype.Redraw(self)
 
 	self:CreateFrame()
+end
+
+function IceClassPowerCounter.prototype:GetCustomColor()
+	return self.moduleSettings.customColor.r, self.moduleSettings.customColor.g, self.moduleSettings.customColor.b, self.alpha
+end
+
+function IceClassPowerCounter.prototype:GetCustomMinColor()
+	return self.moduleSettings.customMinColor.r, self.moduleSettings.customMinColor.g, self.moduleSettings.customMinColor.b, self.alpha
 end
 
 
@@ -244,10 +319,17 @@ end
 function IceClassPowerCounter.prototype:UpdateRunePower()
 	local numReady = UnitPower("player", self.unitPower)
 
-	if self.moduleSettings.runeMode == "Graphical" then
+	if self.moduleSettings.runeMode == "Numeric" then
+		self.frame.numeric:SetText(tostring(numReady))
+		self.frame.numeric:SetTextColor(self:GetColor(self.numericColor))
+	else
 		for i=1, self.numRunes do
 			if i <= numReady then
-				self.frame.graphical[i].rune:SetVertexColor(1, 1, 1)
+				if self.moduleSettings.runeMode == "Graphical" then
+					self.frame.graphical[i].rune:SetVertexColor(1, 1, 1)
+				else
+					self:SetCustomColor(i)
+				end
 
 				if self.moduleSettings.inactiveDisplayMode == "Hidden" then
 					self.frame.graphical[i]:Show()
@@ -270,9 +352,6 @@ function IceClassPowerCounter.prototype:UpdateRunePower()
 				end
 			end
 		end
-	elseif self.moduleSettings.runeMode == "Numeric" then
-		self.frame.numeric:SetText(tostring(numReady))
-		self.frame.numeric:SetTextColor(self:GetColor(self.numericColor))
 	end
 
 	self.lastNumReady = numReady
@@ -295,7 +374,6 @@ function IceClassPowerCounter.prototype:CreateFrame()
 	IceClassPowerCounter.super.prototype.CreateFrame(self)
 
 	self.frame:SetFrameStrata("BACKGROUND")
-	self.frame:SetWidth(self.runeWidth*self.numRunes)
 	self.frame:SetHeight(self.runeHeight)
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
@@ -306,15 +384,16 @@ function IceClassPowerCounter.prototype:CreateFrame()
 end
 
 function IceClassPowerCounter.prototype:SetDisplayMode()
-	if self.moduleSettings.runeMode == "Graphical" then
-		self.frame.numeric:Hide()
-		for i=1, self.numRunes do
-			self.frame.graphical[i]:Show()
-		end
-	elseif self.moduleSettings.runeMode == "Numeric" then
+	if self.moduleSettings.runeMode == "Numeric" then
 		self.frame.numeric:Show()
 		for i=1, self.numRunes do
 			self.frame.graphical[i]:Hide()
+		end
+	else
+		self.frame.numeric:Hide()
+		for i=1, self.numRunes do
+			self:SetupRuneTexture(i)
+			self.frame.graphical[i]:Show()
 		end
 	end
 end
@@ -346,19 +425,14 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 		self.frame.graphical[i].rune:SetAllPoints(self.frame.graphical[i])
 		self.frame.graphical[i].shine = self.frame.graphical[i]:CreateTexture(nil, "OVERLAY")
 
+		self.frame.graphical[i]:SetWidth(self.runeWidth)
+		self.frame.graphical[i]:SetHeight(self.runeHeight)
+
 		self:SetupRuneTexture(i)
 		self.frame.graphical[i].rune:SetVertexColor(0, 0, 0)
 	end
 
 	self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
-	self.frame.graphical[i]:SetWidth(self.runeWidth)
-	self.frame.graphical[i]:SetHeight(self.runeHeight)
-
-	if self.moduleSettings.displayMode == "Horizontal" then
-		self.frame.graphical[i]:SetPoint("TOPLEFT", (i-1) * (self.runeWidth-5) + (i-1) + ((i-1) * self.moduleSettings.runeGap), 0)
-	else
-		self.frame.graphical[i]:SetPoint("TOPLEFT", 0, -1 * ((i-1) * (self.runeHeight-5) + (i-1) + ((i-1) * self.moduleSettings.runeGap)))
-	end
 
 	self.frame.graphical[i]:Hide()
 
@@ -377,13 +451,72 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 		return
 	end
 
-	self.frame.graphical[rune].rune:SetTexture(self:GetRuneTexture(rune))
-	local a,b,c,d = unpack(self.runeCoords[rune])
+	local width = self.runeHeight
+	local a,b,c,d = 0, 1, 0, 1
+	if self.moduleSettings.runeMode == "Graphical" then
+		width = self.runeWidth
+		a,b,c,d = unpack(self.runeCoords[rune])
+	end
+
+	-- make sure any texture aside from the special one is square and has the proper coordinates
 	self.frame.graphical[rune].rune:SetTexCoord(a, b, c, d)
+	self.frame.graphical[rune]:SetWidth(width)
+	self.frame:SetWidth(width*self.numRunes)
+	if self.moduleSettings.displayMode == "Horizontal" then
+		self.frame.graphical[rune]:SetPoint("TOPLEFT", (rune-1) * (width-5) + (rune-1) + ((rune-1) * self.moduleSettings.runeGap), 0)
+	else
+		self.frame.graphical[rune]:SetPoint("TOPLEFT", 0, -1 * ((rune-1) * (self.runeHeight-5) + (rune-1) + ((rune-1) * self.moduleSettings.runeGap)))
+	end
+
+	if self.moduleSettings.runeMode == "Graphical" then
+		self.frame.graphical[rune].rune:SetTexture(self:GetRuneTexture(rune))
+	elseif self.moduleSettings.runeMode == "Graphical Bar" then
+		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "Combo")
+	elseif self.moduleSettings.runeMode == "Graphical Circle" then
+		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "ComboRound")
+	elseif self.moduleSettings.runeMode == "Graphical Glow" then
+		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "ComboGlow")
+	elseif self.moduleSettings.runeMode == "Graphical Clean Circle" then
+		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "ComboCleanCurves")
+	end
 end
 
 function IceClassPowerCounter.prototype:GetAlphaAdd()
 	return 0.15
+end
+
+function IceClassPowerCounter.prototype:SetCustomColor(i)
+	local r, g, b = self:GetCustomColor()
+	if (self.moduleSettings.gradient) then
+		r,g,b = self:GetGradientColor(i)
+	end
+	self.frame.graphical[i].rune:SetVertexColor(r, g, b)
+end
+
+function IceClassPowerCounter.prototype:GetGradientColor(curr)
+	local r, g, b = self:GetCustomColor()
+	local mr, mg, mb = self:GetCustomMinColor()
+	local scale = (curr-1)/(self.numRunes-1)
+
+	if r < mr then
+		r = ((r-mr)*scale) + mr
+	else
+		r = ((mr-r)*scale) + r
+	end
+
+	if g < mg then
+		g = ((g-mg)*scale) + mg
+	else
+		g = ((mg-g)*scale) + g
+	end
+
+	if b < mb then
+		b = ((b-mb)*scale) + mb
+	else
+		b = ((mb-b)*scale) + b
+	end
+
+	return r, g, b
 end
 
 function IceClassPowerCounter.prototype:TargetChanged()

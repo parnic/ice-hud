@@ -22,7 +22,9 @@ end
 function ShardCounter.prototype:GetOptions()
 	local opts = ShardCounter.super.prototype.GetOptions(self)
 
-	opts.hideBlizz.desc = "Hides Blizzard shard frame and disables all events related to it.\n\nNOTE: Blizzard attaches the shard UI to the player's unitframe, so if you have that hidden in PlayerHealth, then this won't do anything."
+	opts.hideBlizz.desc = L["Hides Blizzard shard frame and disables all events related to it.\n\nNOTE: Blizzard attaches the shard UI to the player's unitframe, so if you have that hidden in PlayerHealth, then this won't do anything."]
+	opts.displayMode.desc = L["Choose whether you'd like a graphical or numeric representation of the runes.\n\nNOTE: The color of 'Numeric' mode can be controlled by the ShardCounterNumeric color."]
+	opts.flashWhenReady.desc = L["Shows a flash behind each shard when it becomes available."]
 
 	return opts
 end
