@@ -17,7 +17,7 @@ IceHUD.debugging = false
 
 IceHUD.WowVer = select(4, GetBuildInfo())
 
-IceHUD.validBarList = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc", "BloodGlaives", "ArcHUD", "FangRune" }
+IceHUD.validBarList = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc", "BloodGlaives", "ArcHUD", "FangRune", "DHUD" }
 IceHUD.validCustomModules = {Bar="Buff/Debuff watcher", Counter="Buff/Debuff stack counter", CD="Ability cooldown bar", Health="Health bar", Mana="Mana bar"}
 
 local function deepcopy(object)

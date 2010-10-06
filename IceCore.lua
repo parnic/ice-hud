@@ -825,5 +825,16 @@ function IceCore.prototype:LoadPresets()
 		barBlendMode = "BLEND",
 		barBgBlendMode = "BLEND",
 	}
+
+	self.presets["DHUD"] = {
+		barTexture = "DHUD",
+		barWidth = 128,
+		barHeight = 256,
+		barProportion = 0.14,
+		barSpace = 1,
+		barBlendMode = "BLEND",
+		barBgBlendMode = "BLEND",
+	}
+
 end
 

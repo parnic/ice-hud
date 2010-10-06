@@ -62,6 +62,7 @@ function IceTargetHealth.prototype:GetDefaultSettings()
 	settings["showPartyRoleIcon"] = false
 	settings["PartyRoleIconOffset"] = {x=33, y=-8}
 	settings["PartyRoleIconScale"] = 0.9
+	settings["EliteTextureSet"] = 1
 
 	return settings
 end
@@ -456,6 +457,24 @@ end
 				order = 60.1
 			},
 
+			classIconSet = {
+				type = "select",
+				name = L["Icon set"],
+				desc = L["Which icon set to use for elite/rare elite/rare textures. This simply changes the look of the classification icon."],
+				get = function()
+					return self.moduleSettings.EliteTextureSet
+				end,
+				set = function(info, value)
+					self.moduleSettings.EliteTextureSet = value
+					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.showClassificationIcon
+				end,
+				values = {"Blizzard", "DHUD"},
+				order = 60.2
+			},
+
 			classIconXOffset = {
 				type = "range",
 				name = L["Elite Icon X Offset"],
@@ -640,6 +659,13 @@ function IceTargetHealth.prototype:Disable(core)
 	end
 end
 
+function IceTargetHealth.prototype:GetEliteTextures()
+	if self.moduleSettings.EliteTextureSet == 1 then
+		return IceElement.TexturePath .. "Elite", IceElement.TexturePath .. "RareElite", IceElement.TexturePath .. "Rare"
+	else
+		return IceElement.TexturePath .. "Elite2", IceElement.TexturePath .. "RareElite2", IceElement.TexturePath .. "Rare2"
+	end
+end
 
 function IceTargetHealth.prototype:CreateBackground(redraw)
 	IceTargetHealth.super.prototype.CreateBackground(self)
@@ -749,12 +775,13 @@ function IceTargetHealth.prototype:Update(unit)
 		self.barFrame.classIcon:Show()
 		self.barFrame.classIcon:SetAlpha(self.alpha == 0 and 0 or math.min(1, self.alpha + 0.2))
 
+		local elite, rareelite, rare = self:GetEliteTextures()
 		if self.configMode or IceHUD.IceCore:IsInConfigMode() or classification == "worldboss" or classification == "elite" then
-			self.barFrame.classIcon:SetTexture(self.EliteTexture)
+			self.barFrame.classIcon:SetTexture(elite)
 		elseif classification == "rareelite" then
-			self.barFrame.classIcon:SetTexture(self.RareEliteTexture)
+			self.barFrame.classIcon:SetTexture(rareelite)
 		elseif classification == "rare" then
-			self.barFrame.classIcon:SetTexture(self.RareTexture)
+			self.barFrame.classIcon:SetTexture(rare)
 		else
 			self:DestroyTexFrame(self.barFrame.classIcon)
 			self.barFrame.classIcon:Hide()
