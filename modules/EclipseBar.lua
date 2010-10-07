@@ -127,7 +127,7 @@ function EclipseBar.prototype:UpdateShown()
 end
 
 function EclipseBar.prototype:UseTargetAlpha(scale)
-	return UnitPower("player", SPELL_POWER_ECLIPSE) ~= 0
+	return UnitPower("player", SPELL_POWER_ECLIPSE) ~= 0 and self.combat
 end
 
 function EclipseBar.prototype:UpdateEclipseBuffs()

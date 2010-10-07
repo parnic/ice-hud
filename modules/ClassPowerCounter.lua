@@ -284,6 +284,7 @@ function IceClassPowerCounter.prototype:Redraw()
 	IceClassPowerCounter.super.prototype.Redraw(self)
 
 	self:CreateFrame()
+	self:UpdateRunePower()
 end
 
 function IceClassPowerCounter.prototype:GetCustomColor()
