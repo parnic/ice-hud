@@ -1,7 +1,7 @@
 ## Interface: 30300
 ## Author: Parnic, originally created by Iceroth
 ## Name: IceHUD
-## Title: IceHUD |cff7fff7f -Ace3-|r
+## Title: IceHUD |cff7fff7f-Ace3-|r
 ## Notes: Another HUD addon
 ## Version: @project-version@ (Revision: @project-revision@)
 ## SavedVariables: IceCoreDB
