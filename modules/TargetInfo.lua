@@ -352,10 +352,30 @@ function IceTargetInfo.prototype:GetOptions()
 		order = 37
 	}
 
+	opts["spaceBetweenBuffs"] = {
+		type = 'range',
+		name = L["Space between buffs"],
+		desc = L["How much space should be between each buff or debuff icon."],
+		get = function()
+			return self.moduleSettings.spaceBetweenBuffs
+		end,
+		set = function(info, v)
+			self.moduleSettings.spaceBetweenBuffs = v
+			self:RedrawBuffs()
+		end,
+		min = 0,
+		max = 25,
+		step = 1,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 37.01,
+	}
+
 	opts["buffLocHeader"] = {
 		type = 'header',
 		name = L["Buff placement settings"],
-		order = 37.01
+		order = 37.05
 	}
 
 	opts["buffGrowDirection"] = {
@@ -677,6 +697,7 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 	defaults["alwaysFullAlpha"] = true
 	defaults["showBuffs"] = true
 	defaults["showDebuffs"] = true
+	defaults["spaceBetweenBuffs"] = 0
 
 	return defaults
 end
@@ -998,7 +1019,12 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 			lastBuffSize = 0
 		end
 
-		local x = lastX + lastBuffSize
+		local spaceOffset = ((pos == 1 or self.moduleSettings.perRow == 1) and 0 or self.moduleSettings.spaceBetweenBuffs)
+		if direction < 0 then
+			spaceOffset = spaceOffset * -1
+		end
+
+		local x = lastX + lastBuffSize + spaceOffset
 		lastX = x
 		lastBuffSize = (buffSize * direction)
 		local y = math.floor((i-1) / self.moduleSettings.perRow) * math.max(self.moduleSettings.buffSize, self.moduleSettings.ownBuffSize) * -1
