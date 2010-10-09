@@ -888,7 +888,7 @@ function PlayerHealth.prototype:CreateHealBar()
 
 	self:UpdateBar(1, "undef")
 
-	if not self.moduleSettings.showIncomingHeals or not HealComm then
+	if not self.moduleSettings.showIncomingHeals or (IceHUD.WowVer < 40000 and not HealComm) then
 		self.healFrame.bar:Hide()
 	end
 end
