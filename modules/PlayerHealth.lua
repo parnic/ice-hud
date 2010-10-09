@@ -147,7 +147,7 @@ function PlayerHealth.prototype:HealComm_ModifierChanged(event, guid)
 	end
 end
 
-function PlayerHealth.prototype:IncomingHealPrediction(unit)
+function PlayerHealth.prototype:IncomingHealPrediction(event, unit)
 	if IceHUD.WowVer >= 40000 then
 		if unit and unit ~= self.unit then
 			return
