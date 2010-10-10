@@ -873,7 +873,7 @@ function IceHUD:OnInitialize()
 	self:SetupProfileImportButtons()
 	--@end-debug@
 
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("IceHUD", self.options, "/icehudcl")
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("IceHUD", self.options, "icehudcl")
 
 	ConfigDialog:SetDefaultSize("IceHUD", 750, 650)
 	self:RegisterChatCommand("icehud", function()
@@ -1076,7 +1076,11 @@ InterfaceOptions_AddCategory(blizOptionsPanel)
 
 function IceHUD:OpenConfig()
 	if not ConfigDialog then return end
-	ConfigDialog:Open("IceHUD")
+	if ConfigDialog.OpenFrames["IceHUD"] ~= nil then
+		ConfigDialog:Close("IceHUD")
+	else
+		ConfigDialog:Open("IceHUD")
+	end
 end
 
 function IceHUD:Debug(msg)
