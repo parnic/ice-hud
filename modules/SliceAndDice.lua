@@ -165,6 +165,20 @@ function SliceAndDice.prototype:CreateDurationBar()
 	self:UpdateDurationBar()
 end
 
+function SliceAndDice.prototype:RotateHorizontal()
+	SliceAndDice.super.prototype.RotateHorizontal(self)
+
+	self:RotateFrame(self.durationFrame)
+end
+
+function SliceAndDice.prototype:ResetRotation()
+	SliceAndDice.super.prototype.ResetRotation(self)
+
+	if self.durationFrame.anim then
+		self.durationFrame.anim:Stop()
+	end
+end
+
 -- 'Protected' methods --------------------------------------------------------
 
 function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)

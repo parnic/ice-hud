@@ -210,6 +210,9 @@ function FocusHealth.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
+		hidden = function()
+			return IceHUD.IceCore:ShouldUseDogTags()
+		end,
 		order = 40.1
 	}
 
