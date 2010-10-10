@@ -119,6 +119,8 @@ end
 function IceCustomHealth.prototype:Disable(core)
 	IceCustomHealth.super.prototype.Disable(self, core)
 
+	UnregisterUnitWatch(self.frame)
+
 	self:CancelTimer(self.scheduledEvent, true)
 end
 

@@ -316,6 +316,8 @@ end
 function FocusHealth.prototype:Disable(core)
 	FocusHealth.super.prototype.Disable(self, core)
 
+	UnregisterUnitWatch(self.frame)
+
 	if self.moduleSettings.hideBlizz then
 		self:ShowBlizz()
 	end
