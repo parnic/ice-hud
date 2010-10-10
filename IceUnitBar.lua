@@ -71,7 +71,7 @@ function IceUnitBar.prototype:GetOptions()
 	{
 		type = 'range',
 		name = L["Low Threshold"],
-		desc = L["Threshold of pulsing the bar (0 means never) (for player applies only to mana, not rage/energy/runic power)"],
+		desc = L["When the bar drops below this amount, it will start flashing (0 means never). For the 'mana' bar this only applies to mana and not rage/energy/focus/runic power."],
 		get = function()
 			return self.moduleSettings.lowThreshold
 		end,
@@ -80,7 +80,7 @@ function IceUnitBar.prototype:GetOptions()
 			self:Redraw()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or not self.moduleSettings.lowThresholdFlash
 		end,
 		min = 0,
 		max = 1,
@@ -107,7 +107,7 @@ function IceUnitBar.prototype:GetOptions()
 	opts["lowThresholdColor"] = {
 		type = "toggle",
 		name = L["Low Threshold color"],
-		desc = L["Colors the bar minColor when % is < lowThreshold (requires scaleColor to be enabled)"],
+		desc = L["Changes the color of this bar to be the minimum health or mana color when it's below the low threshold. See the 'MinHealthColor' and 'MinManaColor' colors in the 'Colors' option page.\n\nThis option only applies to health and mana bars."],
 		get = function()
 			return self.moduleSettings.lowThresholdColor
 		end,

@@ -142,6 +142,7 @@ function IceCustomBar.prototype:GetOptions()
 
 	opts.textSettings.args.upperTextString.hidden = false
 	opts.textSettings.args.lowerTextString.hidden = false
+	opts.lowThresholdColor = nil
 
 	opts["customHeader"] = {
 		type = 'header',
