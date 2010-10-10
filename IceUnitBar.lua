@@ -193,6 +193,20 @@ function IceUnitBar.prototype:CreateFlashFrame()
 	end
 end
 
+function IceUnitBar.prototype:RotateHorizontal()
+	IceUnitBar.super.prototype.RotateHorizontal(self)
+
+	self:RotateFrame(self.flashFrame)
+end
+
+function IceUnitBar.prototype:ResetRotation()
+	IceUnitBar.super.prototype.ResetRotation(self)
+
+	if self.flashFrame.anim then
+		self.flashFrame.anim:Stop()
+	end
+end
+
 
 -- OVERRIDE
 function IceUnitBar.prototype:Update()
