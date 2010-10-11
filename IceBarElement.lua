@@ -805,7 +805,7 @@ function IceBarElement.prototype:CreateFrame()
 		self.frame:SetScript("OnUpdate", function() self:MyOnUpdate() end)
 	end
 
-	if self.moduleSettings.rotateBar and self.frame.anim == nil then
+	if self.moduleSettings.rotateBar then
 		self:RotateHorizontal()
 	end
 end
@@ -1229,6 +1229,10 @@ function IceBarElement.prototype:ResetRotation()
 end
 
 function IceBarElement.prototype:RotateFrame(frame)
+	if not frame then
+		return
+	end
+
 	if frame.anim == nil then
 		local grp = frame:CreateAnimationGroup()
 		local rot = grp:CreateAnimation("Rotation")
@@ -1237,10 +1241,18 @@ function IceBarElement.prototype:RotateFrame(frame)
 		rot:SetOrder(1)
 		rot:SetDuration(0.001)
 		rot:SetDegrees(-90)
-		rot:SetOrigin("BOTTOMLEFT", 0, 0)
 		grp.rot = rot
 		frame.anim = grp
 	end
+
+	local anchorPoint
+	if self.moduleSettings.inverse then
+		anchorPoint = "TOPLEFT"
+	else
+		anchorPoint = "BOTTOMLEFT"
+	end
+
+	frame.anim.rot:SetOrigin(anchorPoint, 0, 0)
 	frame.anim.rot:SetScript("OnUpdate", function(anim) if anim:GetProgress() >= 1 then anim:Pause() anim:SetScript("OnUpdate", nil) end end)
 	frame.anim:Play()
 end

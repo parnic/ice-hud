@@ -330,20 +330,8 @@ end
 function CastBar.prototype:ToggleBlizzCast(on)
 	if on then
 		-- restore blizz cast bar
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_SENT");
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_START");
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_STOP");
-
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_FAILED");
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED");
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_DELAYED");
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
-
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START");
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
-		CastingBarFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
-
-		PetCastingBarFrame:RegisterEvent("UNIT_PET");
+		CastingBarFrame:GetScript("OnLoad")(CastingBarFrame)
+		PetCastingBarFrame:GetScript("OnLoad")(PetCastingBarFrame)
 	else
 		-- remove blizz cast bar
 		CastingBarFrame:UnregisterAllEvents()
