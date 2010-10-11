@@ -187,6 +187,13 @@ function IceCustomCDBar.prototype:GetOptions()
 			return self.moduleSettings.cooldownToTrack
 		end,
 		set = function(info, v)
+			local orig = v
+			if tonumber(v) ~= nil then
+				v = GetSpellInfo(tonumber(v))
+			end
+			if v == nil then
+				v = orig
+			end
 			if self.moduleSettings.cooldownToTrack == self.moduleSettings.upperText then
 				self.moduleSettings.upperText = v
 			end

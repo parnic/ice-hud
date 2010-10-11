@@ -241,6 +241,13 @@ function IceCustomBar.prototype:GetOptions()
 			return self.moduleSettings.buffToTrack
 		end,
 		set = function(info, v)
+			local orig = v
+			if tonumber(v) ~= nil then
+				v = GetSpellInfo(tonumber(v))
+			end
+			if v == nil then
+				v = orig
+			end
 			if self.moduleSettings.buffToTrack == self.moduleSettings.upperText then
 				self.moduleSettings.upperText = v
 			end
