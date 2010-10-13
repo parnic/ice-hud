@@ -195,10 +195,6 @@ function Runes.prototype:Enable(core)
 	self:RegisterEvent("RUNE_POWER_UPDATE", "UpdateRunePower");
 	self:RegisterEvent("RUNE_TYPE_UPDATE", "UpdateRuneType");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ResetRuneAvailability");
-
-	if (self.moduleSettings.hideBlizz) then
-		self:HideBlizz()
-	end
 end
 
 function Runes.prototype:Disable(core)
@@ -212,6 +208,10 @@ end
 function Runes.prototype:ResetRuneAvailability()
 	for i=1, self.numRunes do
 		self:UpdateRunePower(nil, i, true)
+	end
+
+	if (self.moduleSettings.hideBlizz) then
+		self:HideBlizz()
 	end
 end
 
