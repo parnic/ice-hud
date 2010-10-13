@@ -16,28 +16,13 @@ end
 function GlobalCoolDown.prototype:Enable(core)
 	GlobalCoolDown.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "CooldownStateChanged")
+	--self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "CooldownStateChanged")
+	self:RegisterEvent("UNIT_SPELLCAST_START","CooldownStateChanged")
+	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED","CooldownStateChanged")
 
 	self:Show(false)
 
 	self.frame:SetFrameStrata("TOOLTIP")
-end
-
-function GlobalCoolDown.prototype:GetSpellId()
-	local defaultSpells = {
-		ROGUE=1752, -- sinister strike
-		PRIEST=139, -- renew
-		DRUID=774, -- rejuvenation
-		WARRIOR=6673, -- battle shout
-		MAGE=168, -- frost armor
-		WARLOCK=1454, -- life tap
-		PALADIN=1152, -- purify
-		SHAMAN=324, -- lightning shield
-		HUNTER=1978, -- serpent sting
-		DEATHKNIGHT=47541 -- death coil
-	}
-	local _, unitClass = UnitClass("player")
-	return defaultSpells[unitClass]
 end
 
 -- OVERRIDE
@@ -69,28 +54,27 @@ function GlobalCoolDown.prototype:GetOptions()
 	return opts
 end
 
-function GlobalCoolDown.prototype:CooldownStateChanged()
-	local start, dur = GetSpellCooldown(self:GetSpellId())
+function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell)
+	if unit ~= "player" then
+		return
+	end
+
+	local start, dur = GetSpellCooldown(spell)
 
 	if start and dur ~= nil and dur > 0 and dur <= 1.5 then
-		local bRestart = not self.startTime or start > self.startTime + dur
+		--local bRestart = not self.startTime or start > self.startTime + dur
 		self.startTime = start
 		self.duration = dur
 
-		if bRestart then
+		--if bRestart then
 			self:SetScale(1, true)
 			self.LastScale = 1
 			self.DesiredScale = 0
 			self.CurrLerpTime = 0
 			self.moduleSettings.desiredLerpTime = dur or 1
-		end
+		--end
 		self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
 		self:Show(true)
-	else
-		self.duration = nil
-		self.startTime = nil
-
-		self:Show(false)
 	end
 end
 
