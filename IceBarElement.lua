@@ -1336,8 +1336,8 @@ function IceBarElement.prototype:PositionMarker(idx, pos)
 	local adjustedBarHeight = self.settings.barHeight - (self.moduleSettings.markers[idx].height)
 	local heightScale = (self.moduleSettings.markers[idx].height / self.settings.barHeight) / 2
 
-	local min_y = 1-coordPos-heightScale
-	local max_y = 1-coordPos+heightScale
+	local min_y = IceHUD:Clamp(1-coordPos-heightScale, 0, 1)
+	local max_y = IceHUD:Clamp(1-coordPos+heightScale, 0, 1)
 
 	if self.moduleSettings.side == IceCore.Side.Left then
 		self.Markers[idx].bar:SetTexCoord(1, 0, min_y, max_y)

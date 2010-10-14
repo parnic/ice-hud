@@ -151,6 +151,11 @@ function EclipseBar.prototype:UpdateEclipsePower()
 	local power = UnitPower("player", SPELL_POWER_ECLIPSE)
 	local maxPower = UnitPowerMax("player", SPELL_POWER_ECLIPSE)
 
+	-- bad api, bad.
+	if maxPower <= 0 or power > maxPower then
+		return
+	end
+
 	self:SetBottomText1(abs((power/maxPower) * 100))
 
 	local pos = (power/maxPower) / 2
