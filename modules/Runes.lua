@@ -192,9 +192,13 @@ end
 function Runes.prototype:Enable(core)
 	Runes.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("RUNE_POWER_UPDATE", "UpdateRunePower");
-	self:RegisterEvent("RUNE_TYPE_UPDATE", "UpdateRuneType");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ResetRuneAvailability");
+	self:RegisterEvent("RUNE_POWER_UPDATE", "UpdateRunePower")
+	self:RegisterEvent("RUNE_TYPE_UPDATE", "UpdateRuneType")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ResetRuneAvailability")
+
+	if (self.moduleSettings.hideBlizz) then
+		self:HideBlizz()
+	end
 end
 
 function Runes.prototype:Disable(core)
@@ -208,10 +212,6 @@ end
 function Runes.prototype:ResetRuneAvailability()
 	for i=1, self.numRunes do
 		self:UpdateRunePower(nil, i, true)
-	end
-
-	if (self.moduleSettings.hideBlizz) then
-		self:HideBlizz()
 	end
 end
 
@@ -389,6 +389,7 @@ function Runes.prototype:ShowBlizz()
 	RuneFrame:Show()
 
 	RuneFrame:GetScript("OnLoad")(RuneFrame)
+	RuneFrame:GetScript("OnEvent")(frame, "PLAYER_ENTERING_WORLD")
 	for i=1, self.numRunes do
 		local frame = _G["RuneButtonIndividual"..i]
 		if frame then
