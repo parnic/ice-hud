@@ -153,9 +153,9 @@ local SilenceCCList = {
 
 local RootCCList = {
 	-- Entangling Roots
-	53308,
+	339,
 	-- Entangling Roots - Nature's Grasp
-	53313,
+	16689,
 	-- Frost Nova
 	42917,
 	-- Earthbind Effect
