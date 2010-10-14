@@ -776,7 +776,7 @@ end
 -- OVERRIDE
 function IceTargetInfo.prototype:CreateFrame(redraw)
 	if not (self.frame) then
-		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.parent, "SecureUnitButtonTemplate")
+		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.masterFrame, "SecureUnitButtonTemplate")
 	end
 
 	-- Parnic - yes, 200 is fairly arbitrary. make a best effort for long names to fit

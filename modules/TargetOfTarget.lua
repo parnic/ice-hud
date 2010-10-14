@@ -289,7 +289,7 @@ end
 -- OVERRIDE
 function TargetOfTarget.prototype:CreateFrame()
 	if not self.frame then
-		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.parent, "SecureUnitButtonTemplate")
+		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.masterFrame, "SecureUnitButtonTemplate")
 		self.frame:SetAttribute("unit", self.unit)
 	end
 

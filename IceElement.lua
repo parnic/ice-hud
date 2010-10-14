@@ -9,6 +9,7 @@ IceElement.TexturePath = IceHUD.Location .. "\\textures\\"
 IceElement.prototype.elementName = nil
 IceElement.prototype.parent = nil
 IceElement.prototype.frame = nil
+IceElement.prototype.masterFrame = nil
 
 IceElement.prototype.defaultColors = {} -- Shared table for all child classes to save some memory
 IceElement.prototype.alpha = nil
@@ -65,6 +66,9 @@ function IceElement.prototype:Create(parent)
 	assert(parent, "IceElement 'parent' can't be nil")
 
 	self.parent = parent
+	if not self.masterFrame then
+		self.masterFrame = CreateFrame("Frame", nil, self.parent)
+	end
 	self:CreateFrame()
 	self:Show(false)
 end
@@ -206,8 +210,9 @@ end
 -- This should be overwritten by inheriting classes
 function IceElement.prototype:CreateFrame()
 	if not (self.frame) then
-		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.parent)
+		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.masterFrame)
 	end
+	self.masterFrame:SetAllPoints(self.frame)
 
 	self.frame:SetScale(self.moduleSettings.scale)
 
@@ -339,7 +344,7 @@ end
 
 function IceElement.prototype:FontFactory(size, frame, font, flags)
 	if not (frame) then
-		frame = self.frame
+		frame = self.masterFrame
 	end
 
 	local fontString = nil
@@ -381,8 +386,10 @@ function IceElement.prototype:Show(bShouldShow)
 	self.bIsVisible = bShouldShow
 
 	if not bShouldShow then
+		self.masterFrame:Hide()
 		self.frame:Hide()
 	else
+		self.masterFrame:Show()
 		self.frame:Show()
 	end
 end

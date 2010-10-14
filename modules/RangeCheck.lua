@@ -122,7 +122,7 @@ end
 
 function RangeCheck.prototype:CreateFrame(redraw)
 	if not (self.frame) then
-		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.parent)
+		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.masterFrame)
 	end
 
 	self.frame:SetScale(self.moduleSettings.scale)

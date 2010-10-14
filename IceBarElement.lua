@@ -818,7 +818,7 @@ end
 -- Creates background for the bar
 function IceBarElement.prototype:CreateBackground()
 	if not (self.frame) then
-		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.parent)
+		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.masterFrame)
 	end
 
 	self.frame:SetFrameStrata("BACKGROUND")
