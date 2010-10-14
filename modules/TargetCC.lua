@@ -12,8 +12,6 @@ local StunCCList = {
 	408,
 	-- cheap shot
 	1833,
-	-- mace stun effect
-	5530,
 	-- shadowfury
 	30283,
 	-- hammer of justice
@@ -21,15 +19,11 @@ local StunCCList = {
 	-- impact
 	12355,
 	-- blackout
-	15268,
+	44415,
 	-- intimidation
 	19577,
 	-- charge stun
 	7922,
-	-- intercept stun
-	30153,
-	-- revenge stun
-	12798,
 	-- concussion blow
 	12809,
 	-- bash
@@ -38,10 +32,6 @@ local StunCCList = {
 	22570,
 	-- pounce
 	9005,
-	-- improved concussive shot
-	19407,
-	-- starfire stun
-	16922,
 	-- war stomp
 	20549,
 	-- deep freeze
@@ -50,8 +40,6 @@ local StunCCList = {
 	46968,
 	-- Gnaw
 	47481,
-	-- stun proc
-	20170,
 }
 
 local IncapacitateCCList = {
@@ -75,12 +63,14 @@ local IncapacitateCCList = {
 	28272,
 	-- Polymorph: Turtle
 	28271,
+	-- Polymorph: Penguin
+	59634,
 	-- Hibernate
 	2637,
 	-- Freezing Trap Effect
 	3355,
-	-- Chastise
-	44041,
+	-- Holy Word: Chastise
+	88625,
 	-- Banish
 	710,
 	-- Shackle Undead
@@ -91,10 +81,6 @@ local IncapacitateCCList = {
 	49203,
 	-- Seduction
 	6358,
-	-- Freezing Arrow
-	60210,
-	-- Shackle
-	10955,
 	-- Turn Evil
 	10326,
 }
@@ -107,17 +93,17 @@ local FearCCList = {
 	-- Howl of Terror
 	5484,
 	-- Death Coil
-	47860,
+	6789,
 	-- Intimidating Shout
 	5246,
 	-- Hex
 	51514,
 	-- Scare Beast
-	14327,
+	1513,
 }
 
 local SilenceCCList = {
-	-- Shield of the Templar
+	-- Avenger's Shield
 	63529,
 	-- Silence
 	15487,
@@ -134,7 +120,7 @@ local SilenceCCList = {
 	-- Arcane Torrent
 	25046,
 	-- Improved Kick
-	13867,
+	18425,
 	-- Improved Counterspell
 	55021,
 	-- Strangulate
@@ -147,8 +133,6 @@ local SilenceCCList = {
 	51722,
 	-- Psychic Horror
 	64058,
-	-- Chimera Shot - Scorpid
-	53359,
 }
 
 local RootCCList = {
@@ -157,7 +141,7 @@ local RootCCList = {
 	-- Entangling Roots - Nature's Grasp
 	16689,
 	-- Frost Nova
-	42917,
+	122,
 	-- Earthbind Effect
 	64695,
 	-- Shattered Barrier
@@ -166,16 +150,16 @@ local RootCCList = {
 	23694,
 	-- Freeze
 	33395,
-	-- Frostbite
-	12494,
-	-- Entrapment
-	64804,
+	-- Entrapment 2 sec
+	19185,
+	-- Entrapment 4 sec
+	64803,
 	-- Web
 	4167,
 	-- Pin
-	53548,
+	50245,
 	-- Venom Web Spray
-	55509,
+	54706,
 	-- Chains of Ice
 	45524,
 }
