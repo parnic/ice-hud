@@ -776,7 +776,7 @@ end
 -- OVERRIDE
 function IceTargetInfo.prototype:CreateFrame(redraw)
 	if not (self.frame) then
-		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.masterFrame, "SecureUnitButtonTemplate")
+		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.parent, "SecureUnitButtonTemplate")
 	end
 
 	-- Parnic - yes, 200 is fairly arbitrary. make a best effort for long names to fit
@@ -845,7 +845,7 @@ end
 
 
 function IceTargetInfo.prototype:CreateTextFrame()
-	self.frame.targetName = self:FontFactory(self.moduleSettings.fontSize+1, nil, self.frame.targetName)
+	self.frame.targetName = self:FontFactory(self.moduleSettings.fontSize+1, self.frame, self.frame.targetName)
 
 	self.frame.targetName:SetJustifyH("CENTER")
 	self.frame.targetName:SetJustifyV("TOP")
@@ -855,7 +855,7 @@ end
 
 
 function IceTargetInfo.prototype:CreateInfoTextFrame()
-	self.frame.targetInfo = self:FontFactory(self.moduleSettings.fontSize, nil, self.frame.targetInfo)
+	self.frame.targetInfo = self:FontFactory(self.moduleSettings.fontSize, self.frame, self.frame.targetInfo)
 
 --	self.frame.targetInfo:SetWidth(self.width)
 	self.frame.targetInfo:SetHeight(14)
@@ -868,7 +868,7 @@ end
 
 
 function IceTargetInfo.prototype:CreateGuildTextFrame()
-	self.frame.targetGuild = self:FontFactory(self.moduleSettings.fontSize, nil, self.frame.targetGuild)
+	self.frame.targetGuild = self:FontFactory(self.moduleSettings.fontSize, self.frame, self.frame.targetGuild)
 
 --	self.frame.targetInfo:SetWidth(self.width)
 	self.frame.targetGuild:SetHeight(14)
@@ -881,7 +881,7 @@ end
 
 
 function IceTargetInfo.prototype:CreateExtraTextFrame()
-	self.frame.targetExtra = self:FontFactory(self.moduleSettings.fontSize, nil, self.frame.targetExtra)
+	self.frame.targetExtra = self:FontFactory(self.moduleSettings.fontSize, self.frame, self.frame.targetExtra)
 
 	self.frame.targetExtra:SetHeight(14)
 	self.frame.targetExtra:SetJustifyH("CENTER")

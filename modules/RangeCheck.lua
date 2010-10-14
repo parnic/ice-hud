@@ -122,7 +122,7 @@ end
 
 function RangeCheck.prototype:CreateFrame(redraw)
 	if not (self.frame) then
-		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.masterFrame)
+		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.parent)
 	end
 
 	self.frame:SetScale(self.moduleSettings.scale)
@@ -132,7 +132,7 @@ function RangeCheck.prototype:CreateFrame(redraw)
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "TOP", self.moduleSettings.hpos, self.moduleSettings.vpos)
 
-	self.frame.rangeFontString = self:FontFactory(--[[self.moduleSettings.fontSize+1]] 13, nil, self.frame.rangeFontString)
+	self.frame.rangeFontString = self:FontFactory(--[[self.moduleSettings.fontSize+1]] 13, self.frame, self.frame.rangeFontString)
 	self.frame.rangeFontString:SetJustifyH("CENTER")
 	self.frame.rangeFontString:SetJustifyV("TOP")
 	self.frame.rangeFontString:SetAllPoints(self.frame)
