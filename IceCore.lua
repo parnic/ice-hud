@@ -630,6 +630,7 @@ function IceCore.prototype:ConfigModeToggle(bWantConfig)
 	if bWantConfig then
 		for i = 1, table.getn(self.elements) do
 			if self.elements[i]:IsEnabled() then
+				self.elements[i].masterFrame:Show()
 				self.elements[i].frame:Show()
 				self.elements[i]:Redraw()
 				if self.elements[i].IsBarElement then
@@ -640,6 +641,7 @@ function IceCore.prototype:ConfigModeToggle(bWantConfig)
 	else
 		for i = 1, table.getn(self.elements) do
 			if not self.elements[i]:IsVisible() then
+				self.elements[i].masterFrame:Hide()
 				self.elements[i].frame:Hide()
 			end
 
