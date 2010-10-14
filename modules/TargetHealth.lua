@@ -646,6 +646,10 @@ function IceTargetHealth.prototype:Enable(core)
 	self:Update(self.unit)
 
 	RegisterUnitWatch(self.frame)
+
+	if not IceHUD.IceCore:ShouldUseDogTags() then
+		self.frame:SetScript("OnHide", function() self:SetBottomText1("") self:SetBottomText2("") end)
+	end
 end
 
 
@@ -813,7 +817,7 @@ function IceTargetHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.healthPercentage, self.color)
 
-	if not IceHUD.IceCore:ShouldUseDogTags() then
+	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
 
 		if self.moduleSettings.abbreviateHealth then

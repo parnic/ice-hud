@@ -70,6 +70,10 @@ function PetHealth.prototype:Enable(core)
 	self.frame:SetAttribute("unit", self.unit)
 	RegisterUnitWatch(self.frame)
 
+	if not IceHUD.IceCore:ShouldUseDogTags() then
+		self.frame:SetScript("OnHide", function() self:SetBottomText1("") self:SetBottomText2("") end)
+	end
+
 	self:CheckPet()
 end
 
@@ -130,7 +134,7 @@ function PetHealth.prototype:Update(unit)
 		self:UpdateBar(self.healthPercentage, color)
 	end
 
-	if not IceHUD.IceCore:ShouldUseDogTags() then
+	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
 		self:SetBottomText1(math.floor(self.healthPercentage * 100))
 	end
 end

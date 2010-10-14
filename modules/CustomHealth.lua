@@ -114,6 +114,10 @@ function IceCustomHealth.prototype:Enable(core)
 	self:CreateFrame()
 
 	self.scheduledEvent = self:ScheduleRepeatingTimer("Update", IceHUD.IceCore:UpdatePeriod())
+
+	if not IceHUD.IceCore:ShouldUseDogTags() then
+		self.frame:SetScript("OnHide", function() self:SetBottomText1("") self:SetBottomText2("") end)
+	end
 end
 
 function IceCustomHealth.prototype:Disable(core)

@@ -258,6 +258,10 @@ function FocusHealth.prototype:Enable(core)
 	-- for showing/hiding the frame based on unit visibility
 	self.frame:SetAttribute("unit", self.unit)
 	RegisterUnitWatch(self.frame)
+
+	if not IceHUD.IceCore:ShouldUseDogTags() then
+		self.frame:SetScript("OnHide", function() self:SetBottomText1("") self:SetBottomText2("") end)
+	end
 end
 
 function FocusHealth.prototype:CreateBackground()
