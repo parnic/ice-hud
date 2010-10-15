@@ -108,7 +108,7 @@ function IceCustomBar.prototype:CreateBar()
 	IceCustomBar.super.prototype.CreateBar(self)
 
 	if not self.barFrame.icon then
-		self.barFrame.icon = self.barFrame:CreateTexture(nil, "LOW")
+		self.barFrame.icon = self.masterFrame:CreateTexture(nil, "LOW")
 		-- default texture so that 'config mode' can work without activating the bar first
 		self.barFrame.icon:SetTexture("Interface\\Icons\\Spell_Frost_Frost")
 		-- this cuts off the border around the buff icon

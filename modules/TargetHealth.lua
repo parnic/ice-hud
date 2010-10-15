@@ -840,7 +840,7 @@ end
 
 function IceTargetHealth.prototype:CreateTexCoord(texframe, icon, width, height, scale, left, right, top, bottom)
 	if not texframe then
-		texframe = self.barFrame:CreateTexture(nil, "BACKGROUND")
+		texframe = self.masterFrame:CreateTexture(nil, "BACKGROUND")
 	end
 
 	texframe:SetTexture(icon)

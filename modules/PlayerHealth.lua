@@ -1275,7 +1275,7 @@ end
 
 function PlayerHealth.prototype:CreateTexCoord(texframe, icon, width, height, scale, left, right, top, bottom)
 	if not texframe then
-		texframe = self.frame:CreateTexture(nil, "BACKGROUND")
+		texframe = self.masterFrame:CreateTexture(nil, "BACKGROUND")
 	end
 	texframe:SetTexture(icon)
 	texframe:SetTexCoord(left, right, top, bottom)
