@@ -29,6 +29,14 @@ function ShardCounter.prototype:GetOptions()
 	return opts
 end
 
+function ShardCounter.prototype:GetDefaultSettings()
+	local defaults =  ShardCounter.super.prototype.GetDefaultSettings(self)
+
+	defaults["pulseWhenFull"] = false
+
+	return defaults
+end
+
 function ShardCounter.prototype:GetRuneTexture(rune)
 	if not rune or rune ~= tonumber(rune) then
 		return

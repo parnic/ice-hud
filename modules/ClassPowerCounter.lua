@@ -252,6 +252,27 @@ function IceClassPowerCounter.prototype:GetOptions()
 		order = 40,
 	}
 
+	opts["pulseWhenFull"] = {
+		type = "toggle",
+		name = L["Pulse when full"],
+		desc = L["If this is checked, then whenever the counter is maxed out it will gently pulsate to let you know it's ready to be used."],
+		get = function()
+			return self.moduleSettings.pulseWhenFull
+		end,
+		set = function(info, v)
+			self.moduleSettings.pulseWhenFull = v
+			if v and self.lastNumReady == self.numRunes then
+				self:StartRunesFullAnimation()
+			else
+				self:StopRunesFullAnimation()
+			end
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 41,
+	}
+
 	opts["hideFriendly"] = {
 		type = "toggle",
 		name = L["Friendly OOC alpha"],
@@ -266,7 +287,7 @@ function IceClassPowerCounter.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 41,
+		order = 42,
 	}
 
 	return opts
@@ -292,6 +313,7 @@ function IceClassPowerCounter.prototype:GetDefaultSettings()
 	defaults["customMinColor"] = {r=1, g=1, b=0, a=1}
 	defaults["customColor"] = {r=1, g=0, b=0, a=1}
 	defaults["hideFriendly"] = false
+	defaults["pulseWhenFull"] = true
 
 	return defaults
 end
@@ -373,10 +395,43 @@ function IceClassPowerCounter.prototype:UpdateRunePower()
 		end
 	end
 
+	if self.moduleSettings.pulseWhenFull then
+		if numReady > self.lastNumReady and numReady == self.numRunes then
+			self:StartRunesFullAnimation()
+		elseif numReady < self.numRunes then
+			self:StopRunesFullAnimation()
+		end
+	end
+
 	self.lastNumReady = numReady
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
+	end
+end
+
+function IceClassPowerCounter.prototype:StartRunesFullAnimation()
+	if not self.frame.anim then
+		local grp = self.frame:CreateAnimationGroup()
+		grp:SetLooping("BOUNCE")
+
+		-- lots of magic numbers here. i wonder if it's worth making them configurable or not...probably not.
+		local scale = grp:CreateAnimation("Scale")
+		scale:SetStartDelay(0.5)
+		scale:SetEndDelay(0)
+		scale:SetDuration(0.75)
+		scale:SetOrigin("CENTER", 0, 0)
+		scale:SetScale(1.5, 1.5)
+
+		self.frame.anim = grp
+	end
+
+	self.frame.anim:Play()
+end
+
+function IceClassPowerCounter.prototype:StopRunesFullAnimation()
+	if self.frame.anim and self.frame.anim:IsPlaying() then
+		self.frame.anim:Stop()
 	end
 end
 
@@ -420,13 +475,13 @@ end
 function IceClassPowerCounter.prototype:CreateRuneFrame()
 	-- create numeric runes
 	if not self.frame.numeric then
-		self.frame.numeric = self:FontFactory(self.moduleSettings.runeFontSize, nil, self.frame.numeric)
+		self.frame.numeric = self:FontFactory(self.moduleSettings.runeFontSize, self.frame, self.frame.numeric)
 	end
 
 	self.frame.numeric:SetWidth(50)
 	self.frame.numeric:SetJustifyH("CENTER")
 
-	self.frame.numeric:SetPoint("TOP", self.frame, "TOP", 0, 0)
+	self.frame.numeric:SetAllPoints(self.frame)
 	self.frame.numeric:Hide()
 
 	if (not self.frame.graphical) then
