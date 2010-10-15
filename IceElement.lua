@@ -214,7 +214,7 @@ function IceElement.prototype:CreateFrame()
 	end
 	self.masterFrame:SetAllPoints(self.frame)
 
-	self.frame:SetScale(self.moduleSettings.scale)
+	self.masterFrame:SetScale(self.moduleSettings.scale)
 
 	self:UpdateAlpha()
 end

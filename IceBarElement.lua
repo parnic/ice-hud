@@ -796,7 +796,7 @@ function IceBarElement.prototype:CreateFrame()
 		end
 	end
 
-	self.frame:SetScale(self.moduleSettings.scale)
+	self.masterFrame:SetScale(self.moduleSettings.scale)
 	-- never register the OnUpdate for the mirror bar since it's handled internally
 	-- in addition, do not register OnUpdate if predictedPower is set and this is the player mana or target mana bar
 	if not string.find(self.elementName, "MirrorBar")
