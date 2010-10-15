@@ -753,6 +753,18 @@ function IceTargetHealth.prototype:Update(unit)
 
 	if unit and not (UnitExists(unit)) then
 --		self:Show(false)
+		if self.barFrame.PvPIcon then
+			self.barFrame.PvPIcon:Hide()
+		end
+		if self.frame.PartyRoleIcon then
+			self.frame.PartyRoleIcon:Hide()
+		end
+		if self.barFrame.classIcon then
+			self.barFrame.classIcon:Hide()
+		end
+		if self.frame.raidIcon then
+			self.frame.raidIcon:Hide()
+		end
 		return
 	else
 --		self:Show(true)
