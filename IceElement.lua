@@ -231,7 +231,7 @@ function IceElement.prototype:UpdateAlpha()
 	if (self.combat) then
 		self.alpha = self.settings.alphaic
 		self.backgroundAlpha = self.settings.alphaicbg
-	elseif (self.target) then
+	elseif (self.target and not self:AlphaPassThroughTarget()) then
 		self.alpha = self.settings.alphaTarget
 		self.backgroundAlpha = self.settings.alphaTargetbg
 	elseif (self:UseTargetAlpha(scale)) then
@@ -247,6 +247,10 @@ function IceElement.prototype:UpdateAlpha()
 	end
 
 	self.frame:SetAlpha(self.alpha)
+end
+
+function IceElement.prototype:AlphaPassThroughTarget()
+	return false
 end
 
 -- use this to add some value to alpha every time. if you always want an element to be slightly brighter than the actual alpha for visibility

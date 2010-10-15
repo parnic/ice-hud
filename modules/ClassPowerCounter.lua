@@ -252,6 +252,23 @@ function IceClassPowerCounter.prototype:GetOptions()
 		order = 40,
 	}
 
+	opts["hideFriendly"] = {
+		type = "toggle",
+		name = L["Friendly OOC alpha"],
+		desc = L["If this is checked, then the counter will use your 'out of target' alpha when targeting someone who is friendly."],
+		get = function()
+			return self.moduleSettings.hideFriendly
+		end,
+		set = function(info, v)
+			self.moduleSettings.hideFriendly = v
+			self:Update(self.unit)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 41,
+	}
+
 	return opts
 end
 
@@ -274,6 +291,7 @@ function IceClassPowerCounter.prototype:GetDefaultSettings()
 	defaults["gradient"] = true
 	defaults["customMinColor"] = {r=1, g=1, b=0, a=1}
 	defaults["customColor"] = {r=1, g=0, b=0, a=1}
+	defaults["hideFriendly"] = false
 
 	return defaults
 end
@@ -401,7 +419,9 @@ end
 
 function IceClassPowerCounter.prototype:CreateRuneFrame()
 	-- create numeric runes
-	self.frame.numeric = self:FontFactory(self.moduleSettings.runeFontSize, nil, self.frame.numeric)
+	if not self.frame.numeric then
+		self.frame.numeric = self:FontFactory(self.moduleSettings.runeFontSize, nil, self.frame.numeric)
+	end
 
 	self.frame.numeric:SetWidth(50)
 	self.frame.numeric:SetJustifyH("CENTER")
@@ -540,6 +560,10 @@ end
 function IceClassPowerCounter.prototype:CheckCombat()
 	IceClassPowerCounter.super.prototype.CheckCombat(self)
 	self:Redraw()
+end
+
+function IceClassPowerCounter.prototype:AlphaPassThroughTarget()
+	return self.moduleSettings.hideFriendly and UnitIsFriend("player", "target")
 end
 
 function IceClassPowerCounter.prototype:HideBlizz()
