@@ -222,7 +222,8 @@ function IceUnitBar.prototype:Update()
 	self.maxMana = UnitPowerMax(self.unit)
 	self.manaPercentage = self.maxMana ~= 0 and (self.mana/self.maxMana) or 0
 
-	_, self.unitClass = UnitClass(self.unit)
+	local locClass
+	locClass, self.unitClass = UnitClass(self.unit)
 
 	if( self.moduleSettings.scaleHealthColor ) then
 		if self.healthPercentage > 0.5 then

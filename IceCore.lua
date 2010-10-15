@@ -646,7 +646,7 @@ function IceCore.prototype:ConfigModeToggle(bWantConfig)
 			end
 
 			-- blank the bottom text that we set before. if the module uses this text, it will reset itself on redraw
-			if self.elements[i].IsBarElement then
+			if self.elements[i].IsBarElement and self.elements[i].frame then
 				self.elements[i]:SetBottomText1()
 			end
 
