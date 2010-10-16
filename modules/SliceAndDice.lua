@@ -366,7 +366,7 @@ end
 
 function SliceAndDice.prototype:HasGlyphBonus()
 	for i=1,GetNumGlyphSockets() do
-		local enabled, _, spell = GetGlyphSocketInfo(i)
+		local enabled, _, _, spell = GetGlyphSocketInfo(i)
 
 		if enabled and spell == GlyphSpellId then
 			return true
