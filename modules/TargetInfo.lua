@@ -1120,7 +1120,7 @@ function IceTargetInfo.prototype:UpdateBuffs()
 			end
 
 			if (buffTexture) then
-				self:SetUpBuff(i, buffTexture, buffDuration, buffTimeLeft, isFromMe, buffApplications, buffType, isStealable)
+				self:SetUpBuff(i, buffTexture, buffDuration, buffTimeLeft, isFromMe, buffApplications, "buff", isStealable)
 			else
 				self.frame.buffFrame.buffs[i]:Hide()
 			end
@@ -1160,6 +1160,7 @@ function IceTargetInfo.prototype:UpdateBuffs()
 					self.frame.debuffFrame.buffs[i].cd:Hide()
 				end
 
+				self.frame.debuffFrame.buffs[i].type = "debuff"
 				self.frame.debuffFrame.buffs[i].fromPlayer = isFromMe
 
 				self.frame.debuffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
