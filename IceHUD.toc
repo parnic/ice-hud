@@ -59,7 +59,6 @@ modules\Threat.lua
 modules\FocusThreat.lua
 modules\RangeCheck.lua
 modules\MaelstromCount.lua
-modules\HungerForBlood.lua
 modules\CustomBar.lua
 modules\CustomCount.lua
 # - make sure PlayerInfo loads after TargetInfo since it inherits
