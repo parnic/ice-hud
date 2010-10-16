@@ -915,10 +915,12 @@ function PlayerHealth.prototype:EnableClickTargeting(bEnable)
 	else
 		self.frame.button:EnableMouse(false)
 		self.frame.button:RegisterForClicks()
+		self.frame.button:SetAttribute("type1")
+		self.frame.button:SetAttribute("type2")
 
 		-- set up click casting
 		ClickCastFrames = ClickCastFrames or {}
-		ClickCastFrames[self.frame.button] = true
+		ClickCastFrames[self.frame.button] = false
 	end
 end
 
