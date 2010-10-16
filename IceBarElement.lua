@@ -66,7 +66,7 @@ function IceBarElement.prototype:Enable()
 		if self.moduleSettings.textVisible["upper"] then
 			self.frame.bottomUpperText:Hide()
 		end
-		if self.moduleSettings.textVisible["upper"] then
+		if self.moduleSettings.textVisible["lower"] then
 			self.frame.bottomLowerText:Hide()
 		end
 	end)
@@ -74,7 +74,7 @@ function IceBarElement.prototype:Enable()
 		if self.moduleSettings.textVisible["upper"] then
 			self.frame.bottomUpperText:Show()
 		end
-		if self.moduleSettings.textVisible["upper"] then
+		if self.moduleSettings.textVisible["lower"] then
 			self.frame.bottomLowerText:Show()
 		end
 	end)
