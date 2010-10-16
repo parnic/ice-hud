@@ -70,10 +70,6 @@ function PetHealth.prototype:Enable(core)
 	self.frame:SetAttribute("unit", self.unit)
 	RegisterUnitWatch(self.frame)
 
-	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self.frame:SetScript("OnHide", function() self:SetBottomText1("") self:SetBottomText2("") end)
-	end
-
 	self:CheckPet()
 end
 

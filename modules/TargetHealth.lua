@@ -646,10 +646,6 @@ function IceTargetHealth.prototype:Enable(core)
 	self:Update(self.unit)
 
 	RegisterUnitWatch(self.frame)
-
-	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self.frame:SetScript("OnHide", function() self:SetBottomText1("") self:SetBottomText2("") end)
-	end
 end
 
 

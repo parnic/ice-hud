@@ -60,12 +60,32 @@ function IceBarElement.prototype:Enable()
 	end
 
 	self:RegisterFontStrings()
+
+	-- allows frames that show/hide via RegisterUnitWatch to not show text when they shouldn't
+	self.frame:SetScript("OnHide", function()
+		if self.moduleSettings.textVisible["upper"] then
+			self.frame.bottomUpperText:Hide()
+		end
+		if self.moduleSettings.textVisible["upper"] then
+			self.frame.bottomLowerText:Hide()
+		end
+	end)
+	self.frame:SetScript("OnShow", function()
+		if self.moduleSettings.textVisible["upper"] then
+			self.frame.bottomUpperText:Show()
+		end
+		if self.moduleSettings.textVisible["upper"] then
+			self.frame.bottomLowerText:Show()
+		end
+	end)
 end
 
 function IceBarElement.prototype:Disable(core)
 	IceBarElement.super.prototype.Disable(self, core)
 
 	self.frame:SetScript("OnUpdate", nil)
+	self.frame:SetScript("OnHide", nil)
+	self.frame:SetScript("OnShow", nil)
 end
 
 
