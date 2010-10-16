@@ -917,6 +917,7 @@ function PlayerHealth.prototype:EnableClickTargeting(bEnable)
 		self.frame.button:RegisterForClicks()
 		self.frame.button:SetAttribute("type1")
 		self.frame.button:SetAttribute("type2")
+		self.frame.button:SetAttribute("unit")
 
 		-- set up click casting
 		ClickCastFrames = ClickCastFrames or {}

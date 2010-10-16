@@ -730,6 +730,11 @@ function IceTargetHealth.prototype:EnableClickTargeting(bEnable)
 			self.frame.button:EnableMouse(false)
 			self.frame.button:RegisterForClicks()
 
+			-- click casting support
+			ClickCastFrames = ClickCastFrames or {}
+			ClickCastFrames[self.frame.button] = false
+
+			self.frame.button:SetParent()
 			self.frame.button = nil
 		end
 	end

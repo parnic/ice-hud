@@ -312,11 +312,19 @@ function TargetOfTarget.prototype:CreateFrame()
 
 		self.frame:SetScript("OnEnter", function(frame) self:OnEnter(frame) end)
 		self.frame:SetScript("OnLeave", function(frame) self:OnLeave(frame) end)
+
+		-- click casting support
+		ClickCastFrames = ClickCastFrames or {}
+		ClickCastFrames[self.frame] = true
 	else
 		self.frame:EnableMouse(false)
 		self.frame:RegisterForClicks()
 		self.frame:SetScript("OnEnter", nil)
 		self.frame:SetScript("OnLeave", nil)
+
+		-- click casting support
+		ClickCastFrames = ClickCastFrames or {}
+		ClickCastFrames[self.frame] = false
 	end
 
 	self.frame:SetAttribute("type1", "target")
@@ -326,10 +334,6 @@ function TargetOfTarget.prototype:CreateFrame()
 	self:CreateToTFrame()
 	self:CreateToTHPFrame()
 	self:CreateDebuffFrame()
-
-	-- click casting support
-	ClickCastFrames = ClickCastFrames or {}
-	ClickCastFrames[self.frame] = true
 end
 
 
