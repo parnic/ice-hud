@@ -261,11 +261,7 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		set = function(info, v)
 			self.moduleSettings.barVisible['bar'] = v
-			if v then
-				self.barFrame:Show()
-			else
-				self.barFrame:Hide()
-			end
+			self:SetBarVisibility(v)
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -766,6 +762,14 @@ end
 	return opts
 end
 
+function IceBarElement.prototype:SetBarVisibility(visible)
+	if visible then
+		self.barFrame:Show()
+	else
+		self.barFrame:Hide()
+	end
+end
+
 function IceBarElement.prototype:SetBarFramePoints()
 	self.barFrame:ClearAllPoints()
 	if (self.moduleSettings.inverse) then
@@ -1107,11 +1111,7 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 		self.frame.bg:Show()
 	end
 
-	if not self.moduleSettings.barVisible['bar'] then
-		self.barFrame:Hide()
-	else
-		self.barFrame:Show()
-	end
+	self:SetBarVisibility(self.moduleSettings.barVisible['bar'])
 
 	if DogTag ~= nil and self.moduleSettings.usesDogTagStrings then
 		DogTag:UpdateAllForFrame(self.frame)

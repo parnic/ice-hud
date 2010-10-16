@@ -56,6 +56,20 @@ function EclipseBar.prototype:Disable(core)
 	EclipseBar.super.prototype.Disable(self, core)
 end
 
+function EclipseBar.prototype:SetBarVisibility(visible)
+	EclipseBar.super.prototype.SetBarVisibility(self, visible)
+
+	if not self.solarBar then
+		return
+	end
+
+	if visible then
+		self.solarBar:Show()
+	else
+		self.solarBar:Hide()
+	end
+end
+
 function EclipseBar.prototype:CreateFrame()
 	EclipseBar.super.prototype.CreateFrame(self)
 
