@@ -796,11 +796,19 @@ function IceTargetInfo.prototype:CreateFrame(redraw)
 		self.frame:RegisterForClicks("AnyUp")
 		self.frame:SetScript("OnEnter", function(frame) self:OnEnter(frame) end)
 		self.frame:SetScript("OnLeave", function(frame) self:OnLeave(frame) end)
+
+		-- set up click casting
+		ClickCastFrames = ClickCastFrames or {}
+		ClickCastFrames[self.frame] = true
 	else
 		self.frame:EnableMouse(false)
 		self.frame:RegisterForClicks()
 		self.frame:SetScript("OnEnter", nil)
 		self.frame:SetScript("OnLeave", nil)
+
+		-- set up click casting
+		ClickCastFrames = ClickCastFrames or {}
+		ClickCastFrames[self.frame] = false
 	end
 
 	self.frame.unit = self.unit
@@ -836,11 +844,6 @@ function IceTargetInfo.prototype:CreateFrame(redraw)
 	self:CreateDebuffFrame(redraw)
 
 	self:CreateRaidIconFrame()
-
-
-	-- set up click casting
-	ClickCastFrames = ClickCastFrames or {}
-	ClickCastFrames[self.frame] = true
 end
 
 
