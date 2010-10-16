@@ -797,6 +797,9 @@ function IceTargetInfo.prototype:CreateFrame(redraw)
 		self.frame:SetScript("OnEnter", function(frame) self:OnEnter(frame) end)
 		self.frame:SetScript("OnLeave", function(frame) self:OnLeave(frame) end)
 
+		self.frame:SetAttribute("type1", "target")
+		self.frame:SetAttribute("type2", "menu")
+
 		-- set up click casting
 		ClickCastFrames = ClickCastFrames or {}
 		ClickCastFrames[self.frame] = true
@@ -806,6 +809,9 @@ function IceTargetInfo.prototype:CreateFrame(redraw)
 		self.frame:SetScript("OnEnter", nil)
 		self.frame:SetScript("OnLeave", nil)
 
+		self.frame:SetAttribute("type1")
+		self.frame:SetAttribute("type2")
+
 		-- set up click casting
 		ClickCastFrames = ClickCastFrames or {}
 		ClickCastFrames[self.frame] = false
@@ -813,9 +819,6 @@ function IceTargetInfo.prototype:CreateFrame(redraw)
 
 	self.frame.unit = self.unit
 
-	-- set up stuff for clicking
-	self.frame:SetAttribute("type1", "target")
-	self.frame:SetAttribute("type2", "menu")
 	self.frame:SetAttribute("unit", self.unit)
 
 	self.frame.menu = function()
