@@ -183,13 +183,14 @@ function IceCustomCount.prototype:GetOptions()
 		name = L["Maximum applications"],
 		desc = L["How many total applications of this buff/debuff can be applied. For example, only 5 sunders can ever be on a target, so this would be set to 5 for tracking Sunder.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
 		get = function()
-			return self.moduleSettings.maxCount
+			return tostring(self.moduleSettings.maxCount)
 		end,
 		set = function(info, v)
-			if not v or not tonumber(v) then
-				v = 0
+			if not v or not tonumber(v) or tonumber(v) <= 0 then
+				v = 5
 			end
-			self.moduleSettings.maxCount = v
+			self.moduleSettings.maxCount = tonumber(v)
+			self:CreateCustomFrame(true)
 			self:Redraw()
 		end,
 		disabled = function()
@@ -398,7 +399,13 @@ function IceCustomCount.prototype:Enable(core)
 
 	self.unit = self.moduleSettings.auraTarget
 
-	self:CreateCustomFrame(true)
+	if not tonumber(self.moduleSettings.maxCount) or tonumber(self.moduleSettings.maxCount) <= 0 then
+		self.moduleSettings.maxCount = 5
+		self:CreateCustomFrame(true)
+		self:Redraw()
+	else
+		self:CreateCustomFrame(true)
+	end
 	self:UpdateCustomCount()
 end
 
