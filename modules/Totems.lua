@@ -212,7 +212,7 @@ end
 
 function Totems.prototype:ResetTotemAvailability()
 	for i=1, self.numTotems do
-		self:UpdateTotem(nil, totem)
+		self:UpdateTotem(nil, i)
 	end
 end
 
