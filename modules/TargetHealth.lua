@@ -734,7 +734,7 @@ function IceTargetHealth.prototype:EnableClickTargeting(bEnable)
 			--ClickCastFrames = ClickCastFrames or {}
 			--ClickCastFrames[self.frame.button] = false
 
-			self.frame.button:SetParent()
+			self.frame.button:SetParent(nil)
 			self.frame.button = nil
 		end
 	end
