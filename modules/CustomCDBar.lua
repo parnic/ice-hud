@@ -436,7 +436,9 @@ function IceCustomCDBar.prototype:EnableUpdates(enable_update)
 	end
 
 	if enable_update then
-		IceHUD.IceCore:RequestUpdates(self.frame, function() self:UpdateCustomBar(true) end)
+		if not IceHUD.IceCore:IsUpdateSubscribed(self.frame) then
+			IceHUD.IceCore:RequestUpdates(self.frame, function() self:UpdateCustomBar(true) end)
+		end
 	else
 		IceHUD.IceCore:RequestUpdates(self.frame, nil)
 	end

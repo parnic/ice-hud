@@ -48,7 +48,9 @@ end
 
 function IceCustomBar.prototype:ConditionalSubscribe()
 	if self:ShouldAlwaysSubscribe() then
-		IceHUD.IceCore:RequestUpdates(self.frame, function() self:UpdateCustomBar() end)
+		if not IceHUD.IceCore:IsUpdateSubscribed(self.frame) then
+			IceHUD.IceCore:RequestUpdates(self.frame, function() self:UpdateCustomBar() end)
+		end
 	else
 		IceHUD.IceCore:RequestUpdates(self.frame, nil)
 	end

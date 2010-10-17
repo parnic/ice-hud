@@ -1229,6 +1229,9 @@ function IceBarElement.prototype:Update()
 end
 
 function IceBarElement.prototype:MyOnUpdate()
+	if not self:IsVisible() then
+		return
+	end
 	self:SetScale(self.DesiredScale)
 end
 

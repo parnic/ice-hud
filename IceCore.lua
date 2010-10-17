@@ -690,7 +690,9 @@ function IceCore.prototype:HandleUpdates()
 end
 
 function IceCore.prototype:RequestUpdates(frame, func)
-	self.updatees[frame] = func
+	if self.updatees[frame] ~= func then
+		self.updatees[frame] = func
+	end
 
 	local count = 0
 	for k,v in pairs(self.updatees) do
