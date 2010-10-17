@@ -225,8 +225,8 @@ function PetHealth.prototype:EnableClickTargeting(bEnable)
 		self.frame.button:RegisterForClicks()
 
 		-- set up click casting
-		ClickCastFrames = ClickCastFrames or {}
-		ClickCastFrames[self.frame.button] = false
+		--ClickCastFrames = ClickCastFrames or {}
+		--ClickCastFrames[self.frame.button] = false
 	end
 end
 

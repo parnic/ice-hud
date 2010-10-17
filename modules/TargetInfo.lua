@@ -813,8 +813,8 @@ function IceTargetInfo.prototype:CreateFrame(redraw)
 		self.frame:SetAttribute("type2")
 
 		-- set up click casting
-		ClickCastFrames = ClickCastFrames or {}
-		ClickCastFrames[self.frame] = false
+		--ClickCastFrames = ClickCastFrames or {}
+		--ClickCastFrames[self.frame] = false
 	end
 
 	self.frame.unit = self.unit

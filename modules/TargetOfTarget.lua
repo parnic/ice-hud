@@ -323,8 +323,8 @@ function TargetOfTarget.prototype:CreateFrame()
 		self.frame:SetScript("OnLeave", nil)
 
 		-- click casting support
-		ClickCastFrames = ClickCastFrames or {}
-		ClickCastFrames[self.frame] = false
+		--ClickCastFrames = ClickCastFrames or {}
+		--ClickCastFrames[self.frame] = false
 	end
 
 	self.frame:SetAttribute("type1", "target")
