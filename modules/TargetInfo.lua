@@ -596,7 +596,10 @@ function IceTargetInfo.prototype:GetOptions()
 			self:Redraw()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or DogTag == nil
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return DogTag == nil
 		end,
 		multiline = true,
 		order = 39.1
@@ -616,7 +619,10 @@ function IceTargetInfo.prototype:GetOptions()
 			self:Redraw()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or DogTag == nil
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return DogTag == nil
 		end,
 		multiline = true,
 		order = 39.2
@@ -636,7 +642,10 @@ function IceTargetInfo.prototype:GetOptions()
 			self:Redraw()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or DogTag == nil
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return DogTag == nil
 		end,
 		multiline = true,
 		order = 39.3
@@ -656,10 +665,76 @@ function IceTargetInfo.prototype:GetOptions()
 			self:Redraw()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or DogTag == nil
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return DogTag == nil
 		end,
 		multiline = true,
 		order = 39.4
+	}
+
+	opts["displayTargetName"] = {
+		type = 'toggle',
+		name = L["Display target name"],
+		desc = L["Whether or not to display the first line of text on this module which is the target's name."],
+		get = function()
+			return self.moduleSettings.displayTargetName
+		end,
+		set = function(info, v)
+			self.moduleSettings.displayTargetName = v
+			self.frame.targetName:SetText()
+			self:Update(self.unit)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return DogTag ~= nil
+		end,
+		order = 39.1,
+	}
+
+	opts["displayTargetDetails"] = {
+		type = 'toggle',
+		name = L["Display target details"],
+		desc = L["Whether or not to display the second line of text on this module which is the target's details (level, class, PvP status, etc.)."],
+		get = function()
+			return self.moduleSettings.displayTargetDetails
+		end,
+		set = function(info, v)
+			self.moduleSettings.displayTargetDetails = v
+			self.frame.targetInfo:SetText()
+			self:Update(self.unit)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return DogTag ~= nil
+		end,
+		order = 39.2,
+	}
+
+	opts["displayTargetGuild"] = {
+		type = 'toggle',
+		name = L["Display target guild"],
+		desc = L["Whether or not to display the third line of text on this module which is the target's guild and realm (if they are from another realm)."],
+		get = function()
+			return self.moduleSettings.displayTargetGuild
+		end,
+		set = function(info, v)
+			self.moduleSettings.displayTargetGuild = v
+			self.frame.targetGuild:SetText()
+			self:Update(self.unit)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return DogTag ~= nil
+		end,
+		order = 39.3,
 	}
 
 	return opts
@@ -698,6 +773,9 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 	defaults["showBuffs"] = true
 	defaults["showDebuffs"] = true
 	defaults["spaceBetweenBuffs"] = 0
+	defaults["displayTargetName"] = true
+	defaults["displayTargetDetails"] = true
+	defaults["displayTargetGuild"] = true
 
 	return defaults
 end
@@ -1410,16 +1488,22 @@ function IceTargetInfo.prototype:Update(unit)
 	end
 
 	if DogTag == nil then
-		self.frame.targetName:SetText(self.name or '')
-		self.frame.targetName:SetVertexColor(UnitSelectionColor(self.unit))
+		if self.moduleSettings.displayTargetName then
+			self.frame.targetName:SetText(self.name or '')
+			self.frame.targetName:SetVertexColor(UnitSelectionColor(self.unit))
+		end
 
-		local line2 = string.format("%s %s%s%s%s%s",
-			self.level or '', self.classLocale or '', self.pvp or '', self.leader or '', self.classification or '', self.targetCombat or '')
-		self.frame.targetInfo:SetText(line2)
+		if self.moduleSettings.displayTargetDetails then
+			local line2 = string.format("%s %s%s%s%s%s",
+				self.level or '', self.classLocale or '', self.pvp or '', self.leader or '', self.classification or '', self.targetCombat or '')
+			self.frame.targetInfo:SetText(line2)
+		end
 
-		local realm = self.realm and " " .. self.realm or ""
-		local line3 = string.format("%s%s", self.guild or '', realm)
-		self.frame.targetGuild:SetText(line3)
+		if self.moduleSettings.displayTargetGuild then
+			local realm = self.realm and " " .. self.realm or ""
+			local line3 = string.format("%s%s", self.guild or '', realm)
+			self.frame.targetGuild:SetText(line3)
+		end
 	end
 
 	-- Parnic - i have no idea why i have to force UpdateFontString here...but
