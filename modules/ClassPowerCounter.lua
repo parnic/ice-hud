@@ -35,7 +35,7 @@ function IceClassPowerCounter.prototype:GetOptions()
 			self:Redraw()
 		end,
 		min = -300,
-		max = 300,
+		max = 700,
 		step = 1,
 		disabled = function()
 			return not self.moduleSettings.enabled

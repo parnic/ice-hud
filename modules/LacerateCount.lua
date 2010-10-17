@@ -2,6 +2,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local LacerateCount = IceCore_CreateClass(IceElement)
 
 LacerateCount.prototype.lacerateSize = 20
+LacerateCount.prototype.numLacerates = 3
 
 -- Constructor --
 function LacerateCount.prototype:init()
@@ -137,6 +138,8 @@ function LacerateCount.prototype:GetOptions()
 		order = 34
 	}
 
+	opts.gradient.desc = string.gsub(opts.gradient.desc, "5", tostring(self.numLacerates))
+
 	return opts
 end
 
@@ -188,7 +191,7 @@ function LacerateCount.prototype:CreateFrame()
 	LacerateCount.super.prototype.CreateFrame(self)
 
 	self.frame:SetFrameStrata("BACKGROUND")
-	self.frame:SetWidth(self.lacerateSize*5)
+	self.frame:SetWidth(self.lacerateSize*self.numLacerates)
 	self.frame:SetHeight(1)
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
@@ -216,7 +219,7 @@ function LacerateCount.prototype:CreateLacerateFrame(doTextureUpdate)
 	end
 
 	-- create backgrounds
-	for i = 1, 5 do
+	for i = 1, self.numLacerates do
 		if (not self.frame.graphicalBG[i]) then
 			local frame = CreateFrame("Frame", nil, self.frame)
 			self.frame.graphicalBG[i] = frame
@@ -247,7 +250,7 @@ function LacerateCount.prototype:CreateLacerateFrame(doTextureUpdate)
 	end
 
 	-- create lacerates
-	for i = 1, 5 do
+	for i = 1, self.numLacerates do
 		if (not self.frame.graphical[i]) then
 			local frame = CreateFrame("Frame", nil, self.frame)
 			self.frame.graphical[i] = frame
@@ -272,7 +275,7 @@ function LacerateCount.prototype:CreateLacerateFrame(doTextureUpdate)
 
 		local r, g, b = self:GetColor("LacerateCount")
 		if (self.moduleSettings.gradient) then
-			g = g - (0.15*i)
+			g = g - ((0.75 / self.numLacerates) * i)
 		end
 		self.frame.graphical[i].texture:SetVertexColor(r, g, b)
 
@@ -284,7 +287,7 @@ end
 function LacerateCount.prototype:UpdateLacerateCount()
 	local points
 	if IceHUD.IceCore:IsInConfigMode() then
-		points = 5
+		points = self.numLacerates
 	else
 		points = IceHUD:GetDebuffCount("target", "Ability_Druid_Lacerate", true)
 	end
@@ -296,7 +299,7 @@ function LacerateCount.prototype:UpdateLacerateCount()
 	if (self.moduleSettings.lacerateMode == "Numeric") then
 		local r, g, b = self:GetColor("LacerateCount")
 		if (self.moduleSettings.gradient and points) then
-			g = g - (0.15*points)
+			g = g - ((0.75 / self.numLacerates) * points)
 		end
 		self.frame.numeric:SetTextColor(r, g, b, 0.7)
 

@@ -240,12 +240,7 @@ function IceThreat.prototype:CreateSecondThreatBar()
 	self.secondThreatBar:SetFrameStrata("MEDIUM")
 	self.secondThreatBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.secondThreatBar:SetHeight(self.settings.barHeight)
-	self.secondThreatBar:ClearAllPoints()
-	if self.moduleSettings.inverse then
-		self.secondThreatBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
-	else
-		self.secondThreatBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
-	end
+	self:SetBarFramePoints(self.secondThreatBar)
 
 	if not (self.secondThreatBar.bar) then
 		self.secondThreatBar.bar = self.secondThreatBar:CreateTexture(nil, "OVERLAY")
@@ -416,17 +411,21 @@ function IceThreat.prototype:UpdateSecondHighestThreatBar(secondHighestThreat, t
 			pos = 1-pos
 		end
 
-		local min_y = 0
-		local max_y = pos
-		if self.moduleSettings.inverse then
+		if (self.moduleSettings.reverse) then
+            pos = 1 - pos
+		end
+		if (self.moduleSettings.inverse) then
+			min_y = 0
+			max_y = pos
+		else
 			min_y = 1-pos
 			max_y = 1
 		end
 
 		if ( self.moduleSettings.side == IceCore.Side.Left ) then
-			self.secondThreatBar.bar:SetTexCoord(1, 0, max_y, min_y)
+			self.secondThreatBar.bar:SetTexCoord(1, 0, min_y, max_y)
 		else
-			self.secondThreatBar.bar:SetTexCoord(0, 1, max_y, min_y)
+			self.secondThreatBar.bar:SetTexCoord(0, 1, min_y, max_y)
 		end
 
 		local r, g, b = self:GetColor("ThreatSecondPlace")

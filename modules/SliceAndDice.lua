@@ -141,6 +141,7 @@ function SliceAndDice.prototype:CreateDurationBar()
 	end
 
 	self.durationFrame:SetFrameStrata("BACKGROUND")
+	self:SetBarFramePoints(self.durationFrame)
 	self.durationFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.durationFrame:SetHeight(self.settings.barHeight)
 
@@ -149,16 +150,11 @@ function SliceAndDice.prototype:CreateDurationBar()
 	end
 
 	self.durationFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	self.durationFrame.bar:SetPoint("BOTTOMLEFT",self.frame,"BOTTOMLEFT")
-	self.durationFrame.bar:SetPoint("BOTTOMRIGHT",self.frame,"BOTTOMRIGHT")
-
+	self.durationFrame.bar:SetAllPoints(self.durationFrame)
 	self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.alpha * self.moduleSettings.durationAlpha))
 	self.durationFrame.bar:SetHeight(0)
 
 	self:UpdateBar(1, "undef")
-
-	self.durationFrame:ClearAllPoints()
-	self.durationFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
 
 	-- force update the bar...if we're in here, then either the UI was just loaded or the player is jacking with the options.
 	-- either way, make sure the duration bar matches accordingly
@@ -295,12 +291,23 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 	scale = IceHUD:Clamp(PotentialSnDDuration / CurrMaxSnDDuration, 0, 1)
 
 	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.durationFrame.bar:SetTexCoord(1, 0, 1-scale, 1)
-	else
-		self.durationFrame.bar:SetTexCoord(0, 1, 1-scale, 1)
+	if (self.moduleSettings.reverse) then
+            scale = 1 - scale
 	end
-	self.durationFrame.bar:SetHeight(self.settings.barHeight * scale)
+	if (self.moduleSettings.inverse) then
+		min_y = 0
+		max_y = scale
+	else
+		min_y = 1-scale
+		max_y = 1
+	end
+
+	if (self.moduleSettings.side == IceCore.Side.Left) then
+		self.durationFrame.bar:SetTexCoord(1, 0, min_y, max_y)
+	else
+		self.durationFrame.bar:SetTexCoord(0, 1, min_y, max_y)
+	end
+	self.durationFrame:SetHeight(self.settings.barHeight * scale)
 
 	if scale == 0 then
 		self.durationFrame.bar:Hide()

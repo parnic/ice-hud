@@ -2,6 +2,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local SunderCount = IceCore_CreateClass(IceElement)
 
 SunderCount.prototype.sunderSize = 20
+SunderCount.prototype.numSunders = 3
 
 -- Constructor --
 function SunderCount.prototype:init()
@@ -117,6 +118,8 @@ function SunderCount.prototype:GetOptions()
 		order = 34
 	}
 
+	opts.gradient.desc = string.gsub(opts.gradient.desc, "5", tostring(self.numSunders))
+
 	return opts
 end
 
@@ -167,7 +170,7 @@ function SunderCount.prototype:CreateFrame()
 	SunderCount.super.prototype.CreateFrame(self)
 
 	self.frame:SetFrameStrata("BACKGROUND")
-	self.frame:SetWidth(self.sunderSize*5)
+	self.frame:SetWidth(self.sunderSize*self.numSunders)
 	self.frame:SetHeight(1)
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", 0, self.moduleSettings.vpos)
@@ -195,7 +198,7 @@ function SunderCount.prototype:CreateSunderFrame(doTextureUpdate)
 	end
 
 	-- create backgrounds
-	for i = 1, 5 do
+	for i = 1, self.numSunders do
 		if (not self.frame.graphicalBG[i]) then
 			local frame = CreateFrame("Frame", nil, self.frame)
 			self.frame.graphicalBG[i] = frame
@@ -226,7 +229,7 @@ function SunderCount.prototype:CreateSunderFrame(doTextureUpdate)
 	end
 
 	-- create sunders
-	for i = 1, 5 do
+	for i = 1, self.numSunders do
 		if (not self.frame.graphical[i]) then
 			local frame = CreateFrame("Frame", nil, self.frame)
 			self.frame.graphical[i] = frame
@@ -251,7 +254,7 @@ function SunderCount.prototype:CreateSunderFrame(doTextureUpdate)
 
 		local r, g, b = self:GetColor("SunderCount")
 		if (self.moduleSettings.gradient) then
-			g = g - (0.15*i)
+			g = g - ((0.75 / self.numSunders) * i)
 		end
 		self.frame.graphical[i].texture:SetVertexColor(r, g, b)
 
@@ -263,7 +266,7 @@ end
 function SunderCount.prototype:UpdateSunderCount()
 	local points
 	if IceHUD.IceCore:IsInConfigMode() then
-		points = 5
+		points = self.numSunders
 	else
 		points = IceHUD:GetDebuffCount("target", "Ability_Warrior_Sunder")
 	end
@@ -275,7 +278,7 @@ function SunderCount.prototype:UpdateSunderCount()
 	if (self.moduleSettings.sunderMode == "Numeric") then
 		local r, g, b = self:GetColor("SunderCount")
 		if (self.moduleSettings.gradient and points) then
-			g = g - (0.15*points)
+			g = g - ((0.75 / self.numSunders) * points)
 		end
 		self.frame.numeric:SetTextColor(r, g, b, 0.7)
 

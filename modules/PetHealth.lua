@@ -34,21 +34,14 @@ end
 
 
 -- OVERRIDE
---[[
 function PetHealth.prototype:CreateFrame()
 	PetHealth.super.prototype.CreateFrame(self)
 
-	local point, relativeTo, relativePoint, xoff, yoff = self.frame.bottomUpperText:GetPoint()
-	if (point == "TOPLEFT") then
-		point = "BOTTOMLEFT"
-	else
-		point = "BOTTOMRIGHT"
+	if not UnitExists(self.unit) then
+		self.frame.bottomUpperText:Hide()
+		self.frame.bottomLowerText:Hide()
 	end
-
-	self.frame.bottomUpperText:ClearAllPoints()
-	self.frame.bottomUpperText:SetPoint(point, relativeTo, relativePoint, 0, 0)
 end
-]]
 
 function PetHealth.prototype:Enable(core)
 	PetHealth.super.prototype.Enable(self, core)

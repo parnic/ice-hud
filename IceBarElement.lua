@@ -55,7 +55,7 @@ function IceBarElement.prototype:Enable()
 			self.moduleSettings.reverse = false
 			self.moduleSettings.inverse = true
 
-			self:SetBarFramePoints()
+			self:SetBarFramePoints(self.barFrame)
 		end
 	end
 
@@ -224,7 +224,7 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		set = function(info, value)
 			self.moduleSettings.inverse = value
-			self:SetBarFramePoints()
+			self:SetBarFramePoints(self.barFrame)
 			self:Redraw()
 		end,
 		disabled = function()
@@ -243,7 +243,7 @@ function IceBarElement.prototype:GetOptions()
 		end,
 		set = function(info, value)
 			self.moduleSettings.reverse = value
-			self:SetBarFramePoints()
+			self:SetBarFramePoints(self.barFrame)
 			self:Redraw()
 		end,
 		disabled = function()
@@ -770,12 +770,12 @@ function IceBarElement.prototype:SetBarVisibility(visible)
 	end
 end
 
-function IceBarElement.prototype:SetBarFramePoints()
-	self.barFrame:ClearAllPoints()
+function IceBarElement.prototype:SetBarFramePoints(frame)
+	frame:ClearAllPoints()
 	if (self.moduleSettings.inverse) then
-		self.barFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
+		frame:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
 	else
-		self.barFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
+		frame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
 	end
 end
 
@@ -894,7 +894,7 @@ function IceBarElement.prototype:CreateBar()
 	end
 
 	self.barFrame:SetFrameStrata("LOW")
-	self:SetBarFramePoints()
+	self:SetBarFramePoints(self.barFrame)
 	self.barFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.barFrame:SetHeight(self.settings.barHeight)
 
