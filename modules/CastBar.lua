@@ -403,7 +403,8 @@ function CastBar.prototype:SpellCastStart(event, unit, spell, rank)
 		self.lagBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
 	end
 
-	local lag = GetTime() - (self.spellCastSent or 0)
+	local now = GetTime()
+	local lag = now - (self.spellCastSent or now)
 
 	local pos = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
 	if self.unit == "vehicle" then
@@ -431,6 +432,8 @@ function CastBar.prototype:SpellCastStart(event, unit, spell, rank)
 	end
 
 	self.lagBar:SetHeight(self.settings.barHeight * pos)
+
+	self.spellCastSent = nil
 end
 
 
@@ -456,7 +459,8 @@ function CastBar.prototype:SpellCastChannelStart(event, unit)
 		self.lagBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
 	end
 
-	local lag = GetTime() - (self.spellCastSent or 0)
+	local now = GetTime()
+	local lag = now - (self.spellCastSent or now)
 
 	local pos = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
 	if self.unit == "vehicle" then
@@ -484,6 +488,8 @@ function CastBar.prototype:SpellCastChannelStart(event, unit)
 	end
 
 	self.lagBar:SetHeight(self.settings.barHeight * pos)
+
+	self.spellCastSent = nil
 end
 
 
