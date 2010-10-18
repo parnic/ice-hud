@@ -79,3 +79,4 @@ modules\ClassPowerCounter.lua
 modules\HolyPower.lua
 modules\Shards.lua
 modules\EclipseBar.lua
+modules\Vengeance.lua
