@@ -58,8 +58,9 @@ function Vengeance.prototype:UpdateCurrent(event, unit)
 		return
 	end
 
-	local name, _, _, _, _, _, _, _, _, _, auraID = UnitAura(unit, GetSpellInfo(VENGEANCE_SPELL_ID))
-	if (name) then
+	local spellName = GetSpellInfo(VENGEANCE_SPELL_ID)
+	local name = UnitAura(unit, spellName)
+	if name then
 		-- Buff found, copy it into the buffer for scanning
 		self.tooltipBuffer:ClearLines()
 		self.tooltipBuffer:SetUnitBuff(unit, name)
