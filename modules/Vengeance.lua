@@ -103,8 +103,8 @@ function Vengeance.prototype:Update(unit)
 	end
 
 	self:UpdateBar(self.current / self.max, "Vengeance")
-	self:SetBottomText1(floor(self.current / self.max * 100) .. "%")
-	self:SetBottomText2(self.current)
+	self:SetBottomText1(floor((self.current / self.max) * 100) .. "%")
+	self:SetBottomText2(tostring(self.current) .."/"..tostring(self.max))
 end
 
 -- Load for tanks only
