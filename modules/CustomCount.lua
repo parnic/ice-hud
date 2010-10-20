@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceCustomCount = IceCore_CreateClass(IceElement)
 
+local IceHUD = _G.IceHUD
+
 IceCustomCount.prototype.countSize = 20
 IceCustomCount.prototype.lastPoints = 0
 

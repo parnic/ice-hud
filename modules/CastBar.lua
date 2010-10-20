@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local CastBar = IceCore_CreateClass(IceCastBar)
 
+local IceHUD = _G.IceHUD
+
 CastBar.prototype.lagBar = nil
 CastBar.prototype.spellCastSent = nil
 

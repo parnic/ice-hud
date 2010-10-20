@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceTargetHealth = IceCore_CreateClass(IceUnitBar)
 
+local IceHUD = _G.IceHUD
+
 IceTargetHealth.prototype.color = nil
 IceTargetHealth.prototype.determineColor = true
 IceTargetHealth.prototype.registerEvents = true

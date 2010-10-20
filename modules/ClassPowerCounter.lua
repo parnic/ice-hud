@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceClassPowerCounter = IceCore_CreateClass(IceElement)
 
+local IceHUD = _G.IceHUD
+
 IceClassPowerCounter.prototype.runeHeight = 22
 IceClassPowerCounter.prototype.runeWidth = 36
 IceClassPowerCounter.prototype.numRunes = 3

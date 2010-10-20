@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local MaelstromCount = IceCore_CreateClass(IceElement)
 
+local IceHUD = _G.IceHUD
+
 MaelstromCount.prototype.maelstromSize = 20
 
 -- Constructor --

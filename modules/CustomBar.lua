@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceCustomBar = IceCore_CreateClass(IceUnitBar)
 
+local IceHUD = _G.IceHUD
+
 local validUnits = {"player", "target", "focus", "focustarget", "pet", "pettarget", "vehicle", "targettarget", "main hand weapon", "off hand weapon"}
 local buffOrDebuff = {"buff", "debuff"}
 local validBuffTimers = {"none", "seconds", "minutes:seconds", "minutes"}

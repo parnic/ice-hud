@@ -1,6 +1,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceCustomCDBar = IceCore_CreateClass(IceUnitBar)
 
+local IceHUD = _G.IceHUD
 
 local validDisplayModes = {"Always", "When ready", "When cooling down"}
 local validBuffTimers = {"none", "seconds", "minutes:seconds", "minutes"}

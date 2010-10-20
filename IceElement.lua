@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local SML = LibStub("LibSharedMedia-3.0")
 
+local IceHUD = _G.IceHUD
+
 IceElement = IceCore_CreateClass()
 
 IceElement.TexturePath = IceHUD.Location .. "\\textures\\"

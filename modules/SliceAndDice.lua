@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local SliceAndDice = IceCore_CreateClass(IceUnitBar)
 
+local IceHUD = _G.IceHUD
+
 local NetherbladeItemIdList = {29044, 29045, 29046, 29047, 29048}
 -- Parnic - bah, have to abandon the more robust string representation of each slot because of loc issues...
 local NetherbladeEquipLocList = {1, 3, 5, 7, 10} --"HeadSlot", "ShoulderSlot", "ChestSlot", "LegsSlot", "HandsSlot"}

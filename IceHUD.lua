@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceHUD = LibStub("AceAddon-3.0"):NewAddon("IceHUD", "AceConsole-3.0")
 
+local IceHUD = IceHUD
+
 local SML = LibStub("LibSharedMedia-3.0")
 local ACR = LibStub("AceConfigRegistry-3.0")
 local ConfigDialog = LibStub("AceConfigDialog-3.0")

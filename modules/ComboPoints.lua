@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local ComboPoints = IceCore_CreateClass(IceElement)
 
+local IceHUD = _G.IceHUD
+
 ComboPoints.prototype.comboSize = 20
 
 -- Constructor --

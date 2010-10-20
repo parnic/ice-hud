@@ -7,6 +7,8 @@ Description: adds a threat bar to IceHUD
 
 IceThreat = IceCore_CreateClass(IceUnitBar)
 
+local IceHUD = _G.IceHUD
+
 IceThreat.prototype.color = nil
 IceThreat.aggroBar = nil
 IceThreat.aggroBarMulti = nil

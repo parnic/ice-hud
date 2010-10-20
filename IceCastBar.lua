@@ -1,6 +1,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceCastBar = IceCore_CreateClass(IceBarElement)
 
+local IceHUD = _G.IceHUD
 
 IceCastBar.Actions = { None = 0, Cast = 1, Channel = 2, Instant = 3, Success = 4, Failure = 5 }
 

@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local Runes = IceCore_CreateClass(IceElement)
 
+local IceHUD = _G.IceHUD
+
 -- blizzard cracks me up. the below block is copied verbatim from RuneFrame.lua ;)
 --Readability == win
 local RUNETYPE_BLOOD = 1;

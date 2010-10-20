@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local EclipseBar = IceCore_CreateClass(IceBarElement)
 
+local IceHUD = _G.IceHUD
+
 EclipseBar.prototype.barUpdateColor = "EclipseLunar"
 EclipseBar.prototype.direction = "none"
 

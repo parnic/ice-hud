@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local PlayerHealth = IceCore_CreateClass(IceUnitBar)
 
+local IceHUD = _G.IceHUD
+
 PlayerHealth.prototype.resting = nil
 PlayerHealth.prototype.pendingBlizzardPartyHide = false
 

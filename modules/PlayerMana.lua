@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local PlayerMana = IceCore_CreateClass(IceUnitBar)
 
+local IceHUD = _G.IceHUD
+
 PlayerMana.prototype.manaType = nil
 PlayerMana.prototype.tickStart = nil
 PlayerMana.prototype.previousEnergy = nil

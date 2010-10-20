@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local DogTag = nil
 
+local IceHUD = _G.IceHUD
+
 IceBarElement = IceCore_CreateClass(IceElement)
 
 IceBarElement.BarTextureWidth = 128
