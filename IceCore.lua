@@ -143,14 +143,16 @@ function IceCore.prototype:Enable(userToggle)
 	end
 
 	-- go through the list of loaded elements that don't have associated settings and dump them
-	toRemove = {}
-	for i = #self.elements, 1, -1 do
-		if not self.settings.modules[self.elements[i]:GetElementName()] then
-			toRemove[#toRemove + 1] = i
+	do
+		local toRemove = {}
+		for i = #self.elements, 1, -1 do
+			if not self.settings.modules[self.elements[i]:GetElementName()] then
+				toRemove[#toRemove + 1] = i
+			end
 		end
-	end
-	for i=1,#toRemove do
-		table.remove(self.elements, toRemove[i])
+		for i=1,#toRemove do
+			table.remove(self.elements, toRemove[i])
+		end
 	end
 
 	for k,v in pairs(self.settings.modules) do
