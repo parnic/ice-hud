@@ -160,6 +160,12 @@ function IceCustomCDBar.prototype:GetOptions()
 		order = 20.2,
 	}
 
+	opts["type"] = {
+		type = "description",
+		name = string.format("%s %s", L["Module type:"], tostring(self:GetBarTypeDescription("CD"))),
+		order = 21,
+	}
+
 	opts["name"] = {
 		type = 'input',
 		name = L["Bar name"],

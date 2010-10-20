@@ -116,6 +116,27 @@ function IceElement.prototype:Redraw()
 end
 
 
+function IceElement.prototype:GetBarTypeDescription(barType)
+	local pre = "|cff00ff00"
+	local post = "|r"
+	local retval = ""
+
+	if barType == "CD" then
+		retval = L["Cooldown"]
+	elseif barType == "Bar" then
+		retval = L["(De)Buff watcher"]
+	elseif barType == "Counter" then
+		retval = L["Counter"]
+	elseif barType == "Health" then
+		retval = HEALTH
+	elseif barType == "Mana" then
+		retval = MANA
+	end
+
+	return string.format("%s%s%s", pre, retval, post)
+end
+
+
 -- inheriting classes should override this and provide
 -- AceOptions table for configuration
 function IceElement.prototype:GetOptions()
