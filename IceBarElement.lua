@@ -1155,6 +1155,7 @@ function IceBarElement.prototype:SetBottomText1(text, color)
 		alpha = 1
 	end
 
+	self.frame.bottomUpperText:SetTextColor(self:GetColor(color, alpha))
 	self.frame.bottomUpperText:SetText(text)
 	self.frame.bottomUpperText:SetWidth(0)
 end
