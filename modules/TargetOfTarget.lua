@@ -126,19 +126,20 @@ function TargetOfTarget.prototype:GetOptions()
 
 	opts["texture"] = {
 		type = 'select',
+		dialogControl = "LSM30_Statusbar",
 		name = L["Texture"],
 		desc = L["ToT frame texture"],
 		get = function(info)
-			return IceHUD:GetSelectValue(info, self.moduleSettings.texture)
+			return self.moduleSettings.texture
 		end,
 		set = function(info, v)
-			self.moduleSettings.texture = info.option.values[v]
+			self.moduleSettings.texture = v
 			self:Redraw()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		values = SML:List(SML.MediaType.STATUSBAR),
+		values = AceGUIWidgetLSMlists.statusbar,
 		order = 35
 	}
 

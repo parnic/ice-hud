@@ -373,16 +373,17 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 
 		textSettings = {
 			type = 'select',
+			dialogControl = "LSM30_Font",
 			name = L["Font"],
 			desc = L["IceHUD Font"],
 			order = 19,
 			get = function(info)
-				return IceHUD:GetSelectValue(info, IceHUD.IceCore:GetFontFamily())
+				return IceHUD.IceCore:GetFontFamily()
 			end,
 			set = function(info, value)
-				IceHUD.IceCore:SetFontFamily(info.option.values[value])
+				IceHUD.IceCore:SetFontFamily(value)
 			end,
-			values = SML:List('font'),
+			values = AceGUIWidgetLSMlists.font,
 			order = 94.75,
 		},
 

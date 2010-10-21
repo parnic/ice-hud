@@ -25,6 +25,9 @@ externals:
     libs/AceGUI-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
         tag: latest
+    libs/AceGUI-3.0-SharedMediaWidgets:
+        url: svn://svn.wowace.com/wow/ace-gui-3-0-shared-media-widgets/mainline/trunk/AceGUI-3.0-SharedMediaWidgets
+        tag: latest
     libs/AceAddon-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
         tag: latest
@@ -47,7 +50,7 @@ externals:
         tag: latest
     libs/LibDBIcon-1.0:
         url: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
-    libs/LibDualSpec-1.0: 
+    libs/LibDualSpec-1.0:
         url: git://git.wowace.com/wow/libdualspec-1-0/mainline.git
         tag: latest
 
@@ -55,4 +58,3 @@ optional-dependencies:
     - libdogtag-3-0
     - libdogtag-unit-3-0
     - librangecheck-2-0
-    - libhealcomm-4-0
