@@ -476,9 +476,7 @@ end
 
 function IceClassPowerCounter.prototype:CreateRuneFrame()
 	-- create numeric runes
-	if not self.frame.numeric then
-		self.frame.numeric = self:FontFactory(self.moduleSettings.runeFontSize, self.frame, self.frame.numeric)
-	end
+	self.frame.numeric = self:FontFactory(self.moduleSettings.runeFontSize, self.frame, self.frame.numeric)
 
 	self.frame.numeric:SetWidth(50)
 	self.frame.numeric:SetJustifyH("CENTER")

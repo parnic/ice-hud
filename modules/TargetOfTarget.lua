@@ -385,9 +385,7 @@ end
 
 
 function TargetOfTarget.prototype:CreateToTFrame()
-	if not self.frame.totName then
-		self.frame.totName = self:FontFactory(self.moduleSettings.fontSize, self.frame.bar, self.frame.totName)
-	end
+	self.frame.totName = self:FontFactory(self.moduleSettings.fontSize, self.frame.bar, self.frame.totName)
 
 	self.frame.totName:SetHeight(self.height)
 	self.frame.totName:SetJustifyH("LEFT")
@@ -399,9 +397,7 @@ end
 
 
 function TargetOfTarget.prototype:CreateToTHPFrame()
-	if not self.frame.totHealth then
-		self.frame.totHealth = self:FontFactory(self.moduleSettings.fontSize, self.frame.bar, self.frame.totHealth)
-	end
+	self.frame.totHealth = self:FontFactory(self.moduleSettings.fontSize, self.frame.bar, self.frame.totHealth)
 
 	self.frame.totHealth:SetHeight(self.height)
 	self.frame.totHealth:SetJustifyH("RIGHT")

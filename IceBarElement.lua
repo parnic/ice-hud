@@ -923,12 +923,8 @@ end
 
 
 function IceBarElement.prototype:CreateTexts()
-	if not self.frame.bottomUpperText then
-		self.frame.bottomUpperText = self:FontFactory(self.moduleSettings.barFontSize, nil, self.frame.bottomUpperText)
-	end
-	if not self.frame.bottomLowerText then
-		self.frame.bottomLowerText = self:FontFactory(self.moduleSettings.barFontSize, nil, self.frame.bottomLowerText)
-	end
+	self.frame.bottomUpperText = self:FontFactory(self.moduleSettings.barFontSize, nil, self.frame.bottomUpperText)
+	self.frame.bottomLowerText = self:FontFactory(self.moduleSettings.barFontSize, nil, self.frame.bottomLowerText)
 
 -- Parnic - commented these out so that they conform to whatever width the string is set to
 --	self.frame.bottomUpperText:SetWidth(80)
