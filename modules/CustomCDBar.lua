@@ -12,7 +12,9 @@ IceCustomCDBar.prototype.cooldownDuration = 0
 IceCustomCDBar.prototype.cooldownEndTime = 0
 IceCustomCDBar.prototype.coolingDown = false
 
-
+-- super temp...remove this when blizzard fixes these spells to work by name with GetSpellCooldown()
+local brokenSpellsNameToId = {}
+table.insert(brokenSpellsNameToId, {"Holy Word: Aspire",88682})
 
 -- Constructor --
 function IceCustomCDBar.prototype:init()
@@ -385,6 +387,8 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function IceCustomCDBar.prototype:GetCooldownDuration(buffName)
+	buffName = self:GetSpellNameOrId(buffName)
+
 	local now = GetTime()
 	local localDuration = nil
 	local localStart, localRemaining, hasCooldown = GetSpellCooldown(buffName)
@@ -551,10 +555,11 @@ end
 
 function IceCustomCDBar.prototype:IsReady()
 	local is_ready = nil
+	local checkSpell = self:GetSpellNameOrId(self.moduleSettings.cooldownToTrack)
 
-	if (IsUsableSpell(self.moduleSettings.cooldownToTrack) == 1) then
-		if SpellHasRange(self.moduleSettings.cooldownToTrack) then
-			if (UnitExists("target") and IsSpellInRange(self.moduleSettings.cooldownToTrack, "target") == 1) then
+	if (IsUsableSpell(checkSpell) == 1) then
+		if SpellHasRange(checkSpell) then
+			if (UnitExists("target") and IsSpellInRange(checkSpell, "target") == 1) then
 				is_ready = 1
 			end
 		else
@@ -563,6 +568,18 @@ function IceCustomCDBar.prototype:IsReady()
 	end
 
 	return is_ready
+end
+
+function IceCustomCDBar.prototype:GetSpellNameOrId(spellName)
+	-- super temp hax. certain spells (the new 'morphing' spells) do not work by name with GetSpellCooldown(), only id.
+	for i=1,#brokenSpellsNameToId do
+		if spellName == brokenSpellsNameToId[i][1] then
+			spellName = brokenSpellsNameToId[i][2]
+			break
+		end
+	end
+
+	return spellName
 end
 
 function IceCustomCDBar.prototype:Show(bShouldShow, bForceHide)
