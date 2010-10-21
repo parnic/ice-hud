@@ -60,6 +60,9 @@ function PetHealth.prototype:Enable(core)
 		self:RegisterEvent("UNIT_HAPPINESS", "PetHappiness")
 	end
 
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+
 	self.frame:SetAttribute("unit", self.unit)
 	RegisterUnitWatch(self.frame)
 
@@ -220,6 +223,23 @@ function PetHealth.prototype:EnableClickTargeting(bEnable)
 		-- set up click casting
 		--ClickCastFrames = ClickCastFrames or {}
 		--ClickCastFrames[self.frame.button] = false
+	end
+end
+
+function PetHealth.prototype:EnteringVehicle(event, unit, arg2)
+	if (self.unit == "pet" and IceHUD:ShouldSwapToVehicle(unit, arg2)) then
+		self.unit = "player"
+		self:RegisterFontStrings()
+		self:Update(self.unit)
+	end
+end
+
+
+function PetHealth.prototype:ExitingVehicle(event, unit)
+	if (unit == "player" and self.unit == "player") then
+		self.unit = "pet"
+		self:RegisterFontStrings()
+		self:Update(self.unit)
 	end
 end
 

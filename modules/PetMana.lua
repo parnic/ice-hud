@@ -50,11 +50,10 @@ end
 function PetMana.prototype:Enable(core)
 	PetMana.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("PET_UI_UPDATE",	 "CheckPet");
-	self:RegisterEvent("PLAYER_PET_CHANGED", "CheckPet");
-	self:RegisterEvent("PET_BAR_CHANGED", "CheckPet");
-	self:RegisterEvent("UNIT_PET", "CheckPet");
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "CheckPet")
+	self:RegisterEvent("PET_UI_UPDATE",	 "CheckPet")
+	self:RegisterEvent("PLAYER_PET_CHANGED", "CheckPet")
+	self:RegisterEvent("PET_BAR_CHANGED", "CheckPet")
+	self:RegisterEvent("UNIT_PET", "CheckPet")
 
 	if IceHUD.WowVer >= 40000 then
 		self:RegisterEvent("UNIT_POWER", "UpdateEvent")
@@ -72,14 +71,15 @@ function PetMana.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+
 	self:CheckPet()
 	self:ManaType(nil, self.unit)
 end
 
 
 function PetMana.prototype:CheckPet()
-	self:CheckForVehicle()
-
 	if (UnitExists(self.unit)) then
 		self:Show(true)
 		self:ManaType(nil, self.unit)
@@ -123,28 +123,11 @@ function PetMana.prototype:MyOnUpdate()
 end
 
 
-function PetMana.prototype:CheckForVehicle()
-	local lastUnit = self.unit
-
-	if UnitIsUnit("pet", "vehicle") or UnitHasVehicleUI("player") then
-		self.unit = "vehicle"
-	else
-		self.unit = "pet"
-	end
-
-	if self.unit ~= lastUnit then
-		self:ManaType(nil, self.unit)
-	end
-end
-
-
 function PetMana.prototype:UpdateEvent(event, unit)
 	self:Update(unit)
 end
 
 function PetMana.prototype:Update(unit)
-	self:CheckForVehicle()
-
 	PetMana.super.prototype.Update(self)
 
 	if (unit and (unit ~= self.unit)) then
@@ -215,7 +198,24 @@ function PetMana.prototype:GetOptions()
 	return opts
 end
 
+function PetMana.prototype:EnteringVehicle(event, unit, arg2)
+	if (self.unit == "pet" and IceHUD:ShouldSwapToVehicle(unit, arg2)) then
+		self.unit = "player"
+		self:RegisterFontStrings()
+		self:ManaType(nil, self.unit)
+		self:Update(self.unit)
+	end
+end
 
+
+function PetMana.prototype:ExitingVehicle(event, unit)
+	if (unit == "player" and self.unit == "player") then
+		self.unit = "pet"
+		self:RegisterFontStrings()
+		self:ManaType(nil, self.unit)
+		self:Update(self.unit)
+	end
+end
 
 -- Load us up
 IceHUD.PetMana = PetMana:new()
