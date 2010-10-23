@@ -39,6 +39,8 @@ function Vengeance.prototype:Enable(core)
 	-- Avoiding iteration where I can
 	self:RegisterEvent("UNIT_AURA", "UpdateCurrent")
 	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateMax")
+
+	self:UpdateMax()
 end
 
 -- disable plugin
@@ -59,11 +61,11 @@ function Vengeance.prototype:UpdateCurrent(event, unit)
 	end
 
 	local spellName = GetSpellInfo(VENGEANCE_SPELL_ID)
-	local name = UnitAura(unit, spellName)
+	local name = UnitAura(self.unit, spellName)
 	if name then
 		-- Buff found, copy it into the buffer for scanning
 		self.tooltipBuffer:ClearLines()
-		self.tooltipBuffer:SetUnitBuff(unit, name)
+		self.tooltipBuffer:SetUnitBuff(self.unit, name)
 
 		-- Grab all regions
 		local regions = {self.tooltipBuffer:GetRegions()}
@@ -80,7 +82,7 @@ function Vengeance.prototype:UpdateCurrent(event, unit)
 		self.current = 0
 	end
 
-	self:Update(unit)
+	self:Update()
 end
 
 function Vengeance.prototype:UpdateMax(event, unit)
@@ -88,11 +90,11 @@ function Vengeance.prototype:UpdateMax(event, unit)
 		return
 	end
 
-	self.max = floor(0.1*UnitHealthMax(unit))
-	self:Update(unit)
+	self.max = floor(0.1*UnitHealthMax(self.unit))
+	self:Update()
 end
 
-function Vengeance.prototype:Update(unit)
+function Vengeance.prototype:Update()
 	Vengeance.super.prototype.Update(self)
 
 	if self.current == 0 then
