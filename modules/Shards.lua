@@ -15,6 +15,7 @@ function ShardCounter.prototype:init()
 	}
 	self.numericColor = "ShardCounterNumeric"
 	self.unitPower = SPELL_POWER_SOUL_SHARDS
+	self.minLevel = SHARDBAR_SHOW_LEVEL
 	self.runeHeight = 23
 	self.runeWidth = 26
 end

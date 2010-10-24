@@ -9,6 +9,7 @@ IceClassPowerCounter.prototype.numRunes = 3
 IceClassPowerCounter.prototype.lastNumReady = 0
 IceClassPowerCounter.prototype.runeCoords = {}
 IceClassPowerCounter.prototype.runeShineFadeSpeed = 0.4
+IceClassPowerCounter.prototype.minLevel = 9
 
 -- Constructor --
 function IceClassPowerCounter.prototype:init(name)
@@ -341,6 +342,26 @@ end
 -- OVERRIDE
 function IceClassPowerCounter.prototype:Enable(core)
 	IceClassPowerCounter.super.prototype.Enable(self, core)
+
+	self:CheckValidLevel(nil, UnitLevel("player"))
+end
+
+function IceClassPowerCounter.prototype:CheckValidLevel(event, level)
+	if not level then
+		return
+	end
+
+	if level < self.minLevel then
+		self:RegisterEvent("PLAYER_LEVEL_UP", "CheckValidLevel")
+		self:Show(false)
+	else
+		self:DisplayCounter()
+		self:Show(true)
+	end
+end
+
+function IceClassPowerCounter.prototype:DisplayCounter()
+	self:UnregisterEvent("PLAYER_LEVEL_UP")
 
 	self:RegisterEvent("UNIT_POWER", "UpdateRunePower")
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "UpdateRunePower")

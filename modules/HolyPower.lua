@@ -15,6 +15,7 @@ function HolyPower.prototype:init()
 	}
 	self.numericColor = "HolyPowerNumeric"
 	self.unitPower = SPELL_POWER_HOLY_POWER
+	self.minLevel = PALADINPOWERBAR_SHOW_LEVEL
 end
 
 function HolyPower.prototype:GetOptions()
