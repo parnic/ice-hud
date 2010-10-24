@@ -23,6 +23,8 @@ function GlobalCoolDown.prototype:Enable(core)
 	self:Show(false)
 
 	self.frame:SetFrameStrata("TOOLTIP")
+
+	self.CDSpellId = self:GetSpellId()
 end
 
 -- OVERRIDE
@@ -55,26 +57,27 @@ function GlobalCoolDown.prototype:GetOptions()
 end
 
 function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell)
-	if unit ~= "player" then
+	if unit ~= "player" or not spell then
 		return
 	end
 
-	local start, dur = GetSpellCooldown(spell)
+	local start, dur = GetSpellCooldown(self.CDSpellId)
 
 	if start and dur ~= nil and dur > 0 and dur <= 1.5 then
-		--local bRestart = not self.startTime or start > self.startTime + dur
-		self.startTime = start
-		self.duration = dur
+		local bRestart = not self.startTime or start > self.startTime + 0.5
+		if bRestart then
+			self.startTime = start
+			self.duration = dur
 
-		--if bRestart then
 			self:SetScale(1, true)
 			self.LastScale = 1
 			self.DesiredScale = 0
 			self.CurrLerpTime = 0
 			self.moduleSettings.desiredLerpTime = dur or 1
-		--end
-		self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
-		self:Show(true)
+
+			self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
+			self:Show(true)
+		end
 	end
 end
 
@@ -82,7 +85,7 @@ function GlobalCoolDown.prototype:MyOnUpdate()
 	GlobalCoolDown.super.prototype.MyOnUpdate(self)
 
 	if self:IsVisible() and self.startTime ~= nil and self.duration ~= nil
-		and self.startTime + self.duration <= GetTime() then
+		and self.CurrScale <= 0.01 then
 		self:Show(false)
 	end
 end
@@ -93,6 +96,26 @@ function GlobalCoolDown.prototype:CreateFrame()
 	self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
 	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
 	self.frame.bg:SetVertexColor(r, g, b, 0.6)
+end
+
+function GlobalCoolDown.prototype:GetSpellId()
+	local defaultSpells
+
+	defaultSpells = {
+		ROGUE=1752, -- sinister strike
+		PRIEST=585, -- smite
+		DRUID=5176, -- wrath
+		WARRIOR=772, -- rend
+		MAGE=133, -- fireball
+		WARLOCK=686, -- shadow bolt
+		PALADIN=20154, -- seal of righteousness
+		SHAMAN=403, -- lightning bolt
+		HUNTER=3044, -- arcane shot
+		DEATHKNIGHT=47541 -- death coil
+	}
+
+	local _, unitClass = UnitClass("player")
+	return defaultSpells[unitClass]
 end
 
 -- Load us up
