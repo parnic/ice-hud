@@ -186,9 +186,6 @@ end
 		type = 'group',
 		name = "|c"..self.configColor..L["Icon Settings"].."|r",
 		desc = L["Settings related to icons"],
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
 		args = {
 			iconConfigMode = {
 				type = "toggle",
@@ -204,6 +201,9 @@ end
 					self:CheckPartyRole()
 					self:Redraw()
 				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
 				order = 5
 			},
 
@@ -217,6 +217,9 @@ end
 				set = function(info, v)
 					self.moduleSettings.lockIconAlpha = v
 					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
 				end,
 				order = 6
 			},

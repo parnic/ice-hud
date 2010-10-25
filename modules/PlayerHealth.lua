@@ -328,9 +328,6 @@ function PlayerHealth.prototype:GetOptions()
 		type = 'group',
 		name = "|c"..self.configColor..L["Icon Settings"].."|r",
 		desc = L["Settings related to icons"],
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
 		args = {
 			iconConfigMode = {
 				type = "toggle",
@@ -342,6 +339,9 @@ function PlayerHealth.prototype:GetOptions()
 				set = function(info, v)
 					configMode = v
 					self:EnteringWorld()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
 				end,
 				order = 5
 			},
@@ -356,6 +356,9 @@ function PlayerHealth.prototype:GetOptions()
 				set = function(info, v)
 					self.moduleSettings.lockIconAlpha = v
 					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
 				end,
 				order = 6
 			},

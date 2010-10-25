@@ -482,9 +482,6 @@ end
 		name = "|c"..self.configColor..L["Text Settings"].."|r",
 		desc = L["Settings related to texts"],
 		order = 32,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
 		args = {
 			fontsize = {
 				type = 'range',
@@ -500,6 +497,9 @@ end
 				min = 8,
 				max = 20,
 				step = 1,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
 				order = 11
 			},
 
@@ -513,6 +513,9 @@ end
 				set = function(info, v)
 					self.moduleSettings.lockUpperTextAlpha = v
 					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
 				end,
 				order = 13
 			},
@@ -528,6 +531,9 @@ end
 					self.moduleSettings.lockLowerTextAlpha = v
 					self:Redraw()
 				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
 				order = 13.1
 			},
 
@@ -542,6 +548,9 @@ end
 					self.moduleSettings.textVisible['upper'] = v
 					self:Redraw()
 				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
 				order = 14
 			},
 
@@ -555,6 +564,9 @@ end
 				set = function(info, v)
 					self.moduleSettings.textVisible['lower'] = v
 					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
 				end,
 				order = 15
 			},
@@ -578,6 +590,9 @@ end
 					self:RegisterFontStrings()
 					self:Redraw()
 				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
 				multiline = true,
 				usage = "<upper text to display>"
 			},
@@ -600,6 +615,9 @@ end
 					self.moduleSettings.lowerText = v
 					self:RegisterFontStrings()
 					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
 				end,
 				multiline = true,
 				usage = "<lower text to display>"
@@ -668,9 +686,6 @@ if not self.moduleSettings.bHideMarkerSettings then
 		name = "|c"..self.configColor..L["Marker Settings"].."|r",
 		desc = L["Create or remove markers at various points along the bar here"],
 		order = 32,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
 		args = {
 			markerPos = {
 				type = "range",
@@ -685,6 +700,9 @@ if not self.moduleSettings.bHideMarkerSettings then
 				set = function(info, v)
 					lastMarkerPosConfig = math.floor(v)
 				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
 				order = 20,
 			},
 			markerColor = {
@@ -697,6 +715,9 @@ if not self.moduleSettings.bHideMarkerSettings then
 				end,
 				set = function(info, r, g, b, a)
 					lastMarkerColorConfig = {r=r, g=g, b=b, a=a}
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
 				end,
 				order = 30,
 			},
@@ -713,6 +734,9 @@ if not self.moduleSettings.bHideMarkerSettings then
 				set = function(info, v)
 					lastMarkerHeightConfig = v
 				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
 				order = 40,
 			},
 			createMarker = {
@@ -722,6 +746,9 @@ if not self.moduleSettings.bHideMarkerSettings then
 				width = "full",
 				func = function()
 					self:AddNewMarker(lastMarkerPosConfig / 100, lastMarkerColorConfig, lastMarkerHeightConfig)
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
 				end,
 				order = 10,
 			},
@@ -748,6 +775,9 @@ if not self.moduleSettings.bHideMarkerSettings then
 					lastMarkerColorConfig = {r=color.r, g=color.g, b=color.b, a=color.a}
 					lastMarkerHeightConfig = self.moduleSettings.markers[v].height
 				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
 				order = 50,
 			},
 			editMarker = {
@@ -759,6 +789,9 @@ if not self.moduleSettings.bHideMarkerSettings then
 						self:EditMarker(lastEditMarkerConfig, lastMarkerPosConfig / 100, lastMarkerColorConfig, lastMarkerHeightConfig)
 					end
 				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
 				order = 60,
 			},
 			deleteMarker = {
@@ -769,6 +802,9 @@ if not self.moduleSettings.bHideMarkerSettings then
 					if self.moduleSettings.markers and lastEditMarkerConfig <= #self.moduleSettings.markers then
 						self:RemoveMarker(lastEditMarkerConfig)
 					end
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
 				end,
 				order = 70,
 			},
