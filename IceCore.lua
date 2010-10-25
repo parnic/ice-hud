@@ -143,6 +143,17 @@ function IceCore.prototype:CheckDisplayUpdateMessage()
 
 			StaticPopup_Show("ICEHUD_UPDATE_PERIOD_MATTERS")
 		end
+		if self.accountSettings.lastRunVersion < 710 then
+			if self.settings.modules["MaelstromCount"] == nil then
+				self.settings.modules["MaelstromCount"] = {}
+			end
+			if self.settings.modules["SunderCount"] == nil then
+				self.settings.modules["SunderCount"] = {}
+			end
+			if self.settings.modules["LacerateCount"] == nil then
+				self.settings.modules["LacerateCount"] = {}
+			end
+		end
 		self.accountSettings.lastRunVersion = thisVersion
 	end
 end
