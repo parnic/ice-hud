@@ -45,11 +45,17 @@ function EclipseBar.prototype:GetDefaultSettings()
 		color = {r=1, g=0, b=0, a=1},
 		height = 6,
 	}
+	defaults.shouldHideBarRotation = true
 
 	return defaults
 end
 
 function EclipseBar.prototype:Enable(core)
+	if self.moduleSettings.rotateBar then
+		self.moduleSettings.rotateBar = false
+		self:ResetRotation()
+	end
+
 	EclipseBar.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM", "UpdateShown")

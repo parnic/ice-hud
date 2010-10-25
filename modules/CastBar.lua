@@ -34,6 +34,7 @@ function CastBar.prototype:GetDefaultSettings()
 	settings["hideAnimationSettings"] = true
 	settings["usesDogTagStrings"] = false
 	settings["rangeColor"] = true
+	settings["shouldHideBarRotation"] = true
 
 	return settings
 end
@@ -294,6 +295,11 @@ end
 
 
 function CastBar.prototype:Enable(core)
+	if self.moduleSettings.rotateBar then
+		self.moduleSettings.rotateBar = false
+		self:ResetRotation()
+	end
+
 	CastBar.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")

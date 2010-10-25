@@ -453,7 +453,7 @@ end
 		values = IceHUD.validBarList,
 		order = 30.08
 	}
-
+if not self.moduleSettings.shouldHideBarRotation then
 	opts["barRotate"] =
 	{
 		type = 'toggle',
@@ -475,7 +475,7 @@ end
 		end,
 		order = 30.09
 	}
-
+end
 	opts["textSettings"] =
 	{
 		type = 'group',
