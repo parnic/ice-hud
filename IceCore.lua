@@ -34,6 +34,10 @@ IceCore.prototype.enabled = nil
 IceCore.prototype.presets = {}
 IceCore.prototype.bConfigMode = false
 
+local SUNDER_SPELL_ID = 7386
+local LACERATE_SPELL_ID = 33745
+local MAELSTROM_SPELL_ID = 53817
+
 -- Constructor --
 function IceCore.prototype:init()
 	IceHUD:Debug("IceCore.prototype:init()")
@@ -207,10 +211,122 @@ function IceCore.prototype:Enable(userToggle)
 		self.settings.updatePeriod = 0.033
 	end
 
+	self:RedirectRemovedModules()
+
 	-- make sure the module options are re-generated. if we switched profiles, we don't want the old elements hanging around
 	IceHUD:GenerateModuleOptions()
 
 	self.enabled = true
+end
+
+function IceCore.prototype:RedirectRemovedModules()
+	local _, class = UnitClass("player")
+	if class == "WARRIOR" and self.settings.modules["SunderCount"] then
+		if self.settings.modules["SunderCount"].enabled or self.settings.modules["SunderCount"].enabled == nil then
+			local bFound = false
+
+			for k,v in pairs(self.elements) do
+				if v.moduleSettings.customBarType == "Counter"
+					and string.upper(v.moduleSettings.auraName) == string.upper(GetSpellInfo(SUNDER_SPELL_ID)) then
+					bFound = true
+					break
+				end
+			end
+
+			if not bFound then
+				local newCounter
+				newCounter = IceCustomCount:new()
+				newCounter.elementName = "Sunders"
+				self.settings.modules[newCounter.elementName] = newCounter:GetDefaultSettings()
+				self:AddNewDynamicModule(newCounter, true)
+
+				newCounter.moduleSettings.alwaysFullAlpha = self.settings.modules["SunderCount"].alwaysFullAlpha or newCounter.moduleSettings.alwaysFullAlpha
+				newCounter.moduleSettings.scale = self.settings.modules["SunderCount"].scale or newCounter.moduleSettings.scale
+				newCounter.moduleSettings.vpos = self.settings.modules["SunderCount"].vpos or newCounter.moduleSettings.vpos
+				newCounter.moduleSettings.countFontSize = self.settings.modules["SunderCount"].sunderFontSize or newCounter.moduleSettings.countFontSize
+				newCounter.moduleSettings.countMode = self.settings.modules["SunderCount"].sunderMode or newCounter.moduleSettings.countMode
+				newCounter.moduleSettings.countGap = self.settings.modules["SunderCount"].sunderGap or newCounter.moduleSettings.countGap
+				newCounter.moduleSettings.gradient = self.settings.modules["SunderCount"].gradient or newCounter.moduleSettings.gradient
+				newCounter.moduleSettings.maxCount = 3
+				newCounter.moduleSettings.auraTarget = "target"
+				newCounter.moduleSettings.auraType = "debuff"
+				newCounter.moduleSettings.auraName = GetSpellInfo(SUNDER_SPELL_ID)
+				newCounter:Enable()
+			end
+		end
+
+		self.settings.modules["SunderCount"] = nil
+	end
+
+	if class == "DRUID" and self.settings.modules["LacerateCount"] then
+		if self.settings.modules["LacerateCount"].enabled or self.settings.modules["LacerateCount"].enabled == nil then
+			local bFound = false
+			for k,v in pairs(self.elements) do
+				if v.moduleSettings.customBarType == "Counter"
+					and string.upper(v.moduleSettings.auraName) == string.upper(GetSpellInfo(LACERATE_SPELL_ID)) then
+					bFound = true
+					break
+				end
+			end
+
+			if not bFound then
+				local newCounter
+				newCounter = IceCustomCount:new()
+				newCounter.elementName = "Lacerates"
+				self.settings.modules[newCounter.elementName] = newCounter:GetDefaultSettings()
+				self:AddNewDynamicModule(newCounter, true)
+
+				newCounter.moduleSettings.alwaysFullAlpha = self.settings.modules["LacerateCount"].alwaysFullAlpha or newCounter.moduleSettings.alwaysFullAlpha
+				newCounter.moduleSettings.scale = self.settings.modules["LacerateCount"].scale or newCounter.moduleSettings.scale
+				newCounter.moduleSettings.vpos = self.settings.modules["LacerateCount"].vpos or newCounter.moduleSettings.vpos
+				newCounter.moduleSettings.hpos = self.settings.modules["LacerateCount"].hpos or newCounter.moduleSettings.hpos
+				newCounter.moduleSettings.countFontSize = self.settings.modules["LacerateCount"].lacerateFontSize or newCounter.moduleSettings.countFontSize
+				newCounter.moduleSettings.countMode = self.settings.modules["LacerateCount"].lacerateMode or newCounter.moduleSettings.countMode
+				newCounter.moduleSettings.countGap = self.settings.modules["LacerateCount"].lacerateGap or newCounter.moduleSettings.countGap
+				newCounter.moduleSettings.gradient = self.settings.modules["LacerateCount"].gradient or newCounter.moduleSettings.gradient
+				newCounter.moduleSettings.maxCount = 3
+				newCounter.moduleSettings.auraTarget = "target"
+				newCounter.moduleSettings.auraType = "debuff"
+				newCounter.moduleSettings.auraName = GetSpellInfo(LACERATE_SPELL_ID)
+				newCounter:Enable()
+			end
+		end
+
+		self.settings.modules["LacerateCount"] = nil
+	end
+
+	if class == "SHAMAN" and self.settings.modules["MaelstromCount"] then
+		if self.settings.modules["MaelstromCount"].enabled or self.settings.modules["MaelstromCount"].enabled == nil then
+			local bFound = false
+			for k,v in pairs(self.elements) do
+				if v.moduleSettings.customBarType == "Counter"
+					and string.upper(v.moduleSettings.auraName) == string.upper(GetSpellInfo(MAELSTROM_SPELL_ID)) then
+					bFound = true
+					break
+				end
+			end
+
+			if not bFound then
+				local newCounter
+				newCounter = IceCustomCount:new()
+				newCounter.elementName = "Maelstroms"
+				self.settings.modules[newCounter.elementName] = newCounter:GetDefaultSettings()
+				self:AddNewDynamicModule(newCounter, true)
+
+				newCounter.moduleSettings.alwaysFullAlpha = self.settings.modules["MaelstromCount"].alwaysFullAlpha or newCounter.moduleSettings.alwaysFullAlpha
+				newCounter.moduleSettings.scale = self.settings.modules["MaelstromCount"].scale or newCounter.moduleSettings.scale
+				newCounter.moduleSettings.vpos = self.settings.modules["MaelstromCount"].vpos or newCounter.moduleSettings.vpos
+				newCounter.moduleSettings.countFontSize = self.settings.modules["MaelstromCount"].maelstromFontSize or newCounter.moduleSettings.countFontSize
+				newCounter.moduleSettings.countMode = self.settings.modules["MaelstromCount"].maelstromMode or newCounter.moduleSettings.countMode
+				newCounter.moduleSettings.countGap = self.settings.modules["MaelstromCount"].maelstromGap or newCounter.moduleSettings.countGap
+				newCounter.moduleSettings.gradient = self.settings.modules["MaelstromCount"].gradient or newCounter.moduleSettings.gradient
+				newCounter.moduleSettings.auraName = GetSpellInfo(MAELSTROM_SPELL_ID)
+				newCounter:Enable()
+			end
+		end
+
+		self.settings.modules["MaelstromCount"] = nil
+	end
 end
 
 

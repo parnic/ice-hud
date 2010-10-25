@@ -42,7 +42,6 @@ modules\ComboPoints.lua
 modules\CastBar.lua
 modules\TargetCast.lua
 modules\MirrorBar.lua
-modules\SunderCount.lua
 modules\GlobalCoolDown.lua
 modules\SliceAndDice.lua
 modules\TargetCC.lua
@@ -51,7 +50,6 @@ modules\FocusCC.lua
 modules\FocusHealth.lua
 modules\FocusMana.lua
 modules\FocusCast.lua
-modules\LacerateCount.lua
 modules\Runes.lua
 # - make sure TargetOfTarget health/mana load after TargetHealth/TargetMana since they inherit
 modules\TargetOfTargetHealth.lua
@@ -59,7 +57,6 @@ modules\TargetOfTargetMana.lua
 modules\Threat.lua
 modules\FocusThreat.lua
 modules\RangeCheck.lua
-modules\MaelstromCount.lua
 modules\CustomBar.lua
 modules\CustomCount.lua
 # - make sure PlayerInfo loads after TargetInfo since it inherits
