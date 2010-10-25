@@ -102,13 +102,17 @@ end
 
 function PetMana.prototype:SetupOnUpdate(enable)
 	if enable then
-		self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
+		if not self.CustomOnUpdate then
+			self.CustomOnUpdate = function() self:Update(self.unit) end
+		end
+
+		IceHUD.IceCore:RequestUpdates(self, self.CustomOnUpdate)
 	else
 		-- make sure the animation has a chance to finish filling up the bar before we cut it off completely
 		if self.CurrScale ~= self.DesiredScale then
-			self.frame:SetScript("OnUpdate", function() self:MyOnUpdate() end)
+			IceHUD.IceCore:RequestUpdates(self, self.MyOnUpdateFunc)
 		else
-			self.frame:SetScript("OnUpdate", nil)
+			IceHUD.IceCore:RequestUpdates(self, nil)
 		end
 	end
 end

@@ -33,6 +33,8 @@ function SliceAndDice.prototype:init()
 
 	self:SetDefaultColor("SliceAndDice", 0.75, 1, 0.2)
 	self:SetDefaultColor("SliceAndDicePotential", 1, 1, 1)
+
+	self.bTreatEmptyAsFull = true
 end
 
 -- 'Public' methods -----------------------------------------------------------
@@ -208,6 +210,13 @@ function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
     return nil, nil
 end
 
+function SliceAndDice.prototype:MyOnUpdate()
+	SliceAndDice.super.prototype.MyOnUpdate(self)
+	if self.bUpdateSnd then
+		self:UpdateSliceAndDice(nil, self.unit, true)
+	end
+end
+
 function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
     if unit and unit ~= self.unit then
         return
@@ -228,7 +237,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
 
     if sndEndTime and sndEndTime >= now then
         if not fromUpdate then
-            self.frame:SetScript("OnUpdate", function() self:UpdateSliceAndDice(nil, self.unit, true) end)
+			self.bUpdateSnd = true
         end
 
         self:Show(true)
@@ -244,7 +253,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
 
 	if ((IceHUD.WowVer >= 30000 and GetComboPoints(self.unit, "target") == 0) or (IceHUD.WowVer < 30000 and GetComboPoints() == 0)) or not UnitExists("target") then
             if self.bIsVisible then
-                self.frame:SetScript("OnUpdate", nil)
+                self.bUpdateSnd = nil
             end
 
 			if not self.moduleSettings.alwaysFullAlpha then

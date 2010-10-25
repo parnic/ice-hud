@@ -12,11 +12,12 @@ function Vengeance.prototype:init()
 	Vengeance.super.prototype.init(self, "Vengeance", "player")
 
 	self.current = 0
-	self.max = floor(0.1*UnitHealthMax(self.unit))
 	self.tooltipBuffer = CreateFrame("GameTooltip","tooltipBuffer",nil,"GameTooltipTemplate")
 	self.tooltipBuffer:SetOwner(WorldFrame, "ANCHOR_NONE")
 
 	self:SetDefaultColor("Vengeance", 200, 45, 45)
+
+	self.bTreatEmptyAsFull = true
 end
 
 -- default settings
@@ -48,11 +49,6 @@ function Vengeance.prototype:Disable(core)
 	Vengeance.super.prototype.Disable(self, core)
 
 	self:UnregisterAllEvents()
-end
-
--- OVERRIDE
-function Vengeance.prototype:UseTargetAlpha(scale)
-	return (scale and (scale > 0))
 end
 
 function Vengeance.prototype:UpdateCurrent(event, unit)

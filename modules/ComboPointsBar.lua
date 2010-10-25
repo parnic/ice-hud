@@ -6,6 +6,8 @@ function ComboPointsBar.prototype:init()
 
 	self:SetDefaultColor("ComboPointsBarMin", 1, 1, 0)
 	self:SetDefaultColor("ComboPointsBarMax", 0, 1, 0)
+
+	self.bTreatEmptyAsFull = true
 end
 
 function ComboPointsBar.prototype:GetOptions()
@@ -37,6 +39,7 @@ function ComboPointsBar.prototype:GetDefaultSettings()
 	defaults.offset = 8
 	defaults.enabled = false
 	defaults.alwaysDisplay = false
+	defaults.desiredLerpTime = 0.05
 	return defaults
 end
 

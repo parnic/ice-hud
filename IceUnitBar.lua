@@ -285,31 +285,39 @@ function IceUnitBar.prototype:UpdateBar(scale, color, alpha)
 		return
 	end
 
-	self.flashFrame.flash:SetVertexColor(self:GetColor(color))
-
 	if (self.moduleSettings.lowThreshold > 0 and
 		self.moduleSettings.lowThresholdFlash and
 		self.moduleSettings.lowThreshold >= scale and self.alive and
 		not self.noFlash) then
-			self.flashFrame:SetScript("OnUpdate", function() self:OnFlashUpdate() end)
+			self.bUpdateFlash = true
+			self.flashFrame.flash:SetVertexColor(self:GetColor(color))
 	else
-		self.flashFrame:SetScript("OnUpdate", nil)
+		self.bUpdateFlash = nil
 		self.flashFrame:SetAlpha(0)
 	end
 end
 
 
-function IceUnitBar.prototype:OnFlashUpdate()
-	local time = GetTime()
-	local decimals = time - math.floor(time)
+function IceUnitBar.prototype:MyOnUpdate()
+	IceUnitBar.super.prototype.MyOnUpdate(self)
 
-	if (decimals > 0.5) then
-		decimals = 1 - decimals
+	self:ConditionalUpdateFlash()
+end
+
+
+function IceUnitBar.prototype:ConditionalUpdateFlash()
+	if self.bUpdateFlash then
+		local time = GetTime()
+		local decimals = time - math.floor(time)
+
+		if (decimals > 0.5) then
+			decimals = 1 - decimals
+		end
+
+		decimals = decimals*1.1 -- add more dynamic to the color change
+
+		self.flashFrame:SetAlpha(decimals)
 	end
-
-	decimals = decimals*1.1 -- add more dynamic to the color change
-
-	self.flashFrame:SetAlpha(decimals)
 end
 
 

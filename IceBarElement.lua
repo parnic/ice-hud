@@ -15,6 +15,7 @@ IceBarElement.prototype.DesiredScale = 1
 IceBarElement.prototype.CurrScale = 1
 IceBarElement.prototype.Markers = {}
 IceBarElement.prototype.IsBarElement = true -- cheating to avoid crawling up the 'super' references looking for this class. see IceCore.lua
+IceBarElement.prototype.bTreatEmptyAsFull = false
 
 local lastMarkerPosConfig = 50
 local lastMarkerColorConfig = {r=1, b=0, g=0, a=1}
@@ -33,6 +34,10 @@ end
 -- OVERRIDE
 function IceBarElement.prototype:Enable()
 	IceBarElement.super.prototype.Enable(self)
+
+	-- never register the OnUpdate for the mirror bar since it's handled internally
+	-- in addition, do not register OnUpdate if predictedPower is set and this is the player mana or target mana bar
+	self:ConditionalSetupUpdate()
 
 	if IceHUD.IceCore:ShouldUseDogTags() then
 		DogTag = LibStub("LibDogTag-3.0", true)
@@ -71,6 +76,7 @@ function IceBarElement.prototype:Enable()
 		if self.moduleSettings.textVisible["lower"] then
 			self.frame.bottomLowerText:Hide()
 		end
+		self:OnHide()
 	end)
 	self.frame:SetScript("OnShow", function()
 		if self.moduleSettings.textVisible["upper"] then
@@ -79,13 +85,21 @@ function IceBarElement.prototype:Enable()
 		if self.moduleSettings.textVisible["lower"] then
 			self.frame.bottomLowerText:Show()
 		end
+		self:OnShow()
 	end)
+end
+
+function IceBarElement.prototype:OnHide()
+	IceHUD.IceCore:RequestUpdates(self, nil)
+end
+
+function IceBarElement.prototype:OnShow()
 end
 
 function IceBarElement.prototype:Disable(core)
 	IceBarElement.super.prototype.Disable(self, core)
 
-	self.frame:SetScript("OnUpdate", nil)
+	IceHUD.IceCore:RequestUpdates(self, nil)
 	self.frame:SetScript("OnHide", nil)
 	self.frame:SetScript("OnShow", nil)
 end
@@ -823,20 +837,29 @@ function IceBarElement.prototype:CreateFrame()
 	end
 
 	self.masterFrame:SetScale(self.moduleSettings.scale)
-	-- never register the OnUpdate for the mirror bar since it's handled internally
-	-- in addition, do not register OnUpdate if predictedPower is set and this is the player mana or target mana bar
-	if not string.find(self.elementName, "MirrorBar")
-		and ((IceHUD.WowVer < 30000 or not GetCVarBool("predictedPower")) or (not string.find(self.elementName, "PlayerMana")))
-		and not self.moduleSettings.isCustomBar and self:RegisterOnUpdate() then
-		self.frame:SetScript("OnUpdate", function() self:MyOnUpdate() end)
-	end
 
 	if self.moduleSettings.rotateBar then
 		self:RotateHorizontal()
 	end
 end
 
-function IceBarElement.prototype:RegisterOnUpdate()
+function IceBarElement.prototype:ConditionalSetupUpdate()
+	if not self.MyOnUpdateFunc then
+		self.MyOnUpdateFunc = function() self:MyOnUpdate() end
+	end
+
+	if IceHUD.IceCore:IsUpdateSubscribed(self) then
+		return
+	end
+
+	if not string.find(self.elementName, "MirrorBar")
+		and ((IceHUD.WowVer < 30000 or not GetCVarBool("predictedPower")) or (not string.find(self.elementName, "PlayerMana")))
+		and self:ShouldRegisterOnUpdate() then
+		IceHUD.IceCore:RequestUpdates(self, self.MyOnUpdateFunc)
+	end
+end
+
+function IceBarElement.prototype:ShouldRegisterOnUpdate()
 	return true
 end
 
@@ -1038,6 +1061,14 @@ function IceBarElement.prototype:SetScale(inScale, force)
 			self.barFrame.bar:Show()
 		end
 	end
+
+	if not self:IsFull(self.CurrScale) or not self:IsFull(inScale) then
+		self:ConditionalSetupUpdate()
+	else
+		if self.CurrScale == self.DesiredScale then
+			IceHUD.IceCore:RequestUpdates(self, nil)
+		end
+	end
 end
 
 
@@ -1046,19 +1077,21 @@ function IceBarElement.prototype:LerpScale(scale)
 		return scale
 	end
 
+	local now = GetTime()
+
 	if self.CurrLerpTime < self.moduleSettings.desiredLerpTime then
-		self.CurrLerpTime = self.CurrLerpTime + (1 / GetFramerate());
+		self.CurrLerpTime = self.CurrLerpTime + (now - (self.lastLerpTime or now))
 	end
+
+	self.lastLerpTime = GetTime()
 
 	if self.CurrLerpTime > self.moduleSettings.desiredLerpTime then
 		self.CurrLerpTime = self.moduleSettings.desiredLerpTime
+	elseif self.CurrLerpTime < self.moduleSettings.desiredLerpTime then
+		return self.LastScale + ((self.DesiredScale - self.LastScale) * (self.CurrLerpTime / self.moduleSettings.desiredLerpTime))
 	end
 
-	if self.CurrLerpTime < self.moduleSettings.desiredLerpTime then
-		return self.LastScale + ((self.DesiredScale - self.LastScale) * (self.CurrLerpTime / self.moduleSettings.desiredLerpTime))
-	else
-		return scale
-	end
+	return scale
 end
 
 
@@ -1102,6 +1135,7 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	if self.DesiredScale ~= scale then
 		self.DesiredScale = scale
 		self.CurrLerpTime = 0
+		self.lastLerpTime = GetTime()
 		self.LastScale = self.CurrScale
 	end
 
@@ -1124,7 +1158,19 @@ end
 
 
 function IceBarElement.prototype:UseTargetAlpha(scale)
-	return (scale and (scale < 1))
+	return not self:IsFull(scale)
+end
+
+function IceBarElement.prototype:IsFull(scale)
+	if self.reverse then
+		scale = 1 - scale
+	end
+
+	if not self.bTreatEmptyAsFull then
+		return scale and scale == 1
+	else
+		return scale and scale == 0
+	end
 end
 
 
@@ -1228,9 +1274,6 @@ function IceBarElement.prototype:Update()
 end
 
 function IceBarElement.prototype:MyOnUpdate()
-	if not self:IsVisible() then
-		return
-	end
 	self:SetScale(self.DesiredScale)
 end
 
@@ -1384,5 +1427,15 @@ function IceBarElement.prototype:LoadMarkers()
 
 	for i=1, #self.moduleSettings.markers do
 		self:CreateMarker(i)
+	end
+end
+
+function IceBarElement.prototype:Show(bShouldShow)
+	if IceBarElement.super.prototype.Show(self, bShouldShow) then
+		if self.bIsVisible then
+			self:ConditionalSetupUpdate()
+		else
+			IceHUD.IceCore:RequestUpdates(self, nil)
+		end
 	end
 end

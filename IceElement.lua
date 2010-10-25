@@ -407,7 +407,7 @@ end
 
 function IceElement.prototype:Show(bShouldShow)
 	if self.bIsVisible == bShouldShow then
-		return
+		return nil
 	end
 
 	self.bIsVisible = bShouldShow
@@ -419,6 +419,8 @@ function IceElement.prototype:Show(bShouldShow)
 		self.masterFrame:Show()
 		self.frame:Show()
 	end
+
+	return true
 end
 
 

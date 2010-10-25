@@ -316,18 +316,23 @@ function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 	return unpack(result)
 end
 
+function TargetCC.prototype:MyOnUpdate()
+	TargetCC.super.prototype.MyOnUpdate(self)
+	self:UpdateTargetDebuffs(nil, self.unit, true)
+end
+
 function TargetCC.prototype:UpdateTargetDebuffs(event, unit, isUpdate)
 	local name, duration, remaining
+
 	if not isUpdate then
-		self.frame:SetScript("OnUpdate", function() self:UpdateTargetDebuffs(nil, self.unit, true) end)
 		self.debuffName, self.debuffDuration, self.debuffRemaining = self:GetMaxDebuffDuration(self.unit, self.debuffList)
 	else
-		self.debuffRemaining = math.max(0, self.debuffRemaining - (1.0 / GetFramerate()))
+		self.debuffRemaining = math.max(0, self.debuffRemaining - (GetTime() - self.lastUpdateTime))
 		if self.debuffRemaining <= 0 then
 			self.debuffName = nil
-			self.frame:SetScript("OnUpdate", nil)
 		end
 	end
+	self.lastUpdateTime = GetTime()
 
 	name = self.debuffName
 	duration = self.debuffDuration

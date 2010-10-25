@@ -245,7 +245,7 @@ end
 
 
 -- OnUpdate handler
-function IceCastBar.prototype:OnUpdate()
+function IceCastBar.prototype:MyOnUpdate()
 	-- safety catch
 	if (self.action == IceCastBar.Actions.None) then
 		IceHUD:Debug("Stopping action ", self.action)
@@ -370,7 +370,7 @@ function IceCastBar.prototype:StartBar(action, message)
 	end
 
 	self:Show(true)
-	self.frame:SetScript("OnUpdate", function() self:OnUpdate() end)
+	self:ConditionalSetupUpdate()
 end
 
 
@@ -380,16 +380,6 @@ function IceCastBar.prototype:StopBar()
 	self.actionDuration = nil
 
 	self:Show(false)
-	self.frame:SetScript("OnUpdate", nil)
-end
-
--- make sure that our custom OnUpdate is restored whenever a Redraw happens
-function IceCastBar.prototype:Redraw()
-	IceCastBar.super.prototype.Redraw(self)
-
-	if self.action ~= IceCastBar.Actions.None then
-		self.frame:SetScript("OnUpdate", function() self:OnUpdate() end)
-	end
 end
 
 function IceCastBar.prototype:GetShortRank(rank)

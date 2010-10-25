@@ -1,6 +1,5 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceCustomHealth = IceCore_CreateClass(IceTargetHealth)
-IceCustomHealth.prototype.scheduledEvent = nil
 
 -- Constructor --
 function IceCustomHealth.prototype:init()
@@ -113,21 +112,19 @@ end
 
 
 function IceCustomHealth.prototype:Enable(core)
-	self.registerEvents = false
+	--self.registerEvents = false
 	IceCustomHealth.super.prototype.Enable(self, core)
 
 	self:SetUnit(self.moduleSettings.unitToTrack)
 	self:CreateFrame()
-
-	self.scheduledEvent = self:ScheduleRepeatingTimer("Update", IceHUD.IceCore:UpdatePeriod())
 end
 
-function IceCustomHealth.prototype:Disable(core)
-	IceCustomHealth.super.prototype.Disable(self, core)
+function IceCustomHealth.prototype:MyOnUpdate()
+	IceCustomHealth.super.prototype.MyOnUpdate(self)
 
-	UnregisterUnitWatch(self.frame)
-
-	self:CancelTimer(self.scheduledEvent, true)
+	if UnitExists(self.unit) then
+		self:Update()
+	end
 end
 
 function IceCustomHealth.prototype:Update(unit)
@@ -153,12 +150,8 @@ function IceCustomHealth.prototype:Update(unit)
 		self.color = "Tapped"
 	end
 
-	if not self:IsVisible() then
-		RegisterUnitWatch(self.frame)
-	end
-
 	--self.determineColor = false
-	IceCustomHealth.super.prototype.Update(self, unit)
+	IceCustomHealth.super.prototype.Update(self, self.unit)
 end
 
 function IceCustomHealth.prototype:SetUnit(unit)
@@ -167,4 +160,8 @@ function IceCustomHealth.prototype:SetUnit(unit)
 		self.frame.button:SetAttribute("unit", self.unit)
 	end
 	self:RegisterFontStrings()
+end
+
+function IceCustomHealth.prototype:OnShow()
+	self:Update(self.unit)
 end

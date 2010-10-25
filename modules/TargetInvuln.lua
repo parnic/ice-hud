@@ -174,20 +174,24 @@ function TargetInvuln.prototype:GetMaxbuffDuration(unitName, buffNames)
 	return unpack(result)
 end
 
+function TargetInvuln.prototype:MyOnUpdate()
+	TargetInvuln.super.prototype.MyOnUpdate(self)
+	self:UpdateTargetBuffs(nil, self.unit, true)
+end
+
 function TargetInvuln.prototype:UpdateTargetBuffs(event, unit, isUpdate)
 	local name, duration, remaining
-	if not isUpdate then
-		self.frame:SetScript("OnUpdate", function() self:UpdateTargetBuffs(nil, self.unit, true) end)
-		self.buffName, self.buffDuration, self.buffRemaining = self:GetMaxbuffDuration(self.unit, self.buffList)
 
+	if not isUpdate then
+		self.buffName, self.buffDuration, self.buffRemaining = self:GetMaxbuffDuration(self.unit, self.buffList)
 	else
-		self.buffRemaining = math.max(0, self.buffRemaining - (1.0 / GetFramerate()))
+		self.buffRemaining = math.max(0, self.buffRemaining - (GetTime() - self.lastUpdateTime))
 
 		if self.buffRemaining <= 0 then
 			self.buffName = nil
-			self.frame:SetScript("OnUpdate", nil)
 		end
 	end
+	self.lastUpdateTime = GetTime()
 
 	name = self.buffName
 	duration = self.buffDuration

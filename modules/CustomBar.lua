@@ -50,11 +50,15 @@ end
 
 function IceCustomBar.prototype:ConditionalSubscribe()
 	if self:ShouldAlwaysSubscribe() then
-		if not IceHUD.IceCore:IsUpdateSubscribed(self.frame) then
-			IceHUD.IceCore:RequestUpdates(self.frame, function() self:UpdateCustomBar() end)
+		if not IceHUD.IceCore:IsUpdateSubscribed(self) then
+			if not self.CustomBarUpdateFunc then
+				self.CustomBarUpdateFunc = function() self:UpdateCustomBar() end
+			end
+
+			IceHUD.IceCore:RequestUpdates(self, self.CustomBarUpdateFunc)
 		end
 	else
-		IceHUD.IceCore:RequestUpdates(self.frame, nil)
+		IceHUD.IceCore:RequestUpdates(self, nil)
 	end
 end
 
@@ -69,7 +73,7 @@ function IceCustomBar.prototype:TargetChanged()
 end
 
 function IceCustomBar.prototype:Disable(core)
-	IceHUD.IceCore:RequestUpdates(self.frame, nil)
+	IceHUD.IceCore:RequestUpdates(self, nil)
 
 	IceCustomBar.super.prototype.Disable(self, core)
 end
@@ -571,8 +575,12 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 	end
 
 	if self.auraEndTime ~= nil and (self.auraEndTime == 0 or self.auraEndTime >= now) then
-		if not self:ShouldAlwaysSubscribe() and not fromUpdate and not IceHUD.IceCore:IsUpdateSubscribed(self.frame) then
-			IceHUD.IceCore:RequestUpdates(self.frame, function() self:UpdateCustomBar(self.unit, true) end)
+		if not self:ShouldAlwaysSubscribe() and not fromUpdate and not IceHUD.IceCore:IsUpdateSubscribed(self) then
+			if not self.UpdateCustomBarFunc then
+				self.UpdateCustomBarFunc = function() self:UpdateCustomBar(self.unit, true) end
+			end
+
+			IceHUD.IceCore:RequestUpdates(self, self.UpdateCustomBarFunc)
 		end
 
 		self:Show(true)
@@ -590,7 +598,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 		self:UpdateBar(0, "undef")
 		self:Show(false)
 		if not self:ShouldAlwaysSubscribe() then
-			IceHUD.IceCore:RequestUpdates(self.frame, nil)
+			IceHUD.IceCore:RequestUpdates(self, nil)
 		end
 	end
 

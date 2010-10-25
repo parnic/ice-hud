@@ -651,9 +651,9 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 			set = function(info, v)
 				IceHUD.IceCore:SetUpdatePeriod(v)
 			end,
-			min = 0.01,
-			max = 1.0,
-			step = 0.01,
+			min = 0,
+			max = 1,
+			step = 0.001,
 			order = 97
 		},
 

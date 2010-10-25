@@ -32,6 +32,8 @@ function IceThreat.prototype:init(name, unit)
 	self:SetDefaultColor("ThreatCustom", 255, 255, 0)
 	self:SetDefaultColor("ThreatPullAggro", 255, 0, 0)
 	self:SetDefaultColor("ThreatSecondPlace", 255, 255, 0)
+
+	self.bTreatEmptyAsFull = true
 end
 
 -- default settings
@@ -189,11 +191,6 @@ function IceThreat.prototype:CreateFrame()
 
 	self:CreateAggroBar()
 	self:CreateSecondThreatBar()
-end
-
--- needs to be inverted for threat bar
-function IceThreat.prototype:UseTargetAlpha(scale)
-	return (scale and (scale > 0))
 end
 
 -- create the aggro range indicator bar

@@ -899,8 +899,10 @@ function IceTargetInfo.prototype:CreateFrame(redraw)
 
 	self.frame:SetAttribute("unit", self.unit)
 
-	self.frame.menu = function()
-		ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor")
+	if not self.frame.menu then
+		self.frame.menu = function()
+			ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor")
+		end
 	end
 
 
@@ -1058,6 +1060,13 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 	local lastX = 0
 	local lastBuffSize = 0
 
+	if not self.MyOnEnterBuffFunc then
+		self.MyOnEnterBuffFunc = function(this) self:BuffOnEnter(this) end
+	end
+	if not self.MyOnLeaveBuffFunc then
+		self.MyOnLeaveBuffFunc = function() GameTooltip:Hide() end
+	end
+
 	for i = 1, IceCore.BuffLimit do
 		if (not buffs[i]) then
 			buffs[i] = CreateFrame("Frame", nil, parent)
@@ -1149,8 +1158,8 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 		buffs[i].id = i
 		if (self.moduleSettings.mouseBuff) then
 			buffs[i]:EnableMouse(true)
-			buffs[i]:SetScript("OnEnter", function(this, ...) self:BuffOnEnter(this, buffs[i].type or type) end)
-			buffs[i]:SetScript("OnLeave", function() GameTooltip:Hide() end)
+			buffs[i]:SetScript("OnEnter", self.MyOnEnterBuffFunc)
+			buffs[i]:SetScript("OnLeave", self.MyOnLeaveBuffFunc)
 		else
 			buffs[i]:EnableMouse(false)
 			buffs[i]:SetScript("OnEnter", nil)
@@ -1532,8 +1541,29 @@ function IceTargetInfo.prototype:OnLeave(frame)
 end
 
 
-function IceTargetInfo.prototype:BuffOnEnter(this, type)
+function IceTargetInfo.prototype:BuffOnEnter(this)
 	if (not self:IsVisible()) then
+		return
+	end
+
+	local type = nil
+	for i = 1, IceCore.BuffLimit do
+		if self.frame.buffFrame.buffs[i] and self.frame.buffFrame.buffs[i] == this then
+			type = self.frame.buffFrame.buffs[i].type
+			break
+		end
+	end
+
+	if not type then
+		for i = 1, IceCore.BuffLimit do
+			if self.frame.debuffFrame.buffs[i] and self.frame.debuffFrame.buffs[i] == this then
+				type = self.frame.debuffFrame.buffs[i].type
+				break
+			end
+		end
+	end
+
+	if not type then
 		return
 	end
 

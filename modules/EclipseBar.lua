@@ -58,8 +58,6 @@ function EclipseBar.prototype:Enable(core)
 	self:RegisterEvent("UNIT_AURA", "UpdateEclipseBuffs")
 	self:RegisterEvent("ECLIPSE_DIRECTION_CHANGE", "UpdateEclipseDirection")
 
-	self.frame:SetScript("OnUpdate", function() self:Update() end)
-
 	self:UpdateEclipseDirection(nil, GetEclipseDirection() == "sun", GetEclipseDirection() == "none")
 	self:UpdateEclipseBuffs()
 	self:UpdateShown()
@@ -97,7 +95,7 @@ function EclipseBar.prototype:CreateFrame()
 	self:UpdateAlpha()
 end
 
-function EclipseBar.prototype:RegisterOnUpdate()
+function EclipseBar.prototype:ShouldRegisterOnUpdate()
 	return false
 end
 
@@ -146,7 +144,7 @@ function EclipseBar.prototype:CreateSolarBar()
 end
 
 function EclipseBar.prototype:UpdateShown()
-	local form  = GetShapeshiftFormID();
+	local form  = GetShapeshiftFormID()
 
 	if form == MOONKIN_FORM or not form then
 		if GetPrimaryTalentTree() == 1 then
@@ -206,8 +204,8 @@ function EclipseBar.prototype:UpdateEclipsePower()
 	self:PositionMarker(1, pos)
 end
 
-function EclipseBar.prototype:Update()
-	EclipseBar.super.prototype.Update(self)
+function EclipseBar.prototype:MyOnUpdate()
+	self:Update()
 
 	self:UpdateEclipsePower()
 	self:UpdateBar(0.5, self.barUpdateColor, 1)

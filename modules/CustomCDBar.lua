@@ -1,5 +1,5 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
-IceCustomCDBar = IceCore_CreateClass(IceUnitBar)
+IceCustomCDBar = IceCore_CreateClass(IceBarElement)
 
 local IceHUD = _G.IceHUD
 
@@ -18,7 +18,7 @@ table.insert(brokenSpellsNameToId, {"Holy Word: Aspire",88682})
 
 -- Constructor --
 function IceCustomCDBar.prototype:init()
-	IceCustomCDBar.super.prototype.init(self, "MyCustomCDBar", "player")
+	IceCustomCDBar.super.prototype.init(self, "MyCustomCDBar")
 end
 
 -- 'Public' methods -----------------------------------------------------------
@@ -59,7 +59,7 @@ end
 
 
 function IceCustomCDBar.prototype:Disable(core)
-	IceHUD.IceCore:RequestUpdates(self.frame, nil)
+	IceHUD.IceCore:RequestUpdates(self, nil)
 
 	IceCustomCDBar.super.prototype.Disable(self, core)
 end
@@ -79,7 +79,6 @@ function IceCustomCDBar.prototype:GetDefaultSettings()
 	settings["lockLowerFontAlpha"] = false
 	settings["lowerText"] = ""
 	settings["lowerTextVisible"] = false
-	settings["isCustomBar"] = false
 	settings["cooldownToTrack"] = ""
 	settings["barColor"] = {r=1, g=0, b=0, a=1}
 	settings["displayMode"] = "When cooling down"
@@ -447,11 +446,15 @@ function IceCustomCDBar.prototype:EnableUpdates(enable_update)
 	end
 
 	if enable_update then
-		if not IceHUD.IceCore:IsUpdateSubscribed(self.frame) then
-			IceHUD.IceCore:RequestUpdates(self.frame, function() self:UpdateCustomBar(true) end)
+		if not IceHUD.IceCore:IsUpdateSubscribed(self) then
+			if not self.CustomUpdateFunc then
+				self.CustomUpdateFunc = function() self:UpdateCustomBar(true) end
+			end
+
+			IceHUD.IceCore:RequestUpdates(self, self.CustomUpdateFunc)
 		end
 	else
-		IceHUD.IceCore:RequestUpdates(self.frame, nil)
+		IceHUD.IceCore:RequestUpdates(self, nil)
 	end
 end
 
@@ -533,6 +536,8 @@ function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
 		self:SetBottomText1(self.moduleSettings.upperText)
 	end
 
+	self:UpdateAlpha()
+
 	self.barFrame.bar:SetVertexColor(self:GetBarColor())
 
 	self.coolingDown = remaining ~= nil and remaining > 0
@@ -548,7 +553,7 @@ function IceCustomCDBar.prototype:TargetChanged()
 	IceCustomCDBar.super.prototype.TargetChanged(self)
 
 	-- Target changing only affects us if we want to show the bar as soon as it is ready.
-	if (self.moduleSettings.displayMode == "When ready") then
+	if (self.moduleSettings.displayMode == "When ready" or self.moduleSettings.displayMode == "Always") then
 		self:UpdateCustomBar()
 	end
 end
@@ -584,11 +589,13 @@ end
 
 function IceCustomCDBar.prototype:Show(bShouldShow, bForceHide)
 	if self.moduleSettings.enabled and not bForceHide then
-		if (self.moduleSettings.displayMode == "Always") then
-			if not self.bIsVisible then
+		if self.moduleSettings.displayMode == "Always" then
+			if self.target then
 				IceCustomCDBar.super.prototype.Show(self, true)
+			else
+				IceCustomCDBar.super.prototype.Show(self, bShouldShow)
 			end
-		elseif (self.moduleSettings.displayMode == "When ready") then
+		elseif self.moduleSettings.displayMode == "When ready" then
 			if not self.coolingDown and self:IsReady() then
 				IceCustomCDBar.super.prototype.Show(self, true)
 			else
@@ -603,9 +610,10 @@ function IceCustomCDBar.prototype:Show(bShouldShow, bForceHide)
 end
 
 function IceCustomCDBar.prototype:UseTargetAlpha(scale)
-	if self.moduleSettings.displayMode == "When ready" and scale == 0 then
+	if (self.moduleSettings.displayMode == "When ready" or self.moduleSettings.displayMode == "Always")
+		and scale == 0 then
 		return false
 	end
 
-	return true
+	return IceCustomCDBar.super.prototype:UseTargetAlpha(self, scale)
 end

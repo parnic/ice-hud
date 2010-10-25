@@ -121,6 +121,10 @@ function PlayerMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
 
+	if not self.CustomOnUpdate then
+		self.CustomOnUpdate = function() self:Update(self.unit) end
+	end
+
 	-- allow new 'predicted power' stuff to show the power updates constantly instead of ticking
 	if GetCVarBool("predictedPower") then
 		self:SetupOnUpdate(true)
@@ -137,13 +141,13 @@ end
 
 function PlayerMana.prototype:SetupOnUpdate(enable)
 	if enable then
-		self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
+		IceHUD.IceCore:RequestUpdates(self, self.CustomOnUpdate)
 	else
 		-- make sure the animation has a chance to finish filling up the bar before we cut it off completely
 		if self.CurrScale ~= self.DesiredScale then
-			self.frame:SetScript("OnUpdate", function() self:MyOnUpdate() end)
+			IceHUD.IceCore:RequestUpdates(self, self.MyOnUpdateFunc)
 		else
-			self.frame:SetScript("OnUpdate", nil)
+			IceHUD.IceCore:RequestUpdates(self, nil)
 		end
 	end
 end
@@ -186,16 +190,6 @@ function PlayerMana.prototype:Redraw()
 end
 
 
--- OVERRIDE
-function PlayerMana.prototype:UseTargetAlpha(scale)
-	if (self.manaType == SPELL_POWER_RAGE or self.manaType == SPELL_POWER_RUNIC_POWER) then
-		return (scale and (scale > 0))
-	else
-		return PlayerMana.super.prototype.UseTargetAlpha(self, scale)
-	end
-end
-
-
 function PlayerMana.prototype:ManaType(event, unit)
 	if (unit ~= self.unit) then
 		return
@@ -212,6 +206,12 @@ function PlayerMana.prototype:ManaType(event, unit)
 			self.tickerFrame:Hide()
 			self.tickerFrame:SetScript("OnUpdate", nil)
 		end
+	end
+
+	if self.manaType == SPELL_POWER_RAGE or self.manaType == SPELL_POWER_RUNIC_POWER then
+		self.bTreatEmptyAsFull = true
+	else
+		self.bTreatEmptyAsFull = false
 	end
 
 	self:Update(self.unit)
@@ -239,12 +239,13 @@ function PlayerMana.prototype:Update(unit, powertype)
 		self:Show(true)
 	end
 
+	local useTicker = self:ShouldUseTicker()
 	-- the user can toggle the predictedPower cvar at any time and the addon will not get notified. handle it.
-	if not self.tickerFrame and self:ShouldUseTicker() then
+	if not self.tickerFrame and useTicker then
 		self:CreateTickerFrame()
 	end
 
-	if (self.manaType ~= SPELL_POWER_ENERGY and self:ShouldUseTicker()) then
+	if (self.manaType ~= SPELL_POWER_ENERGY and useTicker) then
 		self.tickerFrame:Hide()
 	end
 
@@ -268,15 +269,16 @@ function PlayerMana.prototype:Update(unit, powertype)
 
 	self:UpdateBar(self.manaPercentage, color)
 
-	local powerType = UnitPowerType(self.unit)
-	if (self.manaPercentage == 1 and powerType ~= 1 and powerType ~= 6)
-		or (self.manaPercentage == 0 and (powerType == 1 or powerType == 6)) then
+	self:ConditionalUpdateFlash()
+
+	if (self.manaPercentage == 1 and self.manaType ~= SPELL_POWER_RAGE and self.manaType ~= SPELL_POWER_RUNIC_POWER)
+		or (self.manaPercentage == 0 and (self.manaType == SPELL_POWER_RAGE or self.manaType == SPELL_POWER_RUNIC_POWER)) then
 		self:SetupOnUpdate(false)
 	elseif GetCVarBool("predictedPower") then
 		self:SetupOnUpdate(true)
 	end
 
-	if self:ShouldUseTicker() then
+	if useTicker then
 		-- hide ticker if rest of the bar is not visible
 		if (self.alpha == 0) then
 	 		self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", 0))
@@ -313,7 +315,6 @@ function PlayerMana.prototype:UpdateBar(scale, color, alpha)
 
 	PlayerMana.super.prototype.UpdateBar(self, scale, color, alpha)
 end
-
 
 
 function PlayerMana.prototype:UpdateEnergy(event, unit)

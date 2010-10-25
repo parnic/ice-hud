@@ -17,6 +17,8 @@ function IceCore_CreateClass(parent)
 	return class
 end
 
+local DogTag = LibStub("LibDogTag-3.0", true)
+
 IceCore = IceCore_CreateClass()
 
 IceCore.Side = { Left = "LEFT", Right = "RIGHT" }
@@ -73,7 +75,7 @@ function IceCore.prototype:SetupDefaults()
 
 			bShouldUseDogTags = true,
 
-			updatePeriod = 0.1,
+			updatePeriod = 0.033,
 			minimap = {},
 		},
 		global = {
@@ -108,6 +110,15 @@ StaticPopupDialogs["ICEHUD_CONVERTED_TO_ACE3"] =
 	hideOnEscape = 0,
 }
 
+StaticPopupDialogs["ICEHUD_UPDATE_PERIOD_MATTERS"] =
+{
+	text = L["Since the last time you updated IceHUD, many significant CPU and memory optimizations have been made. If bar animation looks jumpy to you, open the /icehud configuration page and lower the 'Update Period' slider. This will cause higher CPU usage but will look nicer. Enjoy IceHUD!"],
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 0,
+}
+
 function IceCore.prototype:CheckDisplayUpdateMessage()
 	local thisVersion
 --[===[@non-debug@
@@ -119,6 +130,14 @@ function IceCore.prototype:CheckDisplayUpdateMessage()
 	if self.accountSettings.lastRunVersion < thisVersion then
 		if self.accountSettings.lastRunVersion < 549 then
 			StaticPopup_Show("ICEHUD_CONVERTED_TO_ACE3")
+		end
+		if self.accountSettings.lastRunVersion < 707 and self.accountSettings.lastRunVersion > 0 then
+			-- update from the old default that may have been saved with the user's settings
+			if self.settings.updatePeriod == 0.1 then
+				self.settings.updatePeriod = 0.033
+			end
+
+			StaticPopup_Show("ICEHUD_UPDATE_PERIOD_MATTERS")
 		end
 		self.accountSettings.lastRunVersion = thisVersion
 	end
@@ -185,7 +204,7 @@ function IceCore.prototype:Enable(userToggle)
 	end
 
 	if self.settings.updatePeriod == nil then
-		self.settings.updatePeriod = 0.1
+		self.settings.updatePeriod = 0.033
 	end
 
 	-- make sure the module options are re-generated. if we switched profiles, we don't want the old elements hanging around
@@ -359,24 +378,23 @@ end
 
 
 function IceCore.prototype:GetColorOptions()
-	assert(table.getn(IceHUD.IceCore.elements) > 0, "Unable to get color options, no elements found!")
-
 	local options = {}
 
-	for k, v in pairs(self.elements[1]:GetColors()) do
-		local kk, vv = k, v
-		options[k] =  {
-			type = 'color',
-			desc = k,
-			name = k,
-			get = function()
-				return IceHUD.IceCore:GetColor(kk)
-			end,
-			set = function(info, r, g, b)
-				local color = k
-				IceHUD.IceCore:SetColor(kk, r, g, b)
-			end
-		}
+	if #self.elements > 0 then
+		for k, v in pairs(self.elements[1]:GetColors()) do
+			options[k] =  {
+				type = 'color',
+				desc = k,
+				name = k,
+				get = function()
+					return IceHUD.IceCore:GetColor(k)
+				end,
+				set = function(info, r, g, b)
+					local color = k
+					IceHUD.IceCore:SetColor(k, r, g, b)
+				end
+			}
+		end
 	end
 
 	return options
@@ -658,7 +676,7 @@ function IceCore.prototype:ConfigModeToggle(bWantConfig)
 end
 
 function IceCore.prototype:ShouldUseDogTags()
-	return LibStub("LibDogTag-3.0", true) and self.settings.bShouldUseDogTags
+	return DogTag and self.settings.bShouldUseDogTags
 end
 
 function IceCore.prototype:SetShouldUseDogTags(should)
@@ -678,22 +696,18 @@ function IceCore.prototype:HandleUpdates()
 	local update_period = self:UpdatePeriod()
 	local elapsed = 1 / GetFramerate()
 	self.update_elapsed = self.update_elapsed + elapsed
-	if (self.update_elapsed > update_period) then
-		for frame, func in pairs(self.updatees)
-		do
+	if (self.update_elapsed >= update_period) then
+		for module, func in pairs(self.updatees) do
 			func()
 		end
-		if (elapsed > update_period) then
-			self.update_elapsed = 0
-		else
-			self.update_elapsed = self.update_elapsed - update_period
-		end
+
+		self.update_elapsed = self.update_elapsed - update_period
 	end
 end
 
-function IceCore.prototype:RequestUpdates(frame, func)
-	if self.updatees[frame] ~= func then
-		self.updatees[frame] = func
+function IceCore.prototype:RequestUpdates(module, func)
+	if self.updatees[module] ~= func then
+		self.updatees[module] = func
 	end
 
 	local count = 0
@@ -704,12 +718,18 @@ function IceCore.prototype:RequestUpdates(frame, func)
 	if (count == 0) then
 		self.IceHUDFrame:SetScript("OnUpdate", nil)
 	else
-		self.IceHUDFrame:SetScript("OnUpdate", function() self:HandleUpdates() end)
+		if not self.UpdateFunc then
+			self.UpdateFunc = function() self:HandleUpdates() end
+		end
+
+		if self.IceHUDFrame:GetScript("OnUpdate") ~= self.UpdateFunc then
+			self.IceHUDFrame:SetScript("OnUpdate", self.UpdateFunc)
+		end
 	end
 end
 
-function IceCore.prototype:IsUpdateSubscribed(frame)
-	return self.updatees[frame] ~= nil
+function IceCore.prototype:IsUpdateSubscribed(module)
+	return self.updatees[module] ~= nil
 end
 
 function IceCore.prototype:EmptyUpdates()

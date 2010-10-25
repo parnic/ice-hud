@@ -54,8 +54,10 @@ end
 function PlayerInfo.prototype:CreateFrame(redraw)
 	PlayerInfo.super.prototype.CreateFrame(self, redraw)
 
-	self.frame.menu = function()
-		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "cursor")
+	if not self.frame.menu then
+		self.frame.menu = function()
+			ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "cursor")
+		end
 	end
 end
 
@@ -68,26 +70,28 @@ StaticPopupDialogs["ICEHUD_BUFF_DISMISS_UNAVAILABLE"] =
 	hideOnEscape = 0,
 }
 
+local function OnBuffMouseUp(frame, button)
+	if IceHUD.WowVer >= 40000 then
+		StaticPopup_Show("ICEHUD_BUFF_DISMISS_UNAVAILABLE")
+	else
+--[[		if( button == "RightButton" ) then
+			if buffs[i].type == "mh" then
+				CancelItemTempEnchantment(1)
+			elseif buffs[i].type == "oh" then
+				CancelItemTempEnchantment(2)
+			else
+				CancelUnitBuff("player", i)
+			end
+		end]]
+	end
+end
+
 function PlayerInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 	local buffs = PlayerInfo.super.prototype.CreateIconFrames(self, parent, direction, buffs, type)
 
 	for i = 1, IceCore.BuffLimit do
 		if (self.moduleSettings.mouseBuff) then
-			buffs[i]:SetScript("OnMouseUp", function( self, button)
-				if IceHUD.WowVer >= 40000 then
-					StaticPopup_Show("ICEHUD_BUFF_DISMISS_UNAVAILABLE")
-				else
-					if( button == "RightButton" ) then
-						if buffs[i].type == "mh" then
-							CancelItemTempEnchantment(1)
-						elseif buffs[i].type == "oh" then
-							CancelItemTempEnchantment(2)
-						else
-							CancelUnitBuff("player", i)
-						end
-					end
-				end
-			end)
+			buffs[i]:SetScript("OnMouseUp", OnBuffMouseUp)
 		else
 			buffs[i]:SetScript("OnMouseUp", nil)
 		end
