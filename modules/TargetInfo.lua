@@ -126,8 +126,8 @@ function IceTargetInfo.prototype:GetOptions()
 			self.moduleSettings.vpos = v
 			self:Redraw()
 		end,
-		min = -300,
-		max = 600,
+		min = -425,
+		max = 700,
 		step = 1,
 		disabled = function()
 			return not self.moduleSettings.enabled
