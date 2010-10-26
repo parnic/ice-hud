@@ -1117,6 +1117,10 @@ function IceHUD:GetDebuffCount(unit, ability, onlyMine, matchByName)
 end
 
 function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
+	if not unit then
+		return 0
+	end
+
 	if unit == "main hand weapon" or unit == "off hand weapon" then
 		local hasMainHandEnchant, mainHandExpiration, mainHandCharges, hasOffHandEnchant, offHandExpiration, offHandCharges
 			= GetWeaponEnchantInfo()

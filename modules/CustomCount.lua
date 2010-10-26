@@ -405,7 +405,7 @@ function IceCustomCount.prototype:Enable(core)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateCustomCount")
 	self:RegisterEvent("PLAYER_DEAD", "UpdateCustomCount")
 
-	self.unit = self.moduleSettings.auraTarget
+	self.unit = self.moduleSettings.auraTarget or "player"
 
 	if not tonumber(self.moduleSettings.maxCount) or tonumber(self.moduleSettings.maxCount) <= 0 then
 		self.moduleSettings.maxCount = 5
