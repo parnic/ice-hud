@@ -574,7 +574,9 @@ end
 			upperTextString = {
 				type = 'input',
 				name = L["Upper Text"],
-				desc = L["The upper text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info.\n\nRemember to press ENTER after filling out this box or it will not save."],
+				desc =
+					self.moduleSettings.usesDogTagStrings and L["The upper text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info.\n\nRemember to press ENTER after filling out this box or it will not save."]
+					or L["The upper text to display under this bar.\n\nNOTE: this text block does NOT support DogTags.\n\nRemember to press ENTER/Accept after filling out this box or it will not save."],
 				hidden = function()
 					return DogTag == nil or not self.moduleSettings.usesDogTagStrings
 				end,
@@ -600,7 +602,9 @@ end
 			lowerTextString = {
 				type = 'input',
 				name = L["Lower Text"],
-				desc = L["The lower text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info.\n\nRemember to press ENTER after filling out this box or it will not save."],
+				desc =
+					self.moduleSettings.usesDogTagStrings and L["The lower text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info.\n\nRemember to press ENTER after filling out this box or it will not save."]
+					or L["The lower text to display under this bar.\n\nNOTE: this text block does NOT support DogTags.\n\nRemember to press ENTER/Accept after filling out this box or it will not save."],
 				hidden = function()
 					return DogTag == nil or not self.moduleSettings.usesDogTagStrings
 				end,
