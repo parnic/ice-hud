@@ -101,10 +101,6 @@ function EclipseBar.prototype:CreateFrame()
 	self:UpdateAlpha()
 end
 
-function EclipseBar.prototype:ShouldRegisterOnUpdate()
-	return false
-end
-
 function EclipseBar.prototype:CreateSolarBar()
 	if not (self.solarBar) then
 		self.solarBar = CreateFrame("Frame", nil, self.frame)

@@ -889,16 +889,10 @@ function IceBarElement.prototype:ConditionalSetupUpdate()
 	end
 
 	if not string.find(self.elementName, "MirrorBar")
-		and ((IceHUD.WowVer < 30000 or not GetCVarBool("predictedPower")) or (not string.find(self.elementName, "PlayerMana")))
-		and self:ShouldRegisterOnUpdate() then
+		and ((IceHUD.WowVer < 30000 or not GetCVarBool("predictedPower")) or (not string.find(self.elementName, "PlayerMana"))) then
 		IceHUD.IceCore:RequestUpdates(self, self.MyOnUpdateFunc)
 	end
 end
-
-function IceBarElement.prototype:ShouldRegisterOnUpdate()
-	return true
-end
-
 
 -- Creates background for the bar
 function IceBarElement.prototype:CreateBackground()
