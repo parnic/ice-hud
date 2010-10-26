@@ -1260,7 +1260,7 @@ function IceHUD:UpdateMedia(event, mediatype, key)
 			IceHUD.IceCore:SetFontFamily(key)
 		end
 	elseif mediatype == "statusbar" then
-		if self.TargetOfTarget and self.TargetOfTarget.enabled and key == self.TargetOfTarget.moduleSettings.texture then
+		if self.TargetOfTarget and self.TargetOfTarget.moduleSettings.enabled and key == self.TargetOfTarget.moduleSettings.texture then
 			self.TargetOfTarget:Redraw()
 		end
 	end
