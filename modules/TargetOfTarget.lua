@@ -181,6 +181,25 @@ function TargetOfTarget.prototype:GetOptions()
 		end
 	}
 
+	opts["moduleHeight"] = {
+		type = 'range',
+		name = L["Height"],
+		desc = L["Sets the height of this module."],
+		min = 5,
+		max = 50,
+		step = 1,
+		get = function()
+			return self.moduleSettings.moduleHeight
+		end,
+		set = function(info, v)
+			self.moduleSettings.moduleHeight = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+	}
+
 	opts.textSettings = {
 		type = 'group',
 		name = "|c"..self.configColor..L["Text Settings"].."|r",
@@ -242,7 +261,8 @@ function TargetOfTarget.prototype:GetDefaultSettings()
 	defaults["sizeToGap"] = true
 	defaults["totWidth"] = 200
 	defaults["leftTag"] = "[Name]"
-	defaults["rightTag"] = "[PercentHP]%"
+	defaults["rightTag"] = "[PercentHP:Percent]"
+	defaults["moduleHeight"] = 15
 	return defaults
 end
 
@@ -300,7 +320,7 @@ function TargetOfTarget.prototype:CreateFrame()
 	else
 		self.frame:SetWidth(self.moduleSettings.totWidth)
 	end
-	self.frame:SetHeight(self.height)
+	self.frame:SetHeight(self.moduleSettings.moduleHeight)
 	self.frame:SetPoint("TOP", self.parent, "TOP", self.moduleSettings.hpos, self.moduleSettings.vpos)
 	self.frame:SetScale(self.moduleSettings.scale)
 
@@ -357,8 +377,8 @@ function TargetOfTarget.prototype:CreateBarFrame()
 		self.frame.bar:SetWidth(self.moduleSettings.totWidth)
 	end
 
-	self.frame.bg:SetHeight(self.height + 2)
-	self.frame.bar:SetHeight(self.height)
+	self.frame.bg:SetHeight(self.moduleSettings.moduleHeight + 2)
+	self.frame.bar:SetHeight(self.moduleSettings.moduleHeight)
 
 	self.frame.bg:SetPoint("LEFT", self.frame.bar, "LEFT", -1, 0)
 	self.frame.bar:SetPoint("LEFT", self.frame, "LEFT", 0, 0)
@@ -388,7 +408,7 @@ end
 function TargetOfTarget.prototype:CreateToTFrame()
 	self.frame.totName = self:FontFactory(self.moduleSettings.fontSize, self.frame.bar, self.frame.totName)
 
-	self.frame.totName:SetHeight(self.height)
+	self.frame.totName:SetHeight(self.moduleSettings.moduleHeight)
 	self.frame.totName:SetJustifyH("LEFT")
 	self.frame.totName:SetJustifyV("CENTER")
 
@@ -400,7 +420,7 @@ end
 function TargetOfTarget.prototype:CreateToTHPFrame()
 	self.frame.totHealth = self:FontFactory(self.moduleSettings.fontSize, self.frame.bar, self.frame.totHealth)
 
-	self.frame.totHealth:SetHeight(self.height)
+	self.frame.totHealth:SetHeight(self.moduleSettings.moduleHeight)
 	self.frame.totHealth:SetJustifyH("RIGHT")
 	self.frame.totHealth:SetJustifyV("CENTER")
 
