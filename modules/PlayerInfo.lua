@@ -51,13 +51,15 @@ function PlayerInfo.prototype:GetOptions()
 	return opts
 end
 
+local function IcePlayerDropdown()
+	ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "cursor")
+end
+
 function PlayerInfo.prototype:CreateFrame(redraw)
 	PlayerInfo.super.prototype.CreateFrame(self, redraw)
 
-	if not self.frame.menu then
-		self.frame.menu = function()
-			ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "cursor")
-		end
+	if not self.frame.menu or self.frame.menu ~= IcePlayerDropdown then
+		self.frame.menu = IcePlayerDropdown
 	end
 end
 
