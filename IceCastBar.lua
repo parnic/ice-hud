@@ -20,7 +20,7 @@ function IceCastBar.prototype:init(name)
 	IceCastBar.super.prototype.init(self, name)
 
 	self:SetDefaultColor("CastCasting", 242, 242, 10)
-	self:SetDefaultColor("CastChanneling", 117, 113, 161)
+	self:SetDefaultColor("CastChanneling", 242, 242, 10)
 	self:SetDefaultColor("CastSuccess", 242, 242, 70)
 	self:SetDefaultColor("CastFail", 1, 0, 0)
 	self.unit = "player"
@@ -275,7 +275,8 @@ function IceCastBar.prototype:MyOnUpdate()
 		scale = scale > 1 and 1 or scale
 		scale = scale < 0 and 0 or scale
 
-		self:UpdateBar(scale, "CastCasting")
+		self:UpdateBar(scale, self:GetCurrentCastingColor())
+
 		local timeString = self.moduleSettings.showCastTime and string.format("%.1fs ", remainingTime) or ""
 		self:SetBottomText1(timeString .. self.actionMessage)
 
@@ -315,6 +316,13 @@ function IceCastBar.prototype:MyOnUpdate()
 	self:StopBar()
 end
 
+function IceCastBar.prototype:GetCurrentCastingColor()
+	local updateColor = "CastCasting"
+	if self.action == IceCastBar.Actions.Channel then
+		updateColor = "CastChanneling"
+	end
+	return updateColor
+end
 
 function IceCastBar.prototype:FlashBar(color, alpha, text, textColor)
 	self.frame:SetAlpha(alpha)
