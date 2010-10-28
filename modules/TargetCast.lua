@@ -20,21 +20,36 @@ function TargetCast.prototype:Enable(core)
 end
 
 
-function TargetCast.prototype:SpellCastInterruptible()
+function TargetCast.prototype:SpellCastInterruptible(event, unit)
+	if unit and unit ~= self.unit then
+		return
+	end
+
 	self.notInterruptible = false
-	self:Redraw()
+	self:UpdateInterruptibleColor()
 end
 
-function TargetCast.prototype:SpellCastNotInterruptible()
+function TargetCast.prototype:SpellCastNotInterruptible(event, unit)
+	if unit and unit ~= self.unit then
+		return
+	end
+
 	self.notInterruptible = true
-	self:Redraw()
+	self:UpdateInterruptibleColor()
 end
 
 function TargetCast.prototype:UpdateBar(scale, color, alpha)
 	TargetCast.super.prototype.UpdateBar(self, scale, color, alpha)
+	self:UpdateInterruptibleColor()
+end
 
-	if self.moduleSettings.displayNonInterruptible and self.notInterruptible then
-		self.barFrame.bar:SetVertexColor(self:GetColor("CastNotInterruptible"))
+function TargetCast.prototype:UpdateInterruptibleColor()
+	if self.moduleSettings.displayNonInterruptible then
+		if self.notInterruptible then
+			self.barFrame.bar:SetVertexColor(self:GetColor("CastNotInterruptible"))
+		else
+			self.barFrame.bar:SetVertexColor(self:GetColor(self:GetCurrentCastingColor()))
+		end
 	end
 end
 
