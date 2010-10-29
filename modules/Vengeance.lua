@@ -5,16 +5,12 @@ local VENGEANCE_SPELL_ID = 93098
 
 Vengeance.prototype.current = nil
 Vengeance.prototype.max = nil
-Vengeance.prototype.tooltipBuffer = nil
 
 -- constructor
 function Vengeance.prototype:init()
 	Vengeance.super.prototype.init(self, "Vengeance", "player")
 
 	self.current = 0
-	self.tooltipBuffer = CreateFrame("GameTooltip","tooltipBuffer",nil,"GameTooltipTemplate")
-	self.tooltipBuffer:SetOwner(WorldFrame, "ANCHOR_NONE")
-
 	self:SetDefaultColor("Vengeance", 200, 45, 45)
 
 	self.bTreatEmptyAsFull = true
@@ -51,34 +47,50 @@ function Vengeance.prototype:Disable(core)
 	self:UnregisterAllEvents()
 end
 
-function Vengeance.prototype:UpdateCurrent(event, unit)
-	if (unit and (unit ~= self.unit)) then
-		return
+-- scan the tooltip and extract the vengeance value
+do
+	-- making these local as they're not used anywhere else
+	local regions = {}
+	local spellName = GetSpellInfo(VENGEANCE_SPELL_ID)
+	local tooltipBuffer = CreateFrame("GameTooltip","tooltipBuffer",nil,"GameTooltipTemplate")
+	tooltipBuffer:SetOwner(WorldFrame, "ANCHOR_NONE")
+
+	-- suggested by Antiarc as a way to repopulate the same table instead of repeatedly creating a new one
+	local function makeTable(t, ...)
+		wipe(t)
+		for i = 1, select("#", ...) do
+			t[i] = select(i, ...)
+		end
 	end
 
-	local spellName = GetSpellInfo(VENGEANCE_SPELL_ID)
-	local name = UnitAura(self.unit, spellName)
-	if name then
-		-- Buff found, copy it into the buffer for scanning
-		self.tooltipBuffer:ClearLines()
-		self.tooltipBuffer:SetUnitBuff(self.unit, name)
-
-		-- Grab all regions
-		local regions = {self.tooltipBuffer:GetRegions()}
-
-		-- Convert FontStrings to strings, replace anything else with ""
-		for i=1, #regions do
-			local region = regions[i]
-			regions[i] = region:GetObjectType() == "FontString" and region:GetText() or ""
+	function Vengeance.prototype:UpdateCurrent(event, unit)
+		if (unit and (unit ~= self.unit)) then
+			return
 		end
 
-		-- Find the number, save it
-		self.current = tonumber(string.match(table.concat(regions),"%d+")) or 0
-	else
-		self.current = 0
-	end
+		local name = UnitAura(self.unit, spellName)
+		if name then
+			-- Buff found, copy it into the buffer for scanning
+			tooltipBuffer:ClearLines()
+			tooltipBuffer:SetUnitBuff(self.unit, name)
 
-	self:Update()
+			-- Grab all regions, stuff em into our table
+			makeTable(regions, tooltipBuffer:GetRegions())
+
+			-- Convert FontStrings to strings, replace anything else with ""
+			for i=1, #regions do
+				local region = regions[i]
+				regions[i] = region:GetObjectType() == "FontString" and region:GetText() or ""
+			end
+
+			-- Find the number, save it
+			self.current = tonumber(string.match(table.concat(regions),"%d+")) or 0
+		else
+			self.current = 0
+		end
+
+		self:Update()
+	end
 end
 
 function Vengeance.prototype:UpdateMax(event, unit)
