@@ -56,6 +56,8 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["PartyRoleIconOffset"] = {x=90, y=-59}
 	settings["PartyRoleIconScale"] = 0.9
 
+	settings["bAllowExpand"] = false
+
 	return settings
 end
 

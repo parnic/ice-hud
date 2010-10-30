@@ -48,6 +48,7 @@ function IceThreat.prototype:GetDefaultSettings()
 	settings["showScaledThreat"] = false
 	settings["displaySecondPlaceThreat"] = true
 	settings["secondPlaceThreatAlpha"] = 0.75
+	settings["bAllowExpand"] = false
 	return settings
 end
 

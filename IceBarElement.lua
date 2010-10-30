@@ -54,16 +54,33 @@ function IceBarElement.prototype:Enable()
 		self.moduleSettings.myTagVersion = IceHUD.CurrTagVersion
 	end
 
-	-- fixup for the new 'invert' option
+	-- fixup for the old new 'invert' option. (This was here before I got here - Andre)
 	if not self.moduleSettings.updatedReverseInverse then
 		self.moduleSettings.updatedReverseInverse = true
 
 		if self.moduleSettings.reverse then
 			self.moduleSettings.reverse = false
-			self.moduleSettings.inverse = true
+			self.moduleSettings.inverse = "NORMAL"
 
 			self:SetBarFramePoints(self.barFrame)
 		end
+	end
+
+	-- fixup for the new new 'invert' option
+	-- This is the new fixup code... Not sure if I'm doin' it right, or if the old and the new fixups can be merged.
+	-- The way I figure it, someone who hasn't updated in like forever might not have had either fixup occur, and yet
+	-- people who have been updating frequently will have already had the old fixup occur... DUN DUN DUN.
+	-- Also... Setting the module default for moduleSettings.inverse seemed to automatically set all my characters
+	-- to that default... So I'm not I can test whether or not my fixup does what I think it does. o.O
+	if not self.moduleSettings.updatedInverseExpand then
+		self.moduleSettings.updatedInverseExpand = true
+
+		if self.moduleSettings.inverse == true then
+			self.moduleSettings.inverse = "INVERSE"
+		else
+			self.moduleSettings.inverse = "NORMAL"
+		end
+		self:SetBarFramePoints(self.barFrame)
 	end
 
 	self:RegisterFontStrings()
@@ -124,7 +141,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 1
 	settings["scale"] = 1
-	settings["inverse"] = false
+	settings["inverse"] = "NORMAL"
 	settings["reverse"] = false
 	settings["barFontSize"] = 12
 	settings["lockUpperTextAlpha"] = true
@@ -146,676 +163,691 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["shouldUseOverride"] = false
 	settings["rotateBar"] = false
 	settings["markers"] = {}
+	settings["bAllowExpand"] = true
 
 	return settings
 end
 
+do
+	local function getFillOptions(self)
+		local values = {
+			["NORMAL"] = "Normal",
+			["INVERSE"] = "Inverse",
+		}
+		if self.moduleSettings.bAllowExpand then
+			values["EXPAND"] = "Expanding"
+		end
 
--- OVERRIDE
-function IceBarElement.prototype:GetOptions()
-	local opts = IceBarElement.super.prototype.GetOptions(self)
+		return values
+	end
 
-	opts["headerLookAndFeel"] = {
-		type = 'header',
-		name = L["Look and Feel"],
-		order = 29.9
-	}
-	opts["side"] =
-	{
-		type = 'select',
-		name = L["Side"],
-		desc = L["Side of the HUD where the bar appears"],
-		get = function(info)
-			if (self.moduleSettings.side == IceCore.Side.Right) then
-				return 2
-			else
-				return 1
-			end
-		end,
-		set = function(info, value)
-			if (value == 2) then
-				self.moduleSettings.side = IceCore.Side.Right
-			else
-				self.moduleSettings.side = IceCore.Side.Left
-			end
-			self:Redraw()
-		end,
-		values = { "Left", "Right" },
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 30
-	}
+	-- OVERRIDE
+	function IceBarElement.prototype:GetOptions()
+		local opts = IceBarElement.super.prototype.GetOptions(self)
 
-	opts["offset"] =
-	{
-		type = 'range',
-		name = L["Offset"],
-		desc = L["Offset of the bar"],
-		min = -10,
-		max = 15,
-		step = 1,
-		get = function()
-			return self.moduleSettings.offset
-		end,
-		set = function(info, value)
-			self.moduleSettings.offset = value
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 30.01
-	}
+		opts["headerLookAndFeel"] = {
+			type = 'header',
+			name = L["Look and Feel"],
+			order = 29.9
+		}
+		opts["side"] =
+		{
+			type = 'select',
+			name = L["Side"],
+			desc = L["Side of the HUD where the bar appears"],
+			get = function(info)
+				if (self.moduleSettings.side == IceCore.Side.Right) then
+					return 2
+				else
+					return 1
+				end
+			end,
+			set = function(info, value)
+				if (value == 2) then
+					self.moduleSettings.side = IceCore.Side.Right
+				else
+					self.moduleSettings.side = IceCore.Side.Left
+				end
+				self:Redraw()
+			end,
+			values = { "Left", "Right" },
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 30
+		}
 
-	opts["scale"] =
-	{
-		type = 'range',
-		name = L["Scale"],
-		desc = L["Scale of the bar"],
-		min = 0.1,
-		max = 2,
-		step = 0.05,
-		isPercent = true,
-		get = function()
-			return self.moduleSettings.scale
-		end,
-		set = function(info, value)
-			self.moduleSettings.scale = value
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 30.02
-	}
+		opts["offset"] =
+		{
+			type = 'range',
+			name = L["Offset"],
+			desc = L["Offset of the bar"],
+			min = -10,
+			max = 15,
+			step = 1,
+			get = function()
+				return self.moduleSettings.offset
+			end,
+			set = function(info, value)
+				self.moduleSettings.offset = value
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 30.01
+		}
 
-	opts["inverse"] =
-	{
-		type = 'toggle',
-		name = L["Invert bar"],
-		desc = L["Controls which direction the bar fills up. With this checked, the bar will fill opposite from normal (e.g. for health: 0% at the top, 100% at the bottom)."],
-		get = function()
-			return self.moduleSettings.inverse
-		end,
-		set = function(info, value)
-			self.moduleSettings.inverse = value
-			self:SetBarFramePoints(self.barFrame)
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 30.03
-	}
+		opts["scale"] =
+		{
+			type = 'range',
+			name = L["Scale"],
+			desc = L["Scale of the bar"],
+			min = 0.1,
+			max = 2,
+			step = 0.05,
+			isPercent = true,
+			get = function()
+				return self.moduleSettings.scale
+			end,
+			set = function(info, value)
+				self.moduleSettings.scale = value
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 30.02
+		}
 
-	opts["reverse"] =
-	{
-		type = 'toggle',
-		name = L["Reverse direction"],
-		desc = L["Controls what it means for the bar to be filled. A normal bar will grow larger as the value grows from 0% to 100%. A reversed bar will shrink as the value grows from 0% to 100%."],
-		get = function()
-			return self.moduleSettings.reverse
-		end,
-		set = function(info, value)
-			self.moduleSettings.reverse = value
-			self:SetBarFramePoints(self.barFrame)
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 30.04
-	}
+		opts["inverse"] =
+		{
+			type = 'select',
+			name = L["Invert bar"],
+			desc = L["Controls what it means for the bar to be filled. A normal bar will grow larger as the value grows from 0% to 100%. A reversed bar will shrink as the value grows from 0% to 100%."],
+			values = getFillOptions(self),
+			get = function()
+				return self.moduleSettings.inverse
+			end,
+			set = function(info, value)
+				self.moduleSettings.inverse = value
+				self:SetBarFramePoints(self.barFrame)
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 30.03
+		}
 
-	opts["barVisible"] = {
-		type = 'toggle',
-		name = L["Bar visible"],
-		desc = L["Toggle bar visibility"],
-		get = function()
-			return self.moduleSettings.barVisible['bar']
-		end,
-		set = function(info, v)
-			self.moduleSettings.barVisible['bar'] = v
-			self:SetBarVisibility(v)
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 28
-	}
+		opts["reverse"] =
+		{
+			type = 'toggle',
+			name = L["Reverse direction"],
+			desc = L["Controls what it means for the bar to be filled. A normal bar will grow larger as the value grows from 0% to 100%. A reversed bar will shrink as the value grows from 0% to 100%."],
+			get = function()
+				return self.moduleSettings.reverse
+			end,
+			set = function(info, value)
+				self.moduleSettings.reverse = value
+				self:SetBarFramePoints(self.barFrame)
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 30.04
+		}
 
-	opts["bgVisible"] = {
-		type = 'toggle',
-		name = L["Bar background visible"],
-		desc = L["Toggle bar background visibility"],
-		get = function()
-			return self.moduleSettings.barVisible['bg']
-		end,
-		set = function(info, v)
-			self.moduleSettings.barVisible['bg'] = v
-			if v then
-				self.frame.bg:Show()
-			else
-				self.frame.bg:Hide()
-			end
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 29
-	}
-if not self.moduleSettings.hideAnimationSettings then
-	opts["headerAnimation"] = {
-		type = 'header',
-		name = L["Animation Settings"],
-		order = 110
-	}
-	opts["shouldAnimate"] =
-	{
-		type = 'toggle',
-		name = L["Animate changes"],
-		desc = L["Whether or not to animate the bar falloffs/gains"],
-		get = function()
-			return self.moduleSettings.shouldAnimate
-		end,
-		set = function(info, value)
-			self.moduleSettings.shouldAnimate = value
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 111
-	}
+		opts["barVisible"] = {
+			type = 'toggle',
+			name = L["Bar visible"],
+			desc = L["Toggle bar visibility"],
+			get = function()
+				return self.moduleSettings.barVisible['bar']
+			end,
+			set = function(info, v)
+				self.moduleSettings.barVisible['bar'] = v
+				self:SetBarVisibility(v)
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 28
+		}
 
-	opts["desiredLerpTime"] =
-	{
-		type = 'range',
-		name = L["Animation Duration"],
-		desc = L["How long the animation should take to play"],
-		min = 0,
-		max = 2,
-		step = 0.05,
-		get = function()
-			return self.moduleSettings.desiredLerpTime
-		end,
-		set = function(info, value)
-			self.moduleSettings.desiredLerpTime = value
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.shouldAnimate
-		end,
-		order = 112
-	}
-end
-
-	opts["widthModifier"] =
-	{
-		type = 'range',
-		name = L["Bar width modifier"],
-		desc = L["Make this bar wider or thinner than others"],
-		min = -80,
-		max = 80,
-		step = 1,
-		get = function()
-			return self.moduleSettings.widthModifier
-		end,
-		set = function(info, v)
-			self.moduleSettings.widthModifier = v
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 30.05
-	}
-
-	opts["barVerticalOffset"] =
-	{
-		type='range',
-		name = L["Bar vertical offset"],
-		desc = L["Adjust the vertical placement of this bar"],
-		min = -400,
-		max = 600,
-		step = 1,
-		get = function()
-			return self.moduleSettings.barVerticalOffset
-		end,
-		set = function(info, v)
-			self.moduleSettings.barVerticalOffset = v
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 30.06
-	}
-
-	opts["barHorizontalAdjust"] =
-	{
-		type='range',
-		name = L["Bar horizontal adjust"],
-		desc = L["This is a per-pixel horizontal adjustment. You should probably use the 'offset' setting above as it is designed to snap bars together. This may be used in the case of a horizontal bar needing to be positioned outside the normal bar locations."],
-		min = -400,
-		max = 600,
-		step = 1,
-		get = function()
-			return self.moduleSettings.barHorizontalOffset
-		end,
-		set = function(info, v)
-			self.moduleSettings.barHorizontalOffset = v
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 30.06
-	}
-
-	opts["shouldUseOverride"] =
-	{
-		type = 'toggle',
-		name = L["Override global texture"],
-		desc = L["This will override the global bar texture setting for this bar with the one specified below."],
-		get = function()
-			return self.moduleSettings.shouldUseOverride
-		end,
-		set = function(info, value)
-			self.moduleSettings.shouldUseOverride = value
-			IceHUD:NotifyOptionsChange()
-
-			self:NotifyBarOverrideChanged()
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self:IsEnabled()
-		end,
-		order = 30.07
-	}
-
-	opts["barTextureOverride"] =
-	{
-		type = 'select',
-		name = L["Bar Texture Override"],
-		desc = L["This will override the global bar texture setting for this bar."],
-		get = function(info)
-			return IceHUD:GetSelectValue(info, self.moduleSettings.barTextureOverride)
-		end,
-		set = function(info, value)
-			self.moduleSettings.barTextureOverride = info.option.values[value]
-			self:NotifyBarOverrideChanged()
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self:IsEnabled() or not self.moduleSettings.shouldUseOverride
-		end,
-		values = IceHUD.validBarList,
-		order = 30.08
-	}
-if not self.moduleSettings.shouldHideBarRotation then
-	opts["barRotate"] =
-	{
-		type = 'toggle',
-		name = L["Rotate 90 degrees"],
-		desc = L["This will rotate this module by 90 degrees to give a horizontal orientation.\n\nWARNING: This feature is brand new and a bit rough around the edges. You will need to greatly adjust the vertical and horizontal offset of this bar plus move the text around in order for it to look correct.\n\nAnd I mean greatly."],
-		get = function(info)
-			return self.moduleSettings.rotateBar
-		end,
-		set = function(info, v)
-			self.moduleSettings.rotateBar = v
-			if v then
-				self:RotateHorizontal()
-			else
-				self:ResetRotation()
-			end
-		end,
-		disabled = function()
-			return not self:IsEnabled()
-		end,
-		order = 30.09
-	}
-end
-	opts["textSettings"] =
-	{
-		type = 'group',
-		name = "|c"..self.configColor..L["Text Settings"].."|r",
-		desc = L["Settings related to texts"],
-		order = 32,
-		args = {
-			fontsize = {
-				type = 'range',
-				name = L["Bar Font Size"],
-				desc = L["Bar Font Size"],
-				get = function()
-					return self.moduleSettings.barFontSize
-				end,
-				set = function(info, v)
-					self.moduleSettings.barFontSize = v
-					self:Redraw()
-				end,
-				min = 8,
-				max = 20,
-				step = 1,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 11
-			},
-
-			lockUpperFontAlpha = {
-				type = "toggle",
-				name = L["Lock Upper Text Alpha"],
-				desc = L["Locks upper text alpha to 100%"],
-				get = function()
-					return self.moduleSettings.lockUpperTextAlpha
-				end,
-				set = function(info, v)
-					self.moduleSettings.lockUpperTextAlpha = v
-					self:Redraw()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 13
-			},
-
-			lockLowerFontAlpha = {
-				type = "toggle",
-				name = L["Lock Lower Text Alpha"],
-				desc = L["Locks lower text alpha to 100%"],
-				get = function()
-					return self.moduleSettings.lockLowerTextAlpha
-				end,
-				set = function(info, v)
-					self.moduleSettings.lockLowerTextAlpha = v
-					self:Redraw()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 13.1
-			},
-
-			upperTextVisible = {
+		opts["bgVisible"] = {
+			type = 'toggle',
+			name = L["Bar background visible"],
+			desc = L["Toggle bar background visibility"],
+			get = function()
+				return self.moduleSettings.barVisible['bg']
+			end,
+			set = function(info, v)
+				self.moduleSettings.barVisible['bg'] = v
+				if v then
+					self.frame.bg:Show()
+				else
+					self.frame.bg:Hide()
+				end
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 29
+		}
+		if not self.moduleSettings.hideAnimationSettings then
+			opts["headerAnimation"] = {
+				type = 'header',
+				name = L["Animation Settings"],
+				order = 110
+			}
+			opts["shouldAnimate"] =
+			{
 				type = 'toggle',
-				name = L["Upper text visible"],
-				desc = L["Toggle upper text visibility"],
+				name = L["Animate changes"],
+				desc = L["Whether or not to animate the bar falloffs/gains"],
 				get = function()
-					return self.moduleSettings.textVisible['upper']
-				end,
-				set = function(info, v)
-					self.moduleSettings.textVisible['upper'] = v
-					self:Redraw()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 14
-			},
-
-			lowerTextVisible = {
-				type = 'toggle',
-				name = L["Lower text visible"],
-				desc = L["Toggle lower text visibility"],
-				get = function()
-					return self.moduleSettings.textVisible['lower']
-				end,
-				set = function(info, v)
-					self.moduleSettings.textVisible['lower'] = v
-					self:Redraw()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 15
-			},
-
-			upperTextString = {
-				type = 'input',
-				name = L["Upper Text"],
-				desc =
-					self.moduleSettings.usesDogTagStrings and L["The upper text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info.\n\nRemember to press ENTER after filling out this box or it will not save."]
-					or L["The upper text to display under this bar.\n\nNOTE: this text block does NOT support DogTags.\n\nRemember to press ENTER/Accept after filling out this box or it will not save."],
-				hidden = function()
-					return DogTag == nil or not self.moduleSettings.usesDogTagStrings
-				end,
-				get = function()
-					return self.moduleSettings.upperText
-				end,
-				set = function(info, v)
-					if DogTag ~= nil and v ~= '' and v ~= nil then
-						v = DogTag:CleanCode(v)
-					end
-
-					self.moduleSettings.upperText = v
-					self:RegisterFontStrings()
-					self:Redraw()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				multiline = true,
-				usage = "<upper text to display>"
-			},
-
-			lowerTextString = {
-				type = 'input',
-				name = L["Lower Text"],
-				desc =
-					self.moduleSettings.usesDogTagStrings and L["The lower text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info.\n\nRemember to press ENTER after filling out this box or it will not save."]
-					or L["The lower text to display under this bar.\n\nNOTE: this text block does NOT support DogTags.\n\nRemember to press ENTER/Accept after filling out this box or it will not save."],
-				hidden = function()
-					return DogTag == nil or not self.moduleSettings.usesDogTagStrings
-				end,
-				get = function()
-					return self.moduleSettings.lowerText
-				end,
-				set = function(info, v)
-					if DogTag ~= nil and v ~= '' and v ~= nil then
-						v = DogTag:CleanCode(v)
-					end
-
-					self.moduleSettings.lowerText = v
-					self:RegisterFontStrings()
-					self:Redraw()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				multiline = true,
-				usage = "<lower text to display>"
-			},
-
-			forceJustifyText = {
-				type = 'select',
-				name = L["Force Text Justification"],
-				desc = L["This sets the alignment for the text on this bar"],
-				get = function(info)
-					return self.moduleSettings.forceJustifyText
+					return self.moduleSettings.shouldAnimate
 				end,
 				set = function(info, value)
-					self.moduleSettings.forceJustifyText = value
+					self.moduleSettings.shouldAnimate = value
 					self:Redraw()
 				end,
-				values = { NONE = "None", LEFT = "Left", RIGHT = "Right" },
 				disabled = function()
 					return not self.moduleSettings.enabled
 				end,
-			},
+				order = 111
+			}
 
-			textVerticalOffset = {
+			opts["desiredLerpTime"] =
+			{
 				type = 'range',
-				name = L["Text Vertical Offset"],
-				desc = L["Offset of the text from the bar vertically (negative is farther below)"],
-				min = -450,
-				max = 350,
-				step = 1,
+				name = L["Animation Duration"],
+				desc = L["How long the animation should take to play"],
+				min = 0,
+				max = 2,
+				step = 0.05,
 				get = function()
-					return self.moduleSettings.textVerticalOffset
+					return self.moduleSettings.desiredLerpTime
+				end,
+				set = function(info, value)
+					self.moduleSettings.desiredLerpTime = value
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.shouldAnimate
+				end,
+				order = 112
+			}
+		end
+
+		opts["widthModifier"] =
+		{
+			type = 'range',
+			name = L["Bar width modifier"],
+			desc = L["Make this bar wider or thinner than others"],
+			min = -80,
+			max = 80,
+			step = 1,
+			get = function()
+				return self.moduleSettings.widthModifier
+			end,
+			set = function(info, v)
+				self.moduleSettings.widthModifier = v
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 30.05
+		}
+
+		opts["barVerticalOffset"] =
+		{
+			type='range',
+			name = L["Bar vertical offset"],
+			desc = L["Adjust the vertical placement of this bar"],
+			min = -400,
+			max = 600,
+			step = 1,
+			get = function()
+				return self.moduleSettings.barVerticalOffset
+			end,
+			set = function(info, v)
+				self.moduleSettings.barVerticalOffset = v
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 30.06
+		}
+
+		opts["barHorizontalAdjust"] =
+		{
+			type='range',
+			name = L["Bar horizontal adjust"],
+			desc = L["This is a per-pixel horizontal adjustment. You should probably use the 'offset' setting above as it is designed to snap bars together. This may be used in the case of a horizontal bar needing to be positioned outside the normal bar locations."],
+			min = -400,
+			max = 600,
+			step = 1,
+			get = function()
+				return self.moduleSettings.barHorizontalOffset
+			end,
+			set = function(info, v)
+				self.moduleSettings.barHorizontalOffset = v
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 30.06
+		}
+
+		opts["shouldUseOverride"] =
+		{
+			type = 'toggle',
+			name = L["Override global texture"],
+			desc = L["This will override the global bar texture setting for this bar with the one specified below."],
+			get = function()
+				return self.moduleSettings.shouldUseOverride
+			end,
+			set = function(info, value)
+				self.moduleSettings.shouldUseOverride = value
+				IceHUD:NotifyOptionsChange()
+
+				self:NotifyBarOverrideChanged()
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self:IsEnabled()
+			end,
+			order = 30.07
+		}
+
+		opts["barTextureOverride"] =
+		{
+			type = 'select',
+			name = L["Bar Texture Override"],
+			desc = L["This will override the global bar texture setting for this bar."],
+			get = function(info)
+				return IceHUD:GetSelectValue(info, self.moduleSettings.barTextureOverride)
+			end,
+			set = function(info, value)
+				self.moduleSettings.barTextureOverride = info.option.values[value]
+				self:NotifyBarOverrideChanged()
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self:IsEnabled() or not self.moduleSettings.shouldUseOverride
+			end,
+			values = IceHUD.validBarList,
+			order = 30.08
+		}
+		if not self.moduleSettings.shouldHideBarRotation then
+			opts["barRotate"] =
+			{
+				type = 'toggle',
+				name = L["Rotate 90 degrees"],
+				desc = L["This will rotate this module by 90 degrees to give a horizontal orientation.\n\nWARNING: This feature is brand new and a bit rough around the edges. You will need to greatly adjust the vertical and horizontal offset of this bar plus move the text around in order for it to look correct.\n\nAnd I mean greatly."],
+				get = function(info)
+					return self.moduleSettings.rotateBar
 				end,
 				set = function(info, v)
-					self.moduleSettings.textVerticalOffset = v
-					self:Redraw()
+					self.moduleSettings.rotateBar = v
+					if v then
+						self:RotateHorizontal()
+					else
+						self:ResetRotation()
+					end
 				end,
 				disabled = function()
-					return not self.moduleSettings.enabled
-				end
-			},
+					return not self:IsEnabled()
+				end,
+				order = 30.09
+			}
+		end
+		opts["textSettings"] =
+		{
+			type = 'group',
+			name = "|c"..self.configColor..L["Text Settings"].."|r",
+			desc = L["Settings related to texts"],
+			order = 32,
+			args = {
+				fontsize = {
+					type = 'range',
+					name = L["Bar Font Size"],
+					desc = L["Bar Font Size"],
+					get = function()
+						return self.moduleSettings.barFontSize
+					end,
+					set = function(info, v)
+						self.moduleSettings.barFontSize = v
+						self:Redraw()
+					end,
+					min = 8,
+					max = 20,
+					step = 1,
+					disabled = function()
+						return not self.moduleSettings.enabled
+					end,
+					order = 11
+				},
 
-			textHorizontalOffset = {
-				type = 'range',
-				name = L["Text Horizontal Offset"],
-				desc = L["Offset of the text from the bar horizontally"],
-				min = -350,
-				max = 350,
-				step = 1,
-				get = function()
-					return self.moduleSettings.textHorizontalOffset
-				end,
-				set = function(info, v)
-					self.moduleSettings.textHorizontalOffset = v
-					self:Redraw()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end
+				lockUpperFontAlpha = {
+					type = "toggle",
+					name = L["Lock Upper Text Alpha"],
+					desc = L["Locks upper text alpha to 100%"],
+					get = function()
+						return self.moduleSettings.lockUpperTextAlpha
+					end,
+					set = function(info, v)
+						self.moduleSettings.lockUpperTextAlpha = v
+						self:Redraw()
+					end,
+					disabled = function()
+						return not self.moduleSettings.enabled
+					end,
+					order = 13
+				},
+
+				lockLowerFontAlpha = {
+					type = "toggle",
+					name = L["Lock Lower Text Alpha"],
+					desc = L["Locks lower text alpha to 100%"],
+					get = function()
+						return self.moduleSettings.lockLowerTextAlpha
+					end,
+					set = function(info, v)
+						self.moduleSettings.lockLowerTextAlpha = v
+						self:Redraw()
+					end,
+					disabled = function()
+						return not self.moduleSettings.enabled
+					end,
+					order = 13.1
+				},
+
+				upperTextVisible = {
+					type = 'toggle',
+					name = L["Upper text visible"],
+					desc = L["Toggle upper text visibility"],
+					get = function()
+						return self.moduleSettings.textVisible['upper']
+					end,
+					set = function(info, v)
+						self.moduleSettings.textVisible['upper'] = v
+						self:Redraw()
+					end,
+					disabled = function()
+						return not self.moduleSettings.enabled
+					end,
+					order = 14
+				},
+
+				lowerTextVisible = {
+					type = 'toggle',
+					name = L["Lower text visible"],
+					desc = L["Toggle lower text visibility"],
+					get = function()
+						return self.moduleSettings.textVisible['lower']
+					end,
+					set = function(info, v)
+						self.moduleSettings.textVisible['lower'] = v
+						self:Redraw()
+					end,
+					disabled = function()
+						return not self.moduleSettings.enabled
+					end,
+					order = 15
+				},
+
+				upperTextString = {
+					type = 'input',
+					name = L["Upper Text"],
+					desc =
+					self.moduleSettings.usesDogTagStrings and L["The upper text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info.\n\nRemember to press ENTER after filling out this box or it will not save."]
+						or L["The upper text to display under this bar.\n\nNOTE: this text block does NOT support DogTags.\n\nRemember to press ENTER/Accept after filling out this box or it will not save."],
+					hidden = function()
+						return DogTag == nil or not self.moduleSettings.usesDogTagStrings
+					end,
+					get = function()
+						return self.moduleSettings.upperText
+					end,
+					set = function(info, v)
+						if DogTag ~= nil and v ~= '' and v ~= nil then
+							v = DogTag:CleanCode(v)
+						end
+
+						self.moduleSettings.upperText = v
+						self:RegisterFontStrings()
+						self:Redraw()
+					end,
+					disabled = function()
+						return not self.moduleSettings.enabled
+					end,
+					multiline = true,
+					usage = "<upper text to display>"
+				},
+
+				lowerTextString = {
+					type = 'input',
+					name = L["Lower Text"],
+					desc =
+					self.moduleSettings.usesDogTagStrings and L["The lower text to display under this bar (accepts LibDogTag formatting)\n\nSee http://www.wowace.com/wiki/LibDogTag-2.0/ or type /dogtag for tag info.\n\nRemember to press ENTER after filling out this box or it will not save."]
+						or L["The lower text to display under this bar.\n\nNOTE: this text block does NOT support DogTags.\n\nRemember to press ENTER/Accept after filling out this box or it will not save."],
+					hidden = function()
+						return DogTag == nil or not self.moduleSettings.usesDogTagStrings
+					end,
+					get = function()
+						return self.moduleSettings.lowerText
+					end,
+					set = function(info, v)
+						if DogTag ~= nil and v ~= '' and v ~= nil then
+							v = DogTag:CleanCode(v)
+						end
+
+						self.moduleSettings.lowerText = v
+						self:RegisterFontStrings()
+						self:Redraw()
+					end,
+					disabled = function()
+						return not self.moduleSettings.enabled
+					end,
+					multiline = true,
+					usage = "<lower text to display>"
+				},
+
+				forceJustifyText = {
+					type = 'select',
+					name = L["Force Text Justification"],
+					desc = L["This sets the alignment for the text on this bar"],
+					get = function(info)
+						return self.moduleSettings.forceJustifyText
+					end,
+					set = function(info, value)
+						self.moduleSettings.forceJustifyText = value
+						self:Redraw()
+					end,
+					values = { NONE = "None", LEFT = "Left", RIGHT = "Right" },
+					disabled = function()
+						return not self.moduleSettings.enabled
+					end,
+				},
+
+				textVerticalOffset = {
+					type = 'range',
+					name = L["Text Vertical Offset"],
+					desc = L["Offset of the text from the bar vertically (negative is farther below)"],
+					min = -450,
+					max = 350,
+					step = 1,
+					get = function()
+						return self.moduleSettings.textVerticalOffset
+					end,
+					set = function(info, v)
+						self.moduleSettings.textVerticalOffset = v
+						self:Redraw()
+					end,
+					disabled = function()
+						return not self.moduleSettings.enabled
+					end
+				},
+
+				textHorizontalOffset = {
+					type = 'range',
+					name = L["Text Horizontal Offset"],
+					desc = L["Offset of the text from the bar horizontally"],
+					min = -350,
+					max = 350,
+					step = 1,
+					get = function()
+						return self.moduleSettings.textHorizontalOffset
+					end,
+					set = function(info, v)
+						self.moduleSettings.textHorizontalOffset = v
+						self:Redraw()
+					end,
+					disabled = function()
+						return not self.moduleSettings.enabled
+					end
+				}
 			}
 		}
-	}
-if not self.moduleSettings.bHideMarkerSettings then
-	opts["markerSettings"] =
-	{
-		type = 'group',
-		name = "|c"..self.configColor..L["Marker Settings"].."|r",
-		desc = L["Create or remove markers at various points along the bar here"],
-		order = 32,
-		args = {
-			markerPos = {
-				type = "range",
-				min = 0,
-				max = 100,
-				step = 1,
-				name = L["Position (percent)"],
-				desc = L["This specifies at what point along the bar this marker should be displayed. Remember to press ENTER when you are done typing.\n\nExample: if you wanted a marker at 40 energy and you have 100 total energy, then this would be 40. If you want it at 40 energy and you have 120 total energy, then this would be 33."],
-				get = function()
-					return lastMarkerPosConfig
-				end,
-				set = function(info, v)
-					lastMarkerPosConfig = math.floor(v)
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 20,
-			},
-			markerColor = {
-				type = "color",
-				name = L["Color"],
-				desc = L["The color this marker should be."],
-				width = "half",
-				get = function()
-					return lastMarkerColorConfig.r, lastMarkerColorConfig.g, lastMarkerColorConfig.b, lastMarkerColorConfig.a
-				end,
-				set = function(info, r, g, b, a)
-					lastMarkerColorConfig = {r=r, g=g, b=b, a=a}
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 30,
-			},
-			markerHeight = {
-				type = "range",
-				min = 1,
-				step = 1,
-				max = self.settings.barHeight,
-				name = L["Height"],
-				desc = L["The height of the marker on the bar."],
-				get = function()
-					return lastMarkerHeightConfig
-				end,
-				set = function(info, v)
-					lastMarkerHeightConfig = v
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 40,
-			},
-			createMarker = {
-				type = "execute",
-				name = L["Create marker"],
-				desc = L["Creates a new marker with the chosen settings."],
-				width = "full",
-				func = function()
-					self:AddNewMarker(lastMarkerPosConfig / 100, lastMarkerColorConfig, lastMarkerHeightConfig)
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 10,
-			},
-			listMarkers = {
-				type = "select",
-				name = L["Edit Marker"],
-				desc = L["Choose a marker to edit. This will place the marker's settings in the fields above here."],
-				values = function()
-					local retval = {}
-					if self.moduleSettings.markers then
-						for i=1, #self.moduleSettings.markers do
-							retval[i] = ((self.moduleSettings.markers[i].position + 0.5) * 100) .. "%"
-						end
-					end
-					return retval
-				end,
-				get = function(info)
-					return lastEditMarkerConfig
-				end,
-				set = function(info, v)
-					lastEditMarkerConfig = v
-					lastMarkerPosConfig = (self.moduleSettings.markers[v].position + 0.5) * 100
-					local color = self.moduleSettings.markers[v].color
-					lastMarkerColorConfig = {r=color.r, g=color.g, b=color.b, a=color.a}
-					lastMarkerHeightConfig = self.moduleSettings.markers[v].height
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 50,
-			},
-			editMarker = {
-				type = "execute",
-				name = L["Update"],
-				desc = L["This will update the marker selected in the 'edit marker' box with the values specified."],
-				func = function()
-					if self.moduleSettings.markers and lastEditMarkerConfig <= #self.moduleSettings.markers then
-						self:EditMarker(lastEditMarkerConfig, lastMarkerPosConfig / 100, lastMarkerColorConfig, lastMarkerHeightConfig)
-					end
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 60,
-			},
-			deleteMarker = {
-				type = "execute",
-				name = L["Remove"],
-				desc = L["This will remove the marker selected in the 'edit marker' box. This action is irreversible."],
-				func = function()
-					if self.moduleSettings.markers and lastEditMarkerConfig <= #self.moduleSettings.markers then
-						self:RemoveMarker(lastEditMarkerConfig)
-					end
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 70,
-			},
-		}
-	}
-end
-	return opts
+		if not self.moduleSettings.bHideMarkerSettings then
+			opts["markerSettings"] =
+			{
+				type = 'group',
+				name = "|c"..self.configColor..L["Marker Settings"].."|r",
+				desc = L["Create or remove markers at various points along the bar here"],
+				order = 32,
+				args = {
+					markerPos = {
+						type = "range",
+						min = 0,
+						max = 100,
+						step = 1,
+						name = L["Position (percent)"],
+						desc = L["This specifies at what point along the bar this marker should be displayed. Remember to press ENTER when you are done typing.\n\nExample: if you wanted a marker at 40 energy and you have 100 total energy, then this would be 40. If you want it at 40 energy and you have 120 total energy, then this would be 33."],
+						get = function()
+							return lastMarkerPosConfig
+						end,
+						set = function(info, v)
+							lastMarkerPosConfig = math.floor(v)
+						end,
+						disabled = function()
+							return not self.moduleSettings.enabled
+						end,
+						order = 20,
+					},
+					markerColor = {
+						type = "color",
+						name = L["Color"],
+						desc = L["The color this marker should be."],
+						width = "half",
+						get = function()
+							return lastMarkerColorConfig.r, lastMarkerColorConfig.g, lastMarkerColorConfig.b, lastMarkerColorConfig.a
+						end,
+						set = function(info, r, g, b, a)
+							lastMarkerColorConfig = {r=r, g=g, b=b, a=a}
+						end,
+						disabled = function()
+							return not self.moduleSettings.enabled
+						end,
+						order = 30,
+					},
+					markerHeight = {
+						type = "range",
+						min = 1,
+						step = 1,
+						max = self.settings.barHeight,
+						name = L["Height"],
+						desc = L["The height of the marker on the bar."],
+						get = function()
+							return lastMarkerHeightConfig
+						end,
+						set = function(info, v)
+							lastMarkerHeightConfig = v
+						end,
+						disabled = function()
+							return not self.moduleSettings.enabled
+						end,
+						order = 40,
+					},
+					createMarker = {
+						type = "execute",
+						name = L["Create marker"],
+						desc = L["Creates a new marker with the chosen settings."],
+						width = "full",
+						func = function()
+							self:AddNewMarker(lastMarkerPosConfig / 100, lastMarkerColorConfig, lastMarkerHeightConfig)
+						end,
+						disabled = function()
+							return not self.moduleSettings.enabled
+						end,
+						order = 10,
+					},
+					listMarkers = {
+						type = "select",
+						name = L["Edit Marker"],
+						desc = L["Choose a marker to edit. This will place the marker's settings in the fields above here."],
+						values = function()
+							local retval = {}
+							if self.moduleSettings.markers then
+								for i=1, #self.moduleSettings.markers do
+									retval[i] = ((self.moduleSettings.markers[i].position + 0.5) * 100) .. "%"
+								end
+							end
+							return retval
+						end,
+						get = function(info)
+							return lastEditMarkerConfig
+						end,
+						set = function(info, v)
+							lastEditMarkerConfig = v
+							lastMarkerPosConfig = (self.moduleSettings.markers[v].position + 0.5) * 100
+							local color = self.moduleSettings.markers[v].color
+							lastMarkerColorConfig = {r=color.r, g=color.g, b=color.b, a=color.a}
+							lastMarkerHeightConfig = self.moduleSettings.markers[v].height
+						end,
+						disabled = function()
+							return not self.moduleSettings.enabled
+						end,
+						order = 50,
+					},
+					editMarker = {
+						type = "execute",
+						name = L["Update"],
+						desc = L["This will update the marker selected in the 'edit marker' box with the values specified."],
+						func = function()
+							if self.moduleSettings.markers and lastEditMarkerConfig <= #self.moduleSettings.markers then
+								self:EditMarker(lastEditMarkerConfig, lastMarkerPosConfig / 100, lastMarkerColorConfig, lastMarkerHeightConfig)
+							end
+						end,
+						disabled = function()
+							return not self.moduleSettings.enabled
+						end,
+						order = 60,
+					},
+					deleteMarker = {
+						type = "execute",
+						name = L["Remove"],
+						desc = L["This will remove the marker selected in the 'edit marker' box. This action is irreversible."],
+						func = function()
+							if self.moduleSettings.markers and lastEditMarkerConfig <= #self.moduleSettings.markers then
+								self:RemoveMarker(lastEditMarkerConfig)
+							end
+						end,
+						disabled = function()
+							return not self.moduleSettings.enabled
+						end,
+						order = 70,
+					},
+				}
+			}
+		end
+		return opts
+	end
 end
 
 function IceBarElement.prototype:SetBarVisibility(visible)
@@ -828,8 +860,10 @@ end
 
 function IceBarElement.prototype:SetBarFramePoints(frame)
 	frame:ClearAllPoints()
-	if (self.moduleSettings.inverse) then
+	if self.moduleSettings.inverse == "INVERSE" then
 		frame:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
+	elseif self.moduleSettings.inverse == "EXPAND" then
+		frame:SetPoint("LEFT", self.frame, "LEFT")
 	else
 		frame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
 	end
@@ -1070,15 +1104,18 @@ function IceBarElement.prototype:SetScale(inScale, force)
 	self.CurrScale = IceHUD:Clamp(self:LerpScale(inScale), 0, 1)
 
 	if force or oldScale ~= self.CurrScale then
-        local scale = self.CurrScale
-        if (self.moduleSettings.reverse) then
-            scale = 1 - scale
-        end
-		if (self.moduleSettings.inverse) then
+		local scale = self.CurrScale
+		if self.moduleSettings.reverse then
+			scale = 1 - scale
+		end
+		if self.moduleSettings.inverse == "INVERSE" then
 			min_y = 0;
 			max_y = scale;
+		elseif self.moduleSettings.inverse == "EXPAND" then
+		  min_y = 0.5 - (scale * 0.5);
+		  max_y = 0.5 + (scale * 0.5);
 		else
-			min_y = 1-scale;
+		  	min_y = 1-scale;
 			max_y = 1;
 		end
 		if (self.moduleSettings.side == IceCore.Side.Left) then
@@ -1349,8 +1386,10 @@ function IceBarElement.prototype:RotateFrame(frame)
 	end
 
 	local anchorPoint
-	if self.moduleSettings.inverse then
+	if self.moduleSettings.inverse == "INVERSE" then
 		anchorPoint = "TOPLEFT"
+	elseif self.moduleSettings.inverse == "EXPAND" then
+		anchorPoint = "LEFT"
 	else
 		anchorPoint = "BOTTOMLEFT"
 	end

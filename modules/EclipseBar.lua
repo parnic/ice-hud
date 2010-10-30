@@ -46,6 +46,7 @@ function EclipseBar.prototype:GetDefaultSettings()
 		height = 6,
 	}
 	defaults.shouldHideBarRotation = true
+	defaults.bAllowExpand = false
 
 	return defaults
 end

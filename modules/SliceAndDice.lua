@@ -83,6 +83,7 @@ function SliceAndDice.prototype:GetDefaultSettings()
     settings["lowerTextString"] = ""
     settings["lowerTextVisible"] = false
     settings["hideAnimationSettings"] = true
+    settings["bAllowExpand"] = false
 
     return settings
 end
