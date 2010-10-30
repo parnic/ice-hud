@@ -400,6 +400,9 @@ function IceCastBar.prototype:GetShortRank(rank)
 	return ""
 end
 
+function IceCastBar.prototype:OnShow()
+	self:ConditionalSetupUpdate()
+end
 
 
 -------------------------------------------------------------------------------
