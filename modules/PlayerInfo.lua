@@ -179,12 +179,14 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 			end
 
 			if not self.frame.buffFrame.buffs[startingNum]:IsVisible() or self.frame.buffFrame.buffs[startingNum].type ~= "mh" then
-				self:SetUpBuff(startingNum,
+				self:SetupAura("buff",
+					startingNum,
 					GetInventoryItemTexture(self.unit, GetInventorySlotInfo("MainHandSlot")),
 					self.mainHandEnchantEndTime,
 					CurrTime + (mainHandExpiration/1000),
 					true,
 					mainHandCharges,
+					nil,
 					"mh")
 			end
 
@@ -199,12 +201,14 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 			end
 
 			if not self.frame.buffFrame.buffs[startingNum]:IsVisible() or self.frame.buffFrame.buffs[startingNum].type ~= "oh" then
-				self:SetUpBuff(startingNum,
+				self:SetupAura("buff",
+					startingNum,
 					GetInventoryItemTexture(self.unit, GetInventorySlotInfo("SecondaryHandSlot")),
 					self.offHandEnchantEndTime,
 					CurrTime + (offHandExpiration/1000),
 					true,
 					offHandCharges,
+					nil,
 					"oh")
 			end
 
@@ -217,7 +221,7 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 			end
 		end
 
-		local direction = self.moduleSettings.buffGrowDirection == "Left" and -1 or 1
+		local direction = self.moduleSettings.auras["buff"].growDirection == "Left" and -1 or 1
 		self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, direction, self.frame.buffFrame.buffs, "buff")
 	end
 end

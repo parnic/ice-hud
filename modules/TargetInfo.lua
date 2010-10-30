@@ -83,11 +83,46 @@ function IceTargetInfo.prototype:Enable(core)
 		self.moduleSettings.myTagVersion = IceHUD.CurrTagVersion
 	end
 
-	if self.moduleSettings.filterBuffs == nil
-		and self.moduleSettings.filterDebuffs == nil
-		and self.moduleSettings.filter ~= nil then
-		self.moduleSettings.filterBuffs = self.moduleSettings.filter
-		self.moduleSettings.filterDebuffs = self.moduleSettings.filter
+	-- Rokiyo: ye olde backwards compatibility
+	if not self.moduleSettings.updateAurasIntoTable then
+		self.moduleSettings.updateAurasIntoTable = true
+
+		if self.moduleSettings.buffSize then self.moduleSettings.auras["buff"].size = self.moduleSettings.buffSize self.moduleSettings.buffSize = nil end
+		if self.moduleSettings.ownBuffSize then self.moduleSettings.auras["buff"].ownSize = self.moduleSettings.ownBuffSize self.moduleSettings.ownBuffSize = nil end
+		if self.moduleSettings.showBuffs then self.moduleSettings.auras["buff"].show = self.moduleSettings.showBuffs self.moduleSettings.showBuffs = nil end
+		if self.moduleSettings.buffGrowDirection then self.moduleSettings.auras["buff"].growDirection = self.moduleSettings.buffGrowDirection self.moduleSettings.buffGrowDirection = nil end
+		if self.moduleSettings.buffAnchorTo then self.moduleSettings.auras["buff"].anchorTo = self.moduleSettings.buffAnchorTo self.moduleSettings.buffAnchorTo = nil end
+		if self.moduleSettings.buffOffset then
+			if self.moduleSettings.buffOffset['x'] then self.moduleSettings.auras["buff"].offset['x'] = self.moduleSettings.buffOffset['x'] end
+			if self.moduleSettings.buffOffset['y'] then self.moduleSettings.auras["buff"].offset['y'] = self.moduleSettings.buffOffset['y'] end
+			self.moduleSettings.buffOffset = nil
+		end
+
+		if self.moduleSettings.debuffSize then self.moduleSettings.auras["debuff"].size = self.moduleSettings.debuffSize self.moduleSettings.debuffSize = nil end
+		if self.moduleSettings.ownDebuffSize then self.moduleSettings.auras["debuff"].ownSize = self.moduleSettings.ownDebuffSize self.moduleSettings.ownDebuffSize = nil end
+		if self.moduleSettings.showDebuffs then self.moduleSettings.auras["debuff"].show = self.moduleSettings.showDebuffs self.moduleSettings.showDebuffs = nil end
+		if self.moduleSettings.debuffGrowDirection then self.moduleSettings.auras["debuff"].growDirection = self.moduleSettings.debuffGrowDirection self.moduleSettings.debuffGrowDirection = nil end
+		if self.moduleSettings.debuffAnchorTo then self.moduleSettings.auras["debuff"].anchorTo = self.moduleSettings.debuffAnchorTo self.moduleSettings.debuffAnchorTo = nil end
+		if self.moduleSettings.debuffOffset then
+			if self.moduleSettings.debuffOffset['x'] then self.moduleSettings.auras["debuff"].offset['x'] = self.moduleSettings.debuffOffset['x'] end
+			if self.moduleSettings.debuffOffset['y'] then self.moduleSettings.auras["debuff"].offset['y'] = self.moduleSettings.debuffOffset['y'] end
+			self.moduleSettings.debuffOffset = nil
+		end
+
+		if self.moduleSettings.filterBuffs then
+			self.moduleSettings.auras["buff"].filter = self.moduleSettings.filterBuffs
+		elseif self.moduleSettings.filter then
+			self.moduleSettings.auras["buff"].filter = self.moduleSettings.filter
+		end
+		self.moduleSettings.filterBuffs = nil
+
+		if self.moduleSettings.filterDebuffs then
+			self.moduleSettings.auras["debuff"].filter = self.moduleSettings.filterDebuffs
+		elseif self.moduleSettings.filter then
+			self.moduleSettings.auras["debuff"].filter = self.moduleSettings.filter
+		end
+		self.moduleSettings.filterDebuffs = nil
+
 		self.moduleSettings.filter = nil
 	end
 
@@ -227,10 +262,10 @@ function IceTargetInfo.prototype:GetOptions()
 		name = L["Buff size"],
 		desc = L["Buff/debuff icon size"],
 		get = function()
-			return self.moduleSettings.buffSize
+			return self.moduleSettings.auras["buff"].size
 		end,
 		set = function(info, v)
-			self.moduleSettings.buffSize = v
+			self.moduleSettings.auras["buff"].size = v
 			self:RedrawBuffs()
 		end,
 		min = 8,
@@ -247,10 +282,10 @@ function IceTargetInfo.prototype:GetOptions()
 		name = L["Own buff size"],
 		desc = L["Buff/debuff size for buffs/debuffs that were applied by you, the player"],
 		get = function()
-			return self.moduleSettings.ownBuffSize
+			return self.moduleSettings.auras["buff"].ownSize
 		end,
 		set = function(info, v)
-			self.moduleSettings.ownBuffSize = v
+			self.moduleSettings.auras["buff"].ownSize = v
 			self:RedrawBuffs()
 		end,
 		min = 8,
@@ -267,10 +302,10 @@ function IceTargetInfo.prototype:GetOptions()
 		name = L["Show buffs"],
 		desc = L["Toggles whether or not buffs are displayed at all"],
 		get = function()
-			return self.moduleSettings.showBuffs
+			return self.moduleSettings.auras["buff"].show
 		end,
 		set = function(info, v)
-			self.moduleSettings.showBuffs = v
+			self.moduleSettings.auras["buff"].show = v
 			self:RedrawBuffs()
 		end,
 		disabled = function()
@@ -284,14 +319,14 @@ function IceTargetInfo.prototype:GetOptions()
 		name = L["Only show buffs by me"],
 		desc = L["Will only show buffs that you cast instead of all buffs active"],
 		get = function(info)
-			return IceHUD:GetSelectValue(info, self.moduleSettings.filterBuffs)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.auras["buff"].filter)
 		end,
 		set = function(info, v)
-			self.moduleSettings.filterBuffs = info.option.values[v]
+			self.moduleSettings.auras["buff"].filter = info.option.values[v]
 			self:RedrawBuffs()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.showBuffs
+			return not self.moduleSettings.enabled or not self.moduleSettings.auras["buff"].show
 		end,
 		values = { "Never", "In Combat", "Always" },
 		order = 36.1
@@ -302,10 +337,10 @@ function IceTargetInfo.prototype:GetOptions()
 		name = L["Show debuffs"],
 		desc = L["Toggles whether or not debuffs are displayed at all"],
 		get = function()
-			return self.moduleSettings.showDebuffs
+			return self.moduleSettings.auras["debuff"].show
 		end,
 		set = function(info, v)
-			self.moduleSettings.showDebuffs = v
+			self.moduleSettings.auras["debuff"].show = v
 			self:RedrawBuffs()
 		end,
 		disabled = function()
@@ -319,14 +354,14 @@ function IceTargetInfo.prototype:GetOptions()
 		name = L["Only show debuffs by me"],
 		desc = L["Will only show debuffs that you cast instead of all debuffs active"],
 		get = function(info)
-			return IceHUD:GetSelectValue(info, self.moduleSettings.filterDebuffs)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.auras["debuff"].filter)
 		end,
 		set = function(info, v)
-			self.moduleSettings.filterDebuffs = info.option.values[v]
+			self.moduleSettings.auras["debuff"].filter = info.option.values[v]
 			self:RedrawBuffs()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.showDebuffs
+			return not self.moduleSettings.enabled or not self.moduleSettings.auras["debuff"].show
 		end,
 		values = { "Never", "In Combat", "Always" },
 		order = 36.3
@@ -384,14 +419,14 @@ function IceTargetInfo.prototype:GetOptions()
 		desc = L["Which direction the buffs should grow from the anchor point"],
 		values = { "Left", "Right" },
 		get = function(info)
-			return IceHUD:GetSelectValue(info, self.moduleSettings.buffGrowDirection)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.auras["buff"].growDirection)
 		end,
 		set = function(info, v)
-			self.moduleSettings.buffGrowDirection = info.option.values[v]
-			self:CreateBuffFrame()
+			self.moduleSettings.auras["buff"].growDirection = info.option.values[v]
+			self:CreateAuraFrame("buff")
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.showBuffs
+			return not self.moduleSettings.enabled or not self.moduleSettings.auras["buff"].show
 		end,
 		order = 37.1
 	}
@@ -402,14 +437,14 @@ function IceTargetInfo.prototype:GetOptions()
 		desc = L["The point on the TargetInfo frame that the buff frame gets connected to"],
 		values = ValidAnchors,
 		get = function(info)
-			return IceHUD:GetSelectValue(info, self.moduleSettings.buffAnchorTo)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.auras["buff"].anchorTo)
 		end,
 		set = function(info, v)
-			self.moduleSettings.buffAnchorTo = info.option.values[v]
-			self:CreateBuffFrame()
+			self.moduleSettings.auras["buff"].anchorTo = info.option.values[v]
+			self:CreateAuraFrame("buff")
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.showBuffs
+			return not self.moduleSettings.enabled or not self.moduleSettings.auras["buff"].show
 		end,
 		order = 37.2
 	}
@@ -422,14 +457,14 @@ function IceTargetInfo.prototype:GetOptions()
 		max = 500,
 		step = 1,
 		get = function()
-			return self.moduleSettings.buffOffset['x']
+			return self.moduleSettings.auras["buff"].offset['x']
 		end,
 		set = function(info, v)
-			self.moduleSettings.buffOffset['x'] = v
-			self:CreateBuffFrame()
+			self.moduleSettings.auras["buff"].offset['x'] = v
+			self:CreateAuraFrame("buff")
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.showBuffs
+			return not self.moduleSettings.enabled or not self.moduleSettings.auras["buff"].show
 		end,
 		order = 37.3
 	}
@@ -442,14 +477,14 @@ function IceTargetInfo.prototype:GetOptions()
 		max = 500,
 		step = 1,
 		get = function()
-			return self.moduleSettings.buffOffset['y']
+			return self.moduleSettings.auras["buff"].offset['y']
 		end,
 		set = function(info, v)
-			self.moduleSettings.buffOffset['y'] = v
-			self:CreateBuffFrame()
+			self.moduleSettings.auras["buff"].offset['y'] = v
+			self:CreateAuraFrame("buff")
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.showBuffs
+			return not self.moduleSettings.enabled or not self.moduleSettings.auras["buff"].show
 		end,
 		order = 37.4
 	}
@@ -466,14 +501,14 @@ function IceTargetInfo.prototype:GetOptions()
 		desc = L["Which direction the debuffs should grow from the anchor point"],
 		values = { "Left", "Right" },
 		get = function(info)
-			return IceHUD:GetSelectValue(info, self.moduleSettings.debuffGrowDirection)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.auras["debuff"].growDirection)
 		end,
 		set = function(info, v)
-			self.moduleSettings.debuffGrowDirection = info.option.values[v]
-			self:CreateDebuffFrame()
+			self.moduleSettings.auras["debuff"].growDirection = info.option.values[v]
+			self:CreateAuraFrame("debuff")
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.showDebuffs
+			return not self.moduleSettings.enabled or not self.moduleSettings.auras["debuff"].show
 		end,
 		order = 37.81
 	}
@@ -484,14 +519,14 @@ function IceTargetInfo.prototype:GetOptions()
 		desc = L["The point on the TargetInfo frame that the debuff frame gets connected to"],
 		values = ValidAnchors,
 		get = function(info)
-			return IceHUD:GetSelectValue(info, self.moduleSettings.debuffAnchorTo)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.auras["debuff"].anchorTo)
 		end,
 		set = function(info, v)
-			self.moduleSettings.debuffAnchorTo = info.option.values[v]
-			self:CreateDebuffFrame()
+			self.moduleSettings.auras["debuff"].anchorTo = info.option.values[v]
+			self:CreateAuraFrame("debuff")
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.showDebuffs
+			return not self.moduleSettings.enabled or not self.moduleSettings.auras["debuff"].show
 		end,
 		order = 37.82
 	}
@@ -504,14 +539,14 @@ function IceTargetInfo.prototype:GetOptions()
 		max = 500,
 		step = 1,
 		get = function()
-			return self.moduleSettings.debuffOffset['x']
+			return self.moduleSettings.auras["debuff"].offset['x']
 		end,
 		set = function(info, v)
-			self.moduleSettings.debuffOffset['x'] = v
-			self:CreateDebuffFrame()
+			self.moduleSettings.auras["debuff"].offset['x'] = v
+			self:CreateAuraFrame("debuff")
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.showDebuffs
+			return not self.moduleSettings.enabled or not self.moduleSettings.auras["debuff"].show
 		end,
 		order = 37.83
 	}
@@ -524,14 +559,14 @@ function IceTargetInfo.prototype:GetOptions()
 		max = 500,
 		step = 1,
 		get = function()
-			return self.moduleSettings.debuffOffset['y']
+			return self.moduleSettings.auras["debuff"].offset['y']
 		end,
 		set = function(info, v)
-			self.moduleSettings.debuffOffset['y'] = v
-			self:CreateDebuffFrame()
+			self.moduleSettings.auras["debuff"].offset['y'] = v
+			self:CreateAuraFrame("debuff")
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.showDebuffs
+			return not self.moduleSettings.enabled or not self.moduleSettings.auras["debuff"].show
 		end,
 		order = 37.84
 	}
@@ -750,18 +785,8 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 	defaults["vpos"] = -50
 	defaults["hpos"] = 0
 	defaults["zoom"] = 0.08
-	defaults["buffSize"] = 20
-	defaults["ownBuffSize"] = 20
-	defaults["buffOffset"] = {x=-10,y=0}
-	defaults["buffAnchorTo"] = "TOPLEFT"
-	defaults["buffGrowDirection"] = "Left"
-	defaults["debuffOffset"] = {x=10,y=0}
-	defaults["debuffAnchorTo"] = "TOPRIGHT"
-	defaults["debuffGrowDirection"] = "Right"
 	defaults["mouseTarget"] = true
 	defaults["mouseBuff"] = true
-	defaults["filterBuffs"] = "Never"
-	defaults["filterDebuffs"] = "Never"
 	defaults["perRow"] = 10
 	defaults["line1Tag"] = "[Name:HostileColor]"
 --	defaults["line2Tag"] = "[Level:DifficultyColor] [[IsPlayer ? Race ! CreatureType]:ClassColor] [[IsPlayer ? Class]:ClassColor] [[~PvP ? \"PvE\" ! \"PvP\"]:HostileColor] [IsLeader ? \"Leader\":Yellow] [InCombat ? \"Combat\":Red] [Classification]"
@@ -770,52 +795,57 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 	defaults["line4Tag"] = ""
 	defaults["myTagVersion"] = 2
 	defaults["alwaysFullAlpha"] = true
-	defaults["showBuffs"] = true
-	defaults["showDebuffs"] = true
 	defaults["spaceBetweenBuffs"] = 0
 	defaults["displayTargetName"] = true
 	defaults["displayTargetDetails"] = true
 	defaults["displayTargetGuild"] = true
+	defaults["auras"] = {
+		["buff"] = {
+			["size"] = 20,
+			["ownSize"] = 20,
+			["offset"] = {x=-10,y=0},
+			["anchorTo"] = "TOPLEFT",
+			["growDirection"] = "Left",
+			["filter"] = "Never",
+			["show"] = true,
+		},
+		["debuff"] = {
+			["size"] = 20,
+			["ownSize"] = 20,
+			["offset"] = {x=10,y=0},
+			["anchorTo"] = "TOPRIGHT",
+			["growDirection"] = "Right",
+			["filter"] = "Never",
+			["show"] = true,
+		}
+	}
 
 	return defaults
 end
 
 
-function IceTargetInfo.prototype:RegisterFontStrings()
-	if DogTag ~= nil then
-		if self.frame.targetName then
-			if self.moduleSettings.line1Tag ~= '' then
-				DogTag:AddFontString(self.frame.targetName, self.frame, self.moduleSettings.line1Tag, "Unit", { unit = self.unit })
-			else
-				DogTag:RemoveFontString(self.frame.targetName)
-			end
+do
+	local function SetFontString(self, textFrame, tag)
+		if textFrame and tag ~= '' then
+			DogTag:AddFontString(textFrame, self.frame, tag, "Unit", { unit = self.unit })
+		else
+			DogTag:RemoveFontString(textFrame)
 		end
-		if self.frame.targetInfo then
-			if self.moduleSettings.line2Tag ~= '' then
-				DogTag:AddFontString(self.frame.targetInfo, self.frame, self.moduleSettings.line2Tag, "Unit", { unit = self.unit })
-			else
-				DogTag:RemoveFontString(self.frame.targetInfo)
-			end
-		end
-		if self.frame.targetGuild then
-			if self.moduleSettings.line3Tag ~= '' then
-				DogTag:AddFontString(self.frame.targetGuild, self.frame, self.moduleSettings.line3Tag, "Unit", { unit = self.unit })
-			else
-				DogTag:RemoveFontString(self.frame.targetGuild)
-			end
-		end
-		if self.frame.targetExtra then
-			if self.moduleSettings.line4Tag ~= '' then
-				DogTag:AddFontString(self.frame.targetExtra, self.frame, self.moduleSettings.line4Tag, "Unit", { unit = self.unit })
-			else
-				DogTag:RemoveFontString(self.frame.targetExtra)
-			end
-		end
+	end
 
-		self:TargetChanged()
-		DogTag:UpdateAllForFrame(self.frame)
+	function IceTargetInfo.prototype:RegisterFontStrings()
+		if DogTag ~= nil then
+			SetFontString(self, self.frame.targetName, self.moduleSettings.line1Tag)
+			SetFontString(self, self.frame.targetInfo, self.moduleSettings.line2Tag)
+			SetFontString(self, self.frame.targetGuild, self.moduleSettings.line3Tag)
+			SetFontString(self, self.frame.targetExtra, self.moduleSettings.line4Tag)
+
+			self:TargetChanged()
+			DogTag:UpdateAllForFrame(self.frame)
+		end
 	end
 end
+
 
 function IceTargetInfo.prototype:UnregisterFontStrings()
 	if DogTag ~= nil then
@@ -840,221 +870,161 @@ end
 
 function IceTargetInfo.prototype:RedrawBuffs()
 	if (self.moduleSettings.enabled) then
-		self:CreateBuffFrame(false)
-		self:CreateDebuffFrame(false)
+		self:CreateAuraFrame("buff", false)
+		self:CreateAuraFrame("debuff", false)
 
 		self:TargetChanged()
 	end
 end
 
-
-
 -- 'Protected' methods --------------------------------------------------------
+do 	-- OVERRIDE: IceTargetInfo.prototype:CreateFrame(redraw)
+	local function CreateTextFrame(self, textFrame, fontSize, relativePoint, offsetX, offsetY, height, show)
+		textFrame = self:FontFactory(fontSize, self.frame, textFrame)
+		textFrame:SetJustifyH("CENTER")
+		textFrame:SetJustifyV("TOP")
+		textFrame:SetPoint("TOP", self.frame, relativePoint, offsetX, offsetY)
 
--- OVERRIDE
-function IceTargetInfo.prototype:CreateFrame(redraw)
-	if not (self.frame) then
-		self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.parent, "SecureUnitButtonTemplate")
+		if height then textFrame:SetHeight(height) end
+		if show then textFrame:Show() end
+
+		return textFrame
 	end
 
-	-- Parnic - yes, 200 is fairly arbitrary. make a best effort for long names to fit
-	self.width = math.max(200, self.settings.gap + 50)
+	local function CreateRaidIconFrame(self)
+		if (not self.frame.raidIcon) then
+			self.frame.raidIcon = CreateFrame("Frame", nil, self.frame)
+		end
 
-	self.frame:SetScale(self.moduleSettings.scale)
+		if (not self.frame.raidIcon.icon) then
+			self.frame.raidIcon.icon = self.frame.raidIcon:CreateTexture(nil, "BACKGROUND")
+			self.frame.raidIcon.icon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
+		end
 
-	self.frame:SetFrameStrata("BACKGROUND")
-	self.frame:SetWidth(self.width)
-	self.frame:SetHeight(32)
-	self.frame:ClearAllPoints()
-	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
-	self.frame:SetScale(self.moduleSettings.scale)
+		self.frame.raidIcon:SetPoint("BOTTOM", self.frame, "TOP", 0, 1)
+		self.frame.raidIcon:SetWidth(16)
+		self.frame.raidIcon:SetHeight(16)
 
-	if (self.moduleSettings.mouseTarget) then
-		self.frame:EnableMouse(true)
-		self.frame:RegisterForClicks("AnyUp")
-		self.frame:SetScript("OnEnter", function(frame) self:OnEnter(frame) end)
-		self.frame:SetScript("OnLeave", function(frame) self:OnLeave(frame) end)
+		self.frame.raidIcon.icon:SetAllPoints(self.frame.raidIcon)
+		SetRaidTargetIconTexture(self.frame.raidIcon.icon, 0)
+		self.frame.raidIcon:Hide()
+	end
 
-		self.frame:SetAttribute("type1", "target")
-		self.frame:SetAttribute("type2", "menu")
+	function IceTargetInfo.prototype:CreateFrame(redraw)
+		if not (self.frame) then
+			self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.parent, "SecureUnitButtonTemplate")
+		end
 
-		-- set up click casting
-		ClickCastFrames = ClickCastFrames or {}
-		ClickCastFrames[self.frame] = true
-	else
-		self.frame:EnableMouse(false)
-		self.frame:RegisterForClicks()
-		self.frame:SetScript("OnEnter", nil)
-		self.frame:SetScript("OnLeave", nil)
+		-- Parnic - yes, 200 is fairly arbitrary. make a best effort for long names to fit
+		self.width = math.max(200, self.settings.gap + 50)
 
-		self.frame:SetAttribute("type1")
-		self.frame:SetAttribute("type2")
+		self.frame:SetScale(self.moduleSettings.scale)
+
+		self.frame:SetFrameStrata("BACKGROUND")
+		self.frame:SetWidth(self.width)
+		self.frame:SetHeight(32)
+		self.frame:ClearAllPoints()
+		self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
+		self.frame:SetScale(self.moduleSettings.scale)
+
+		if (self.moduleSettings.mouseTarget) then
+			self.frame:EnableMouse(true)
+			self.frame:RegisterForClicks("AnyUp")
+			self.frame:SetScript("OnEnter", function(frame) self:OnEnter(frame) end)
+			self.frame:SetScript("OnLeave", function(frame) self:OnLeave(frame) end)
+
+			self.frame:SetAttribute("type1", "target")
+			self.frame:SetAttribute("type2", "menu")
+
+			-- set up click casting
+			ClickCastFrames = ClickCastFrames or {}
+			ClickCastFrames[self.frame] = true
+		else
+			self.frame:EnableMouse(false)
+			self.frame:RegisterForClicks()
+			self.frame:SetScript("OnEnter", nil)
+			self.frame:SetScript("OnLeave", nil)
+
+			self.frame:SetAttribute("type1")
+			self.frame:SetAttribute("type2")
 
 		-- set up click casting
 		--ClickCastFrames = ClickCastFrames or {}
 		--ClickCastFrames[self.frame] = false
-	end
-
-	self.frame.unit = self.unit
-
-	self.frame:SetAttribute("unit", self.unit)
-
-	if not self.frame.menu then
-		self.frame.menu = function()
-			ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor")
 		end
+
+		self.frame.unit = self.unit
+
+		self.frame:SetAttribute("unit", self.unit)
+
+		if not self.frame.menu then
+			self.frame.menu = function()
+				ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor")
+			end
+		end
+
+
+		-- create a fancy highlight frame for mouse over
+		if (not self.frame.highLight) then
+			self.frame.highLight = self.frame:CreateTexture(nil, "OVERLAY")
+			self.frame.highLight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
+			self.frame.highLight:SetBlendMode("ADD")
+			self.frame.highLight:SetAllPoints(self.frame)
+			self.frame.highLight:SetVertexColor(1, 1, 1, 0.25)
+			self.frame.highLight:Hide()
+		end
+
+
+		-- create rest of the frames
+		self.frame.targetName = CreateTextFrame(self, self.frame.targetName, self.moduleSettings.fontSize+1, "TOP", 0, 0, nil, nil)
+		self.frame.targetInfo = CreateTextFrame(self, self.frame.targetInfo, self.moduleSettings.fontSize, "TOP", 0, -16, 14, true)
+		self.frame.targetGuild = CreateTextFrame(self, self.frame.targetGuild, self.moduleSettings.fontSize, "BOTTOM", 0, 0, 14, true)
+		self.frame.targetExtra = CreateTextFrame(self, self.frame.targetExtra, self.moduleSettings.fontSize, "BOTTOM", 0, -16, 14, true)
+
+		self:CreateAuraFrame("buff", redraw)
+		self:CreateAuraFrame("debuff", redraw)
+
+		CreateRaidIconFrame(self)
+	end
+end
+
+function IceTargetInfo.prototype:CreateAuraFrame(aura, redraw)
+	local auraFrame
+	local point
+
+	if (aura == "buff") then
+		auraFrame = "buffFrame"
+		point = "TOPRIGHT"
+	elseif (aura == "debuff") then
+		auraFrame = "debuffFrame"
+		point = "TOPLEFT"
+	else
+		error("Invalid Auraframe")
 	end
 
-
-	-- create a fancy highlight frame for mouse over
-	if (not self.frame.highLight) then
-		self.frame.highLight = self.frame:CreateTexture(nil, "OVERLAY")
-		self.frame.highLight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
-		self.frame.highLight:SetBlendMode("ADD")
-		self.frame.highLight:SetAllPoints(self.frame)
-		self.frame.highLight:SetVertexColor(1, 1, 1, 0.25)
-		self.frame.highLight:Hide()
+	if (not self.frame[auraFrame]) then
+		self.frame[auraFrame] = CreateFrame("Frame", nil, self.frame)
+		self.frame[auraFrame]:SetFrameStrata("BACKGROUND")
+		self.frame[auraFrame]:SetWidth(1)
+		self.frame[auraFrame]:SetHeight(1)
+		self.frame[auraFrame]:Show()
+		self.frame[auraFrame].buffs = {}
 	end
 
-
-	-- create rest of the frames
-	self:CreateTextFrame()
-	self:CreateInfoTextFrame()
-	self:CreateGuildTextFrame()
-	self:CreateExtraTextFrame()
-
-	self:CreateBuffFrame(redraw)
-	self:CreateDebuffFrame(redraw)
-
-	self:CreateRaidIconFrame()
-end
-
-
-function IceTargetInfo.prototype:CreateTextFrame()
-	self.frame.targetName = self:FontFactory(self.moduleSettings.fontSize+1, self.frame, self.frame.targetName)
-
-	self.frame.targetName:SetJustifyH("CENTER")
-	self.frame.targetName:SetJustifyV("TOP")
-
-	self.frame.targetName:SetPoint("TOP", self.frame, "TOP")
-end
-
-
-function IceTargetInfo.prototype:CreateInfoTextFrame()
-	self.frame.targetInfo = self:FontFactory(self.moduleSettings.fontSize, self.frame, self.frame.targetInfo)
-
---	self.frame.targetInfo:SetWidth(self.width)
-	self.frame.targetInfo:SetHeight(14)
-	self.frame.targetInfo:SetJustifyH("CENTER")
-	self.frame.targetInfo:SetJustifyV("TOP")
-
-	self.frame.targetInfo:SetPoint("TOP", self.frame, "TOP", 0, -16)
-	self.frame.targetInfo:Show()
-end
-
-
-function IceTargetInfo.prototype:CreateGuildTextFrame()
-	self.frame.targetGuild = self:FontFactory(self.moduleSettings.fontSize, self.frame, self.frame.targetGuild)
-
---	self.frame.targetInfo:SetWidth(self.width)
-	self.frame.targetGuild:SetHeight(14)
-	self.frame.targetGuild:SetJustifyH("CENTER")
-	self.frame.targetGuild:SetJustifyV("TOP")
-
-	self.frame.targetGuild:SetPoint("TOP", self.frame, "BOTTOM", 0, 0)
-	self.frame.targetGuild:Show()
-end
-
-
-function IceTargetInfo.prototype:CreateExtraTextFrame()
-	self.frame.targetExtra = self:FontFactory(self.moduleSettings.fontSize, self.frame, self.frame.targetExtra)
-
-	self.frame.targetExtra:SetHeight(14)
-	self.frame.targetExtra:SetJustifyH("CENTER")
-	self.frame.targetExtra:SetJustifyV("TOP")
-
-	self.frame.targetExtra:SetPoint("TOP", self.frame, "BOTTOM", 0, -16)
-	self.frame.targetExtra:Show()
-end
-
-
-function IceTargetInfo.prototype:CreateRaidIconFrame()
-	if (not self.frame.raidIcon) then
-		self.frame.raidIcon = CreateFrame("Frame", nil, self.frame)
-	end
-
-	if (not self.frame.raidIcon.icon) then
-		self.frame.raidIcon.icon = self.frame.raidIcon:CreateTexture(nil, "BACKGROUND")
-		self.frame.raidIcon.icon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
-	end
-
-	self.frame.raidIcon:SetPoint("BOTTOM", self.frame, "TOP", 0, 1)
-	self.frame.raidIcon:SetWidth(16)
-	self.frame.raidIcon:SetHeight(16)
-
-	self.frame.raidIcon.icon:SetAllPoints(self.frame.raidIcon)
-	SetRaidTargetIconTexture(self.frame.raidIcon.icon, 0)
-	self.frame.raidIcon:Hide()
-end
-
-
-function IceTargetInfo.prototype:CreateBuffFrame(redraw)
-	if (not self.frame.buffFrame) then
-		self.frame.buffFrame = CreateFrame("Frame", nil, self.frame)
-
-		self.frame.buffFrame:SetFrameStrata("BACKGROUND")
-		self.frame.buffFrame:SetWidth(1)
-		self.frame.buffFrame:SetHeight(1)
-
-		self.frame.buffFrame:Show()
-
-		self.frame.buffFrame.buffs = {}
-	end
-
-	self.frame.buffFrame:ClearAllPoints()
-	self.frame.buffFrame:SetPoint("TOPRIGHT", self.frame, self.moduleSettings.buffAnchorTo, self.moduleSettings.buffOffset['x'], self.moduleSettings.buffOffset['y'])
+	self.frame[auraFrame]:ClearAllPoints()
+	self.frame[auraFrame]:SetPoint(point, self.frame, self.moduleSettings.auras[aura].anchorTo, self.moduleSettings.auras[aura].offset['x'], self.moduleSettings.auras[aura].offset['y'])
 
 	if (not redraw) then
-		local direction = self.moduleSettings.buffGrowDirection == "Left" and -1 or 1
-		self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, direction, self.frame.buffFrame.buffs, "buff")
+		local direction = self.moduleSettings.auras[aura].growDirection == "Left" and -1 or 1
+		self.frame[auraFrame].buffs = self:CreateIconFrames(self.frame[auraFrame], direction, self.frame[auraFrame].buffs, "buff")
 	end
 
-	if self.moduleSettings.showBuffs then
-		self.frame.buffFrame:Show()
+	if self.moduleSettings.auras[aura].show then
+		self.frame[auraFrame]:Show()
 	else
-		self.frame.buffFrame:Hide()
+		self.frame[auraFrame]:Hide()
 	end
 end
-
-
-function IceTargetInfo.prototype:CreateDebuffFrame(redraw)
-	if (not self.frame.debuffFrame) then
-		self.frame.debuffFrame = CreateFrame("Frame", nil, self.frame)
-
-		self.frame.debuffFrame:SetFrameStrata("BACKGROUND")
-		self.frame.debuffFrame:SetWidth(1)
-		self.frame.debuffFrame:SetHeight(1)
-
-		self.frame.debuffFrame:Show()
-
-		self.frame.debuffFrame.buffs = {}
-	end
-
-	self.frame.debuffFrame:ClearAllPoints()
-	self.frame.debuffFrame:SetPoint("TOPLEFT", self.frame, self.moduleSettings.debuffAnchorTo, self.moduleSettings.debuffOffset['x'], self.moduleSettings.debuffOffset['y'])
-
-	if (not redraw) then
-		local direction = self.moduleSettings.debuffGrowDirection == "Left" and -1 or 1
-		self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame, direction, self.frame.debuffFrame.buffs, "debuff")
-	end
-
-	if self.moduleSettings.showDebuffs then
-		self.frame.debuffFrame:Show()
-	else
-		self.frame.debuffFrame:Hide()
-	end
-end
-
 
 function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type, skipSize)
 	local lastX = 0
@@ -1072,38 +1042,42 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 			buffs[i] = CreateFrame("Frame", nil, parent)
 			buffs[i].icon = CreateFrame("Frame", nil, buffs[i])
 			buffs[i].cd = CreateFrame("Cooldown", nil, buffs[i], "CooldownFrameTemplate")
+
+			buffs[i]:SetFrameStrata("BACKGROUND")
+			buffs[i].icon:SetFrameStrata("BACKGROUND")
+
+			buffs[i].cd:SetFrameStrata("BACKGROUND")
+			buffs[i].cd:SetFrameLevel(buffs[i].icon:GetFrameLevel()+1)
+			buffs[i].cd:SetReverse(true)
+			buffs[i].cd:ClearAllPoints()
+			buffs[i].cd:SetAllPoints(buffs[i])
+
+			buffs[i].icon:ClearAllPoints()
+			buffs[i].icon:SetPoint("CENTER", 0, 0)
 		end
 
-		buffs[i]:SetFrameStrata("BACKGROUND")
 		if buffs[i].fromPlayer then
-			buffs[i]:SetWidth(self.moduleSettings.ownBuffSize)
-			buffs[i]:SetHeight(self.moduleSettings.ownBuffSize)
+			buffs[i]:SetWidth(self.moduleSettings.auras["buff"].ownSize)
+			buffs[i]:SetHeight(self.moduleSettings.auras["buff"].ownSize)
 		else
-			buffs[i]:SetWidth(self.moduleSettings.buffSize)
-			buffs[i]:SetHeight(self.moduleSettings.buffSize)
+			buffs[i]:SetWidth(self.moduleSettings.auras["buff"].size)
+			buffs[i]:SetHeight(self.moduleSettings.auras["buff"].size)
 		end
 
-		buffs[i].icon:SetFrameStrata("BACKGROUND")
 		if not skipSize then
 			if buffs[i].fromPlayer then
-				buffs[i].icon:SetWidth(self.moduleSettings.ownBuffSize-2)
-				buffs[i].icon:SetHeight(self.moduleSettings.ownBuffSize-2)
+				buffs[i].icon:SetWidth(self.moduleSettings.auras["buff"].ownSize-2)
+				buffs[i].icon:SetHeight(self.moduleSettings.auras["buff"].ownSize-2)
 			else
-				buffs[i].icon:SetWidth(self.moduleSettings.buffSize-2)
-				buffs[i].icon:SetHeight(self.moduleSettings.buffSize-2)
+				buffs[i].icon:SetWidth(self.moduleSettings.auras["buff"].size-2)
+				buffs[i].icon:SetHeight(self.moduleSettings.auras["buff"].size-2)
 			end
 		end
 
-		buffs[i].cd:SetFrameStrata("BACKGROUND")
-		buffs[i].cd:SetFrameLevel(buffs[i].icon:GetFrameLevel()+1)
-		buffs[i].cd:SetReverse(true)
-		buffs[i].cd:ClearAllPoints()
-		buffs[i].cd:SetAllPoints(buffs[i])
 
-
-		local buffSize = self.moduleSettings.buffSize
+		local buffSize = self.moduleSettings.auras["buff"].size
 		if buffs[i].fromPlayer then
-			buffSize = self.moduleSettings.ownBuffSize
+			buffSize = self.moduleSettings.auras["buff"].ownSize
 		end
 
 		local pos = i % self.moduleSettings.perRow
@@ -1120,7 +1094,7 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 		local x = lastX + lastBuffSize + spaceOffset
 		lastX = x
 		lastBuffSize = (buffSize * direction)
-		local y = math.floor((i-1) / self.moduleSettings.perRow) * math.max(self.moduleSettings.buffSize, self.moduleSettings.ownBuffSize) * -1
+		local y = math.floor((i-1) / self.moduleSettings.perRow) * math.max(self.moduleSettings.auras["buff"].size, self.moduleSettings.auras["buff"].ownSize) * -1
 
 		buffs[i]:ClearAllPoints()
 		if direction < 0 then
@@ -1129,14 +1103,7 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 			buffs[i]:SetPoint("TOPLEFT", x, y)
 		end
 
-
-		buffs[i].icon:ClearAllPoints()
-		buffs[i].icon:SetPoint("CENTER", 0, 0)
-
---		buffs[i]:Show()
---		buffs[i].icon:Show()
-
-		if (not buffs[i].texture) then
+		if not buffs[i].texture then
 			buffs[i].texture = buffs[i]:CreateTexture()
 			buffs[i].texture:ClearAllPoints()
 			buffs[i].texture:SetAllPoints(buffs[i])
@@ -1170,171 +1137,109 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 	return buffs
 end
 
-function IceTargetInfo.prototype:SetBuffSize(buff)
+function IceTargetInfo.prototype:UpdateBuffType(aura)
+	local auraFrame, reaction
+	local filter = false
+
+	if (aura == "buff") then
+		auraFrame = "buffFrame"
+		reaction = "HELPFUL"
+	elseif (aura == "debuff") then
+		auraFrame = "debuffFrame"
+		reaction = "HARMFUL"
+	else
+		error("Invalid buff frame")
+	end
+
+	if (self.moduleSettings.auras[aura].filter == "Always") then
+		filter = true
+	elseif (self.moduleSettings.auras[aura].filter == "In Combat") then
+		if (UnitAffectingCombat("player")) then
+			filter = true
+		end
+	end
+
+	if self.moduleSettings.auras[aura].show then
+		for i = 1, IceCore.BuffLimit do
+			local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
+            local isFromMe = (unitCaster == "player")
+
+			if (icon) then
+				self:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable)
+			else
+				self.frame[auraFrame].buffs[i]:Hide()
+			end
+		end
+	end
+
+	local direction = self.moduleSettings.auras[aura].growDirection == "Left" and -1 or 1
+	self.frame[auraFrame].buffs = self:CreateIconFrames(self.frame[auraFrame], direction, self.frame[auraFrame].buffs, aura, true)
+end
+
+function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, auraType)
+	local hostile = UnitCanAttack("player", self.unit)
+	local zoom = self.moduleSettings.zoom
+	local auraFrame = aura.."Frame"
+
+	if aura == "buff" then
+		if isStealable and self.playerClass == "MAGE" then
+			self.frame[auraFrame].buffs[i].texture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
+			if isFromMe then
+				self.frame[auraFrame].buffs[i].icon:SetWidth(self.moduleSettings.auras[aura].ownSize-8)
+				self.frame[auraFrame].buffs[i].icon:SetHeight(self.moduleSettings.auras[aura].ownSize-8)
+			else
+				self.frame[auraFrame].buffs[i].icon:SetWidth(self.moduleSettings.auras[aura].size-8)
+				self.frame[auraFrame].buffs[i].icon:SetHeight(self.moduleSettings.auras[aura].size-8)
+			end
+		else
+			local alpha = icon and 0.5 or 0
+			self.frame[auraFrame].buffs[i].texture:SetTexture(0, 0, 0, alpha)
+			if isFromMe then
+				self.frame[auraFrame].buffs[i].icon:SetWidth(self.moduleSettings.auras[aura].ownSize-2)
+				self.frame[auraFrame].buffs[i].icon:SetHeight(self.moduleSettings.auras[aura].ownSize-2)
+			else
+				self.frame[auraFrame].buffs[i].icon:SetWidth(self.moduleSettings.auras[aura].size-2)
+				self.frame[auraFrame].buffs[i].icon:SetHeight(self.moduleSettings.auras[aura].size-2)
+			end
+		end
+	elseif aura == "debuff" and (not hostile or not filter or (filter and duration)) then
+		local alpha = icon and 1 or 0
+		self.frame[auraFrame].buffs[i].texture:SetTexture(1, 1, 1, alpha)
+
+		local color = debuffType and DebuffTypeColor[debuffType] or DebuffTypeColor["none"]
+		self.frame[auraFrame].buffs[i].texture:SetVertexColor(color.r, color.g, color.b)
+	end
+
+	-- cooldown frame
+	if (duration and duration > 0 and expirationTime and expirationTime > 0) then
+		local start = expirationTime - duration
+
+		self.frame[auraFrame].buffs[i].cd:SetCooldown(start, duration)
+		self.frame[auraFrame].buffs[i].cd:Show()
+	else
+		self.frame[auraFrame].buffs[i].cd:Hide()
+	end
+
+	self.frame[auraFrame].buffs[i].type = auraType or aura
+	self.frame[auraFrame].buffs[i].fromPlayer = isFromMe
+
+	self.frame[auraFrame].buffs[i].icon.texture:SetTexture(icon)
+	self.frame[auraFrame].buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
+	self.frame[auraFrame].buffs[i].icon.stack:SetText((count and (count > 1)) and count or nil)
+
+	self.frame[auraFrame].buffs[i]:Show()
 end
 
 function IceTargetInfo.prototype:UpdateBuffs()
-	local zoom = self.moduleSettings.zoom
-	local filterBuffs = false
-	local filterDebuffs = false
-
-	if (self.moduleSettings.filterBuffs == "Always") then
-		filterBuffs = true
-	elseif (self.moduleSettings.filterBuffs == "In Combat") then
-		if (UnitAffectingCombat("player")) then
-			filterBuffs = true
-		end
-	end
-
-	if (self.moduleSettings.filterDebuffs == "Always") then
-		filterDebuffs = true
-	elseif (self.moduleSettings.filterDebuffs == "In Combat") then
-		if (UnitAffectingCombat("player")) then
-			filterDebuffs = true
-		end
-	end
-
-	local hostile = UnitCanAttack("player", self.unit)
-
-
-	if self.moduleSettings.showBuffs then
-		for i = 1, IceCore.BuffLimit do
-			local buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, isFromMe, unitCaster, isStealable;
-			if IceHUD.WowVer >= 30000 then
-				buffName, buffRank, buffTexture, buffApplications, buffType, buffDuration, buffTimeLeft, unitCaster, isStealable
-					= UnitAura(self.unit, i, "HELPFUL" .. (filterBuffs and "|PLAYER" or "")) --UnitBuff(self.unit, i, filterBuffs and not hostile)
-
-				isFromMe = (unitCaster == "player")
-			else
-				buffName, buffRank, buffTexture, buffApplications, buffDuration, buffTimeLeft
-					= UnitBuff(self.unit, i, filterBuffs and not hostile)
-
-				isFromMe = buffDuration and buffTimeLeft
-			end
-
-			if (buffTexture) then
-				self:SetUpBuff(i, buffTexture, buffDuration, buffTimeLeft, isFromMe, buffApplications, "buff", isStealable)
-			else
-				self.frame.buffFrame.buffs[i]:Hide()
-			end
-		end
-	end
-
-	local direction = self.moduleSettings.buffGrowDirection == "Left" and -1 or 1
-	self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, direction, self.frame.buffFrame.buffs, "buff", true)
-
-	if self.moduleSettings.showDebuffs then
-		for i = 1, IceCore.BuffLimit do
-			local buffName, buffRank, buffTexture, buffApplications, debuffDispelType,
-				debuffDuration, debuffTimeLeft, unitCaster = UnitAura(self.unit, i, "HARMFUL" .. (filterDebuffs and "|PLAYER" or "")) --UnitDebuff(self.unit, i, filterDebuffs and not hostile)
-
-			local isFromMe = (unitCaster == "player")
-
-			if (buffTexture and (not hostile or not filterDebuffs or (filterDebuffs and debuffDuration))) then
-				local alpha = buffTexture and 1 or 0
-				self.frame.debuffFrame.buffs[i].texture:SetTexture(1, 1, 1, alpha)
-
-				local color = debuffDispelType and DebuffTypeColor[debuffDispelType] or DebuffTypeColor["none"]
-				self.frame.debuffFrame.buffs[i].texture:SetVertexColor(color.r, color.g, color.b)
-
-				-- cooldown frame
-				if (debuffDuration and debuffDuration > 0 and
-					debuffTimeLeft and debuffTimeLeft > 0) then
-					local start
-					if IceHUD.WowVer >= 30000 then
-						-- in wotlk, the "bufftimeleft" parameter is actually the ending time for the buff
-						start = debuffTimeLeft - debuffDuration
-					else
-						start = GetTime() - debuffDuration + debuffTimeLeft
-					end
-					self.frame.debuffFrame.buffs[i].cd:SetCooldown(start, debuffDuration)
-					self.frame.debuffFrame.buffs[i].cd:Show()
-				else
-					self.frame.debuffFrame.buffs[i].cd:Hide()
-				end
-
-				self.frame.debuffFrame.buffs[i].type = "debuff"
-				self.frame.debuffFrame.buffs[i].fromPlayer = isFromMe
-
-				self.frame.debuffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
-				self.frame.debuffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
-
-				if (buffApplications and (buffApplications > 1)) then
-					self.frame.debuffFrame.buffs[i].icon.stack:SetText(buffApplications)
-				else
-					self.frame.debuffFrame.buffs[i].icon.stack:SetText(nil)
-				end
-
-
-				self.frame.debuffFrame.buffs[i]:Show()
-			else
-				self.frame.debuffFrame.buffs[i]:Hide()
-			end
-		end
-	end
-
-	local direction = self.moduleSettings.debuffGrowDirection == "Left" and -1 or 1
-	self.frame.debuffFrame.buffs = self:CreateIconFrames(self.frame.debuffFrame, direction, self.frame.debuffFrame.buffs, "debuff")
+	self:UpdateBuffType("buff")
+	self:UpdateBuffType("debuff")
 end
-
-
-function IceTargetInfo.prototype:SetUpBuff(i, buffTexture, buffDuration, buffTimeLeft, isFromMe, buffApplications, buffType, isStealable)
-	local zoom = self.moduleSettings.zoom
-
-	if isStealable and self.playerClass == "MAGE" then
-		self.frame.buffFrame.buffs[i].texture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
-		if isFromMe then
-			self.frame.buffFrame.buffs[i].icon:SetWidth(self.moduleSettings.ownBuffSize-8)
-			self.frame.buffFrame.buffs[i].icon:SetHeight(self.moduleSettings.ownBuffSize-8)
-		else
-			self.frame.buffFrame.buffs[i].icon:SetWidth(self.moduleSettings.buffSize-8)
-			self.frame.buffFrame.buffs[i].icon:SetHeight(self.moduleSettings.buffSize-8)
-		end
-	else
-		local alpha = buffTexture and 0.5 or 0
-		self.frame.buffFrame.buffs[i].texture:SetTexture(0, 0, 0, alpha)
-		if isFromMe then
-			self.frame.buffFrame.buffs[i].icon:SetWidth(self.moduleSettings.ownBuffSize-2)
-			self.frame.buffFrame.buffs[i].icon:SetHeight(self.moduleSettings.ownBuffSize-2)
-		else
-			self.frame.buffFrame.buffs[i].icon:SetWidth(self.moduleSettings.buffSize-2)
-			self.frame.buffFrame.buffs[i].icon:SetHeight(self.moduleSettings.buffSize-2)
-		end
-	end
-
-	self.frame.buffFrame.buffs[i].type = buffType
-	self.frame.buffFrame.buffs[i].icon.texture:SetTexture(buffTexture)
-	self.frame.buffFrame.buffs[i].icon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
-
-	-- cooldown frame
-	if (buffDuration and buffDuration > 0 and
-		buffTimeLeft and buffTimeLeft > 0) then
-		local start = buffTimeLeft - buffDuration
-		self.frame.buffFrame.buffs[i].cd:SetCooldown(start, buffDuration)
-		self.frame.buffFrame.buffs[i].cd:Show()
-	else
-		self.frame.buffFrame.buffs[i].cd:Hide()
-	end
-
-	self.frame.buffFrame.buffs[i].fromPlayer = isFromMe
-
-	if (buffApplications and (buffApplications > 1)) then
-		self.frame.buffFrame.buffs[i].icon.stack:SetText(buffApplications)
-	else
-		self.frame.buffFrame.buffs[i].icon.stack:SetText(nil)
-	end
-
-	self.frame.buffFrame.buffs[i]:Show()
-end
-
-
 
 function IceTargetInfo.prototype:AuraChanged(event, unit)
 	if (unit == self.unit) then
 		self:UpdateBuffs()
 	end
 end
-
 
 function IceTargetInfo.prototype:UpdateRaidTargetIcon()
 	if not (UnitExists(self.unit)) then
@@ -1546,32 +1451,11 @@ function IceTargetInfo.prototype:BuffOnEnter(this)
 		return
 	end
 
-	local type = nil
-	for i = 1, IceCore.BuffLimit do
-		if self.frame.buffFrame.buffs[i] and self.frame.buffFrame.buffs[i] == this then
-			type = self.frame.buffFrame.buffs[i].type
-			break
-		end
-	end
-
-	if not type then
-		for i = 1, IceCore.BuffLimit do
-			if self.frame.debuffFrame.buffs[i] and self.frame.debuffFrame.buffs[i] == this then
-				type = self.frame.debuffFrame.buffs[i].type
-				break
-			end
-		end
-	end
-
-	if not type then
-		return
-	end
-
 	GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT")
-	if (type == "buff") then
+	if this.type == "buff" then
 		GameTooltip:SetUnitBuff(self.unit, this.id)
-	elseif (type == "mh" or type == "oh") then
-		GameTooltip:SetInventoryItem("player", type == "mh" and GetInventorySlotInfo("MainHandSlot") or GetInventorySlotInfo("SecondaryHandSlot"))
+	elseif this.type == "mh" or this.type == "oh" then
+		GameTooltip:SetInventoryItem("player", this.type == "mh" and GetInventorySlotInfo("MainHandSlot") or GetInventorySlotInfo("SecondaryHandSlot"))
 	else
 		GameTooltip:SetUnitDebuff(self.unit, this.id)
 	end
