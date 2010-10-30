@@ -333,7 +333,19 @@ function Totems.prototype:CreateTotem(i, name)
 		self.frame.graphical[i]:SetPoint("TOPLEFT", 0, -1 * ((i-1) * (self.totemSize-(MAX_TOTEMS - 1)) + (i-1) + ((i-1) * self.moduleSettings.totemGap)))
 	end
 
-
+	if not self.graphicalOnEnter then
+		self.graphicalOnEnter = function(button) GameTooltip:SetOwner(button); GameTooltip:SetTotem(button.slot) end
+	end
+	if not self.graphicalOnLeave then
+		self.graphicalOnLeave = function() GameTooltip:Hide() end
+	end
+	if not self.graphicalOnMouseUp then
+		self.graphicalOnMouseUp = function (self, mouseButton)
+			if mouseButton == "RightButton" then
+				DestroyTotem(self.slot)
+			end
+		end
+	end
 
 	self.frame.graphical[i].cd:SetFrameStrata("BACKGROUND")
 	self.frame.graphical[i].cd:SetFrameLevel(self.frame.graphical[i]:GetFrameLevel()+1)
@@ -356,15 +368,11 @@ function Totems.prototype:CreateTotem(i, name)
 
 	self.frame.graphical[i]:EnableMouse(true)
 	self.frame.graphical[i].slot = i;
-	self.frame.graphical[i]:SetScript("OnEnter", function(button) GameTooltip:SetOwner(button); GameTooltip:SetTotem(button.slot) end)
-	self.frame.graphical[i]:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	self.frame.graphical[i]:SetScript("OnEnter", self.graphicalOnEnter)
+	self.frame.graphical[i]:SetScript("OnLeave", self.graphicalOnLeave)
 	-- it looks like HookScript will continue to add handlers every time instead of replacing them like SetScript
 	if (bWasNewFrame) then
-		self.frame.graphical[i]:HookScript("OnMouseUp", function (self, mouseButton)
-			if ( mouseButton == "RightButton" ) then
-				DestroyTotem(self.slot);
-			end
-		end)
+		self.frame.graphical[i]:HookScript("OnMouseUp", self.graphicalOnMouseUp)
 	end
 
 end
