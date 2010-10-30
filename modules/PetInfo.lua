@@ -16,17 +16,5 @@ function PetInfo.prototype:GetDefaultSettings()
 	return settings
 end
 
-local function IcePetDropdown()
-	ToggleDropDownMenu(1, nil, PetFrameDropDown, "cursor")
-end
-
-function PetInfo.prototype:CreateFrame(redraw)
-	PetInfo.super.prototype.CreateFrame(self, redraw)
-
-	if not self.frame.menu or self.frame.menu ~= IcePetDropdown then
-		self.frame.menu = IcePetDropdown
-	end
-end
-
 -- Load us up
 IceHUD.PetInfo = PetInfo:new()

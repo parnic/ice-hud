@@ -51,18 +51,6 @@ function PlayerInfo.prototype:GetOptions()
 	return opts
 end
 
-local function IcePlayerDropdown()
-	ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "cursor")
-end
-
-function PlayerInfo.prototype:CreateFrame(redraw)
-	PlayerInfo.super.prototype.CreateFrame(self, redraw)
-
-	if not self.frame.menu or self.frame.menu ~= IcePlayerDropdown then
-		self.frame.menu = IcePlayerDropdown
-	end
-end
-
 StaticPopupDialogs["ICEHUD_BUFF_DISMISS_UNAVAILABLE"] =
 {
 	text = "Sorry, but there is currently no way for custom mods to cancel buffs. This will be fixed whenever Blizzard fixes the API.",

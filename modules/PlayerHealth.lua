@@ -855,7 +855,8 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 	end
 
 	self.frame.button.menu = function()
-		ToggleDropDownMenu(1, nil, PlayerFrameDropDown, "cursor")
+		IceHUD.DropdownUnit = self.unit
+		ToggleDropDownMenu(1, nil, IceHUD_UnitFrame_DropDown, "cursor")
 	end
 
 	self:EnableClickTargeting(self.moduleSettings.allowMouseInteraction)

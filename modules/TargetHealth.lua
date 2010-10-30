@@ -702,7 +702,8 @@ function IceTargetHealth.prototype:CreateBackground(redraw)
 		end
 
 		self.frame.button.menu = function()
-			ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor");
+			IceHUD.DropdownUnit = self.unit
+			ToggleDropDownMenu(1, nil, IceHUD_UnitFrame_DropDown, "cursor")
 		end
 	end
 end

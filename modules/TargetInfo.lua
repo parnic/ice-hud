@@ -959,7 +959,8 @@ do 	-- OVERRIDE: IceTargetInfo.prototype:CreateFrame(redraw)
 
 		if not self.frame.menu then
 			self.frame.menu = function()
-				ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor")
+				IceHUD.DropdownUnit = self.unit
+				ToggleDropDownMenu(1, nil, IceHUD_UnitFrame_DropDown, "cursor")
 			end
 		end
 

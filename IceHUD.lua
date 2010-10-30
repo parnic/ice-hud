@@ -1296,3 +1296,122 @@ function IceHUD:CreateCustomModuleAndNotify(moduleKey, settings)
 		StaticPopup_Show(popupMsg)
 	end
 end
+
+local BLACKLISTED_UNIT_MENU_OPTIONS = {
+	SET_FOCUS = "ICEHUD_SET_FOCUS",
+	CLEAR_FOCUS = "ICEHUD_CLEAR_FOCUS",
+	LOCK_FOCUS_FRAME = true,
+	UNLOCK_FOCUS_FRAME = true,
+}
+
+UnitPopupButtons["ICEHUD_SET_FOCUS"] = {
+	text = L["Type %s to set focus"]:format(SLASH_FOCUS1),
+	tooltipText = L["Blizzard currently does not provide a proper way to right-click focus with custom unit frames."],
+	dist = 0,
+}
+
+UnitPopupButtons["ICEHUD_CLEAR_FOCUS"] = {
+	text = L["Type %s to clear focus"]:format(SLASH_CLEARFOCUS1),
+	tooltipText = L["Blizzard currently does not provide a proper way to right-click focus with custom unit frames."],
+	dist = 0,
+}
+
+local munged_unit_menus = {}
+local function munge_unit_menu(menu)
+	local result = munged_unit_menus[menu]
+	if result then
+		return result
+	end
+
+	if not UnitPopupMenus then
+		munged_unit_menus[menu] = menu
+		return menu
+	end
+
+	local data = UnitPopupMenus[menu]
+	if not data then
+		munged_unit_menus[menu] = menu
+		return menu
+	end
+
+	local found = false
+	for _, v in ipairs(data) do
+		if BLACKLISTED_UNIT_MENU_OPTIONS[v] then
+			found = true
+			break
+		end
+	end
+
+	if not found then
+		-- nothing to remove or add, we're all fine here.
+		munged_unit_menus[menu] = menu
+		return menu
+	end
+
+	local new_data = {}
+	for _, v in ipairs(data) do
+		local blacklisted = BLACKLISTED_UNIT_MENU_OPTIONS[v]
+		if not blacklisted then
+			new_data[#new_data+1] = v
+		elseif blacklisted ~= true then
+			new_data[#new_data+1] = blacklisted
+		end
+	end
+	local new_menu_name = "ICEHUD_" .. menu
+
+	UnitPopupMenus[new_menu_name] = new_data
+	munged_unit_menus[menu] = new_menu_name
+	return new_menu_name
+end
+IceHUD.MungeUnitMenu = munge_unit_menu
+
+local function figure_unit_menu(unit)
+	if unit == "focus" then
+		return "FOCUS"
+	end
+
+	if UnitIsUnit(unit, "player") then
+		return "SELF"
+	end
+
+	if UnitIsUnit(unit, "vehicle") then
+		-- NOTE: vehicle check must come before pet check for accuracy's sake because
+		-- a vehicle may also be considered your pet
+		return "VEHICLE"
+	end
+
+	if UnitIsUnit(unit, "pet") then
+		return "PET"
+	end
+
+	if not UnitIsPlayer(unit) then
+		return "TARGET"
+	end
+
+	local id = UnitInRaid(unit)
+	if id then
+		return "RAID_PLAYER", id
+	end
+
+	if UnitInParty(unit) then
+		return "PARTY"
+	end
+
+	return "PLAYER"
+end
+
+local IceHUD_UnitFrame_DropDown = CreateFrame("Frame", "IceHUD_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
+UnitPopupFrames[#UnitPopupFrames+1] = "IceHUD_UnitFrame_DropDown"
+
+IceHUD.DropdownUnit = nil
+UIDropDownMenu_Initialize(IceHUD_UnitFrame_DropDown, function()
+	if not IceHUD.DropdownUnit then
+		return
+	end
+
+	local menu, id = figure_unit_menu(IceHUD.DropdownUnit)
+	if menu then
+		menu = IceHUD.MungeUnitMenu(menu)
+		UnitPopup_ShowMenu(IceHUD_UnitFrame_DropDown, menu, IceHUD.DropdownUnit, nil, id)
+	end
+end, "MENU", nil)
