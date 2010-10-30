@@ -189,6 +189,11 @@ function PlayerMana.prototype:Redraw()
 	end
 end
 
+-- CheckCombat is hooked down in IceElement as PLAYER_ENTERING_WORLD, so hijack it for a mana check
+function PlayerMana.prototype:CheckCombat()
+	PlayerMana.super.prototype.CheckCombat(self)
+	self:ManaType(nil, self.unit)
+end
 
 function PlayerMana.prototype:ManaType(event, unit)
 	if (unit ~= self.unit) then
