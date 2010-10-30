@@ -1162,7 +1162,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 	if self.moduleSettings.auras[aura].show then
 		for i = 1, IceCore.BuffLimit do
 			local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
-            local isFromMe = (unitCaster == "player")
+			local isFromMe = (unitCaster == "player")
 
 			if (icon) then
 				self:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable)
