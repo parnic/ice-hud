@@ -16,6 +16,7 @@ function HolyPower.prototype:init()
 	self.numericColor = "HolyPowerNumeric"
 	self.unitPower = SPELL_POWER_HOLY_POWER
 	self.minLevel = PALADINPOWERBAR_SHOW_LEVEL
+	self.bTreatEmptyAsFull = true
 end
 
 function HolyPower.prototype:GetOptions()
@@ -51,3 +52,4 @@ local _, unitClass = UnitClass("player")
 if (unitClass == "PALADIN" and IceHUD.WowVer >= 40000) then
 	IceHUD.HolyPower = HolyPower:new()
 end
+

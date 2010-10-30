@@ -370,6 +370,8 @@ function IceClassPowerCounter.prototype:DisplayCounter()
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
 	end
+
+	self:UpdateRunePower()
 end
 
 function IceClassPowerCounter.prototype:Disable(core)
@@ -427,6 +429,7 @@ function IceClassPowerCounter.prototype:UpdateRunePower()
 	end
 
 	self.lastNumReady = numReady
+	self:UpdateAlpha()
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
@@ -645,3 +648,12 @@ end
 function IceClassPowerCounter.prototype:HideBlizz()
 	assert(true, "Must override HideBlizz in child classes.")
 end
+
+function IceClassPowerCounter.prototype:UseTargetAlpha()
+	if self.bTreatEmptyAsFull then
+		return self.lastNumReady > 0
+	else
+		return self.lastNumReady < self.numRunes
+	end
+end
+
