@@ -152,6 +152,11 @@ function PlayerMana.prototype:SetupOnUpdate(enable)
 	end
 end
 
+function PlayerMana.prototype:OnShow()
+	if not self:IsFull(self.CurrScale) then
+		self:SetupOnUpdate(true)
+	end
+end
 
 function PlayerMana.prototype:EnteringVehicle(event, unit, arg2)
 	if (self.unit == "player" and IceHUD:ShouldSwapToVehicle(unit, arg2)) then

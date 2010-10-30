@@ -111,6 +111,9 @@ function IceBarElement.prototype:OnHide()
 end
 
 function IceBarElement.prototype:OnShow()
+	if not self:IsFull(self.CurrScale) then
+		self:ConditionalSetupUpdate()
+	end
 end
 
 function IceBarElement.prototype:Disable(core)
