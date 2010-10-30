@@ -1174,7 +1174,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 	end
 
 	local direction = self.moduleSettings.auras[aura].growDirection == "Left" and -1 or 1
-	self.frame[auraFrame].buffs = self:CreateIconFrames(self.frame[auraFrame], direction, self.frame[auraFrame].buffs, aura, true)
+	self.frame[auraFrame].buffs = self:CreateIconFrames(self.frame[auraFrame], direction, self.frame[auraFrame].buffs, aura)
 end
 
 function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, auraType)
