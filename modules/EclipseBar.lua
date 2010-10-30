@@ -107,7 +107,7 @@ function EclipseBar.prototype:CreateSolarBar()
 		self.solarBar = CreateFrame("Frame", nil, self.frame)
 	end
 
-	local solarTop = not IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse)
+	local solarTop = not IceHUD:xor(self.moduleSettings.reverse, (self.moduleSettings.inverse == "INVERSE"))
 
 	self.solarBar:SetFrameStrata("BACKGROUND")
 	self.solarBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))

@@ -306,7 +306,7 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 	if (self.moduleSettings.reverse) then
             scale = 1 - scale
 	end
-	if (self.moduleSettings.inverse) then
+	if (self.moduleSettings.inverse == "INVERSE") then
 		min_y = 0
 		max_y = scale
 	else

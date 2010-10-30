@@ -406,7 +406,7 @@ function CastBar.prototype:SpellCastStart(event, unit, spell, rank)
 
 	self.lagBar:SetFrameStrata("BACKGROUND")
 	self.lagBar:ClearAllPoints()
-	if not IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse) then
+	if not IceHUD:xor(self.moduleSettings.reverse, (self.moduleSettings.inverse == "INVERSE")) then
 		self.lagBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
 	else
 		self.lagBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
@@ -423,7 +423,7 @@ function CastBar.prototype:SpellCastStart(event, unit, spell, rank)
 
 	local min_y = 0
 	local max_y = pos
-	if IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse) then
+	if IceHUD:xor(self.moduleSettings.reverse, (self.moduleSettings.inverse == "INVERSE")) then
 		min_y = 1-pos
 		max_y = 1
 	end
@@ -455,7 +455,7 @@ function CastBar.prototype:SpellCastChannelStart(event, unit)
 		return
 	end
 
-	local lagTop = not IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse)
+	local lagTop = not IceHUD:xor(self.moduleSettings.reverse, (self.moduleSettings.inverse == "INVERSE"))
 	if self.moduleSettings.reverseChannel then
 		lagTop = not lagTop
 	end

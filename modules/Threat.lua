@@ -200,7 +200,7 @@ function IceThreat.prototype:CreateAggroBar()
 		self.aggroBar = CreateFrame("Frame", nil, self.frame)
 	end
 
-	local aggroTop = not IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse)
+	local aggroTop = not IceHUD:xor(self.moduleSettings.reverse, (self.moduleSettings.inverse == "INVERSE"))
 
 	self.aggroBar:SetFrameStrata("BACKGROUND")
 	self.aggroBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
@@ -373,7 +373,7 @@ function IceThreat.prototype:Update(unit)
 		self.aggroBarMulti = rangeMulti
 
 		local pos = IceHUD:Clamp(1 - (1 / rangeMulti), 0, 1)
-		local fromTop = not IceHUD:xor(self.moduleSettings.reverse, self.moduleSettings.inverse)
+		local fromTop = not IceHUD:xor(self.moduleSettings.reverse, (self.moduleSettings.inverse == "INVERSE"))
 
 		local min_y = 0
 		local max_y = pos
@@ -414,7 +414,7 @@ function IceThreat.prototype:UpdateSecondHighestThreatBar(secondHighestThreat, t
 		if (self.moduleSettings.reverse) then
             pos = 1 - pos
 		end
-		if (self.moduleSettings.inverse) then
+		if (self.moduleSettings.inverse == "INVERSE") then
 			min_y = 0
 			max_y = pos
 		else
