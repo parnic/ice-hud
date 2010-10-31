@@ -1030,6 +1030,8 @@ end
 function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type, skipSize)
 	local lastX = 0
 	local lastBuffSize = 0
+	local lastY = 0
+	local largestHeightThisRow = 0
 
 	if not self.MyOnEnterBuffFunc then
 		self.MyOnEnterBuffFunc = function(this) self:BuffOnEnter(this) end
@@ -1075,16 +1077,24 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 			end
 		end
 
-
-		local buffSize = self.moduleSettings.auras["buff"].size
-		if buffs[i].fromPlayer then
-			buffSize = self.moduleSettings.auras["buff"].ownSize
-		end
-
 		local pos = i % self.moduleSettings.perRow
 		if pos == 1 or self.moduleSettings.perRow == 1 then
 			lastX = 0
 			lastBuffSize = 0
+			lastY = lastY + largestHeightThisRow
+			largestHeightThisRow = 0
+		end
+
+		local buffSize = self.moduleSettings.auras["buff"].size
+		if buffSize > largestHeightThisRow then
+			largestHeightThisRow = buffSize
+		end
+		if buffs[i].fromPlayer then
+			buffSize = self.moduleSettings.auras["buff"].ownSize
+
+			if buffSize > largestHeightThisRow then
+				largestHeightThisRow = buffSize
+			end
 		end
 
 		local spaceOffset = ((pos == 1 or self.moduleSettings.perRow == 1) and 0 or self.moduleSettings.spaceBetweenBuffs)
@@ -1095,7 +1105,7 @@ function IceTargetInfo.prototype:CreateIconFrames(parent, direction, buffs, type
 		local x = lastX + lastBuffSize + spaceOffset
 		lastX = x
 		lastBuffSize = (buffSize * direction)
-		local y = math.floor((i-1) / self.moduleSettings.perRow) * math.max(self.moduleSettings.auras["buff"].size, self.moduleSettings.auras["buff"].ownSize) * -1
+		local y = lastY * -1
 
 		buffs[i]:ClearAllPoints()
 		if direction < 0 then
@@ -1165,7 +1175,14 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 			local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
 			local isFromMe = (unitCaster == "player")
 
-			if (icon) then
+			if not icon and IceHUD.IceCore:IsInConfigMode() and UnitExists(self.unit) then
+				icon = [[Interface\Icons\Spell_Frost_Frost]]
+				duration = 60
+				expirationTime = GetTime() + 59
+				count = 1
+			end
+
+			if icon then
 				self:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable)
 			else
 				self.frame[auraFrame].buffs[i]:Hide()
