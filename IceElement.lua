@@ -381,12 +381,9 @@ function IceElement.prototype:FontFactory(size, frame, font, flags)
 		fontString = font
 	end
 
-	local fontFace = SML:Fetch('font', self.settings.fontFamily)
-	if not fontFace then
-		fontFace = "Fonts\\FRIZQT__.TTF"
+	if not fontString:SetFont(SML:Fetch('font', self.settings.fontFamily), size, flags) then
+		fontString:SetFont("Fonts\\FRIZQT__.TTF", size, flags)
 	end
-
-	fontString:SetFont(fontFace, size, flags)
 
 	if not (flags) then
 		fontString:SetShadowColor(0, 0, 0, 1)
