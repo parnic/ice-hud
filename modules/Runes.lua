@@ -400,11 +400,22 @@ function Runes.prototype:ShowBlizz()
 	end
 end
 
+local function hook_playerframe()
+	hooksecurefunc("PlayerFrame_HideVehicleTexture",function()
+		if IceHUD.Runes.moduleSettings.hideBlizz then
+			IceHUD.Runes:HideBlizz()
+		end
+	end)
+	hook_playerframe = nil
+end
 
 function Runes.prototype:HideBlizz()
 	RuneFrame:Hide()
-
 	RuneFrame:UnregisterAllEvents()
+
+	if hook_playerframe then
+		hook_playerframe()
+	end
 end
 
 function Runes.prototype:TargetChanged()
