@@ -56,8 +56,6 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["PartyRoleIconOffset"] = {x=90, y=-59}
 	settings["PartyRoleIconScale"] = 0.9
 
-	settings["bAllowExpand"] = false
-
 	return settings
 end
 
@@ -865,34 +863,9 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 end
 
 function PlayerHealth.prototype:CreateHealBar()
-	if not self.healFrame then
-		self.healFrame = CreateFrame("Frame", nil, self.frame)
-	end
-
-	self.healFrame:SetFrameStrata("LOW")
-	self.healFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
-	self.healFrame:SetHeight(self.settings.barHeight)
-	self.healFrame:ClearAllPoints()
-	if self.moduleSettings.reverse then
-		self.healFrame:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
-	else
-		self.healFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
-	end
-
-	if not self.healFrame.bar then
-		self.healFrame.bar = self.healFrame:CreateTexture(nil, "BACKGROUND")
-	end
-
-	self.healFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	self.healFrame.bar:SetAllPoints(self.healFrame)
+	self.healFrame = self:BarFactory(self.healFrame, "LOW","BACKGROUND")
 
 	self.healFrame.bar:SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
-
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.healFrame.bar:SetTexCoord(1, 0, 0, 1)
-	else
-		self.healFrame.bar:SetTexCoord(0, 1, 0, 1)
-	end
 
 	self:UpdateBar(1, "undef")
 
@@ -1221,38 +1194,21 @@ function PlayerHealth.prototype:Update(unit)
 
 	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
 	if self.moduleSettings.showIncomingHeals and self.healFrame and self.healFrame.bar and incomingHealAmt then
-		local barValue, percent
+		local percent
 
 		if incomingHealAmt > 0 then
 			percent = ((self.health + incomingHealAmt) / self.maxHealth)
-			barValue = 1-percent
+			if self.moduleSettings.reverse then
+				percent = 1 - percent
+				-- Rokiyo: I'm thinking the frama strata should also to be set to medium if we're in reverse.
+			end
 		else
-			barValue = 1
 			percent = 0
 		end
 
-		barValue = IceHUD:Clamp(barValue, 0, 1)
 		percent = IceHUD:Clamp(percent, 0, 1)
 
-		local min_y = barValue
-		local max_y = 1
-		if self.moduleSettings.reverse then
-			min_y = 0
-			max_y = 1-barValue
-		end
-
-		if (self.moduleSettings.side == IceCore.Side.Left) then
-			self.healFrame.bar:SetTexCoord(1, 0, min_y, max_y)
-		else
-			self.healFrame.bar:SetTexCoord(0, 1, min_y, max_y)
-		end
-		self.healFrame:SetHeight(self.settings.barHeight * percent)
-
-		if percent == 0 then
-			self.healFrame.bar:Hide()
-		else
-			self.healFrame.bar:Show()
-		end
+		self:SetBarCoord(self.healFrame, percent)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then

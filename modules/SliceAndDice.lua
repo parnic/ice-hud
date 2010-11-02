@@ -140,22 +140,11 @@ function SliceAndDice.prototype:CreateFrame()
 end
 
 function SliceAndDice.prototype:CreateDurationBar()
-	if not self.durationFrame then
-		self.durationFrame = CreateFrame("Frame", nil, self.frame)
-		self.CurrScale = 0
-	end
+	self.durationFrame = self:BarFactory(self.durationFrame, "BACKGROUND","ARTWORK")
 
-	self.durationFrame:SetFrameStrata("BACKGROUND")
-	self:SetBarFramePoints(self.durationFrame)
-	self.durationFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
-	self.durationFrame:SetHeight(self.settings.barHeight)
+	-- Rokiyo: Do we need to call this here?
+	self.CurrScale = 0
 
-	if not self.durationFrame.bar then
-		self.durationFrame.bar = self.durationFrame:CreateTexture(nil, "LOW")
-	end
-
-	self.durationFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	self.durationFrame.bar:SetAllPoints(self.durationFrame)
 	self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.alpha * self.moduleSettings.durationAlpha))
 	self.durationFrame.bar:SetHeight(0)
 
@@ -306,6 +295,8 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 	if (self.moduleSettings.reverse) then
             scale = 1 - scale
 	end
+
+	local min_y, max_y
 	if (self.moduleSettings.inverse == "INVERSE") then
 		min_y = 0
 		max_y = scale

@@ -358,19 +358,8 @@ end
 
 
 function CastBar.prototype:CreateLagBar()
-	if not (self.lagBar) then
-		self.lagBar = CreateFrame("Frame", nil, self.frame)
-	end
-
-	self.lagBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
-	self.lagBar:SetHeight(self.settings.barHeight)
-
-	if not (self.lagBar.bar) then
-		self.lagBar.bar = self.lagBar:CreateTexture(nil, "BACKGROUND")
-	end
-
-	self.lagBar.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	self.lagBar.bar:SetAllPoints(self.lagBar)
+	self.lagBar = self:BarFactory(self.lagBar, "LOW","BACKGROUND")
+	self:SetBarCoord(self.lagBar, 0 , true)
 
 	local r, g, b = self:GetColor("CastLag")
 	if (self.settings.backgroundToggle) then
@@ -378,11 +367,6 @@ function CastBar.prototype:CreateLagBar()
 	end
 	self.lagBar.bar:SetVertexColor(r, g, b, self.moduleSettings.lagAlpha)
 
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.lagBar.bar:SetTexCoord(1, 0, 0, 0)
-	else
-		self.lagBar.bar:SetTexCoord(0, 1, 0, 0)
-	end
 	self.lagBar.bar:Hide()
 end
 
@@ -404,43 +388,17 @@ function CastBar.prototype:SpellCastStart(event, unit, spell, rank)
 		return
 	end
 
-	self.lagBar:SetFrameStrata("BACKGROUND")
-	self.lagBar:ClearAllPoints()
-	if not IceHUD:xor(self.moduleSettings.reverse, (self.moduleSettings.inverse == "INVERSE")) then
-		self.lagBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
-	else
-		self.lagBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
-	end
-
-	local now = GetTime()
-	local lag = now - (self.spellCastSent or now)
-
-	local pos = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
+	local scale
 	if self.unit == "vehicle" then
-		pos = 0
-	end
-	local y = self.settings.barHeight - (pos * self.settings.barHeight)
-
-	local min_y = 0
-	local max_y = pos
-	if IceHUD:xor(self.moduleSettings.reverse, (self.moduleSettings.inverse == "INVERSE")) then
-		min_y = 1-pos
-		max_y = 1
-	end
-
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.lagBar.bar:SetTexCoord(1, 0, min_y, max_y)
+		scale = 0
 	else
-		self.lagBar.bar:SetTexCoord(0, 1, min_y, max_y)
+		local now = GetTime()
+		local lag = now - (self.spellCastSent or now)
+		scale = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
 	end
 
-	if pos == 0 then
-		self.lagBar.bar:Hide()
-	else
-		self.lagBar.bar:Show()
-	end
-
-	self.lagBar:SetHeight(self.settings.barHeight * pos)
+	self.lagBar:SetFrameStrata("BACKGROUND")
+	self:SetBarCoord(self.lagBar, scale, true)
 
 	self.spellCastSent = nil
 end
@@ -455,48 +413,19 @@ function CastBar.prototype:SpellCastChannelStart(event, unit)
 		return
 	end
 
-	local lagTop = not IceHUD:xor(self.moduleSettings.reverse, (self.moduleSettings.inverse == "INVERSE"))
-	if self.moduleSettings.reverseChannel then
-		lagTop = not lagTop
+	local scale
+	if self.unit == "vehicle" then
+		scale = 0
+	else
+		local now = GetTime()
+		local lag = now - (self.spellCastSent or now)
+		scale = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
 	end
+
+	local top = not self.moduleSettings.reverseChannel
 
 	self.lagBar:SetFrameStrata("MEDIUM")
-	self.lagBar:ClearAllPoints()
-	if lagTop then
-		self.lagBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
-	else
-		self.lagBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
-	end
-
-	local now = GetTime()
-	local lag = now - (self.spellCastSent or now)
-
-	local pos = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
-	if self.unit == "vehicle" then
-		pos = 0
-	end
-	local y = self.settings.barHeight - (pos * self.settings.barHeight)
-
-	local min_y = 1-pos
-	local max_y = 1
-	if lagTop then
-		min_y = 0
-		max_y = pos
-	end
-
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.lagBar.bar:SetTexCoord(1, 0, min_y, max_y)
-	else
-		self.lagBar.bar:SetTexCoord(0, 1, min_y, max_y)
-	end
-
-	if pos == 0 then
-		self.lagBar.bar:Hide()
-	else
-		self.lagBar.bar:Show()
-	end
-
-	self.lagBar:SetHeight(self.settings.barHeight * pos)
+	self:SetBarCoord(self.lagBar, scale, top)
 
 	self.spellCastSent = nil
 end

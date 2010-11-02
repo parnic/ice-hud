@@ -861,15 +861,19 @@ function IceBarElement.prototype:SetBarVisibility(visible)
 	end
 end
 
-function IceBarElement.prototype:SetBarFramePoints(frame)
+function IceBarElement.prototype:SetBarFramePoints(frame, offset_x, offset_y)
+	local anchor
+	
 	frame:ClearAllPoints()
 	if self.moduleSettings.inverse == "INVERSE" then
-		frame:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
+		anchor = "TOPLEFT"
 	elseif self.moduleSettings.inverse == "EXPAND" then
-		frame:SetPoint("LEFT", self.frame, "LEFT")
+		anchor = "LEFT"
 	else
-		frame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
+		anchor = "BOTTOMLEFT"
 	end
+
+	frame:SetPoint(anchor, self.frame, anchor, offset_x, offset_y)
 end
 
 
@@ -985,27 +989,35 @@ end
 
 -- Creates the actual bar
 function IceBarElement.prototype:CreateBar()
-	if not (self.barFrame) then
-		self.barFrame = CreateFrame("Frame", nil, self.frame)
-	end
+	self.barFrame = self:BarFactory(self.barFrame, "LOW", "ARTWORK")
+	self:SetBarCoord(self.barFrame)
 
-	self.barFrame:SetFrameStrata("LOW")
-	self:SetBarFramePoints(self.barFrame)
-	self.barFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
-	self.barFrame:SetHeight(self.settings.barHeight)
-
-	if not (self.barFrame.bar) then
-		self.barFrame.bar = self.barFrame:CreateTexture(nil, "LOW")
-	end
-
-	self.barFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	self.barFrame.bar:SetBlendMode(self.settings.barBlendMode)
-	self.barFrame.bar:SetAllPoints(self.barFrame)
 	self:SetScale(self.CurrScale, true)
-
 	self:UpdateBar(1, "undef")
 end
 
+-- Returns a barFrame & barFrame.bar
+-- Rokiyo: Currently keeping old behaviour of running through bar creation on every Redraw, but I'm not convinced we need to.
+function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer)
+	if not (barFrame) then
+		barFrame = CreateFrame("Frame", nil, self.frame)
+	end
+
+	barFrame:SetFrameStrata(frameStrata and frameStrata or "LOW")
+	barFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
+	barFrame:SetHeight(self.settings.barHeight)
+	self:SetBarFramePoints(barFrame)
+
+	if not barFrame.bar then
+		barFrame.bar = barFrame:CreateTexture(nil, (textureLayer and textureLayer or "ARTWORK"))
+	end
+
+	barFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+	barFrame.bar:SetAllPoints(barFrame)
+
+	return barFrame
+end
 
 function IceBarElement.prototype:GetMyBarTexture()
 	if self.moduleSettings.shouldUseOverride and self.moduleSettings.barTextureOverride then
@@ -1099,6 +1111,54 @@ function IceBarElement.prototype:Flip(side)
 	end
 end
 
+-- Rokiyo: bar is the only required argument, scale & top are optional
+function IceBarElement.prototype:SetBarCoord(barFrame, scale, top)
+	local min_x, max_x, min_y, max_y
+	if not scale then scale = 0 end
+
+	if (self.moduleSettings.side == IceCore.Side.Left) then
+		min_x = 1
+		max_x = 0
+	else
+		min_x = 0
+		max_x = 1
+	end
+
+	if IceHUD:xor(self.moduleSettings.reverse, top) then
+		local offset_y
+		if self.moduleSettings.inverse == "INVERSE" then
+			min_y = 1 - scale
+			max_y = 1
+			offset_y = 0 - (self.settings.barHeight * (1 - scale))
+		else
+			min_y = 0
+			max_y = scale
+			offset_y = (self.settings.barHeight * (1 - scale))
+		end
+		self:SetBarFramePoints(barFrame, 0, offset_y)
+	else
+		if self.moduleSettings.inverse == "INVERSE" then
+			min_y = 0;
+			max_y = scale;
+		elseif self.moduleSettings.inverse == "EXPAND" then
+			min_y = 0.5 - (scale * 0.5);
+			max_y = 0.5 + (scale * 0.5);
+		else
+		  	min_y = 1-scale;
+			max_y = 1;
+		end
+		self:SetBarFramePoints(barFrame, 0, 0)
+	end
+
+	barFrame.bar:SetTexCoord(min_x, max_x, min_y, max_y)
+	barFrame:SetHeight(self.settings.barHeight * scale)
+
+	if scale == 0 then
+		barFrame.bar:Hide()
+	else
+		barFrame.bar:Show()
+	end
+end
 
 function IceBarElement.prototype:SetScale(inScale, force)
 	local oldScale = self.CurrScale
@@ -1111,29 +1171,8 @@ function IceBarElement.prototype:SetScale(inScale, force)
 		if self.moduleSettings.reverse then
 			scale = 1 - scale
 		end
-		if self.moduleSettings.inverse == "INVERSE" then
-			min_y = 0;
-			max_y = scale;
-		elseif self.moduleSettings.inverse == "EXPAND" then
-		  min_y = 0.5 - (scale * 0.5);
-		  max_y = 0.5 + (scale * 0.5);
-		else
-		  	min_y = 1-scale;
-			max_y = 1;
-		end
-		if (self.moduleSettings.side == IceCore.Side.Left) then
-			self.barFrame.bar:SetTexCoord(1, 0, min_y, max_y)
-		else
-			self.barFrame.bar:SetTexCoord(0, 1, min_y, max_y)
-		end
 
-		self.barFrame:SetHeight(self.settings.barHeight * scale)
-
-		if scale == 0 then
-			self.barFrame.bar:Hide()
-		else
-			self.barFrame.bar:Show()
-		end
+		self:SetBarCoord(self.barFrame, scale)
 	end
 
 	if not self:IsFull(self.CurrScale) or not self:IsFull(inScale) then

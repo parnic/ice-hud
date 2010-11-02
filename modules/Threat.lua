@@ -196,67 +196,32 @@ end
 
 -- create the aggro range indicator bar
 function IceThreat.prototype:CreateAggroBar()
-	if not (self.aggroBar) then
-		self.aggroBar = CreateFrame("Frame", nil, self.frame)
-	end
+	self.aggroBar = self:BarFactory(self.aggroBar, "BACKGROUND","ARTWORK")
 
+	-- Rokiyo: TODO: modify IceBarElement:SetBarFramePoints() to handle this behaviour.
 	local aggroTop = not IceHUD:xor(self.moduleSettings.reverse, (self.moduleSettings.inverse == "INVERSE"))
-
-	self.aggroBar:SetFrameStrata("BACKGROUND")
-	self.aggroBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
-	self.aggroBar:SetHeight(self.settings.barHeight)
-	self.aggroBar:ClearAllPoints()
+    self.aggroBar:ClearAllPoints()
 	if aggroTop then
 		self.aggroBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
 	else
 		self.aggroBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
 	end
-
-	if not (self.aggroBar.bar) then
-		self.aggroBar.bar = self.aggroBar:CreateTexture(nil, "LOW")
-	end
-
-	self.aggroBar.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	self.aggroBar.bar:SetAllPoints(self.aggroBar)
+	-- End of IceBarElement:SetBarFramePoints() override.
 
 	local r, g, b = self:GetColor("ThreatPullAggro")
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor("CastCasting")
 	end
 	self.aggroBar.bar:SetVertexColor(r, g, b, self.moduleSettings.aggroAlpha)
-
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.aggroBar.bar:SetTexCoord(1, 0, 0, 0)
-	else
-		self.aggroBar.bar:SetTexCoord(0, 1, 0, 0)
-	end
+	self:SetBarCoord(self.aggroBar)
 end
 
 function IceThreat.prototype:CreateSecondThreatBar()
-	if not (self.secondThreatBar) then
-		self.secondThreatBar = CreateFrame("Frame", nil, self.frame)
-	end
-
-	self.secondThreatBar:SetFrameStrata("MEDIUM")
-	self.secondThreatBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
-	self.secondThreatBar:SetHeight(self.settings.barHeight)
-	self:SetBarFramePoints(self.secondThreatBar)
-
-	if not (self.secondThreatBar.bar) then
-		self.secondThreatBar.bar = self.secondThreatBar:CreateTexture(nil, "OVERLAY")
-	end
-
-	self.secondThreatBar.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	self.secondThreatBar.bar:SetAllPoints(self.secondThreatBar)
+	self.secondThreatBar = self:BarFactory(self.secondThreatBar, "MEDIUM", "OVERLAY")
 
 	local r, g, b = self:GetColor("ThreatSecondPlace")
 	self.secondThreatBar.bar:SetVertexColor(r, g, b, self.alpha)
-
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.secondThreatBar.bar:SetTexCoord(1, 0, 0, 0)
-	else
-		self.secondThreatBar.bar:SetTexCoord(0, 1, 0, 0)
-	end
+	self:SetBarCoord(self.secondThreatBar)
 end
 
 -- bar stuff
@@ -414,6 +379,8 @@ function IceThreat.prototype:UpdateSecondHighestThreatBar(secondHighestThreat, t
 		if (self.moduleSettings.reverse) then
             pos = 1 - pos
 		end
+
+		local min_y, max_y
 		if (self.moduleSettings.inverse == "INVERSE") then
 			min_y = 0
 			max_y = pos

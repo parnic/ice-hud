@@ -103,47 +103,16 @@ function EclipseBar.prototype:CreateFrame()
 end
 
 function EclipseBar.prototype:CreateSolarBar()
-	if not (self.solarBar) then
-		self.solarBar = CreateFrame("Frame", nil, self.frame)
-	end
+	self.solarBar = self:BarFactory(self.solarBar,"BACKGROUND", "ARTWORK")
 
-	local solarTop = not IceHUD:xor(self.moduleSettings.reverse, (self.moduleSettings.inverse == "INVERSE"))
+	local offsetY
+	local scale = 0.5
 
-	self.solarBar:SetFrameStrata("BACKGROUND")
-	self.solarBar:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
-	self.solarBar:SetHeight(self.settings.barHeight)
-	self.solarBar:ClearAllPoints()
-	if solarTop then
-		self.solarBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
-	else
-		self.solarBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
-	end
-
-	if not (self.solarBar.bar) then
-		self.solarBar.bar = self.solarBar:CreateTexture(nil, "LOW")
-	end
-
-	self.solarBar.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	self.solarBar.bar:SetAllPoints(self.solarBar)
+	self:SetBarCoord(self.solarBar, scale, true)
 
 	self.solarBar.bar:SetVertexColor(self:GetColor("EclipseSolar", 1))
 
-	local pos = 0.5
-	local min_y = 0
-	local max_y = pos
-	if not solarTop then
-		min_y = 1-pos
-		max_y = 1
-	end
-
-	if self.moduleSettings.side == IceCore.Side.Left then
-		self.solarBar.bar:SetTexCoord(1, 0, min_y, max_y)
-	else
-		self.solarBar.bar:SetTexCoord(0, 1, min_y, max_y)
-	end
-
 	self.solarBar.bar:Show()
-	self.solarBar:SetHeight(self.settings.barHeight * pos)
 end
 
 function EclipseBar.prototype:UpdateShown()
