@@ -1135,7 +1135,11 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top)
 			max_y = scale
 			offset_y = (self.settings.barHeight * (1 - scale))
 		end
-		self:SetBarFramePoints(barFrame, 0, offset_y)
+		if self.moduleSettings.rotateBar then
+			self:SetBarFramePoints(barFrame, offset_y, 0)
+		else
+			self:SetBarFramePoints(barFrame, 0, offset_y)
+		end
 	else
 		if self.moduleSettings.inverse == "INVERSE" then
 			min_y = 0;
@@ -1392,7 +1396,7 @@ end
 
 function IceBarElement.prototype:RotateHorizontal()
 	self:RotateFrame(self.frame)
-	self:RotateFrame(self.barFrame)
+	--self:RotateFrame(self.barFrame)
 	for i=1, #self.Markers do
 		self.Markers[i]:Hide()
 	end
@@ -1427,7 +1431,7 @@ function IceBarElement.prototype:RotateFrame(frame)
 		frame.anim = grp
 	end
 
-	local anchorPoint
+	local anchorPoint = "LEFT"
 	if self.moduleSettings.inverse == "INVERSE" then
 		anchorPoint = "TOPLEFT"
 	elseif self.moduleSettings.inverse == "EXPAND" then
