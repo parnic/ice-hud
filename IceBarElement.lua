@@ -1474,7 +1474,7 @@ end
 function IceBarElement.prototype:PositionMarker(idx, pos)
 	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
 		"Bad marker passed to PositionMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
-	if self.moduleSettings.inverse then
+	if (self.moduleSettings.inverse == "INVERSE") then
 		pos = pos * -1
 	end
 	local coordPos = 0.5 + pos
