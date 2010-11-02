@@ -45,17 +45,17 @@ function EclipseBar.prototype:GetDefaultSettings()
 		color = {r=1, g=0, b=0, a=1},
 		height = 6,
 	}
-	defaults.shouldHideBarRotation = true
+	defaults.shouldHideBarRotation = false
 	defaults.bAllowExpand = false
 
 	return defaults
 end
 
 function EclipseBar.prototype:Enable(core)
-	if self.moduleSettings.rotateBar then
+--[[	if self.moduleSettings.rotateBar then
 		self.moduleSettings.rotateBar = false
 		self:ResetRotation()
-	end
+	end]]
 
 	EclipseBar.super.prototype.Enable(self, core)
 
@@ -172,7 +172,7 @@ function EclipseBar.prototype:UpdateEclipsePower()
 		b * 255,
 		abs((power/maxPower) * 100)))
 ]]
-	local pos = (power/maxPower) / 2
+	local pos = ((power/maxPower) / 2) + 0.5
 	self:PositionMarker(1, pos)
 end
 

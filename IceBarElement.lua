@@ -798,7 +798,7 @@ do
 							local retval = {}
 							if self.moduleSettings.markers then
 								for i=1, #self.moduleSettings.markers do
-									retval[i] = ((self.moduleSettings.markers[i].position + 0.5) * 100) .. "%"
+									retval[i] = ((self.moduleSettings.markers[i].position) * 100) .. "%"
 								end
 							end
 							return retval
@@ -808,7 +808,7 @@ do
 						end,
 						set = function(info, v)
 							lastEditMarkerConfig = v
-							lastMarkerPosConfig = (self.moduleSettings.markers[v].position + 0.5) * 100
+							lastMarkerPosConfig = (self.moduleSettings.markers[v].position) * 100
 							local color = self.moduleSettings.markers[v].color
 							lastMarkerColorConfig = {r=color.r, g=color.g, b=color.b, a=color.a}
 							lastMarkerHeightConfig = self.moduleSettings.markers[v].height
@@ -873,7 +873,11 @@ function IceBarElement.prototype:SetBarFramePoints(frame, offset_x, offset_y)
 		anchor = "BOTTOMLEFT"
 	end
 
-	frame:SetPoint(anchor, self.frame, anchor, offset_x, offset_y)
+	if self.moduleSettings.rotateBar then
+		frame:SetPoint(anchor, self.frame, anchor, offset_y, offset_x)
+	else
+		frame:SetPoint(anchor, self.frame, anchor, offset_x, offset_y)
+	end
 end
 
 
@@ -1113,7 +1117,7 @@ end
 
 -- Rokiyo: bar is the only required argument, scale & top are optional
 function IceBarElement.prototype:SetBarCoord(barFrame, scale, top)
-	local min_x, max_x, min_y, max_y
+	local min_x, max_x, min_y, max_y, offset_y
 	if not scale then scale = 0 end
 
 	if (self.moduleSettings.side == IceCore.Side.Left) then
@@ -1125,7 +1129,6 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top)
 	end
 
 	if IceHUD:xor(self.moduleSettings.reverse, top) then
-		local offset_y
 		if self.moduleSettings.inverse == "INVERSE" then
 			min_y = 1 - scale
 			max_y = 1
@@ -1134,11 +1137,6 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top)
 			min_y = 0
 			max_y = scale
 			offset_y = (self.settings.barHeight * (1 - scale))
-		end
-		if self.moduleSettings.rotateBar then
-			self:SetBarFramePoints(barFrame, offset_y, 0)
-		else
-			self:SetBarFramePoints(barFrame, 0, offset_y)
 		end
 	else
 		if self.moduleSettings.inverse == "INVERSE" then
@@ -1151,9 +1149,9 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top)
 		  	min_y = 1-scale;
 			max_y = 1;
 		end
-		self:SetBarFramePoints(barFrame, 0, 0)
 	end
 
+	self:SetBarFramePoints(barFrame, 0, offset_y)
 	barFrame.bar:SetTexCoord(min_x, max_x, min_y, max_y)
 	barFrame:SetHeight(self.settings.barHeight * scale)
 
@@ -1396,10 +1394,6 @@ end
 
 function IceBarElement.prototype:RotateHorizontal()
 	self:RotateFrame(self.frame)
-	--self:RotateFrame(self.barFrame)
-	for i=1, #self.Markers do
-		self.Markers[i]:Hide()
-	end
 end
 
 function IceBarElement.prototype:ResetRotation()
@@ -1431,7 +1425,7 @@ function IceBarElement.prototype:RotateFrame(frame)
 		frame.anim = grp
 	end
 
-	local anchorPoint = "LEFT"
+	local anchorPoint
 	if self.moduleSettings.inverse == "INVERSE" then
 		anchorPoint = "TOPLEFT"
 	elseif self.moduleSettings.inverse == "EXPAND" then
@@ -1458,7 +1452,7 @@ function IceBarElement.prototype:AddNewMarker(inPosition, inColor, inHeight)
 
 	local idx = #self.moduleSettings.markers + 1
 	self.moduleSettings.markers[idx] = {
-		position = inPosition - 0.5, -- acceptable range is -0.5 to +0.5
+		position = inPosition,
 		color = {r=inColor.r, g=inColor.g, b=inColor.b, a=1},
 		height = inHeight,
 	}
@@ -1469,7 +1463,7 @@ function IceBarElement.prototype:EditMarker(idx, inPosition, inColor, inHeight)
 	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
 		"Bad marker passed to EditMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
 	self.moduleSettings.markers[idx] = {
-		position = inPosition - 0.5, -- acceptable range is -0.5 to +0.5
+		position = inPosition,
 		color = {r=inColor.r, g=inColor.g, b=inColor.b, a=1},
 		height = inHeight,
 	}
@@ -1491,17 +1485,10 @@ function IceBarElement.prototype:CreateMarker(idx)
 		self.Markers[idx] = nil
 	end
 
-	self.Markers[idx] = CreateFrame("Frame", nil, self.barFrame)
-	local marker = self.Markers[idx]
+	self.Markers[idx] = self:BarFactory(self.Markers[idx], "MEDIUM", "OVERLAY")
 
-	marker:SetFrameStrata("LOW")
-	marker:ClearAllPoints()
-
-	marker.bar = marker:CreateTexture(nil, "LOW")
-	marker.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	marker.bar:SetAllPoints(marker)
 	local color = self.moduleSettings.markers[idx].color
-	marker.bar:SetVertexColor(color.r, color.g, color.b, color.a)
+	self.Markers[idx].bar:SetVertexColor(color.r, color.g, color.b, color.a)
 
 	self:UpdateMarker(idx)
 	self:PositionMarker(idx, self.moduleSettings.markers[idx].position)
@@ -1517,24 +1504,34 @@ end
 function IceBarElement.prototype:PositionMarker(idx, pos)
 	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
 		"Bad marker passed to PositionMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
+
+	local min_y, max_y, offset_y
+	local heightScale = (self.moduleSettings.markers[idx].height / self.settings.barHeight)
+
 	if (self.moduleSettings.inverse == "INVERSE") then
-		pos = pos * -1
+		offset_y = 0 - (self.settings.barHeight * pos)
+		min_y = IceHUD:Clamp(pos, 0, 1)
+		max_y = IceHUD:Clamp(pos+heightScale, 0, 1)
+	elseif (self.moduleSettings.inverse == "EXPAND") then
+		pos = pos + ((1-pos) * 0.5)
+		heightScale = heightScale * 0.5
+		offset_y = self.settings.barHeight * (pos - 0.5)
+		min_y = IceHUD:Clamp(1-pos-(heightScale), 0, 1)
+		max_y = IceHUD:Clamp(1-pos+(heightScale), 0, 1)
+	else
+		offset_y = (self.settings.barHeight * pos)
+		min_y = IceHUD:Clamp(1-pos-heightScale, 0, 1)
+		max_y = IceHUD:Clamp(1-pos, 0, 1)
 	end
-	local coordPos = 0.5 + pos
-	local adjustedBarHeight = self.settings.barHeight - (self.moduleSettings.markers[idx].height)
-	local heightScale = (self.moduleSettings.markers[idx].height / self.settings.barHeight) / 2
 
-	local min_y = IceHUD:Clamp(1-coordPos-heightScale, 0, 1)
-	local max_y = IceHUD:Clamp(1-coordPos+heightScale, 0, 1)
-
-	if self.moduleSettings.side == IceCore.Side.Left then
+	if (self.moduleSettings.side == IceCore.Side.Left) then
 		self.Markers[idx].bar:SetTexCoord(1, 0, min_y, max_y)
 	else
 		self.Markers[idx].bar:SetTexCoord(0, 1, min_y, max_y)
 	end
 
+	self:SetBarFramePoints(self.Markers[idx], 0, offset_y)
 	self.Markers[idx].bar:Show()
-	self.Markers[idx]:SetPoint("CENTER", self.frame, "CENTER", 0, (self.settings.barHeight * pos))
 end
 
 function IceBarElement.prototype:LoadMarkers()
