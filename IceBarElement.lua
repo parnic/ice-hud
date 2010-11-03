@@ -1117,47 +1117,49 @@ end
 
 -- Rokiyo: bar is the only required argument, scale & top are optional
 function IceBarElement.prototype:SetBarCoord(barFrame, scale, top)
-	local min_x, max_x, min_y, max_y, offset_y
 	if not scale then scale = 0 end
-
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		min_x = 1
-		max_x = 0
-	else
-		min_x = 0
-		max_x = 1
-	end
-
-	if IceHUD:xor(self.moduleSettings.reverse, top) then
-		if self.moduleSettings.inverse == "INVERSE" then
-			min_y = 1 - scale
-			max_y = 1
-			offset_y = 0 - (self.settings.barHeight * (1 - scale))
-		else
-			min_y = 0
-			max_y = scale
-			offset_y = (self.settings.barHeight * (1 - scale))
-		end
-	else
-		if self.moduleSettings.inverse == "INVERSE" then
-			min_y = 0;
-			max_y = scale;
-		elseif self.moduleSettings.inverse == "EXPAND" then
-			min_y = 0.5 - (scale * 0.5);
-			max_y = 0.5 + (scale * 0.5);
-		else
-		  	min_y = 1-scale;
-			max_y = 1;
-		end
-	end
-
-	self:SetBarFramePoints(barFrame, 0, offset_y)
-	barFrame.bar:SetTexCoord(min_x, max_x, min_y, max_y)
-	barFrame:SetHeight(self.settings.barHeight * scale)
+	scale = IceHUD:Clamp(scale, 0, 1)
 
 	if scale == 0 then
 		barFrame.bar:Hide()
 	else
+		local min_y, max_y
+		local offset_y = 0
+
+		if IceHUD:xor(self.moduleSettings.reverse, top) then
+			if self.moduleSettings.inverse == "INVERSE" then
+				min_y = 1 - scale
+				max_y = 1
+				offset_y = 0 - (self.settings.barHeight * (1 - scale))
+			elseif self.moduleSettings.inverse == "EXPAND" then
+				min_y = 0.5 - (scale * 0.5);
+				max_y = 0.5 + (scale * 0.5);
+			else
+				min_y = 0
+				max_y = scale
+				offset_y = (self.settings.barHeight * (1 - scale))
+			end
+		else
+			if self.moduleSettings.inverse == "INVERSE" then
+				min_y = 0;
+				max_y = scale;
+			elseif self.moduleSettings.inverse == "EXPAND" then
+				min_y = 0.5 - (scale * 0.5);
+				max_y = 0.5 + (scale * 0.5);
+			else
+				min_y = 1-scale;
+				max_y = 1;
+			end
+		end
+
+		if (self.moduleSettings.side == IceCore.Side.Left) then
+			barFrame.bar:SetTexCoord(1, 0, min_y, max_y)
+		else
+			barFrame.bar:SetTexCoord(0, 1, min_y, max_y)
+		end
+
+		self:SetBarFramePoints(barFrame, 0, offset_y)
+		barFrame:SetHeight(self.settings.barHeight * scale)
 		barFrame.bar:Show()
 	end
 end

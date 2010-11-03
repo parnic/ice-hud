@@ -198,22 +198,13 @@ end
 function IceThreat.prototype:CreateAggroBar()
 	self.aggroBar = self:BarFactory(self.aggroBar, "BACKGROUND","ARTWORK")
 
-	-- Rokiyo: TODO: modify IceBarElement:SetBarFramePoints() to handle this behaviour.
-	local aggroTop = not IceHUD:xor(self.moduleSettings.reverse, (self.moduleSettings.inverse == "INVERSE"))
-    self.aggroBar:ClearAllPoints()
-	if aggroTop then
-		self.aggroBar:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
-	else
-		self.aggroBar:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT")
-	end
-	-- End of IceBarElement:SetBarFramePoints() override.
-
 	local r, g, b = self:GetColor("ThreatPullAggro")
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor("CastCasting")
 	end
 	self.aggroBar.bar:SetVertexColor(r, g, b, self.moduleSettings.aggroAlpha)
-	self:SetBarCoord(self.aggroBar)
+
+	self:SetBarCoord(self.aggroBar, 0 , true)
 end
 
 function IceThreat.prototype:CreateSecondThreatBar()
@@ -221,6 +212,7 @@ function IceThreat.prototype:CreateSecondThreatBar()
 
 	local r, g, b = self:GetColor("ThreatSecondPlace")
 	self.secondThreatBar.bar:SetVertexColor(r, g, b, self.alpha)
+
 	self:SetBarCoord(self.secondThreatBar)
 end
 
@@ -338,28 +330,7 @@ function IceThreat.prototype:Update(unit)
 		self.aggroBarMulti = rangeMulti
 
 		local pos = IceHUD:Clamp(1 - (1 / rangeMulti), 0, 1)
-		local fromTop = not IceHUD:xor(self.moduleSettings.reverse, (self.moduleSettings.inverse == "INVERSE"))
-
-		local min_y = 0
-		local max_y = pos
-		if not fromTop then
-			min_y = 1-pos
-			max_y = 1
-		end
-
-		if ( self.moduleSettings.side == IceCore.Side.Left ) then
-			self.aggroBar.bar:SetTexCoord(1, 0, min_y, max_y)
-		else
-			self.aggroBar.bar:SetTexCoord(0, 1, min_y, max_y)
-		end
-
-		if pos == 0 then
-			self.aggroBar.bar:Hide()
-		else
-			self.aggroBar.bar:Show()
-		end
-
-		self.aggroBar:SetHeight(self.settings.barHeight * pos)
+		self:SetBarCoord(self.aggroBar, pos, true)
 	--end
 
 	self:UpdateAlpha()
@@ -370,36 +341,14 @@ function IceThreat.prototype:UpdateSecondHighestThreatBar(secondHighestThreat, t
 	if secondHighestThreat <= 0 or not threatValue or threatValue == 0 then
 		self.secondThreatBar:Hide()
 	else
-		local pos = IceHUD:Clamp(secondHighestThreat / threatValue, 0, 1)
-
-		if self.moduleSettings.reverse then
-			pos = 1-pos
-		end
-
-		if (self.moduleSettings.reverse) then
-            pos = 1 - pos
-		end
-
-		local min_y, max_y
-		if (self.moduleSettings.inverse == "INVERSE") then
-			min_y = 0
-			max_y = pos
-		else
-			min_y = 1-pos
-			max_y = 1
-		end
-
-		if ( self.moduleSettings.side == IceCore.Side.Left ) then
-			self.secondThreatBar.bar:SetTexCoord(1, 0, min_y, max_y)
-		else
-			self.secondThreatBar.bar:SetTexCoord(0, 1, min_y, max_y)
-		end
-
 		local r, g, b = self:GetColor("ThreatSecondPlace")
 		self.secondThreatBar.bar:SetVertexColor(r, g, b, self.alpha * self.moduleSettings.secondPlaceThreatAlpha)
 
-		self.secondThreatBar:SetHeight(pos * self.settings.barHeight)
-		self.secondThreatBar:Show()
+		local pos = IceHUD:Clamp(secondHighestThreat / threatValue, 0, 1)
+		if self.moduleSettings.reverse then
+			pos = 1-pos
+		end
+		self:SetBarCoord(self.secondThreatBar, pos)
 	end
 end
 

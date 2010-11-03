@@ -83,7 +83,7 @@ function SliceAndDice.prototype:GetDefaultSettings()
     settings["lowerTextString"] = ""
     settings["lowerTextVisible"] = false
     settings["hideAnimationSettings"] = true
-    settings["bAllowExpand"] = false
+    settings["bAllowExpand"] = true
 
     return settings
 end
@@ -296,28 +296,8 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
             scale = 1 - scale
 	end
 
-	local min_y, max_y
-	if (self.moduleSettings.inverse == "INVERSE") then
-		min_y = 0
-		max_y = scale
-	else
-		min_y = 1-scale
-		max_y = 1
-	end
-
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.durationFrame.bar:SetTexCoord(1, 0, min_y, max_y)
-	else
-		self.durationFrame.bar:SetTexCoord(0, 1, min_y, max_y)
-	end
-	self.durationFrame:SetHeight(self.settings.barHeight * scale)
-
-	if scale == 0 then
-		self.durationFrame.bar:Hide()
-	else
-		self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.alpha * self.moduleSettings.durationAlpha))
-		self.durationFrame.bar:Show()
-	end
+	self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.alpha * self.moduleSettings.durationAlpha))
+	self:SetBarCoord(self.durationFrame, scale)
 
 	if sndEndTime < GetTime() then
 		self:SetBottomText1(self.moduleSettings.upperText .. "0 (" .. PotentialSnDDuration .. ")")
