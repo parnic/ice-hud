@@ -45,7 +45,6 @@ function EclipseBar.prototype:GetDefaultSettings()
 		color = {r=1, g=0, b=0, a=1},
 		height = 6,
 	}
-	defaults.shouldHideBarRotation = false
 	defaults.bAllowExpand = false
 
 	return defaults

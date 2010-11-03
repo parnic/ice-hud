@@ -34,7 +34,6 @@ function CastBar.prototype:GetDefaultSettings()
 	settings["hideAnimationSettings"] = true
 	settings["usesDogTagStrings"] = false
 	settings["rangeColor"] = true
-	settings["shouldHideBarRotation"] = false
 	settings["bAllowExpand"] = false
 
 	return settings

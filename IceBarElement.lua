@@ -487,29 +487,27 @@ do
 			values = IceHUD.validBarList,
 			order = 30.08
 		}
-		if not self.moduleSettings.shouldHideBarRotation then
-			opts["barRotate"] =
-			{
-				type = 'toggle',
-				name = L["Rotate 90 degrees"],
-				desc = L["This will rotate this module by 90 degrees to give a horizontal orientation.\n\nWARNING: This feature is brand new and a bit rough around the edges. You will need to greatly adjust the vertical and horizontal offset of this bar plus move the text around in order for it to look correct.\n\nAnd I mean greatly."],
-				get = function(info)
-					return self.moduleSettings.rotateBar
-				end,
-				set = function(info, v)
-					self.moduleSettings.rotateBar = v
-					if v then
-						self:RotateHorizontal()
-					else
-						self:ResetRotation()
-					end
-				end,
-				disabled = function()
-					return not self:IsEnabled()
-				end,
-				order = 30.09
-			}
-		end
+		opts["barRotate"] =
+		{
+			type = 'toggle',
+			name = L["Rotate 90 degrees"],
+			desc = L["This will rotate this module by 90 degrees to give a horizontal orientation.\n\nWARNING: This feature is brand new and a bit rough around the edges. You will need to greatly adjust the vertical and horizontal offset of this bar plus move the text around in order for it to look correct.\n\nAnd I mean greatly."],
+			get = function(info)
+				return self.moduleSettings.rotateBar
+			end,
+			set = function(info, v)
+				self.moduleSettings.rotateBar = v
+				if v then
+					self:RotateHorizontal()
+				else
+					self:ResetRotation()
+				end
+			end,
+			disabled = function()
+				return not self:IsEnabled()
+			end,
+			order = 30.09
+		}
 		opts["textSettings"] =
 		{
 			type = 'group',
