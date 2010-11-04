@@ -225,7 +225,9 @@ function IceCore.prototype:Enable(userToggle)
 	self:RedirectRemovedModules()
 
 	-- make sure the module options are re-generated. if we switched profiles, we don't want the old elements hanging around
-	IceHUD:GenerateModuleOptions()
+	if IceHUD.optionsLoaded then
+		IceHUD_Options:GenerateModuleOptions()
+	end
 
 	self.enabled = true
 end
@@ -360,7 +362,9 @@ function IceCore.prototype:AddNewDynamicModule(module, hasSettings)
 		module:Enable(true)
 	end
 
-	IceHUD:GenerateModuleOptions()
+	if IceHUD.optionsLoaded then
+		IceHUD_Options:GenerateModuleOptions()
+	end
 end
 
 
@@ -400,7 +404,9 @@ function IceCore.prototype:DeleteDynamicModule(module)
 	table.remove(self.elements,ndx)
 	self.settings.modules[module.elementName] = nil
 
-	IceHUD:GenerateModuleOptions()
+	if IceHUD.optionsLoaded then
+		IceHUD_Options:GenerateModuleOptions()
+	end
 end
 
 
@@ -410,7 +416,9 @@ function IceCore.prototype:RenameDynamicModule(module, newName)
 
 	module.elementName = newName
 
-	IceHUD:GenerateModuleOptions()
+	if IceHUD.optionsLoaded then
+		IceHUD_Options:GenerateModuleOptions()
+	end
 
 	LibStub("AceConfigDialog-3.0"):SelectGroup("IceHUD", "modules", newName)
 end

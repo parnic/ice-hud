@@ -58,3 +58,9 @@ optional-dependencies:
     - libdogtag-3-0
     - libdogtag-unit-3-0
     - librangecheck-2-0
+
+move-folders:
+    IceHUD/IceHUD_Options: IceHUD_Options
+
+tools-used:
+    - libdatabroker-1-1

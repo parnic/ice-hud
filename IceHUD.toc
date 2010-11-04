@@ -78,3 +78,7 @@ modules\HolyPower.lua
 modules\Shards.lua
 modules\EclipseBar.lua
 modules\Vengeance.lua
+
+#@do-not-package@
+IceHUD_Options\Options.lua
+#@end-do-not-package@
