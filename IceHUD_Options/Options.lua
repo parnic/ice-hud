@@ -660,7 +660,7 @@ function IceHUD_Options:OnLoad()
 end
 
 if IceHUD and IceHUD.IceCore then
-	self:OnLoad()
+	IceHUD_Options:OnLoad()
 end
 
 function IceHUD_Options:SetupProfileImportButtons()
