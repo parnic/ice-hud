@@ -653,7 +653,7 @@ function IceHUD_Options:OnLoad()
 	self.options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(IceHUD.db)
 
 	-- Add dual-spec support
-	if LibDualSpec then
+	if IceHUD.db.profile.enable and LibDualSpec then
 		LibDualSpec:EnhanceOptions(IceHUD_Options.options.args.profiles, IceHUD.db)
 	end
 

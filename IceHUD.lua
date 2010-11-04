@@ -251,10 +251,11 @@ function IceHUD:OnEnable(isFirst)
 		if LibDualSpec then
 			LibDualSpec:EnhanceDatabase(self.db, "IceHUD")
 		end
-		--@debug@
-		IceHUD_Options:OnLoad()
-		--@end-debug@
 	end
+
+	--@debug@
+	IceHUD_Options:OnLoad()
+	--@end-debug@
 
 	if isFirst then
 		self:SetDebugging(self.IceCore:GetDebug())
