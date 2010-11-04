@@ -1,5 +1,6 @@
 local LibDualSpec = LibStub('LibDualSpec-1.0', true)
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
+local icon = LibStub("LibDBIcon-1.0")
 
 IceHUD_Options = {}
 
