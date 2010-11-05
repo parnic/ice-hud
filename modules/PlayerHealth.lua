@@ -908,12 +908,21 @@ end
 
 
 function PlayerHealth.prototype:EnteringWorld()
+	self:CheckVehicle()
 	self:CheckCombat()
 	self:CheckLeader()
 	self:CheckPartyRole()
 	self:CheckPvP()
 	-- Parnic - moved :Resting to the end because it calls Update which sets alpha on everything
 	self:Resting()
+end
+
+function PlayerHealth.prototype:CheckVehicle()
+	if UnitHasVehicleUI("player") then
+		self:EnteringVehicle(nil, "player", true)
+	else
+		self:ExitingVehicle(nil, "player")
+	end
 end
 
 

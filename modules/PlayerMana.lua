@@ -120,6 +120,7 @@ function PlayerMana.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckVehicle")
 
 	if not self.CustomOnUpdate then
 		self.CustomOnUpdate = function() self:Update(self.unit) end
@@ -133,6 +134,14 @@ function PlayerMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
 	self:ManaType(nil, self.unit)
+end
+
+function PlayerMana.prototype:CheckVehicle()
+	if UnitHasVehicleUI("player") then
+		self:EnteringVehicle(nil, "player", true)
+	else
+		self:ExitingVehicle(nil, "player")
+	end
 end
 
 function PlayerMana.prototype:ShouldUseTicker()
