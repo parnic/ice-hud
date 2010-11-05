@@ -22,6 +22,8 @@ local lastMarkerColorConfig = {r=1, b=0, g=0, a=1}
 local lastMarkerHeightConfig = 6
 local lastEditMarkerConfig = 1
 
+local MIN_ANIMATED_UPDATED_RATE = 15
+
 -- Constructor --
 function IceBarElement.prototype:init(name, ...)
 	IceBarElement.super.prototype.init(self, name, ...)
@@ -357,9 +359,28 @@ do
 				end,
 				set = function(info, value)
 					self.moduleSettings.shouldAnimate = value
+					self.moduleSettings.wasAnimated = value
 					self:Redraw()
 				end,
 				disabled = function()
+					-- If below threshold, turn off and remember if we were on
+					if 1/IceHUD.IceCore:UpdatePeriod() < MIN_ANIMATED_UPDATED_RATE then
+						if self.moduleSettings.shouldAnimate then
+							self.moduleSettings.wasAnimated = true
+							self.moduleSettings.shouldAnimate = false
+							IceHUD:NotifyOptionsChange()
+	                        self:Redraw()
+						end
+						return true
+
+					-- If above threshold, if we're off but were on, turn back on
+					elseif not self.moduleSettings.shouldAnimate and self.moduleSettings.wasAnimated then
+						self.moduleSettings.shouldAnimate = true
+						self.moduleSettings.wasAnimated = false
+						IceHUD:NotifyOptionsChange()
+						self:Redraw()
+					end
+
 					return not self.moduleSettings.enabled
 				end,
 				order = 111
