@@ -133,14 +133,14 @@ function IceTargetInfo.prototype:Enable(core)
 
 		-- Rokiyo: Death to tiny tables!
 		if auraSettings.buff.offset then
-		auraSettings.buff.offsetX = auraSettings.buff.offset['x']
-		auraSettings.buff.offsetY = auraSettings.buff.offset['y']
-		auraSettings.buff.offset = nil
+			auraSettings.buff.offsetX = auraSettings.buff.offset['x']
+			auraSettings.buff.offsetY = auraSettings.buff.offset['y']
+			auraSettings.buff.offset = nil
 		end
 		if auraSettings.debuff.offset then
-		auraSettings.debuff.offsetX = auraSettings.debuff.offset['x']
-		auraSettings.debuff.offsetY = auraSettings.debuff.offset['y']
-		auraSettings.debuff.offset = nil
+			auraSettings.debuff.offsetX = auraSettings.debuff.offset['x']
+			auraSettings.debuff.offsetY = auraSettings.debuff.offset['y']
+			auraSettings.debuff.offset = nil
 		end
 	end
 
@@ -839,7 +839,7 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 	defaults["mouseBuff"] = true
 	defaults["perRow"] = 10
 	defaults["line1Tag"] = "[Name:HostileColor]"
---	defaults["line2Tag"] = "[Level:DifficultyColor] [[IsPlayer ? Race ! CreatureType]:ClassColor] [[IsPlayer ? Class]:ClassColor] [[~PvP ? \"PvE\" ! \"PvP\"]:HostileColor] [IsLeader ? \"Leader\":Yellow] [InCombat ? \"Combat\":Red] [Classification]"
+--  defaults["line2Tag"] = "[Level:DifficultyColor] [[IsPlayer ? Race ! CreatureType]:ClassColor] [[IsPlayer ? Class]:ClassColor] [[~PvP ? \"PvE\" ! \"PvP\"]:HostileColor] [IsLeader ? \"Leader\":Yellow] [InCombat ? \"Combat\":Red] [Classification]"
 	defaults["line2Tag"] = "[Level:DifficultyColor] [SmartRace:ClassColor] [SmartClass:ClassColor] [PvPIcon] [IsLeader ? 'Leader':Yellow] [InCombat ? 'Combat':Red] [Classification]"
 	defaults["line3Tag"] = "[Guild:Angle]"
 	defaults["line4Tag"] = ""
@@ -1156,7 +1156,7 @@ do
 
 			-- Frame resizing --
 			local size = frame.fromPlayer and self.moduleSettings.auras[type].ownSize or self.moduleSettings.auras[type].size
-			lastAuraSize = size * (left and 1 or -1)
+			lastAuraSize = size * (left and -1 or 1)
 			largestHeightThisRow = max(size, largestHeightThisRow)
 
 			frame:SetWidth(size)
