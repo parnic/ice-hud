@@ -525,6 +525,7 @@ do
 				else
 					self:ResetRotation()
 				end
+				self:Redraw()
 			end,
 			disabled = function()
 				return not self:IsEnabled()
@@ -914,6 +915,8 @@ function IceBarElement.prototype:Redraw()
 	self:CreateFrame()
 
 	self.frame:SetAlpha(self.alpha)
+
+	self:RepositionMarkers()
 end
 
 
@@ -1465,6 +1468,12 @@ end
 function IceBarElement.prototype:NotifyBarOverrideChanged()
 	for i=1, #self.Markers do
 		self.Markers[i].bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+	end
+end
+
+function IceBarElement.prototype:RepositionMarkers()
+	for idx=1,#self.Markers do
+		self:PositionMarker(idx, self.moduleSettings.markers[idx].position)
 	end
 end
 
