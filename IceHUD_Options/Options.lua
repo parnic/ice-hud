@@ -604,16 +604,16 @@ Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targe
 		updatePeriod = {
 			type = 'range',
 			name = L["Update Period"],
-			desc = L["Time between display updates in seconds"],
+			desc = L["Number of updates per second. The higher this number is, the smoother bars will animate. However, higher settings will also use more CPU, so balance it to your liking. 30 is the recommended setting."],
 			get = function()
-				return IceHUD.IceCore:UpdatePeriod()
+				return math.ceil(1/IceHUD.IceCore:UpdatePeriod())
 			end,
 			set = function(info, v)
-				IceHUD.IceCore:SetUpdatePeriod(v)
+				IceHUD.IceCore:SetUpdatePeriod(1/v)
 			end,
-			min = 0,
-			max = 1,
-			step = 0.001,
+			min = 5,
+			max = 60,
+			step = 1,
 			order = 97
 		},
 

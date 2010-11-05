@@ -116,7 +116,7 @@ StaticPopupDialogs["ICEHUD_CONVERTED_TO_ACE3"] =
 
 StaticPopupDialogs["ICEHUD_UPDATE_PERIOD_MATTERS"] =
 {
-	text = L["Since the last time you updated IceHUD, many significant CPU and memory optimizations have been made. If bar animation looks jumpy to you, open the /icehud configuration page and lower the 'Update Period' slider. This will cause higher CPU usage but will look nicer. Enjoy IceHUD!"],
+	text = L["Since the last time you updated IceHUD, many significant CPU and memory optimizations have been made. If bar animation looks jumpy to you, open the /icehud configuration page and raise the 'Update Period' slider. This will cause higher CPU usage but will look nicer. Enjoy IceHUD!"],
 	button1 = OKAY,
 	timeout = 0,
 	whileDead = 1,
