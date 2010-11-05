@@ -86,24 +86,28 @@ function IceBarElement.prototype:Enable()
 	self:RegisterFontStrings()
 
 	-- allows frames that show/hide via RegisterUnitWatch to not show text when they shouldn't
-	self.frame:SetScript("OnHide", function()
-		if self.moduleSettings.textVisible["upper"] then
-			self.frame.bottomUpperText:Hide()
-		end
-		if self.moduleSettings.textVisible["lower"] then
-			self.frame.bottomLowerText:Hide()
-		end
-		self:OnHide()
-	end)
-	self.frame:SetScript("OnShow", function()
-		if self.moduleSettings.textVisible["upper"] then
-			self.frame.bottomUpperText:Show()
-		end
-		if self.moduleSettings.textVisible["lower"] then
-			self.frame.bottomLowerText:Show()
-		end
-		self:OnShow()
-	end)
+	if self.frame:GetScript("OnHide") == nil then
+		self.frame:SetScript("OnHide", function()
+			if self.moduleSettings.textVisible["upper"] then
+				self.frame.bottomUpperText:Hide()
+			end
+			if self.moduleSettings.textVisible["lower"] then
+				self.frame.bottomLowerText:Hide()
+			end
+			self:OnHide()
+		end)
+	end
+	if self.frame:GetScript("OnShow") == nil then
+		self.frame:SetScript("OnShow", function()
+			if self.moduleSettings.textVisible["upper"] then
+				self.frame.bottomUpperText:Show()
+			end
+			if self.moduleSettings.textVisible["lower"] then
+				self.frame.bottomLowerText:Show()
+			end
+			self:OnShow()
+		end)
+	end
 end
 
 function IceBarElement.prototype:OnHide()
@@ -120,8 +124,6 @@ function IceBarElement.prototype:Disable(core)
 	IceBarElement.super.prototype.Disable(self, core)
 
 	IceHUD.IceCore:RequestUpdates(self, nil)
-	self.frame:SetScript("OnHide", nil)
-	self.frame:SetScript("OnShow", nil)
 end
 
 
@@ -861,7 +863,7 @@ end
 
 function IceBarElement.prototype:SetBarFramePoints(frame, offset_x, offset_y)
 	local anchor
-	
+
 	frame:ClearAllPoints()
 	if self.moduleSettings.inverse == "INVERSE" then
 		anchor = "TOPLEFT"
