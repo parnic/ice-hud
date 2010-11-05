@@ -21,6 +21,11 @@ function EclipseBar.prototype:init()
 	self:SetDefaultColor("EclipseSolarActive", 238, 251, 31)
 end
 
+function EclipseBar.prototype:Redraw()
+	EclipseBar.super.prototype.Redraw(self)
+	self:MyOnUpdate()
+end
+
 function EclipseBar.prototype:GetOptions()
 	local opts = EclipseBar.super.prototype.GetOptions(self)
 	opts.reverse.hidden = true
@@ -103,14 +108,9 @@ end
 
 function EclipseBar.prototype:CreateSolarBar()
 	self.solarBar = self:BarFactory(self.solarBar,"BACKGROUND", "ARTWORK")
-
-	local offsetY
-	local scale = 0.5
-
-	self:SetBarCoord(self.solarBar, scale, true)
+	self:SetBarCoord(self.solarBar, 0.5, true)
 
 	self.solarBar.bar:SetVertexColor(self:GetColor("EclipseSolar", 1))
-
 	self.solarBar.bar:Show()
 end
 
