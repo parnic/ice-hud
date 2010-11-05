@@ -1207,7 +1207,9 @@ function IceBarElement.prototype:SetScale(inScale, force)
 		self:ConditionalSetupUpdate()
 	else
 		if self.CurrScale == self.DesiredScale then
-			IceHUD.IceCore:RequestUpdates(self, nil)
+			-- Parnic: this optimization may be reaching a bit too far and causing things to get stuck
+			--         without this, several modules continues to update that don't need to but the stuck issues seem to be decreased
+			--IceHUD.IceCore:RequestUpdates(self, nil)
 		end
 	end
 end

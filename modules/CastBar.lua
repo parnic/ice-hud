@@ -303,6 +303,10 @@ function CastBar.prototype:Enable(core)
 	if self.moduleSettings.enabled and not self.moduleSettings.showBlizzCast then
 		self:ToggleBlizzCast(false)
 	end
+
+	if self.moduleSettings.shouldAnimate then
+		self.moduleSettings.shouldAnimate = false
+	end
 end
 
 
