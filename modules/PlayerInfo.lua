@@ -140,18 +140,18 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 	local startingNum = 0
 
 	for i=1, IceCore.BuffLimit do
-		if not self.frame.buffFrame.buffs[i]:IsVisible()
-			or self.frame.buffFrame.buffs[i].type == "mh"
-			or self.frame.buffFrame.buffs[i].type == "oh" then
+		if not self.frame.buffFrame.iconFrames[i]:IsVisible()
+			or self.frame.buffFrame.iconFrames[i].type == "mh"
+			or self.frame.buffFrame.iconFrames[i].type == "oh" then
 			if startingNum == 0 then
 				startingNum = i
 			end
 		end
 
-		if self.frame.buffFrame.buffs[i]:IsVisible() then
-			if (self.frame.buffFrame.buffs[i].type == "mh" and not hasMainHandEnchant)
-				or (self.frame.buffFrame.buffs[i].type == "oh" and not hasOffHandEnchant) then
-				self.frame.buffFrame.buffs[i]:Hide()
+		if self.frame.buffFrame.iconFrames[i]:IsVisible() then
+			if (self.frame.buffFrame.iconFrames[i].type == "mh" and not hasMainHandEnchant)
+				or (self.frame.buffFrame.iconFrames[i].type == "oh" and not hasOffHandEnchant) then
+				self.frame.buffFrame.iconFrames[i]:Hide()
 			end
 		end
 	end
@@ -166,7 +166,7 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 				self.mainHandEnchantTimeSet = CurrTime
 			end
 
-			if not self.frame.buffFrame.buffs[startingNum]:IsVisible() or self.frame.buffFrame.buffs[startingNum].type ~= "mh" then
+			if not self.frame.buffFrame.iconFrames[startingNum]:IsVisible() or self.frame.buffFrame.iconFrames[startingNum].type ~= "mh" then
 				self:SetupAura("buff",
 					startingNum,
 					GetInventoryItemTexture(self.unit, GetInventorySlotInfo("MainHandSlot")),
@@ -188,7 +188,7 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 				self.offHandEnchantTimeSet = CurrTime
 			end
 
-			if not self.frame.buffFrame.buffs[startingNum]:IsVisible() or self.frame.buffFrame.buffs[startingNum].type ~= "oh" then
+			if not self.frame.buffFrame.iconFrames[startingNum]:IsVisible() or self.frame.buffFrame.iconFrames[startingNum].type ~= "oh" then
 				self:SetupAura("buff",
 					startingNum,
 					GetInventoryItemTexture(self.unit, GetInventorySlotInfo("SecondaryHandSlot")),
@@ -204,13 +204,13 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 		end
 
 		for i=startingNum, IceCore.BuffLimit do
-			if self.frame.buffFrame.buffs[i]:IsVisible() then
-				self.frame.buffFrame.buffs[i]:Hide()
+			if self.frame.buffFrame.iconFrames[i]:IsVisible() then
+				self.frame.buffFrame.iconFrames[i]:Hide()
 			end
 		end
 
 		local direction = self.moduleSettings.auras["buff"].growDirection == "Left" and -1 or 1
-		self.frame.buffFrame.buffs = self:CreateIconFrames(self.frame.buffFrame, direction, self.frame.buffFrame.buffs, "buff")
+		self.frame.buffFrame.iconFrames = self:CreateIconFrames(self.frame.buffFrame, direction, self.frame.buffFrame.iconFrames, "buff")
 	end
 end
 
