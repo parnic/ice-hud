@@ -221,6 +221,7 @@ function IceCore.prototype:Enable(userToggle)
 	if self.settings.updatePeriod == nil then
 		self.settings.updatePeriod = 0.033
 	end
+	self.settings.updatePeriod = IceHUD:Clamp(self.settings.updatePeriod, 0, 0.067)
 
 	self:RedirectRemovedModules()
 
