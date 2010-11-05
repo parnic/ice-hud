@@ -298,6 +298,7 @@ function CastBar.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckVehicle")
 
 	if self.moduleSettings.enabled and not self.moduleSettings.showBlizzCast then
 		self:ToggleBlizzCast(false)
@@ -317,6 +318,15 @@ function CastBar.prototype:ExitingVehicle(event, unit)
 	if (unit == "player" and self.unit == "vehicle") then
 		self.unit = "player"
 		self:Update(self.unit)
+	end
+end
+
+
+function CastBar.prototype:CheckVehicle()
+	if UnitHasVehicleUI("player") then
+		self:EnteringVehicle(nil, "player", true)
+	else
+		self:ExitingVehicle(nil, "player")
 	end
 end
 
