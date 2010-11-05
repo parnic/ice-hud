@@ -1490,7 +1490,7 @@ function IceBarElement.prototype:CreateMarker(idx)
 	self.Markers[idx] = self:BarFactory(self.Markers[idx], "MEDIUM", "OVERLAY")
 
 	local color = self.moduleSettings.markers[idx].color
-	self.Markers[idx].bar:SetVertexColor(color.r, color.g, color.b, color.a)
+	self.Markers[idx].bar:SetVertexColor(color.r, color.g, color.b, self.alpha)
 
 	self:UpdateMarker(idx)
 	self:PositionMarker(idx, self.moduleSettings.markers[idx].position)
