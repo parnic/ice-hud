@@ -12,7 +12,6 @@ local AceSerializer = LibStub("AceSerializer-3.0", 1)
 
 local pendingModuleLoads = {}
 local bReadyToRegisterModules = false
-local lastCustomModule = "Bar"
 
 IceHUD.CurrTagVersion = 3
 IceHUD.debugging = false
