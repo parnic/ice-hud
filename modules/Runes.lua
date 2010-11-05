@@ -252,7 +252,7 @@ function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
 			self.frame.graphical[rune].cd:Show()
 		elseif self.moduleSettings.cooldownMode == "Alpha" then
 			self.frame.graphical[rune]:SetAlpha(0.2)
-     	elseif self.moduleSettings.cooldownMode == "Both" then
+	 	elseif self.moduleSettings.cooldownMode == "Both" then
 			self.frame.graphical[rune].cd:SetCooldown(GetRuneCooldown(rune))
 			self.frame.graphical[rune].cd:Show()
 			self.frame.graphical[rune]:SetAlpha(0.2)

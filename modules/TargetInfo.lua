@@ -1112,14 +1112,14 @@ do
 			local anchor, spaceOffset
 			local newRow = ((i % self.moduleSettings.perRow) == 1 or self.moduleSettings.perRow == 1)
 
-            if newRow then
+			if newRow then
 				lastX = 0
 				lastY = lastY + largestHeightThisRow
 				largestHeightThisRow = 0
 				lastAuraSize = 0
 				spaceOffset = 0
-	        else
-	            spaceOffset = self.moduleSettings.spaceBetweenBuffs
+			else
+				spaceOffset = self.moduleSettings.spaceBetweenBuffs
 			end
 
 			if left then
@@ -1149,7 +1149,7 @@ do
 			end
 			-- Rokiyo: Can't locally buffering these until I'm sure they exist :(
 			local frame = iconFrames[i]
-            local icon = frame.icon
+			local icon = frame.icon
 
 			frame:ClearAllPoints()
 			frame:SetPoint(anchor, offset_x, offset_y)

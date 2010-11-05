@@ -1074,9 +1074,9 @@ function IceTargetHealth.prototype:CheckPartyRole()
 			end
 
 			if proposalExists == true then
-			      isTank = (role == "TANK")
-			      isHeal = (role == "HEALER")
-			      isDPS = (role == "DAMAGER")
+				isTank = (role == "TANK")
+				isHeal = (role == "HEALER")
+				isDPS = (role == "DAMAGER")
 			end
 
 			if proposalExists == nil then

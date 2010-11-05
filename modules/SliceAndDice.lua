@@ -67,70 +67,70 @@ end
 
 -- OVERRIDE
 function SliceAndDice.prototype:GetDefaultSettings()
-    local settings = SliceAndDice.super.prototype.GetDefaultSettings(self)
+	local settings = SliceAndDice.super.prototype.GetDefaultSettings(self)
 
-    settings["enabled"] = false
-    settings["shouldAnimate"] = false
-    settings["desiredLerpTime"] = nil
-    settings["lowThreshold"] = 0
-    settings["side"] = IceCore.Side.Right
-    settings["offset"] = 6
-    settings["upperText"]="SnD:"
-    settings["showAsPercentOfMax"] = true
-    settings["durationAlpha"] = 0.6
-    settings["usesDogTagStrings"] = false
-    settings["lockLowerFontAlpha"] = false
-    settings["lowerTextString"] = ""
-    settings["lowerTextVisible"] = false
-    settings["hideAnimationSettings"] = true
-    settings["bAllowExpand"] = true
+	settings["enabled"] = false
+	settings["shouldAnimate"] = false
+	settings["desiredLerpTime"] = nil
+	settings["lowThreshold"] = 0
+	settings["side"] = IceCore.Side.Right
+	settings["offset"] = 6
+	settings["upperText"]="SnD:"
+	settings["showAsPercentOfMax"] = true
+	settings["durationAlpha"] = 0.6
+	settings["usesDogTagStrings"] = false
+	settings["lockLowerFontAlpha"] = false
+	settings["lowerTextString"] = ""
+	settings["lowerTextVisible"] = false
+	settings["hideAnimationSettings"] = true
+	settings["bAllowExpand"] = true
 
-    return settings
+	return settings
 end
 
 -- OVERRIDE
 function SliceAndDice.prototype:GetOptions()
-    local opts = SliceAndDice.super.prototype.GetOptions(self)
+	local opts = SliceAndDice.super.prototype.GetOptions(self)
 
-    opts["textSettings"].args["upperTextString"]["desc"] = "The text to display under this bar. # will be replaced with the number of Slice and Dice seconds remaining."
+	opts["textSettings"].args["upperTextString"]["desc"] = "The text to display under this bar. # will be replaced with the number of Slice and Dice seconds remaining."
 
-    opts["showAsPercentOfMax"] =
-    {
-        type = 'toggle',
-        name = L["Show bar as % of maximum"],
-        desc = L["If this is checked, then the SnD buff time shows as a percent of the maximum attainable (taking set bonuses and talents into account). Otherwise, the bar always goes from full to empty when applying SnD no matter the duration."],
-        get = function()
-            return self.moduleSettings.showAsPercentOfMax
-        end,
-        set = function(info, v)
-            self.moduleSettings.showAsPercentOfMax = v
-        end,
-        disabled = function()
-            return not self.moduleSettings.enabled
-        end
-    }
+	opts["showAsPercentOfMax"] =
+	{
+		type = 'toggle',
+		name = L["Show bar as % of maximum"],
+		desc = L["If this is checked, then the SnD buff time shows as a percent of the maximum attainable (taking set bonuses and talents into account). Otherwise, the bar always goes from full to empty when applying SnD no matter the duration."],
+		get = function()
+			return self.moduleSettings.showAsPercentOfMax
+		end,
+		set = function(info, v)
+			self.moduleSettings.showAsPercentOfMax = v
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end
+	}
 
-    opts["durationAlpha"] =
-    {
-        type = "range",
-        name = L["Potential SnD time bar alpha"],
-        desc = L["What alpha value to use for the bar that displays how long your SnD will last if you activate it. (This gets multiplied by the bar's current alpha to stay in line with the bar on top of it)"],
-        min = 0,
-        max = 100,
-        step = 5,
-        get = function()
-            return self.moduleSettings.durationAlpha * 100
-        end,
-        set = function(info, v)
-            self.moduleSettings.durationAlpha = v / 100.0
-            self:Redraw()
-        end,
-        disabled = function()
-            return not self.moduleSettings.enabled
-        end
-    }
+	opts["durationAlpha"] =
+	{
+		type = "range",
+		name = L["Potential SnD time bar alpha"],
+		desc = L["What alpha value to use for the bar that displays how long your SnD will last if you activate it. (This gets multiplied by the bar's current alpha to stay in line with the bar on top of it)"],
+		min = 0,
+		max = 100,
+		step = 5,
+		get = function()
+			return self.moduleSettings.durationAlpha * 100
+		end,
+		set = function(info, v)
+			self.moduleSettings.durationAlpha = v / 100.0
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end
+	}
 
-    return opts
+	return opts
 end
 
 function SliceAndDice.prototype:CreateFrame()
@@ -172,32 +172,32 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
-    local i = 1
-    local buff, rank, texture, count, type, duration, endTime, remaining
-    if IceHUD.WowVer >= 30000 then
-        buff, rank, texture, count, type, duration, endTime = UnitBuff(unitName, i)
-    else
-        buff, rank, texture, count, duration, remaining = UnitBuff(unitName, i)
-    end
+	local i = 1
+	local buff, rank, texture, count, type, duration, endTime, remaining
+	if IceHUD.WowVer >= 30000 then
+		buff, rank, texture, count, type, duration, endTime = UnitBuff(unitName, i)
+	else
+		buff, rank, texture, count, duration, remaining = UnitBuff(unitName, i)
+	end
 
-    while buff do
-        if (texture and string.match(texture, buffName)) then
-            if endTime and not remaining then
-                remaining = endTime - GetTime()
-            end
-            return duration, remaining
-        end
+	while buff do
+		if (texture and string.match(texture, buffName)) then
+			if endTime and not remaining then
+				remaining = endTime - GetTime()
+			end
+			return duration, remaining
+		end
 
-        i = i + 1;
+		i = i + 1;
 
-        if IceHUD.WowVer >= 30000 then
-            buff, rank, texture, count, type, duration, endTime = UnitBuff(unitName, i)
-        else
-            buff, rank, texture, count, duration, remaining = UnitBuff(unitName, i)
-        end
-    end
+		if IceHUD.WowVer >= 30000 then
+			buff, rank, texture, count, type, duration, endTime = UnitBuff(unitName, i)
+		else
+			buff, rank, texture, count, duration, remaining = UnitBuff(unitName, i)
+		end
+	end
 
-    return nil, nil
+	return nil, nil
 end
 
 function SliceAndDice.prototype:MyOnUpdate()
@@ -208,54 +208,54 @@ function SliceAndDice.prototype:MyOnUpdate()
 end
 
 function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
-    if unit and unit ~= self.unit then
-        return
-    end
+	if unit and unit ~= self.unit then
+		return
+	end
 
-    local now = GetTime()
-    local remaining = nil
+	local now = GetTime()
+	local remaining = nil
 
-    if not fromUpdate or IceHUD.WowVer < 30000 then
-        sndDuration, remaining = self:GetBuffDuration(self.unit, "Ability_Rogue_SliceDice")
+	if not fromUpdate or IceHUD.WowVer < 30000 then
+		sndDuration, remaining = self:GetBuffDuration(self.unit, "Ability_Rogue_SliceDice")
 
 		if not remaining then
-            sndEndTime = 0
+			sndEndTime = 0
 		else
-            sndEndTime = remaining + now
-        end
-    end
+			sndEndTime = remaining + now
+		end
+	end
 
-    if sndEndTime and sndEndTime >= now then
-        if not fromUpdate then
+	if sndEndTime and sndEndTime >= now then
+		if not fromUpdate then
 			self.bUpdateSnd = true
-        end
+		end
 
-        self:Show(true)
-        if not remaining then
-            remaining = sndEndTime - now
-        end
-        local denominator = (self.moduleSettings.showAsPercentOfMax and CurrMaxSnDDuration or sndDuration)
-        self:UpdateBar(denominator ~= 0 and remaining / denominator or 0, "SliceAndDice")
+		self:Show(true)
+		if not remaining then
+			remaining = sndEndTime - now
+		end
+		local denominator = (self.moduleSettings.showAsPercentOfMax and CurrMaxSnDDuration or sndDuration)
+		self:UpdateBar(denominator ~= 0 and remaining / denominator or 0, "SliceAndDice")
 
-        formatString = self.moduleSettings.upperText or ''
-    else
+		formatString = self.moduleSettings.upperText or ''
+	else
 	self:UpdateBar(0, "SliceAndDice")
 
 	if ((IceHUD.WowVer >= 30000 and GetComboPoints(self.unit, "target") == 0) or (IceHUD.WowVer < 30000 and GetComboPoints() == 0)) or not UnitExists("target") then
-            if self.bIsVisible then
-                self.bUpdateSnd = nil
-            end
+			if self.bIsVisible then
+				self.bUpdateSnd = nil
+			end
 
 			if not self.moduleSettings.alwaysFullAlpha then
 				self:Show(false)
 			end
 	end
-    end
+	end
 
-    -- somewhat redundant, but we also need to check potential remaining time
-    if (remaining ~= nil) or PotentialSnDDuration > 0 then
-        self:SetBottomText1(self.moduleSettings.upperText .. tostring(floor(remaining or 0)) .. " (" .. PotentialSnDDuration .. ")")
-    end
+	-- somewhat redundant, but we also need to check potential remaining time
+	if (remaining ~= nil) or PotentialSnDDuration > 0 then
+		self:SetBottomText1(self.moduleSettings.upperText .. tostring(floor(remaining or 0)) .. " (" .. PotentialSnDDuration .. ")")
+	end
 end
 
 function SliceAndDice.prototype:UpdateDurationBar(event, unit)
@@ -293,7 +293,7 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 
 	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
 	if (self.moduleSettings.reverse) then
-            scale = 1 - scale
+			scale = 1 - scale
 	end
 
 	self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.alpha * self.moduleSettings.durationAlpha))
@@ -305,27 +305,27 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 end
 
 function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints)
-    local maxduration
+	local maxduration
 
-    if numComboPoints == 0 then
-        return 0
-    end
+	if numComboPoints == 0 then
+		return 0
+	end
 
-    maxduration = baseTime + ((numComboPoints - 1) * gapPerComboPoint)
+	maxduration = baseTime + ((numComboPoints - 1) * gapPerComboPoint)
 
-    if self:HasNetherbladeBonus() then
-        maxduration = maxduration + netherbladeBonus
-    end
+	if self:HasNetherbladeBonus() then
+		maxduration = maxduration + netherbladeBonus
+	end
 
-    if self:HasGlyphBonus() then
-        maxduration = maxduration + glyphBonusSec
-    end
+	if self:HasGlyphBonus() then
+		maxduration = maxduration + glyphBonusSec
+	end
 
-    _, _, _, _, rank = GetTalentInfo(impSndTalentPage, impSndTalentIdx)
+	_, _, _, _, rank = GetTalentInfo(impSndTalentPage, impSndTalentIdx)
 
-    maxduration = maxduration * (1 + (rank * impSndBonusPerRank))
+	maxduration = maxduration * (1 + (rank * impSndBonusPerRank))
 
-    return maxduration
+	return maxduration
 end
 
 function SliceAndDice.prototype:HasNetherbladeBonus()
@@ -395,5 +395,5 @@ end
 local _, unitClass = UnitClass("player")
 -- Load us up
 if unitClass == "ROGUE" then
-    IceHUD.SliceAndDice = SliceAndDice:new()
+	IceHUD.SliceAndDice = SliceAndDice:new()
 end

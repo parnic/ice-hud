@@ -61,7 +61,7 @@ function IceCastBar.prototype:GetDefaultSettings()
 	settings["auraIconXOffset"] = 40
 	settings["auraIconYOffset"] = 0
 	settings["auraIconScale"] = 1
-    settings["reverseChannel"] = true
+	settings["reverseChannel"] = true
 
 	return settings
 end

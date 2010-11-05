@@ -1017,12 +1017,12 @@ function PlayerHealth.prototype:CheckPartyRole()
 			IceHUD:Debug( tostring(proposalExists) .."**".. tostring(typeID) .."**".. tostring(id) .."**".. tostring(name) .."**".. tostring(texture) .."**".. tostring(role) .."**".. tostring(hasResponded) .."**".. tostring(totalEncounters) .."**".. tostring(completedEncounters) .."**".. tostring(numMembers) .."**".. tostring(isleader) )
 
 			if proposalExists == true then
-			      IceHUD:Debug(tostring(typeID).." "..role)
-			      isTank = (role == "TANK")
-			      isHeal = (role == "HEALER")
-			      isDPS = (role == "DAMAGER")
+				IceHUD:Debug(tostring(typeID).." "..role)
+				isTank = (role == "TANK")
+				isHeal = (role == "HEALER")
+				isDPS = (role == "DAMAGER")
 			else
-			      IceHUD:Debug("NoProposal")
+				IceHUD:Debug("NoProposal")
 			end
 
 			IceHUD:Debug("---")
