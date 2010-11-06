@@ -1186,9 +1186,7 @@ function IceBarElement.prototype:SetScale(inScale, force)
 		self:ConditionalSetupUpdate()
 	else
 		if self.CurrScale == self.DesiredScale then
-			-- Parnic: this optimization may be reaching a bit too far and causing things to get stuck
-			--         without this, several modules continues to update that don't need to but the stuck issues seem to be decreased
-			--IceHUD.IceCore:RequestUpdates(self, nil)
+			IceHUD.IceCore:RequestUpdates(self, nil)
 		end
 	end
 end
@@ -1556,15 +1554,5 @@ function IceBarElement.prototype:LoadMarkers()
 
 	for i=1, #self.moduleSettings.markers do
 		self:CreateMarker(i)
-	end
-end
-
-function IceBarElement.prototype:Show(bShouldShow)
-	if IceBarElement.super.prototype.Show(self, bShouldShow) then
-		if self.bIsVisible then
-			self:ConditionalSetupUpdate()
-		else
-			IceHUD.IceCore:RequestUpdates(self, nil)
-		end
 	end
 end

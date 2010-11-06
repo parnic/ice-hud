@@ -211,6 +211,15 @@ function IceCastBar.prototype:GetOptions()
 	return opts
 end
 
+function IceCastBar.prototype:IsFull(scale)
+	local retval = IceCastBar.super.prototype.IsFull(self, scale)
+	if retval then
+		if self.action and self.action ~= IceCastBar.Actions.None then
+			return false
+		end
+	end
+	return retval
+end
 
 -- 'Protected' methods --------------------------------------------------------
 
