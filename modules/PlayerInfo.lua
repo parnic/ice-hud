@@ -209,8 +209,9 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 			end
 		end
 
-		local direction = self.moduleSettings.auras["buff"].growDirection == "Left" and -1 or 1
-		self.frame.buffFrame.iconFrames = self:CreateIconFrames(self.frame.buffFrame, direction, self.frame.buffFrame.iconFrames, "buff")
+		self.frame.buffFrame.iconFrames = self:CreateIconFrames(self.frame.buffFrame,
+			self.moduleSettings.auras["buff"].growDirection,
+			self.frame.buffFrame.iconFrames, "buff")
 	end
 end
 
