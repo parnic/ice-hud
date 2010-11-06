@@ -276,15 +276,11 @@ function IceCastBar.prototype:MyOnUpdate()
 			scale = self.actionDuration ~= 0 and remainingTime / self.actionDuration or 0
 		end
 
-		if (remainingTime < 0) then
+		self:UpdateBar(IceHUD:Clamp(scale, 0, 1), self:GetCurrentCastingColor())
+
+		if (remainingTime <= 0) then
 			self:StopBar()
 		end
-
-		-- sanity check to make sure the bar doesn't over/underfill
-		scale = scale > 1 and 1 or scale
-		scale = scale < 0 and 0 or scale
-
-		self:UpdateBar(scale, self:GetCurrentCastingColor())
 
 		local timeString = self.moduleSettings.showCastTime and string.format("%.1fs ", remainingTime) or ""
 		self:SetBottomText1(timeString .. self.actionMessage)
@@ -396,6 +392,8 @@ function IceCastBar.prototype:StopBar()
 	self.actionStartTime = nil
 	self.actionDuration = nil
 
+	self:SetBottomText1()
+	self:SetScale(0)
 	self:Show(false)
 end
 

@@ -163,5 +163,6 @@ function IceCustomHealth.prototype:SetUnit(unit)
 end
 
 function IceCustomHealth.prototype:OnShow()
+	IceCustomHealth.super.prototype.OnShow(self)
 	self:Update(self.unit)
 end

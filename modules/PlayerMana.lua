@@ -126,10 +126,7 @@ function PlayerMana.prototype:Enable(core)
 		self.CustomOnUpdate = function() self:Update(self.unit) end
 	end
 
-	-- allow new 'predicted power' stuff to show the power updates constantly instead of ticking
-	if GetCVarBool("predictedPower") then
-		self:SetupOnUpdate(true)
-	end
+	self:SetupOnUpdate(true)
 
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
@@ -293,7 +290,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 	if (self.manaPercentage == 1 and self.manaType ~= SPELL_POWER_RAGE and self.manaType ~= SPELL_POWER_RUNIC_POWER)
 		or (self.manaPercentage == 0 and (self.manaType == SPELL_POWER_RAGE or self.manaType == SPELL_POWER_RUNIC_POWER)) then
 		self:SetupOnUpdate(false)
-	elseif GetCVarBool("predictedPower") then
+	else
 		self:SetupOnUpdate(true)
 	end
 

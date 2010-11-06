@@ -176,6 +176,7 @@ function IceThreat.prototype:Enable(core)
 
 	self.scheduledEvent = self:ScheduleRepeatingTimer("Update", 0.2)
 
+	self:SetScale(0, true, true)
 	self:Update(self.unit)
 end
 
@@ -391,6 +392,12 @@ function IceThreat.prototype:GetSecondHighestThreat()
 	return secondHighestThreat
 end
 
+function IceThreat.prototype:Show(bShouldShow)
+	IceThreat.super.prototype.Show(self, bShouldShow)
+	if not bShouldShow then
+		self:SetScale(0, true, true)
+	end
+end
 
 -- Load us up
 IceHUD.IceThreat = IceThreat:new()

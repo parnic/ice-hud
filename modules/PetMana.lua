@@ -148,7 +148,7 @@ function PetMana.prototype:Update(unit)
 	if (self.manaPercentage == 1 and self.manaType ~= SPELL_POWER_RAGE and self.manaType ~= SPELL_POWER_RUNIC_POWER)
 		or (self.manaPercentage == 0 and (self.manaType == SPELL_POWER_RAGE or self.manaType == SPELL_POWER_RUNIC_POWER)) then
 		self:SetupOnUpdate(false)
-	elseif GetCVarBool("predictedPower") then
+	else
 		self:SetupOnUpdate(true)
 	end
 

@@ -35,8 +35,6 @@ end
 function IceBarElement.prototype:Enable()
 	IceBarElement.super.prototype.Enable(self)
 
-	-- never register the OnUpdate for the mirror bar since it's handled internally
-	-- in addition, do not register OnUpdate if predictedPower is set and this is the player mana or target mana bar
 	self:ConditionalSetupUpdate()
 
 	if IceHUD.IceCore:ShouldUseDogTags() then
@@ -940,8 +938,7 @@ function IceBarElement.prototype:ConditionalSetupUpdate()
 		return
 	end
 
-	if not string.find(self.elementName, "MirrorBar")
-		and ((IceHUD.WowVer < 30000 or not GetCVarBool("predictedPower")) or (not string.find(self.elementName, "PlayerMana"))) then
+	if not string.find(self.elementName, "MirrorBar") and not string.find(self.elementName, "PlayerMana") then
 		IceHUD.IceCore:RequestUpdates(self, self.MyOnUpdateFunc)
 	end
 end
@@ -1167,11 +1164,16 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top)
 	end
 end
 
-function IceBarElement.prototype:SetScale(inScale, force)
+function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
 	local oldScale = self.CurrScale
 	local min_y, max_y;
 
-	self.CurrScale = IceHUD:Clamp(self:LerpScale(inScale), 0, 1)
+	if not skipLerp then
+		self.CurrScale = self:LerpScale(inScale)
+	else
+		self.CurrScale = inScale
+	end
+	self.CurrScale = IceHUD:Clamp(self.CurrScale, 0, 1)
 
 	if force or oldScale ~= self.CurrScale then
 		local scale = self.CurrScale
