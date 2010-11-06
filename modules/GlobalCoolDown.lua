@@ -56,6 +56,10 @@ function GlobalCoolDown.prototype:GetOptions()
 	return opts
 end
 
+function GlobalCoolDown.prototype:IsFull(scale)
+	return false
+end
+
 function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell)
 	if unit ~= "player" or not spell then
 		return
