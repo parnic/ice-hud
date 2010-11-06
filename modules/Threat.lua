@@ -211,8 +211,7 @@ end
 function IceThreat.prototype:CreateSecondThreatBar()
 	self.secondThreatBar = self:BarFactory(self.secondThreatBar, "MEDIUM", "OVERLAY")
 
-	local r, g, b = self:GetColor("ThreatSecondPlace")
-	self.secondThreatBar.bar:SetVertexColor(r, g, b, self.alpha)
+	self.secondThreatBar.bar:SetVertexColor(self:GetColor("ThreatSecondPlace", self.alpha * self.moduleSettings.secondPlaceThreatAlpha))
 
 	self:SetBarCoord(self.secondThreatBar)
 end
@@ -247,13 +246,21 @@ function IceThreat.prototype:Update(unit)
 	local secondHighestThreat = 0
 	local rangeMulti = 1.1
 	local scaledPercentZeroToOne
-
+--[[
+threatState = 1
+scaledPercent = 1
+rawPercent = 1
+scaledPercentZeroToOne = 1
+isTanking = 1
+tankThreat = 100
+threatValue = 100
+]]
 	if not isTanking then
 		_, _, _, _, tankThreat = UnitDetailedThreatSituation("targettarget", self.unit) -- highest threat target of target (i.e. the tank)
 	elseif self.moduleSettings.displaySecondPlaceThreat then
 		secondHighestThreat = self:GetSecondHighestThreat()
 	end
-
+--secondHighestThreat = 75
 	if threatValue and threatValue < 0 then
 		threatValue = threatValue + 410065408 -- the corrected threat while under MI or Fade
 		if isTanking then
@@ -300,7 +307,7 @@ function IceThreat.prototype:Update(unit)
 			scaledPercentZeroToOne = rawPercent / 100
 		end
 
-		IceHUD:Debug( "isTanking="..(isTanking or "nil").." threatState="..(threatState or "nil").." scaledPercent="..(scaledPercent or "nil").." rawPercent="..(rawPercent or "nil") )
+		IceHUD:Debug( "isTanking="..(isTanking or "nil").." threatState="..(threatState or "nil").." scaledPercent="..(scaledPercent or "nil").." rawPercent="..(rawPercent or "nil").." threatValue="..(threatValue or "nil").." secondhighest="..(secondHighestThreat or "nil"))
 	end
 
 	-- set percentage text
@@ -327,12 +334,12 @@ function IceThreat.prototype:Update(unit)
 	self:UpdateBar( scaledPercentZeroToOne, self.color )
 
 	-- do the aggro indicator bar stuff, but only if it has changed
-	--if ( self.aggroBarMulti ~= rangeMulti ) then
+	if ( self.aggroBarMulti ~= rangeMulti ) then
 		self.aggroBarMulti = rangeMulti
 
 		local pos = IceHUD:Clamp(1 - (1 / rangeMulti), 0, 1)
 		self:SetBarCoord(self.aggroBar, pos, true)
-	--end
+	end
 
 	self:UpdateAlpha()
 	self:UpdateSecondHighestThreatBar(secondHighestThreat, threatValue)
@@ -342,14 +349,20 @@ function IceThreat.prototype:UpdateSecondHighestThreatBar(secondHighestThreat, t
 	if secondHighestThreat <= 0 or not threatValue or threatValue == 0 then
 		self.secondThreatBar:Hide()
 	else
-		local r, g, b = self:GetColor("ThreatSecondPlace")
-		self.secondThreatBar.bar:SetVertexColor(r, g, b, self.alpha * self.moduleSettings.secondPlaceThreatAlpha)
+		local secondPercent = secondHighestThreat / threatValue
+		if not self.lastSecondHighestThreat or self.lastSecondHighestThreat ~= secondPercent then
+			self.lastSecondHighestThreat = secondPercent
 
-		local pos = IceHUD:Clamp(secondHighestThreat / threatValue, 0, 1)
-		if self.moduleSettings.reverse then
-			pos = 1-pos
+			self.secondThreatBar.bar:SetVertexColor(self:GetColor("ThreatSecondPlace", self.alpha * self.moduleSettings.secondPlaceThreatAlpha))
+
+			local pos = IceHUD:Clamp(secondPercent, 0, 1)
+			if self.moduleSettings.reverse then
+				pos = 1-pos
+			end
+
+			self:SetBarCoord(self.secondThreatBar, pos)
+			self.secondThreatBar:Show()
 		end
-		self:SetBarCoord(self.secondThreatBar, pos)
 	end
 end
 
@@ -373,7 +386,7 @@ function IceThreat.prototype:GetSecondHighestThreat()
 
 			i = i + 1
 		end
-	elseif UnitInParty("player") then
+	else
 		numMembers = GetNumPartyMembers()
 
 		while numFound < numMembers and i <= MAX_NUM_PARTY_MEMBERS do
@@ -386,6 +399,13 @@ function IceThreat.prototype:GetSecondHighestThreat()
 			end
 
 			i = i + 1
+		end
+	end
+
+	if UnitExists("pet") then
+		local _, _, _, _, temp = UnitDetailedThreatSituation("pet", self.unit)
+		if temp ~= nil and temp > secondHighestThreat then
+			secondHighestThreat = temp
 		end
 	end
 
