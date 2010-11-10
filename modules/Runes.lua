@@ -215,6 +215,7 @@ function Runes.prototype:ResetRuneAvailability()
 	for i=1, self.numRunes do
 		self:UpdateRunePower(nil, i, true)
 	end
+	self:Redraw()
 end
 
 -- simply shows/hides the foreground rune when it becomes usable/unusable. this allows the background transparent rune to show only
