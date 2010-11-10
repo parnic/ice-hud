@@ -106,6 +106,8 @@ function IceBarElement.prototype:Enable()
 			self:OnShow()
 		end)
 	end
+
+	self:Redraw()
 end
 
 function IceBarElement.prototype:OnHide()
@@ -122,6 +124,8 @@ function IceBarElement.prototype:Disable(core)
 	IceBarElement.super.prototype.Disable(self, core)
 
 	IceHUD.IceCore:RequestUpdates(self, nil)
+
+	self:ClearMarkers()
 end
 
 
@@ -1458,6 +1462,12 @@ function IceBarElement.prototype:RepositionMarkers()
 	end
 end
 
+function IceBarElement.prototype:ClearMarkers()
+	for idx=1,#self.Markers do
+		self:RemoveMarker(idx, true)
+	end
+end
+
 function IceBarElement.prototype:AddNewMarker(inPosition, inColor, inHeight)
 	if not self.moduleSettings.markers then
 		self.moduleSettings.markers = {}
@@ -1483,12 +1493,14 @@ function IceBarElement.prototype:EditMarker(idx, inPosition, inColor, inHeight)
 	self:CreateMarker(idx)
 end
 
-function IceBarElement.prototype:RemoveMarker(idx)
+function IceBarElement.prototype:RemoveMarker(idx, bSkipSettings)
 	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
 		"Bad marker passed to RemoveMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
 	self.Markers[idx]:Hide()
 	table.remove(self.Markers, idx)
-	table.remove(self.moduleSettings.markers, idx)
+	if not bSkipSettings then
+		table.remove(self.moduleSettings.markers, idx)
+	end
 end
 
 function IceBarElement.prototype:CreateMarker(idx)
