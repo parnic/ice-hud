@@ -274,7 +274,7 @@ function Runes.prototype:UpdateRuneType(event, rune)
 	local thisRuneName = self.runeNames[GetRuneType(rune)]
 
 	self.frame.graphical[rune].rune:SetTexture(self:GetRuneTexture(thisRuneName))
-	--self.frame.graphical[rune].rune:SetVertexColor(self:GetColor("Runes"..thisRuneName))
+	self.frame.graphical[rune].rune:SetVertexColor(self:GetColor("Runes"..thisRuneName))
 end
 
 function Runes.prototype:GetRuneTexture(runeName)
@@ -342,8 +342,6 @@ function Runes.prototype:CreateRune(i, type, name)
 		self.frame.graphical[i].rune:SetAllPoints(self.frame.graphical[i])
 		self.frame.graphical[i].cd = CreateFrame("Cooldown", nil, self.frame.graphical[i], "CooldownFrameTemplate")
 		self.frame.graphical[i].shine = self.frame.graphical[i]:CreateTexture(nil, "OVERLAY")
-
-		self.frame.graphical[i].rune:SetTexture(self:GetRuneTexture(name))
 	end
 
 	self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
@@ -365,7 +363,8 @@ function Runes.prototype:CreateRune(i, type, name)
 		self.frame.graphical[i]:SetPoint("TOPLEFT", 0, -1 * ((runeSwapI-1) * (self.runeSize-5) + (runeSwapI-1) + ((runeSwapI-1) * self.moduleSettings.runeGap)))
 	end
 
-	--self.frame.graphical[i].rune:SetVertexColor(self:GetColor("Runes"..name))
+	self.frame.graphical[i].rune:SetTexture(self:GetRuneTexture(name))
+	self.frame.graphical[i].rune:SetVertexColor(self:GetColor("Runes"..name))
 	self.frame.graphical[i]:Show()
 
 	self.frame.graphical[i].cd:SetFrameStrata("BACKGROUND")
