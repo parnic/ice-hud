@@ -128,6 +128,8 @@ function IceTargetInfo.prototype:Enable(core)
 	end
 
 	if not self.moduleSettings.debuffSizeFixup then
+		self.moduleSettings.debuffSizeFixup = true
+
 		auraSettings.debuff.size = auraSettings.buff.size
 		auraSettings.debuff.ownSize = auraSettings.buff.ownSize
 
