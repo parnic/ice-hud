@@ -293,6 +293,24 @@ function IceClassPowerCounter.prototype:GetOptions()
 		order = 42,
 	}
 
+	opts["overrideAlpha"] = {
+		type = "toggle",
+		name = L["Override alpha when not full"],
+		desc = L["If your class power is not full (or not empty in the case of Holy Power) then the module will always be displayed on your screen using the In Combat alpha setting. Otherwise it will fade to the OOC alpha when you leave combat."],
+		width = "double",
+		get = function()
+			return self.moduleSettings.overrideAlpha
+		end,
+		set = function(info, v)
+			self.moduleSettings.overrideAlpha = v
+			self:UpdateAlpha()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 43,
+	}
+
 	return opts
 end
 
@@ -317,6 +335,7 @@ function IceClassPowerCounter.prototype:GetDefaultSettings()
 	defaults["customColor"] = {r=1, g=0, b=0, a=1}
 	defaults["hideFriendly"] = false
 	defaults["pulseWhenFull"] = true
+	defaults["overrideAlpha"] = true
 
 	return defaults
 end
@@ -650,6 +669,10 @@ function IceClassPowerCounter.prototype:HideBlizz()
 end
 
 function IceClassPowerCounter.prototype:UseTargetAlpha()
+	if not self.moduleSettings.overrideAlpha then
+		return false
+	end
+
 	if self.bTreatEmptyAsFull then
 		return self.lastNumReady > 0
 	else
