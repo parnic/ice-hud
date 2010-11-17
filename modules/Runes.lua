@@ -274,6 +274,11 @@ function Runes.prototype:UpdateRuneType(event, rune)
 
 	local thisRuneName = self.runeNames[GetRuneType(rune)]
 
+	-- i have no idea how this could happen but it's been reported, so...
+	if not thisRuneName then
+		return
+	end
+
 	self.frame.graphical[rune].rune:SetTexture(self:GetRuneTexture(thisRuneName))
 	self.frame.graphical[rune].rune:SetVertexColor(self:GetColor("Runes"..thisRuneName))
 end
