@@ -873,6 +873,10 @@ end
 
 
 function IceTargetHealth.prototype:SetTexLoc(texframe, xpos, ypos, anchorFrom, anchorTo)
+	if not texframe then
+		return nil
+	end
+
 	texframe:Show()
 	texframe:ClearAllPoints()
 	texframe:SetPoint(anchorFrom or "TOPLEFT", self.frame, anchorTo or "TOPLEFT", xpos or 0, ypos or 0)
@@ -880,6 +884,10 @@ end
 
 
 function IceTargetHealth.prototype:SetTexScale(texframe, width, height, scale)
+	if not texframe then
+		return nil
+	end
+
 	texframe:SetWidth(width * scale)
 	texframe:SetHeight(height * scale)
 end
