@@ -646,8 +646,6 @@ function IceTargetHealth.prototype:Enable(core)
 		self:HideBlizz()
 	end
 
-	self:CreateRaidIconFrame()
-
 	self:Update(self.unit)
 
 	RegisterUnitWatch(self.frame)
@@ -746,6 +744,11 @@ function IceTargetHealth.prototype:EnableClickTargeting(bEnable)
 	end
 end
 
+function IceTargetHealth.prototype:OnShow()
+	IceTargetHealth.super.prototype.OnShow(self)
+
+	self:Update(self.unit)
+end
 
 function IceTargetHealth.prototype:UpdateEvent(event, unit)
 	self:Update(unit)
@@ -908,6 +911,8 @@ end
 
 function IceTargetHealth.prototype:CreateFrame()
 	IceTargetHealth.super.prototype.CreateFrame(self)
+
+	self:CreateRaidIconFrame()
 
 	-- for showing/hiding the frame based on unit visibility
 	self.frame:SetAttribute("unit", self.unit)
