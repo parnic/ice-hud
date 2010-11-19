@@ -156,10 +156,16 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 		end
 	end
 
+	-- no acceptable space found to append weapon buffs, so don't.
+	-- either the player already has 40 buffs on him or he's in configuration mode
+	if startingNum == 0 then
+		return
+	end
+
 	if hasMainHandEnchant or hasOffHandEnchant then
 		local CurrTime = GetTime()
 
-		if hasMainHandEnchant then
+		if hasMainHandEnchant and startingNum <= IceCore.BuffLimit then
 			if self.mainHandEnchantEndTime == 0 or
 				abs(self.mainHandEnchantEndTime - (mainHandExpiration/1000)) > CurrTime - self.mainHandEnchantTimeSet + EPSILON then
 				self.mainHandEnchantEndTime = mainHandExpiration/1000
@@ -181,7 +187,7 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 			startingNum = startingNum + 1
 		end
 
-		if hasOffHandEnchant then
+		if hasOffHandEnchant and startingNum <= IceCore.BuffLimit then
 			if self.offHandEnchantEndTime == 0 or
 				abs(self.offHandEnchantEndTime - (offHandExpiration/1000)) > abs(CurrTime - self.offHandEnchantTimeSet) + EPSILON then
 				self.offHandEnchantEndTime = offHandExpiration/1000
