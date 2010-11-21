@@ -165,19 +165,23 @@ function PlayerMana.prototype:OnShow()
 end
 
 function PlayerMana.prototype:EnteringVehicle(event, unit, arg2)
-	if (self.unit == "player" and IceHUD:ShouldSwapToVehicle(unit, arg2)) then
-		self.unit = "vehicle"
-		self:RegisterFontStrings()
-		self:Update(self.unit)
+	if (self.unit == "player") then
+		if IceHUD:ShouldSwapToVehicle(unit, arg2) then
+			self.unit = "vehicle"
+			self:RegisterFontStrings()
+		end
+		self:ManaType(nil, self.unit)
 	end
 end
 
 
 function PlayerMana.prototype:ExitingVehicle(event, unit)
-	if (unit == "player" and self.unit == "vehicle") then
-		self.unit = "player"
-		self:RegisterFontStrings()
-		self:Update(self.unit)
+	if (unit == "player") then
+		if self.unit == "vehicle" then
+			self.unit = "player"
+			self:RegisterFontStrings()
+		end
+		self:ManaType(nil, self.unit)
 	end
 end
 
