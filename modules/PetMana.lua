@@ -73,6 +73,7 @@ function PetMana.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckVehicle")
 
 	self:CheckPet()
 	self:ManaType(nil, self.unit)
@@ -203,21 +204,31 @@ function PetMana.prototype:GetOptions()
 end
 
 function PetMana.prototype:EnteringVehicle(event, unit, arg2)
-	if (self.unit == "pet" and IceHUD:ShouldSwapToVehicle(unit, arg2)) then
-		self.unit = "player"
-		self:RegisterFontStrings()
+	if (self.unit == "pet") then
+		if IceHUD:ShouldSwapToVehicle(unit, arg2) then
+			self.unit = "player"
+			self:RegisterFontStrings()
+		end
 		self:ManaType(nil, self.unit)
-		self:Update(self.unit)
 	end
 end
 
 
 function PetMana.prototype:ExitingVehicle(event, unit)
-	if (unit == "player" and self.unit == "player") then
-		self.unit = "pet"
-		self:RegisterFontStrings()
+	if (unit == "player") then
+		if self.unit == "player" then
+			self.unit = "pet"
+			self:RegisterFontStrings()
+		end
 		self:ManaType(nil, self.unit)
-		self:Update(self.unit)
+	end
+end
+
+function PetMana.prototype:CheckVehicle()
+	if UnitHasVehicleUI("player") then
+		self:EnteringVehicle(nil, "player", true)
+	else
+		self:ExitingVehicle(nil, "player")
 	end
 end
 
