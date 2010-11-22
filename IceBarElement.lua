@@ -942,6 +942,10 @@ function IceBarElement.prototype:ConditionalSetupUpdate()
 		return
 	end
 
+	if not self.moduleSettings.enabled then
+		return
+	end
+
 	if not string.find(self.elementName, "MirrorBar") and not string.find(self.elementName, "PlayerMana") then
 		IceHUD.IceCore:RequestUpdates(self, self.MyOnUpdateFunc)
 	end
