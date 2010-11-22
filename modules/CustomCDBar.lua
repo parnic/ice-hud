@@ -380,7 +380,7 @@ function IceCustomCDBar.prototype:GetOptions()
 end
 
 function IceCustomCDBar.prototype:GetBarColor()
-	return self.moduleSettings.barColor.r, self.moduleSettings.barColor.g, self.moduleSettings.barColor.b, self.alpha
+	return self.moduleSettings.barColor.r, self.moduleSettings.barColor.g, self.moduleSettings.barColor.b, 1
 end
 
 -- 'Protected' methods --------------------------------------------------------

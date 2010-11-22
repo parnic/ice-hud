@@ -480,7 +480,7 @@ function IceCustomBar.prototype:GetOptions()
 end
 
 function IceCustomBar.prototype:GetBarColor()
-	return self.moduleSettings.barColor.r, self.moduleSettings.barColor.g, self.moduleSettings.barColor.b, self.alpha
+	return self.moduleSettings.barColor.r, self.moduleSettings.barColor.g, self.moduleSettings.barColor.b, 1
 end
 
 -- 'Protected' methods --------------------------------------------------------
