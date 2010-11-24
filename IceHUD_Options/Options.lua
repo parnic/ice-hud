@@ -62,7 +62,10 @@ Good news: as of v1.5, you can create as many bars and counters for any buffs or
 Expand "|cffffdc42Module Settings|r", expand PlayerHealth (or TargetHealth for targets), click Icon Settings. You can control every aspect of the icons there including location, visibility, draw order, etc.
 
 |cff9999ff11. How do I turn off buffs/debuffs on the player's or target's bar?|r
-Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targets), and set the number of buffs per row to be 0. These cannot be controlled independently (e.g. you can turn off buffs and debuffs, but not just one or the other).]]
+Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targets), and set the number of buffs per row to be 0. These cannot be controlled independently (e.g. you can turn off buffs and debuffs, but not just one or the other).
+
+|cff9999ff12. How do I turn off these big huge bars that pulse whenever one of my abilities procs?|r
+This isn't |cff9999ffIceHUD|r - it's Blizzard's new Spell Alerts they added in 4.0.1. Interface options => Combat => "Show Spell Alerts" to turn them off or search for a mod to tweak their positioning/size/etc.]]
 				}
 			}
 		},
