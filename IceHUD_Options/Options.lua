@@ -44,7 +44,7 @@ Check the "Transparency Settings" section. Nearly any combination of states shou
 Expand the "|cffffdc42Module Settings|r" section, expand "PlayerHealth," click "Text Settings," look for options about keeping the lower/upper text blocks alpha locked. If the text is alpha locked, it will not drop below 100%, otherwise it respects its bar's transparency setting. PlayerHealth/Mana, TargetHealth/Mana, and pet bars should all have these options.
 
 |cff9999ff5. Is there any way to see combo points for Rogues and Druids or sunder applications for Warriors?|r
-Yes, check the "ComboPoints" and "SunderCount" modules in the configuration panel. (Note that these modules may not show up if you're not of the appropriate class to see them. They should be present for their respective classes, however.)
+Yes, check the "ComboPoints" and "Sunders" modules in the configuration panel. (Note that these modules may not show up if you're not of the appropriate class to see them. They should be present for their respective classes, however.)
 
 |cff9999ff6. What's this thing at the top of the player's cast bar? It's darker than the rest of the bar.|r
 That's the Cast Lag Indicator that shows you when you can start casting a new spell and still be able to finish the current one (based on your lag to the server). You can disable this in the Player Cast Bar module settings.
@@ -56,13 +56,13 @@ Yes, this is called the MirrorBarHandler in the |cffffdc42Module Settings|r. It'
 That would be the TargetOfTarget module. That module is available for people who don't want the full ToT health/mana bars, but do want some sort of ToT representation on the screen.
 
 |cff9999ff9. IceHUD needs a bar or counter for buff/debuff X!|r
-Good news: as of v1.5, you can create as many bars and counters for any buffs or debuffs you want! Click one of the "Create custom ..." buttons above. This will create a module named MyCustomBar# (where # is a number based on how many custom bars you've made so far) or MyCustomCounter#. You can then expand the |cffffdc42Module Settings|r group and modify all sorts of settings on the new custom module. It is highly recommend that you rename the bar as soon as possible to avoid any confusion later. These custom modules are full-featured enough to replace some of the class-specific ones that are already there, but I will leave them so as not to upset people who are already using them.
+Good news: as of v1.5, you can create as many bars and counters for any buffs or debuffs you want! Select one of the custom module types above and press the Create button. This will create a custom module and automatically select it in the list. It is highly recommend that you rename the bar as soon as possible to avoid any confusion later.
 
 |cff9999ff10. How do I turn off the resting/combat/PvP/etc. icons on the player or target?|r
 Expand "|cffffdc42Module Settings|r", expand PlayerHealth (or TargetHealth for targets), click Icon Settings. You can control every aspect of the icons there including location, visibility, draw order, etc.
 
 |cff9999ff11. How do I turn off buffs/debuffs on the player's or target's bar?|r
-Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targets), and set the number of buffs per row to be 0. These cannot be controlled independently (e.g. you can turn off buffs and debuffs, but not just one or the other).
+Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targets), select Buff Settings or Debuff Settings, and un-check "show buffs" (or "show debuffs").
 
 |cff9999ff12. How do I turn off these big huge bars that pulse whenever one of my abilities procs?|r
 This isn't |cff9999ffIceHUD|r - it's Blizzard's new Spell Alerts they added in 4.0.1. Interface options => Combat => "Show Spell Alerts" to turn them off or search for a mod to tweak their positioning/size/etc.]]
