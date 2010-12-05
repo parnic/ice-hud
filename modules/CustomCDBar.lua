@@ -590,11 +590,11 @@ end
 function IceCustomCDBar.prototype:Show(bShouldShow, bForceHide)
 	if self.moduleSettings.enabled and not bForceHide then
 		if self.moduleSettings.displayMode == "Always" then
-			if self.target then
+			--if self.target then
 				IceCustomCDBar.super.prototype.Show(self, true)
-			else
-				IceCustomCDBar.super.prototype.Show(self, bShouldShow)
-			end
+			--else
+				--IceCustomCDBar.super.prototype.Show(self, bShouldShow)
+			--end
 		elseif self.moduleSettings.displayMode == "When ready" then
 			if not self.coolingDown and self:IsReady() then
 				IceCustomCDBar.super.prototype.Show(self, true)
