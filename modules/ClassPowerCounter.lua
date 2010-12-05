@@ -540,29 +540,28 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 	-- create runes
 	if (not self.frame.graphical[i]) then
 		self.frame.graphical[i] = CreateFrame("Frame", nil, self.frame)
-		self.frame.graphical[i].rune = self.frame.graphical[i]:CreateTexture(nil, "LOW")
-		self.frame.graphical[i].rune:SetAllPoints(self.frame.graphical[i])
-		self.frame.graphical[i].shine = self.frame.graphical[i]:CreateTexture(nil, "OVERLAY")
-
+		self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
 		self.frame.graphical[i]:SetWidth(self.runeWidth)
 		self.frame.graphical[i]:SetHeight(self.runeHeight)
 
-		self:SetupRuneTexture(i)
+		self.frame.graphical[i].rune = self.frame.graphical[i]:CreateTexture(nil, "LOW")
+		self.frame.graphical[i].rune:SetAllPoints(self.frame.graphical[i])
 		self.frame.graphical[i].rune:SetVertexColor(0, 0, 0)
+		self:SetupRuneTexture(i)
+
+		self.frame.graphical[i].shine = self.frame.graphical[i]:CreateTexture(nil, "OVERLAY")
+		self.frame.graphical[i].shine:SetTexture("Interface\\ComboFrame\\ComboPoint")
+		self.frame.graphical[i].shine:SetBlendMode("ADD")
+		self.frame.graphical[i].shine:SetTexCoord(0.5625, 1, 0, 1)
+		self.frame.graphical[i].shine:ClearAllPoints()
+		self.frame.graphical[i].shine:SetPoint("CENTER", self.frame.graphical[i], "CENTER")
+
+		self.frame.graphical[i].shine:SetWidth(self.runeWidth + 25)
+		self.frame.graphical[i].shine:SetHeight(self.runeHeight + 10)
+		self.frame.graphical[i].shine:Hide()
+
+		self.frame.graphical[i]:Hide()
 	end
-
-	self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
-
-	self.frame.graphical[i]:Hide()
-
-	self.frame.graphical[i].shine:SetTexture("Interface\\ComboFrame\\ComboPoint")
-	self.frame.graphical[i].shine:SetBlendMode("ADD")
-	self.frame.graphical[i].shine:SetTexCoord(0.5625, 1, 0, 1)
-	self.frame.graphical[i].shine:ClearAllPoints()
-	self.frame.graphical[i].shine:SetPoint("CENTER", self.frame.graphical[i], "CENTER")
-	self.frame.graphical[i].shine:SetWidth(self.runeWidth + 25)
-	self.frame.graphical[i].shine:SetHeight(self.runeHeight + 10)
-	self.frame.graphical[i].shine:Hide()
 end
 
 function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
