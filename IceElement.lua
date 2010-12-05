@@ -70,6 +70,7 @@ function IceElement.prototype:Create(parent)
 	self.parent = parent
 	if not self.masterFrame then
 		self.masterFrame = CreateFrame("Frame", nil, self.parent)
+		self.masterFrame:SetFrameStrata("MEDIUM")
 	end
 	self:CreateFrame()
 	self:Show(false)

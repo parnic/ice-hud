@@ -230,12 +230,11 @@ function IceCastBar.prototype:CreateFrame()
 	self.frame.bottomUpperText:SetWidth(self.settings.gap + 30)
 
 	if not self.barFrame.icon then
-		self.barFrame.icon = self.masterFrame:CreateTexture(nil, "LOW")
+		self.barFrame.icon = self.masterFrame:CreateTexture(nil, "OVERLAY")
 		-- default texture so that 'config mode' can work without activating the bar first
 		self.barFrame.icon:SetTexture("Interface\\Icons\\Spell_Frost_Frost")
 		-- this cuts off the border around the buff icon
 		self.barFrame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-		self.barFrame.icon:SetDrawLayer("OVERLAY")
 	end
 	self:PositionIcons()
 end
