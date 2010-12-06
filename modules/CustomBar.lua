@@ -28,6 +28,9 @@ function IceCustomBar.prototype:Enable(core)
 	self:RegisterEvent("UNIT_PET", "UpdateCustomBarEvent")
 	self:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomBarEvent")
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomBarEvent")
+	if self.unitClass == "SHAMAN" then
+		self:RegisterEvent("PLAYER_TOTEM_UPDATE", "UpdateTotems")
+	end
 
 	if self.moduleSettings.auraIconScale == nil then
 		self.moduleSettings.auraIconScale = 1
@@ -528,11 +531,34 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 		isMine = unitCaster == "player"
 	end
 
+	if self.unitClass == "SHAMAN" then
+		for i=1,MAX_TOTEMS do
+			local haveTotem, totemName, startTime, realDuration, icon = GetTotemInfo(i)
+
+			if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
+				duration = self.moduleSettings.maxDuration
+			else
+				duration = realDuration
+			end
+
+			if ((self.moduleSettings.exactMatch and totemName:upper() == buffName:upper())
+				or (not self.moduleSettings.exactMatch and string.match(totemName:upper(), buffName:upper()))) then
+				endTime = startTime + realDuration
+				remaining = endTime - GetTime()
+				return duration, remaining, 1, icon, endTime
+			end
+		end
+	end
+
 	return nil, nil, nil, nil
 end
 
 function IceCustomBar.prototype:UpdateCustomBarEvent(event, unit)
 	self:UpdateCustomBar(unit)
+end
+
+function IceCustomBar.prototype:UpdateTotems(event, totem)
+	self:UpdateCustomBar(self.unit)
 end
 
 function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
