@@ -501,7 +501,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 			return offHandExpiration/1000, offHandExpiration/1000, offHandCharges, GetInventoryItemTexture("player", slotId)
 		end
 
-		return nil, nil, nil, nil
+		return nil
 	end
 
 	local i = 1
@@ -535,22 +535,24 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 		for i=1,MAX_TOTEMS do
 			local haveTotem, totemName, startTime, realDuration, icon = GetTotemInfo(i)
 
-			if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
-				duration = self.moduleSettings.maxDuration
-			else
-				duration = realDuration
-			end
+			if haveTotem and totemName then
+				if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
+					duration = self.moduleSettings.maxDuration
+				else
+					duration = realDuration
+				end
 
-			if ((self.moduleSettings.exactMatch and totemName:upper() == buffName:upper())
-				or (not self.moduleSettings.exactMatch and string.match(totemName:upper(), buffName:upper()))) then
-				endTime = startTime + realDuration
-				remaining = endTime - GetTime()
-				return duration, remaining, 1, icon, endTime
+				if ((self.moduleSettings.exactMatch and totemName:upper() == buffName:upper())
+					or (not self.moduleSettings.exactMatch and string.match(totemName:upper(), buffName:upper()))) then
+					endTime = startTime + realDuration
+					remaining = endTime - GetTime()
+					return duration, remaining, 1, icon, endTime
+				end
 			end
 		end
 	end
 
-	return nil, nil, nil, nil
+	return nil
 end
 
 function IceCustomBar.prototype:UpdateCustomBarEvent(event, unit)
