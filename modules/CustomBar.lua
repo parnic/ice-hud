@@ -566,6 +566,8 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 		return
 	end
 
+	self:ConditionalUpdateFlash()
+
 	local now = GetTime()
 	local remaining = nil
 	local count = 0
@@ -653,6 +655,9 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 	end
 
 	self.barFrame.bar:SetVertexColor(self:GetBarColor())
+	if self.flashFrame and self.flashFrame.flash then
+		self.flashFrame.flash:SetVertexColor(self:GetBarColor())
+	end
 end
 
 function IceCustomBar.prototype:OutCombat()
