@@ -12,7 +12,7 @@ local GlyphSpellId = 56810
 local baseTime = 9
 local gapPerComboPoint = 3
 local netherbladeBonus = 3
-local glyphBonusSec = 3
+local glyphBonusSec = 6
 local impSndTalentPage = 2
 local impSndTalentIdx = 4
 local impSndBonusPerRank = 0.25
@@ -43,20 +43,20 @@ end
 function SliceAndDice.prototype:Enable(core)
 	SliceAndDice.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "TargetChanged")
 	self:RegisterEvent("UNIT_AURA", "UpdateSliceAndDice")
 	self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateDurationBar")
 
 	if not self.moduleSettings.alwaysFullAlpha then
 		self:Show(false)
 	else
-		self:UpdateSliceAndDice(nil, self.unit)
+		self:UpdateSliceAndDice()
 	end
 
 	self:SetBottomText1("")
 end
 
 function SliceAndDice.prototype:TargetChanged()
+	SliceAndDice.super.prototype.TargetChanged(self)
 	self:UpdateDurationBar()
 	self:UpdateSliceAndDice()
 end
@@ -145,7 +145,7 @@ function SliceAndDice.prototype:CreateDurationBar()
 	-- Rokiyo: Do we need to call this here?
 	self.CurrScale = 0
 
-	self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.alpha * self.moduleSettings.durationAlpha))
+	self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
 	self.durationFrame.bar:SetHeight(0)
 
 	self:UpdateBar(1, "undef")
@@ -205,6 +205,9 @@ function SliceAndDice.prototype:MyOnUpdate()
 	if self.bUpdateSnd then
 		self:UpdateSliceAndDice(nil, self.unit, true)
 	end
+	if self.target then
+		self:UpdateDurationBar()
+	end
 end
 
 function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
@@ -239,9 +242,9 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
 
 		formatString = self.moduleSettings.upperText or ''
 	else
-	self:UpdateBar(0, "SliceAndDice")
+		self:UpdateBar(0, "SliceAndDice")
 
-	if ((IceHUD.WowVer >= 30000 and GetComboPoints(self.unit, "target") == 0) or (IceHUD.WowVer < 30000 and GetComboPoints() == 0)) or not UnitExists("target") then
+		if ((IceHUD.WowVer >= 30000 and GetComboPoints(self.unit, "target") == 0) or (IceHUD.WowVer < 30000 and GetComboPoints() == 0)) or not UnitExists("target") then
 			if self.bIsVisible then
 				self.bUpdateSnd = nil
 			end
@@ -249,7 +252,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
 			if not self.moduleSettings.alwaysFullAlpha then
 				self:Show(false)
 			end
-	end
+		end
 	end
 
 	-- somewhat redundant, but we also need to check potential remaining time
@@ -274,8 +277,12 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 	-- first, set the cached upper limit of SnD duration
 	CurrMaxSnDDuration = self:GetMaxBuffTime(maxComboPoints)
 
+	if event then
+		self:UpdateSliceAndDice()
+	end
+
 	-- player doesn't want to show the percent of max or the alpha is zeroed out, so don't bother with the duration bar
-	if not self.moduleSettings.showAsPercentOfMax or self.moduleSettings.durationAlpha == 0 then
+	if not self.moduleSettings.showAsPercentOfMax or self.moduleSettings.durationAlpha == 0 or (points == 0 and not self:IsVisible()) then
 		self.durationFrame:Hide()
 		return
 	end
@@ -293,10 +300,10 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 
 	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
 	if (self.moduleSettings.reverse) then
-			scale = 1 - scale
+		scale = 1 - scale
 	end
 
-	self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.alpha * self.moduleSettings.durationAlpha))
+	self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
 	self:SetBarCoord(self.durationFrame, scale)
 
 	if sndEndTime < GetTime() then
