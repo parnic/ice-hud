@@ -162,6 +162,20 @@ function Totems.prototype:GetOptions()
 		order = 34.1
 	}
 
+	opts["allowMouseClick"] = {
+		type = 'toggle',
+		name = L["Allow mouse interaction"],
+		desc = L["Whether or not to allow the mouse to interact with the totems. If this is enabled, then right-clicking a totem will cancel it. Otherwise mouse clicks will not get caught by the totems and no tooltips will be shown."],
+		get = function()
+			return self.moduleSettings.allowMouseClick
+		end,
+		set = function(info, v)
+			self.moduleSettings.allowMouseClick = v
+			self:Redraw()
+		end,
+		order = 34.2
+	}
+
 	return opts
 end
 
@@ -179,6 +193,7 @@ function Totems.prototype:GetDefaultSettings()
 	defaults["displayMode"] = "Horizontal"
 	defaults["cooldownMode"] = "Cooldown"
 	defaults["totemGap"] = 0
+	defaults["allowMouseClick"] = true
 
 	return defaults
 end
@@ -366,15 +381,21 @@ function Totems.prototype:CreateTotem(i, name)
 	self.frame.graphical[i].shine:SetHeight(self.totemSize + 10)
 	self.frame.graphical[i].shine:Hide()
 
-	self.frame.graphical[i]:EnableMouse(true)
-	self.frame.graphical[i].slot = i;
-	self.frame.graphical[i]:SetScript("OnEnter", self.graphicalOnEnter)
-	self.frame.graphical[i]:SetScript("OnLeave", self.graphicalOnLeave)
+	if self.moduleSettings.allowMouseClick then
+		self.frame.graphical[i]:EnableMouse(true)
+		self.frame.graphical[i]:SetScript("OnEnter", self.graphicalOnEnter)
+		self.frame.graphical[i]:SetScript("OnLeave", self.graphicalOnLeave)
+	else
+		self.frame.graphical[i]:EnableMouse(false)
+		self.frame.graphical[i]:SetScript("OnEnter", nil)
+		self.frame.graphical[i]:SetScript("OnLeave", nil)
+	end
+	self.frame.graphical[i].slot = i
+
 	-- it looks like HookScript will continue to add handlers every time instead of replacing them like SetScript
 	if (bWasNewFrame) then
 		self.frame.graphical[i]:HookScript("OnMouseUp", self.graphicalOnMouseUp)
 	end
-
 end
 
 -- Load us up
