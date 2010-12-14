@@ -51,14 +51,18 @@ function IceCustomBar.prototype:Enable(core)
 		self.moduleSettings.auraIconYOffset = 0
 	end
 
+	self:FixupTextColors()
+	self:SetCustomTextColor(self.frame.bottomUpperText, self.moduleSettings.upperTextColor)
+	self:SetCustomTextColor(self.frame.bottomLowerText, self.moduleSettings.lowerTextColor)
+end
+
+function IceCustomBar.prototype:FixupTextColors()
 	if not self.moduleSettings.upperTextColor then
 		self.moduleSettings.upperTextColor = {r=1, g=1, b=1}
 	end
-	self:SetCustomTextColor(self.frame.bottomUpperText, self.moduleSettings.upperTextColor)
 	if not self.moduleSettings.lowerTextColor then
 		self.moduleSettings.lowerTextColor = {r=1, g=1, b=1}
 	end
-	self:SetCustomTextColor(self.frame.bottomLowerText, self.moduleSettings.lowerTextColor)
 end
 
 function IceCustomBar.prototype:ConditionalSubscribe()
@@ -495,6 +499,7 @@ function IceCustomBar.prototype:GetOptions()
 		type = "color",
 		name = L["Upper Text Color"],
 		get = function()
+			self:FixupTextColors()
 			return self.moduleSettings.upperTextColor.r, self.moduleSettings.upperTextColor.g, self.moduleSettings.upperTextColor.b, 1
 		end,
 		set = function(info, r,g,b)
