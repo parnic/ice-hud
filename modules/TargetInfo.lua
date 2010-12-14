@@ -146,6 +146,12 @@ function IceTargetInfo.prototype:Enable(core)
 		end
 	end
 
+	if self.moduleSettings.perRow then
+		auraSettings.buff.perRow = self.moduleSettings.perRow
+		auraSettings.debuff.perRow = self.moduleSettings.perRow
+		self.moduleSettings.perRow = nil
+	end
+
 	self:RegisterFontStrings()
 end
 
@@ -269,26 +275,6 @@ function IceTargetInfo.prototype:GetOptions()
 		end,
 		isPercent = true,
 		order = 33
-	}
-
-	opts["perRow"] = {
-		type = 'range',
-		name = L["Buffs / row"],
-		desc = L["How many buffs/debuffs is shown on each row"],
-		get = function()
-			return self.moduleSettings.perRow
-		end,
-		set = function(info, v)
-			self.moduleSettings.perRow = v
-			self:RedrawBuffs()
-		end,
-		min = 0,
-		max = 20,
-		step = 1,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 37
 	}
 
 	opts["spaceBetweenBuffs"] = {
@@ -464,6 +450,25 @@ function IceTargetInfo.prototype:GetOptions()
 				end,
 				order = 37.4
 			},
+			perRow = {
+				type = 'range',
+				name = L["Buffs / row"],
+				desc = L["How many buffs/debuffs is shown on each row"],
+				get = function()
+					return self.moduleSettings.auras["buff"].perRow
+				end,
+				set = function(info, v)
+					self.moduleSettings.auras["buff"].perRow = v
+					self:CreateAuraFrame("buff")
+				end,
+				min = 1,
+				max = 20,
+				step = 1,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.auras["buff"].show
+				end,
+				order = 37.5
+			},
 		}
 	}
 
@@ -619,6 +624,25 @@ function IceTargetInfo.prototype:GetOptions()
 					return not self.moduleSettings.enabled or not self.moduleSettings.auras["debuff"].show
 				end,
 				order = 37.84
+			},
+			perRow = {
+				type = 'range',
+				name = L["Buffs / row"],
+				desc = L["How many buffs/debuffs is shown on each row"],
+				get = function()
+					return self.moduleSettings.auras["debuff"].perRow
+				end,
+				set = function(info, v)
+					self.moduleSettings.auras["debuff"].perRow = v
+					self:CreateAuraFrame("debuff")
+				end,
+				min = 1,
+				max = 20,
+				step = 1,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.auras["debuff"].show
+				end,
+				order = 37.85
 			},
 		}
 	}
@@ -839,7 +863,6 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 	defaults["zoom"] = 0.08
 	defaults["mouseTarget"] = true
 	defaults["mouseBuff"] = true
-	defaults["perRow"] = 10
 	defaults["line1Tag"] = "[Name:HostileColor]"
 --  defaults["line2Tag"] = "[Level:DifficultyColor] [[IsPlayer ? Race ! CreatureType]:ClassColor] [[IsPlayer ? Class]:ClassColor] [[~PvP ? \"PvE\" ! \"PvP\"]:HostileColor] [IsLeader ? \"Leader\":Yellow] [InCombat ? \"Combat\":Red] [Classification]"
 	defaults["line2Tag"] = "[Level:DifficultyColor] [SmartRace:ClassColor] [SmartClass:ClassColor] [PvPIcon] [IsLeader ? 'Leader':Yellow] [InCombat ? 'Combat':Red] [Classification]"
@@ -861,6 +884,7 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 			["growDirection"] = "Left",
 			["filter"] = "Never",
 			["show"] = true,
+			["perRow"] = 10,
 		},
 		["debuff"] = {
 			["size"] = 20,
@@ -871,6 +895,7 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 			["growDirection"] = "Right",
 			["filter"] = "Never",
 			["show"] = true,
+			["perRow"] = 10,
 		}
 	}
 
@@ -1112,7 +1137,11 @@ do
 		for i = 1, IceCore.BuffLimit do
 			-- Setup --
 			local anchor, spaceOffset
-			local newRow = ((i % self.moduleSettings.perRow) == 1 or self.moduleSettings.perRow == 1)
+			local perRow = self.moduleSettings.auras.buff.perRow
+			if type == "debuff" then
+				perRow = self.moduleSettings.auras.debuff.perRow
+			end
+			local newRow = ((i % perRow) == 1 or perRow == 1)
 
 			if newRow then
 				lastX = 0
