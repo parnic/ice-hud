@@ -571,7 +571,7 @@ do
 					disabled = function()
 						return not self.moduleSettings.enabled
 					end,
-					order = 13.1
+					order = 14
 				},
 
 				upperTextVisible = {
@@ -588,7 +588,7 @@ do
 					disabled = function()
 						return not self.moduleSettings.enabled
 					end,
-					order = 14
+					order = 13.1,
 				},
 
 				lowerTextVisible = {
@@ -605,7 +605,7 @@ do
 					disabled = function()
 						return not self.moduleSettings.enabled
 					end,
-					order = 15
+					order = 14.1,
 				},
 
 				upperTextString = {
@@ -633,7 +633,8 @@ do
 						return not self.moduleSettings.enabled
 					end,
 					multiline = true,
-					usage = "<upper text to display>"
+					usage = "<upper text to display>",
+					order = 13.2,
 				},
 
 				lowerTextString = {
@@ -661,7 +662,8 @@ do
 						return not self.moduleSettings.enabled
 					end,
 					multiline = true,
-					usage = "<lower text to display>"
+					usage = "<lower text to display>",
+					order = 14.2,
 				},
 
 				forceJustifyText = {
@@ -679,6 +681,7 @@ do
 					disabled = function()
 						return not self.moduleSettings.enabled
 					end,
+					order = 11.1,
 				},
 
 				textVerticalOffset = {
@@ -697,7 +700,8 @@ do
 					end,
 					disabled = function()
 						return not self.moduleSettings.enabled
-					end
+					end,
+					order = 11.2,
 				},
 
 				textHorizontalOffset = {
@@ -716,8 +720,20 @@ do
 					end,
 					disabled = function()
 						return not self.moduleSettings.enabled
-					end
-				}
+					end,
+					order = 11.3,
+				},
+
+				textHeader = {
+					type = 'header',
+					name = L["Upper Text"],
+					order = 12,
+				},
+				textHeader2 = {
+					type = 'header',
+					name = L["Lower Text"],
+					order = 13.999,
+				},
 			}
 		}
 		if not self.moduleSettings.bHideMarkerSettings then
