@@ -1163,14 +1163,28 @@ do
 
 			frame:SetWidth(size)
 			frame:SetHeight(size)
-			icon:SetWidth(size-2)
-			icon:SetHeight(size-2)
 
 			-- Texture creation --
 			if not frame.texture then
 				frame.texture = TextureFactory(frame)
 				icon.texture = TextureFactory(frame.icon)
 				icon.texture:SetTexture(nil)
+			end
+
+			if type == "buff" then
+				if frame.isStealable and self.playerClass == "MAGE" then
+					frame.texture:SetVertexColor(1, 1, 1)
+					frame.texture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
+					icon:SetWidth(size-8)
+					icon:SetHeight(size-8)
+				else
+					frame.texture:SetTexture(0, 0, 0, 0.5)
+					icon:SetWidth(size-2)
+					icon:SetHeight(size-2)
+				end
+			else
+				icon:SetWidth(size-2)
+				icon:SetHeight(size-2)
 			end
 
 			-- Text creation --
@@ -1230,7 +1244,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 			end
 
 			if icon then
-				self:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable)
+				self:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, debuffType)
 			else
 				self.frame[auraFrame].iconFrames[i]:Hide()
 			end
@@ -1252,21 +1266,12 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 	local frameIcon = frame.icon
 
 	if aura == "buff" then
-		if isStealable and self.playerClass == "MAGE" then
-			frameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
-			frameIcon:SetWidth(size-8)
-			frameIcon:SetHeight(size-8)
-		else
-			local alpha = icon and 0.5 or 0
-			frameTexture:SetTexture(0, 0, 0, alpha)
-			frameIcon:SetWidth(size-2)
-			frameIcon:SetHeight(size-2)
-		end
+		frame.isStealable = isStealable
 	elseif aura == "debuff" and (not hostile or not filter or (filter and duration)) then
 		local alpha = icon and 1 or 0
 		frameTexture:SetTexture(1, 1, 1, alpha)
 
-		local color = debuffType and DebuffTypeColor[debuffType] or DebuffTypeColor["none"]
+		local color = auraType and DebuffTypeColor[auraType] or DebuffTypeColor["none"]
 		frameTexture:SetVertexColor(color.r, color.g, color.b)
 	end
 
@@ -1280,7 +1285,7 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 		frame.cd:Hide()
 	end
 
-	frame.type = auraType or aura
+	frame.type = ((auraType == "mh" or auraType == "oh") and auraType) or aura
 	frame.fromPlayer = isFromMe
 
 	frameIcon.texture:SetTexture(icon)
