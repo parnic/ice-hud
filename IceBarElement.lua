@@ -1467,7 +1467,7 @@ function IceBarElement.prototype:RepositionMarkers()
 end
 
 function IceBarElement.prototype:ClearMarkers()
-	for idx=1,#self.Markers do
+	for idx=#self.Markers,1,-1 do
 		self:RemoveMarker(idx, true)
 	end
 end
