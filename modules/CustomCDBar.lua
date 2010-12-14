@@ -19,6 +19,7 @@ table.insert(brokenSpellsNameToId, {"Holy Word: Aspire",88682})
 -- Constructor --
 function IceCustomCDBar.prototype:init()
 	IceCustomCDBar.super.prototype.init(self, "MyCustomCDBar")
+	self.textColorOverride = true
 end
 
 -- 'Public' methods -----------------------------------------------------------
@@ -55,6 +56,15 @@ function IceCustomCDBar.prototype:Enable(core)
 		end
 		self.moduleSettings.displayWhenEmpty = nil
 	end
+
+	if not self.moduleSettings.upperTextColor then
+		self.moduleSettings.upperTextColor = {r=1, g=1, b=1}
+	end
+	self:SetCustomTextColor(self.frame.bottomUpperText, self.moduleSettings.upperTextColor)
+	if not self.moduleSettings.lowerTextColor then
+		self.moduleSettings.lowerTextColor = {r=1, g=1, b=1}
+	end
+	self:SetCustomTextColor(self.frame.bottomLowerText, self.moduleSettings.lowerTextColor)
 end
 
 
@@ -90,6 +100,8 @@ function IceCustomCDBar.prototype:GetDefaultSettings()
 	settings["auraIconXOffset"] = 40
 	settings["auraIconYOffset"] = 0
 	settings["auraIconScale"] = 1
+	settings["lowerTextColor"] = {r=1, g=1, b=1}
+	settings["upperTextColor"] = {r=1, g=1, b=1}
 
 	return settings
 end
@@ -376,6 +388,42 @@ function IceCustomCDBar.prototype:GetOptions()
 		},
 	}
 
+	opts.textSettings.args.upperTextColor = {
+		type = "color",
+		name = L["Upper Text Color"],
+		get = function()
+			return self.moduleSettings.upperTextColor.r, self.moduleSettings.upperTextColor.g, self.moduleSettings.upperTextColor.b, 1
+		end,
+		set = function(info, r,g,b)
+			self.moduleSettings.upperTextColor.r = r
+			self.moduleSettings.upperTextColor.g = g
+			self.moduleSettings.upperTextColor.b = b
+			self:SetCustomTextColor(self.frame.bottomUpperText, self.moduleSettings.upperTextColor)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 13.9,
+	}
+
+	opts.textSettings.args.lowerTextColor = {
+		type = "color",
+		name = L["Lower Text Color"],
+		get = function()
+			return self.moduleSettings.lowerTextColor.r, self.moduleSettings.lowerTextColor.g, self.moduleSettings.lowerTextColor.b, 1
+		end,
+		set = function(info, r,g,b)
+			self.moduleSettings.lowerTextColor.r = r
+			self.moduleSettings.lowerTextColor.g = g
+			self.moduleSettings.lowerTextColor.b = b
+			self:SetCustomTextColor(self.frame.bottomLowerText, self.moduleSettings.lowerTextColor)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 14.9,
+	}
+
 	return opts
 end
 
@@ -535,6 +583,8 @@ function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
 		self.auraBuffCount = 0
 		self:SetBottomText1(self.moduleSettings.upperText)
 	end
+
+	self:SetBottomText2(self.moduleSettings.lowerText)
 
 	self:UpdateAlpha()
 

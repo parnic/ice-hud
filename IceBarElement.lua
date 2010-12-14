@@ -632,7 +632,7 @@ do
 					disabled = function()
 						return not self.moduleSettings.enabled
 					end,
-					multiline = true,
+					multiline = self.moduleSettings.usesDogTagStrings,
 					usage = "<upper text to display>",
 					order = 13.2,
 				},
@@ -661,7 +661,7 @@ do
 					disabled = function()
 						return not self.moduleSettings.enabled
 					end,
-					multiline = true,
+					multiline = self.moduleSettings.usesDogTagStrings,
 					usage = "<lower text to display>",
 					order = 14.2,
 				},
@@ -1345,7 +1345,9 @@ function IceBarElement.prototype:SetBottomText1(text, color)
 		alpha = 1
 	end
 
-	self.frame.bottomUpperText:SetTextColor(self:GetColor(color, alpha))
+	if not self.textColorOverride then
+		self.frame.bottomUpperText:SetTextColor(self:GetColor(color, alpha))
+	end
 	self.frame.bottomUpperText:SetText(text)
 	self.frame.bottomUpperText:SetWidth(0)
 end
@@ -1375,11 +1377,20 @@ function IceBarElement.prototype:SetBottomText2(text, color, alpha)
 		alpha = 1
 	end
 
-	self.frame.bottomLowerText:SetTextColor(self:GetColor(color, alpha))
+	if not self.textColorOverride then
+		self.frame.bottomLowerText:SetTextColor(self:GetColor(color, alpha))
+	end
 	self.frame.bottomLowerText:SetText(text)
 	self.frame.bottomLowerText:SetWidth(0)
 end
 
+function IceBarElement.prototype:SetCustomTextColor(fontInstance, colorTable)
+	if not fontInstance or not colorTable or type(colorTable) ~= "table" then
+		return
+	end
+
+	fontInstance:SetTextColor(colorTable.r, colorTable.g, colorTable.b)
+end
 
 function IceBarElement.prototype:SetTextAlpha()
 	if self.frame.bottomUpperText then

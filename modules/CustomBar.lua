@@ -16,6 +16,7 @@ IceCustomBar.prototype.bIsAura = false
 -- Constructor --
 function IceCustomBar.prototype:init()
 	IceCustomBar.super.prototype.init(self, "MyCustomBar", "player")
+	self.textColorOverride = true
 end
 
 -- 'Public' methods -----------------------------------------------------------
@@ -49,6 +50,15 @@ function IceCustomBar.prototype:Enable(core)
 	if self.moduleSettings.auraIconYOffset == nil then
 		self.moduleSettings.auraIconYOffset = 0
 	end
+
+	if not self.moduleSettings.upperTextColor then
+		self.moduleSettings.upperTextColor = {r=1, g=1, b=1}
+	end
+	self:SetCustomTextColor(self.frame.bottomUpperText, self.moduleSettings.upperTextColor)
+	if not self.moduleSettings.lowerTextColor then
+		self.moduleSettings.lowerTextColor = {r=1, g=1, b=1}
+	end
+	self:SetCustomTextColor(self.frame.bottomLowerText, self.moduleSettings.lowerTextColor)
 end
 
 function IceCustomBar.prototype:ConditionalSubscribe()
@@ -111,6 +121,8 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["auraIconYOffset"] = 0
 	settings["auraIconScale"] = 1
 	settings["exactMatch"] = false
+	settings["lowerTextColor"] = {r=1, g=1, b=1}
+	settings["upperTextColor"] = {r=1, g=1, b=1}
 
 	return settings
 end
@@ -479,6 +491,42 @@ function IceCustomBar.prototype:GetOptions()
 		},
 	}
 
+	opts.textSettings.args.upperTextColor = {
+		type = "color",
+		name = L["Upper Text Color"],
+		get = function()
+			return self.moduleSettings.upperTextColor.r, self.moduleSettings.upperTextColor.g, self.moduleSettings.upperTextColor.b, 1
+		end,
+		set = function(info, r,g,b)
+			self.moduleSettings.upperTextColor.r = r
+			self.moduleSettings.upperTextColor.g = g
+			self.moduleSettings.upperTextColor.b = b
+			self:SetCustomTextColor(self.frame.bottomUpperText, self.moduleSettings.upperTextColor)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 13.9,
+	}
+
+	opts.textSettings.args.lowerTextColor = {
+		type = "color",
+		name = L["Lower Text Color"],
+		get = function()
+			return self.moduleSettings.lowerTextColor.r, self.moduleSettings.lowerTextColor.g, self.moduleSettings.lowerTextColor.b, 1
+		end,
+		set = function(info, r,g,b)
+			self.moduleSettings.lowerTextColor.r = r
+			self.moduleSettings.lowerTextColor.g = g
+			self.moduleSettings.lowerTextColor.b = b
+			self:SetCustomTextColor(self.frame.bottomLowerText, self.moduleSettings.lowerTextColor)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 14.9,
+	}
+
 	return opts
 end
 
@@ -655,6 +703,8 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 		self.auraBuffCount = 0
 		self:SetBottomText1(self.moduleSettings.upperText)
 	end
+
+	self:SetBottomText2(self.moduleSettings.lowerText)
 
 	self.barFrame.bar:SetVertexColor(self:GetBarColor())
 	if self.flashFrame and self.flashFrame.flash then
