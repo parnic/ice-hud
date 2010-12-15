@@ -14,7 +14,8 @@ IceCustomCDBar.prototype.coolingDown = false
 
 -- super temp...remove this when blizzard fixes these spells to work by name with GetSpellCooldown()
 local brokenSpellsNameToId = {}
-table.insert(brokenSpellsNameToId, {"Holy Word: Aspire",88682})
+table.insert(brokenSpellsNameToId, {"Holy Word: Serenity",88684})
+table.insert(brokenSpellsNameToId, {"Holy Word: Sanctuary",88685})
 
 -- Constructor --
 function IceCustomCDBar.prototype:init()
