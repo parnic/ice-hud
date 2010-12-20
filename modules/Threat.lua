@@ -224,6 +224,10 @@ function IceThreat.prototype:Update(unit)
 		return
 	end
 
+	if IceHUD.IceCore:IsInConfigMode() then
+		return
+	end
+
 	if not unit then
 		unit = self.unit
 	end
