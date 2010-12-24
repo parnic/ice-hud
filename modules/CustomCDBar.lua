@@ -397,7 +397,7 @@ function IceCustomCDBar.prototype:GetOptions()
 		name = L["Upper Text Color"],
 		get = function()
 			self:FixupTextColors()
-			return self.moduleSettings.upperTextColor.r, self.moduleSettings.upperTextColor.g, self.moduleSettings.upperTextColor.b, 1
+			return self.moduleSettings.upperTextColor.r, self.moduleSettings.upperTextColor.g, self.moduleSettings.upperTextColor.b, self.alpha
 		end,
 		set = function(info, r,g,b)
 			self.moduleSettings.upperTextColor.r = r

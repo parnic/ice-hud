@@ -536,7 +536,7 @@ function IceCustomBar.prototype:GetOptions()
 end
 
 function IceCustomBar.prototype:GetBarColor()
-	return self.moduleSettings.barColor.r, self.moduleSettings.barColor.g, self.moduleSettings.barColor.b, 1
+	return self.moduleSettings.barColor.r, self.moduleSettings.barColor.g, self.moduleSettings.barColor.b, self.alpha
 end
 
 -- 'Protected' methods --------------------------------------------------------
@@ -547,11 +547,19 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 			= GetWeaponEnchantInfo()
 
 		if unitName == "main hand weapon" and hasMainHandEnchant then
+			local duration =
+				(self.auraDuration == nil or (mainHandExpiration/1000) > self.auraDuration) and (mainHandExpiration/1000)
+				or self.auraDuration
+
 			local slotId, mainHandTexture = GetInventorySlotInfo("MainHandSlot")
-			return mainHandExpiration/1000, mainHandExpiration/1000, mainHandCharges, GetInventoryItemTexture("player", slotId)
+			return duration, mainHandExpiration/1000, mainHandCharges, GetInventoryItemTexture("player", slotId)
 		elseif unitName == "off hand weapon" and hasOffHandEnchant then
+			local duration =
+				(self.auraDuration == nil or (offHandExpiration/1000) > self.auraDuration) and (offHandExpiration/1000)
+				or self.auraDuration
+
 			local slotId, offHandTexture = GetInventorySlotInfo("SecondaryHandSlot")
-			return offHandExpiration/1000, offHandExpiration/1000, offHandCharges, GetInventoryItemTexture("player", slotId)
+			return duration, offHandExpiration/1000, offHandCharges, GetInventoryItemTexture("player", slotId)
 		end
 
 		return nil
