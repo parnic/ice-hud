@@ -654,7 +654,7 @@ local function figure_unit_menu(unit)
 	return "PLAYER"
 end
 
-local IceHUD_UnitFrame_DropDown = CreateFrame("Frame", "IceHUD_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
+IceHUD_UnitFrame_DropDown = CreateFrame("Frame", "IceHUD_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
 UnitPopupFrames[#UnitPopupFrames+1] = "IceHUD_UnitFrame_DropDown"
 
 IceHUD.DropdownUnit = nil
