@@ -344,6 +344,9 @@ function FocusHealth.prototype:Update(unit)
 		self:Show(true)
 	end
 
+	if not self.frame.raidIcon then
+		self:CreateRaidIconFrame()
+	end
 	self:UpdateRaidFocusIcon()
 
 	self.color = "FocusHealthFriendly" -- friendly > 4
