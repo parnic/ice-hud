@@ -93,6 +93,7 @@ function SliceAndDice.prototype:GetOptions()
 	local opts = SliceAndDice.super.prototype.GetOptions(self)
 
 	opts["textSettings"].args["upperTextString"]["desc"] = "The text to display under this bar. # will be replaced with the number of Slice and Dice seconds remaining."
+	opts["textSettings"].args["upperTextString"].hidden = false
 
 	opts["showAsPercentOfMax"] =
 	{
@@ -257,7 +258,8 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
 
 	-- somewhat redundant, but we also need to check potential remaining time
 	if (remaining ~= nil) or PotentialSnDDuration > 0 then
-		self:SetBottomText1(self.moduleSettings.upperText .. tostring(floor(remaining or 0)) .. " (" .. PotentialSnDDuration .. ")")
+		local potText = " (" .. PotentialSnDDuration .. ")"
+		self:SetBottomText1(self.moduleSettings.upperText .. tostring(floor(remaining or 0)) .. (self.moduleSettings.durationAlpha ~= 0 and potText or ""))
 	end
 end
 
@@ -293,21 +295,24 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 		self:Show(true)
 	end
 
-	PotentialSnDDuration = self:GetMaxBuffTime(points)
+	if self.moduleSettings.durationAlpha > 0 then
+		PotentialSnDDuration = self:GetMaxBuffTime(points)
 
-	-- compute the scale from the current number of combo points
-	scale = IceHUD:Clamp(PotentialSnDDuration / CurrMaxSnDDuration, 0, 1)
+		-- compute the scale from the current number of combo points
+		scale = IceHUD:Clamp(PotentialSnDDuration / CurrMaxSnDDuration, 0, 1)
 
-	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
-	if (self.moduleSettings.reverse) then
-		scale = 1 - scale
+		-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
+		if (self.moduleSettings.reverse) then
+			scale = 1 - scale
+		end
+
+		self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
+		self:SetBarCoord(self.durationFrame, scale)
 	end
 
-	self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
-	self:SetBarCoord(self.durationFrame, scale)
-
 	if sndEndTime < GetTime() then
-		self:SetBottomText1(self.moduleSettings.upperText .. "0 (" .. PotentialSnDDuration .. ")")
+		local potText = " (" .. PotentialSnDDuration .. ")"
+		self:SetBottomText1(self.moduleSettings.upperText .. "0" .. (self.moduleSettings.durationAlpha > 0 and potText or ""))
 	end
 end
 
