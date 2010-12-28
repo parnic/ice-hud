@@ -699,9 +699,11 @@ function IceTargetHealth.prototype:CreateBackground(redraw)
 			end
 		end
 
-		self.frame.button.menu = function()
-			IceHUD.DropdownUnit = self.unit
-			ToggleDropDownMenu(1, nil, IceHUD_UnitFrame_DropDown, "cursor")
+		if not self.frame.button.menu then
+			self.frame.button.menu = function(this, unit)
+				IceHUD.DropdownUnit = unit
+				ToggleDropDownMenu(1, nil, IceHUD_UnitFrame_DropDown, "cursor")
+			end
 		end
 	end
 end
