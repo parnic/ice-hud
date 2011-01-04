@@ -30,6 +30,61 @@ IceTargetInfo.prototype.tapped = nil
 IceTargetInfo.prototype.isPlayer = nil
 IceTargetInfo.prototype.playerClass = nil
 
+local UnitSelectionColor = function(unit)
+	if not UnitExists(unit) then
+		return 1, 1, 1, 1
+	elseif UnitIsUnit(unit, "player") or UnitIsUnit(unit, "pet") then
+		if UnitIsPVP("player") then
+			return 0, 1, 0, 1 -- player is in pvp, unit is player or player's pet, return green
+		else
+			return 0, 0, 1, 1 -- player is not pvp, unit is player or player's pet, return blue
+		end
+	else
+		if UnitIsPVPFreeForAll(unit) then
+			return 1, 0, 0, 1 -- FFA PVP, return red
+		elseif UnitIsPVPSanctuary(unit) then
+			return 0, 0, 1, 1 -- sanctuary PVP, return blue
+		end
+
+		local unitPlayer = UnitIsPlayer(unit)
+		local playerPvp = UnitIsPVP("player")
+		local unitPvp = UnitIsPVP(unit)
+		local unitFaction = UnitFactionGroup(unit)
+		local playerFaction = UnitFactionGroup("player")
+
+		if playerPvp and unitPlayer then
+			if unitPvp then
+				if unitFaction ~= playerFaction then
+					return 1, 0, 0, 1 -- different faction, both pvp, return red
+				else
+					return 0, 1, 0, 1 -- same faction, both pvp, return green
+				end
+			else
+				return 0, 0, 1, 1 -- unit not pvp, return blue
+			end
+		else
+			if unitPlayer then
+				if unitPvp and unitFaction ~= playerFaction then
+					return 1, 1, 0, 1 -- unit pvp, player not, return yellow
+				else
+					return 0, 0, 1, 1 -- player is not pvp and either unit is not pvp or unit is our faction, return blue
+				end
+			end
+
+			local reaction = UnitReaction(unit, "player")
+			if not reaction then
+				return 1, 1, 1, 1 -- unknown or bug, return white
+			elseif reaction < 4 then
+				return 1, 0, 0, 1 -- below neutral, red reaction
+			elseif reaction == 4 then
+				return 1, 1, 0, 1 -- neutral, yellow reaction
+			else
+				return 0, 1, 0, 1 -- above neutral, green reaction
+			end
+		end
+	end
+end
+
 
 -- Constructor --
 function IceTargetInfo.prototype:init(moduleName, unit)
