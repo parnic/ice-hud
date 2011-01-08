@@ -338,10 +338,10 @@ function FocusHealth.prototype:Update(unit)
 	end
 
 	if not (UnitExists(unit)) then
-		self:Show(false)
+		--self:Show(false)
 		return
 	else
-		self:Show(true)
+		--self:Show(true)
 	end
 
 	if not self.frame.raidIcon then
