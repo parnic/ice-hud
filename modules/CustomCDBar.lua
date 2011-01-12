@@ -309,6 +309,42 @@ function IceCustomCDBar.prototype:GetOptions()
 		order = 31.1,
 	}
 
+	opts["bIgnoreRange"] = {
+		type = 'toggle',
+		name = L["Ignore range"],
+		desc = L["If the selected ability has a max range or only works on friendly units, this will ignore that check. Meaning you can use a CD bar for buff spells and it will display when you have an enemy targeted."],
+		get = function()
+			return self.moduleSettings.bIgnoreRange
+		end,
+		set = function(info, v)
+			self.moduleSettings.bIgnoreRange = v
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 31.2,
+	}
+
+	opts["bUseNormalAlphas"] = {
+		type = 'toggle',
+		name = L["Use normal alpha"],
+		desc = L["Usually CD bars will always display if they're set to 'When Ready' or 'Always' mode regardless of your other transparency settings. If you'd rather this bar show/hide as per normal transparency rules, then check this box."],
+		get = function()
+			return self.moduleSettings.bUseNormalAlphas
+		end,
+		set = function(info, v)
+			self.moduleSettings.bUseNormalAlphas = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return self.moduleSettings.displayMode ~= "When ready" and self.moduleSettings.displayMode ~= "Always"
+		end,
+		order = 31.3,
+	}
+
 	opts["iconSettings"] = {
 		type = 'group',
 		name = "|c"..self.configColor..L["Icon Settings"].."|r",
@@ -433,7 +469,7 @@ function IceCustomCDBar.prototype:GetOptions()
 end
 
 function IceCustomCDBar.prototype:GetBarColor()
-	return self.moduleSettings.barColor.r, self.moduleSettings.barColor.g, self.moduleSettings.barColor.b, 1
+	return self.moduleSettings.barColor.r, self.moduleSettings.barColor.g, self.moduleSettings.barColor.b, self.alpha
 end
 
 -- 'Protected' methods --------------------------------------------------------
@@ -618,7 +654,7 @@ function IceCustomCDBar.prototype:IsReady()
 	local checkSpell = self:GetSpellNameOrId(self.moduleSettings.cooldownToTrack)
 
 	if (IsUsableSpell(checkSpell) == 1) then
-		if SpellHasRange(checkSpell) then
+		if not self.moduleSettings.bIgnoreRange and SpellHasRange(checkSpell) then
 			if (UnitExists("target") and IsSpellInRange(checkSpell, "target") == 1) then
 				is_ready = 1
 			end
@@ -665,7 +701,10 @@ function IceCustomCDBar.prototype:Show(bShouldShow, bForceHide)
 end
 
 function IceCustomCDBar.prototype:UseTargetAlpha(scale)
-	if (self.moduleSettings.displayMode == "When ready" or self.moduleSettings.displayMode == "Always")
+	if self.moduleSettings.bUseNormalAlphas
+		and (self.moduleSettings.displayMode == "When ready" or self.moduleSettings.displayMode == "Always") then
+		return scale == 0
+	elseif (self.moduleSettings.displayMode == "When ready" or self.moduleSettings.displayMode == "Always")
 		and scale == 0 then
 		return false
 	end
