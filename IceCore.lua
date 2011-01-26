@@ -781,6 +781,10 @@ function IceCore.prototype:IsInConfigMode()
 end
 
 function IceCore.prototype:ConfigModeToggle(bWantConfig)
+	if self.bConfigMode == bWantConfig then
+		return
+	end
+
 	self.bConfigMode = bWantConfig
 
 	if bWantConfig then

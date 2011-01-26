@@ -410,7 +410,7 @@ function IceElement.prototype:IsVisible()
 end
 
 function IceElement.prototype:Show(bShouldShow)
-	if self.bIsVisible == bShouldShow then
+	if self.bIsVisible == bShouldShow or not self.masterFrame or not self.frame then
 		return nil
 	end
 

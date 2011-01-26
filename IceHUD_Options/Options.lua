@@ -347,6 +347,9 @@ This isn't |cff9999ffIceHUD|r - it's Blizzard's new Spell Alerts they added in 4
 			set = function(info, value)
 				IceHUD.IceCore:SetFontFamily(value)
 			end,
+			disabled = function()
+				return not IceHUD.IceCore:IsEnabled()
+			end,
 			values = AceGUIWidgetLSMlists.font,
 			order = 94.75,
 		},
@@ -572,6 +575,9 @@ This isn't |cff9999ffIceHUD|r - it's Blizzard's new Spell Alerts they added in 4
 			func = function()
 				IceHUD:CreateCustomModuleAndNotify(lastCustomModule)
 			end,
+			disabled = function()
+				return not IceHUD.IceCore:IsEnabled()
+			end,
 			order = 94.6,
 		},
 
@@ -584,6 +590,9 @@ This isn't |cff9999ffIceHUD|r - it's Blizzard's new Spell Alerts they added in 4
 			end,
 			set = function(info, value)
 				IceHUD.IceCore:ConfigModeToggle(value)
+			end,
+			disabled = function()
+				return not IceHUD.IceCore:IsEnabled()
 			end,
 			order = 95
 		},

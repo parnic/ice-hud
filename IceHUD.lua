@@ -245,12 +245,12 @@ function IceHUD:OnEnable(isFirst)
 
 	if self.db.profile.enable then
 		self.IceCore:Enable()
+	end
 
-		-- Add dual-spec support
-		local LibDualSpec = LibStub('LibDualSpec-1.0', true)
-		if LibDualSpec then
-			LibDualSpec:EnhanceDatabase(self.db, "IceHUD")
-		end
+	-- Add dual-spec support
+	local LibDualSpec = LibStub('LibDualSpec-1.0', true)
+	if LibDualSpec then
+		LibDualSpec:EnhanceDatabase(self.db, "IceHUD")
 	end
 
 	--@debug@
@@ -443,7 +443,9 @@ end
 
 function IceHUD:PostProfileChanged(db, newProfile)
 	self:NotifyNewDb()
-	self.IceCore:Enable()
+	if self.db.profile.enable then
+		self.IceCore:Enable()
+	end
 end
 
 function IceHUD:ProfileReset()
