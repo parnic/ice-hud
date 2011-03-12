@@ -103,8 +103,10 @@ local FearCCList = {
 }
 
 local SilenceCCList = {
-	-- Avenger's Shield
+	-- Avenger's Shield with Daze  (unsure, need to test if this is needed with the Glyph, otherwise 31935 covers it)
 	63529,
+	-- Avenger's Shield without Daze glyph
+	31935,
 	-- Silence
 	15487,
 	-- Silencing Shot
@@ -133,6 +135,8 @@ local SilenceCCList = {
 	51722,
 	-- Psychic Horror
 	64058,
+	-- Elemental Disruption (weapon enchant)
+	74208,
 }
 
 local RootCCList = {
