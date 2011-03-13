@@ -117,6 +117,7 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["barColor"] = {r=1, g=0, b=0, a=1}
 	settings["trackOnlyMine"] = true
 	settings["displayWhenEmpty"] = false
+	settings["displayWhenTargeting"] = false
 	settings["hideAnimationSettings"] = true
 	settings["buffTimerDisplay"] = "minutes"
 	settings["maxDuration"] = 0
@@ -365,6 +366,23 @@ function IceCustomBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 30.9
+	}
+	
+	opts["displayWhenTargeting"] = {
+		type = 'toggle',
+		name = L["Display when targeting"],
+		desc = L["Whether to display this bar when you target a unit, even if the buff/debuff specified is not present."],
+		get = function()
+			return self.moduleSettings.displayWhenTargeting
+		end,
+		set = function(info, v)
+			self.moduleSettings.displayWhenTargeting = v
+			self:UpdateCustomBar()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 30.91
 	}
 
 	opts["buffTimerDisplay"] = {
@@ -732,7 +750,9 @@ function IceCustomBar.prototype:OutCombat()
 end
 
 function IceCustomBar.prototype:Show(bShouldShow)
-	if self.moduleSettings.displayWhenEmpty then
+	if self.moduleSettings.displayWhenTargeting and self.target then
+		IceCustomBar.super.prototype.Show(self, true)
+	elseif self.moduleSettings.displayWhenEmpty then
 		if not self.bIsVisible then
 			IceCustomBar.super.prototype.Show(self, true)
 		end
