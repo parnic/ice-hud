@@ -1,7 +1,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceTargetMana = IceCore_CreateClass(IceUnitBar)
 IceTargetMana.prototype.registerEvents = true
-IceTargetHealth.prototype.color = nil
+IceTargetMana.prototype.color = nil
 IceTargetMana.prototype.determineColor = true
 
 
