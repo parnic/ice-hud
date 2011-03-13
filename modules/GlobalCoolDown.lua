@@ -20,11 +20,23 @@ function GlobalCoolDown.prototype:Enable(core)
 	self:RegisterEvent("UNIT_SPELLCAST_START","CooldownStateChanged")
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED","CooldownStateChanged")
 
+	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED","CooldownAborted")
+	self:RegisterEvent("UNIT_SPELLCAST_FAILED","CooldownAborted")
+
 	self:Show(false)
 
 	self.frame:SetFrameStrata("TOOLTIP")
 
 	self.CDSpellId = self:GetSpellId()
+end
+
+function GlobalCoolDown.prototype:CooldownAborted(event, unit, spell)
+	if unit ~= "player" or not spell or not self.CurrSpell or self.CurrSpell ~= spell then
+		return
+	end
+
+	self.CurrLerpTime = self.moduleSettings.desiredLerpTime
+	self.CurrSpell = nil
 end
 
 -- OVERRIDE
@@ -78,6 +90,7 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell)
 			self.DesiredScale = 0
 			self.CurrLerpTime = 0
 			self.moduleSettings.desiredLerpTime = dur or 1
+			self.CurrSpell = spell
 
 			self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
 			self:Show(true)
