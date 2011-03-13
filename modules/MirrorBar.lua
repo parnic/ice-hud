@@ -513,6 +513,7 @@ function MirrorBarHandler.prototype:SetSettings(bar)
 	bar.moduleSettings.textHorizontalOffset = self.moduleSettings.textHorizontalOffset
 	bar.moduleSettings.barVisible = self.moduleSettings.barVisible
 	bar.moduleSettings.barVerticalOffset = self.moduleSettings.barVerticalOffset
+	bar.moduleSettings.alwaysFullAlpha = self.moduleSettings.alwaysFullAlpha
 end
 
 
