@@ -96,6 +96,10 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell)
 			self:Show(true)
 		end
 	end
+
+	if event == "UNIT_SPELLCAST_SUCCEEDED" then
+		self.CurrSpell = nil
+	end
 end
 
 function GlobalCoolDown.prototype:MyOnUpdate()
