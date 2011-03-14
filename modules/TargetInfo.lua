@@ -390,6 +390,22 @@ function IceTargetInfo.prototype:GetOptions()
 				values = { "Never", "In Combat", "Always" },
 				order = 32.1
 			},
+			sorted = {
+				type = 'toggle',
+				name = L["Sort by expiration"],
+				desc = L["Toggles whether or not to sort by expiration time (otherwise they're sorted how the game sorts them - by application time)"],
+				get = function()
+					return self.moduleSettings.auras["buff"].sortByExpiration
+				end,
+				set = function(info, v)
+					self.moduleSettings.auras["buff"].sortByExpiration = v
+					self:RedrawBuffs()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				order = 32.2
+			},
 			header = {
 				type = 'header',
 				name = L["Size and Placement"],
@@ -564,6 +580,22 @@ function IceTargetInfo.prototype:GetOptions()
 				end,
 				values = { "Never", "In Combat", "Always" },
 				order = 32.1
+			},
+			sorted = {
+				type = 'toggle',
+				name = L["Sort by expiration"],
+				desc = L["Toggles whether or not to sort by expiration time (otherwise they're sorted how the game sorts them - by application time)"],
+				get = function()
+					return self.moduleSettings.auras["debuff"].sortByExpiration
+				end,
+				set = function(info, v)
+					self.moduleSettings.auras["debuff"].sortByExpiration = v
+					self:RedrawBuffs()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				order = 32.2
 			},
 			header = {
 				type = 'header',
@@ -940,6 +972,7 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 			["filter"] = "Never",
 			["show"] = true,
 			["perRow"] = 10,
+			["sortByExpiration"] = true,
 		},
 		["debuff"] = {
 			["size"] = 20,
@@ -951,6 +984,7 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 			["filter"] = "Never",
 			["show"] = true,
 			["perRow"] = 10,
+			["sortByExpiration"] = true,
 		}
 	}
 
@@ -1278,7 +1312,6 @@ do
 			icon.stack = stack
 
 			-- Misc --
-			frame.id = i
 			if (self.moduleSettings.mouseBuff) then
 				frame:EnableMouse(true)
 				frame:SetScript("OnEnter", self.MyOnEnterBuffFunc)
@@ -1293,6 +1326,20 @@ do
 		return iconFrames
 	end
 end
+
+local function BuffExpirationSort(a, b)
+	if a[5] == 0 then
+		return false
+	elseif b[5] == 0 then
+		return true
+	end
+
+	return a[5] < b[5]
+end
+
+local buffData = {}
+buffData["buff"] = {}
+buffData["debuff"] = {}
 
 function IceTargetInfo.prototype:UpdateBuffType(aura)
 	local auraFrame, reaction
@@ -1328,9 +1375,25 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 			end
 
 			if icon then
-				self:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, debuffType)
+				if self.moduleSettings.auras[aura].sortByExpiration then
+					buffData[aura][i] = {aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, debuffType}
+				else
+					self:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, debuffType)
+				end
 			else
 				self.frame[auraFrame].iconFrames[i]:Hide()
+				buffData[aura][i] = nil
+			end
+		end
+	end
+
+	if self.moduleSettings.auras[aura].sortByExpiration then
+		table.sort(buffData[aura], BuffExpirationSort)
+		for k,v in pairs(buffData[aura]) do
+			if v then
+				self:SetupAura(v[1], k, v[3], v[4], v[5], v[6], v[7], v[8], v[9])
+				-- pretty hacky, but hey...whaddya gonna do?
+				self.frame[aura.."Frame"].iconFrames[k].id = v[2]
 			end
 		end
 	end
@@ -1371,6 +1434,7 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 
 	frame.type = ((auraType == "mh" or auraType == "oh") and auraType) or aura
 	frame.fromPlayer = isFromMe
+	frame.id = i
 
 	frameIcon.texture:SetTexture(icon)
 	frameIcon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)

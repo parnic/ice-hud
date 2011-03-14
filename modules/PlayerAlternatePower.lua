@@ -3,11 +3,12 @@ local PlayerAlternatePower = IceCore_CreateClass(IceUnitBar)
 
 -- Constructor --
 function PlayerAlternatePower.prototype:init(moduleName, unit)
-	if not moduleName or not unit then
-		PlayerAlternatePower.super.prototype.init(self, "PlayerAlternatePower", "player")
-	else
-		PlayerAlternatePower.super.prototype.init(self, moduleName, unit)
-	end
+	PlayerAlternatePower.super.prototype.init(self, "PlayerAlternatePower", "player")
+
+	self.bTreatEmptyAsFull = true
+	self.power = 0
+	self.maxPower = 0
+	self.powerPercent = 0
 end
 
 function PlayerAlternatePower.prototype:GetDefaultSettings()
@@ -23,17 +24,12 @@ function PlayerAlternatePower.prototype:GetDefaultSettings()
 end
 
 function PlayerAlternatePower.prototype:Enable(core)
-	self.bTreatEmptyAsFull = true
 	PlayerAlternatePower.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_POWER", "UpdateEvent")
 	self:RegisterEvent("UNIT_MAXPOWER", "UpdateEvent")
 	self:RegisterEvent("UNIT_POWER_BAR_SHOW", "PowerBarShow")
 	self:RegisterEvent("UNIT_POWER_BAR_HIDE", "PowerBarHide")
-
-	self.power = 0
-	self.maxPower = 0
-	self.powerPercent = 0
 
 	self:Update(self.unit)
 
