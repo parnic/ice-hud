@@ -801,7 +801,6 @@ function IceTargetHealth.prototype:Update(unit)
 
 		self:SetTexLoc(self.barFrame.classIcon, self.moduleSettings.classIconOffset['x'], self.moduleSettings.classIconOffset['y'])
 		self.barFrame.classIcon:Show()
-		self.barFrame.classIcon:SetAlpha(self.alpha == 0 and 0 or math.min(1, self.alpha + 0.2))
 
 		local elite, rareelite, rare = self:GetEliteTextures()
 		if self.configMode or IceHUD.IceCore:IsInConfigMode() or classification == "worldboss" or classification == "elite" then
@@ -1029,6 +1028,9 @@ function IceTargetHealth.prototype:SetIconAlpha()
 	end
 	if self.frame.PartyRoleIcon then
 		self.frame.PartyRoleIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
+	end
+	if self.barFrame.classIcon and self.moduleSettings.showClassificationIcon then
+		self.barFrame.classIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha == 0 and 0 or math.min(1, self.alpha + 0.2))
 	end
 end
 
