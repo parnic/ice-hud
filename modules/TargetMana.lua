@@ -85,7 +85,7 @@ function IceTargetMana.prototype:Update(unit)
 
 	local manaType = UnitPowerType(self.unit)
 
-	if self.moduleSettings.onlyShowMana and manaType ~= 0 then
+	if self.moduleSettings.onlyShowMana and manaType ~= SPELL_POWER_MANA then
 		self:Show(false)
 		return
 	end
@@ -97,19 +97,25 @@ function IceTargetMana.prototype:Update(unit)
 			self.color = "ScaledManaColor"
 		end
 
-		if (manaType == 1) then
+		if (manaType == SPELL_POWER_RAGE) then
 			self.color = "TargetRage"
-		elseif (manaType == 2) then
+		elseif (manaType == SPELL_POWER_FOCUS) then
 			self.color = "TargetFocus"
-		elseif (manaType == 3) then
+		elseif (manaType == SPELL_POWER_ENERGY) then
 			self.color = "TargetEnergy"
-		elseif (manaType == 6) then
+		elseif (manaType == SPELL_POWER_RUNIC_POWER) then
 			self.color = "TargetRunicPower"
 		end
 
 		if (self.tapped) then
 			self.color = "Tapped"
 		end
+	end
+
+	if manaType == SPELL_POWER_RAGE or manaType == SPELL_POWER_RUNIC_POWER then
+		self.bTreatEmptyAsFull = true
+	else
+		self.bTreatEmptyAsFull = false
 	end
 
 	self:UpdateBar(self.manaPercentage, self.color)
