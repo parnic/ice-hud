@@ -446,7 +446,7 @@ function IceCore.prototype:Disable(userToggle)
 
 	self:ConfigModeToggle(false)
 
-	for i = 1, table.getn(self.elements) do
+	for i=1, #self.elements do
 		if (self.elements[i]:IsEnabled()) then
 			self.elements[i]:Disable(true)
 		end

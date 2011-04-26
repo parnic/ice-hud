@@ -89,12 +89,6 @@ function IceCustomBar.prototype:TargetChanged()
 	self:UpdateCustomBar(self.unit)
 end
 
-function IceCustomBar.prototype:Disable(core)
-	IceHUD.IceCore:RequestUpdates(self, nil)
-
-	IceCustomBar.super.prototype.Disable(self, core)
-end
-
 -- OVERRIDE
 function IceCustomBar.prototype:GetDefaultSettings()
 	local settings = IceCustomBar.super.prototype.GetDefaultSettings(self)
@@ -367,7 +361,7 @@ function IceCustomBar.prototype:GetOptions()
 		end,
 		order = 30.9
 	}
-	
+
 	opts["displayWhenTargeting"] = {
 		type = 'toggle',
 		name = L["Display when targeting"],
@@ -749,7 +743,12 @@ function IceCustomBar.prototype:OutCombat()
 	self:UpdateCustomBar(self.unit)
 end
 
-function IceCustomBar.prototype:Show(bShouldShow)
+function IceCustomBar.prototype:Show(bShouldShow, bForceHide)
+	if bForceHide then
+		IceCustomBar.super.prototype.Show(self, bShouldShow, bForceHide)
+		return
+	end
+
 	if self.moduleSettings.displayWhenTargeting and self.target then
 		IceCustomBar.super.prototype.Show(self, true)
 	elseif self.moduleSettings.displayWhenEmpty then
