@@ -854,6 +854,7 @@ function IceCore.prototype:RequestUpdates(module, func)
 	local count = 0
 	for k,v in pairs(self.updatees) do
 		count = count + 1
+		break
 	end
 
 	if (count == 0) then
@@ -869,8 +870,12 @@ function IceCore.prototype:RequestUpdates(module, func)
 	end
 end
 
-function IceCore.prototype:IsUpdateSubscribed(module)
-	return self.updatees[module] ~= nil
+function IceCore.prototype:IsUpdateSubscribed(module, func)
+	if func == nil then
+		return self.updatees[module] ~= nil
+	else
+		return self.updatees[module] == func
+	end
 end
 
 function IceCore.prototype:EmptyUpdates()
