@@ -331,6 +331,21 @@ This isn't |cff9999ffIceHUD|r - it's Blizzard's new Spell Alerts they added in 4
 					end,
 					order = 32,
 				},
+
+				bTreatFriendlyAsTarget = {
+					type = 'toggle',
+					name = L["Use 'Target' alpha for friendlies"],
+					desc = L["If this is disabled, then targeting a friendly will use the 'Alpha out of combat' setting instead of 'Alpha OOC and Target'."],
+					width = 'double',
+					get = function()
+						return IceHUD.IceCore.settings.bTreatFriendlyAsTarget
+					end,
+					set = function(info, value)
+						IceHUD.IceCore.settings.bTreatFriendlyAsTarget = value
+						IceHUD.IceCore:Redraw()
+					end,
+					order = 32
+				},
 			}
 		},
 

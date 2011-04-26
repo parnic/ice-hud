@@ -1253,7 +1253,7 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	if (self.combat) then
 		self.alpha = self.settings.alphaic
 		self.backgroundAlpha = self.settings.alphaicbg
-	elseif (self.target) then
+	elseif (self.target and not self:AlphaPassThroughTarget()) then
 		self.alpha = self.settings.alphaTarget
 		self.backgroundAlpha = self.settings.alphaTargetbg
 	elseif (self:UseTargetAlpha(scale)) then

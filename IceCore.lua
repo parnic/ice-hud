@@ -67,6 +67,7 @@ function IceCore.prototype:SetupDefaults()
 			alphaTargetbg = 0.25,
 			alphaNotFullbg = 0.25,
 
+			bTreatFriendlyAsTarget = true,
 			backgroundToggle = false,
 			backgroundColor = {r = 0.5, g = 0.5, b = 0.5},
 			barTexture = "Bar",

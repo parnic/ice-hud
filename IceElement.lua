@@ -274,7 +274,7 @@ function IceElement.prototype:UpdateAlpha()
 end
 
 function IceElement.prototype:AlphaPassThroughTarget()
-	return false
+	return not self.settings.bTreatFriendlyAsTarget and UnitIsFriend("target", "player")
 end
 
 -- use this to add some value to alpha every time. if you always want an element to be slightly brighter than the actual alpha for visibility
