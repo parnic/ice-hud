@@ -251,7 +251,7 @@ end
 function TargetCC.prototype:GetOptions()
 	local opts = TargetCC.super.prototype.GetOptions(self)
 
-	opts["lowThreshold"] = nil
+	opts["lowThresholdColor"] = nil
 	opts["textSettings"].args["upperTextString"] = nil
 	opts["textSettings"].args["lowerTextString"] = nil
 
