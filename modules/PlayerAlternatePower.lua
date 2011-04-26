@@ -91,6 +91,8 @@ end
 function PlayerAlternatePower.prototype:GetOptions()
 	local opts = PlayerAlternatePower.super.prototype.GetOptions(self)
 
+	opts["lowThresholdColor"] = nil
+
 	opts["hideBlizz"] = {
 		type = "toggle",
 		name = L["Hide Blizzard Frame"],

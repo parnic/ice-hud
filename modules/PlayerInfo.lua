@@ -53,7 +53,7 @@ end
 
 StaticPopupDialogs["ICEHUD_BUFF_DISMISS_UNAVAILABLE"] =
 {
-	text = "Sorry, but there is currently no way for custom mods to cancel buffs. This will be fixed whenever Blizzard fixes the API.",
+	text = "Sorry, but there is currently no simple way for custom mods to cancel buffs while retaining flexibility in how buffs are displayed. This will be fixed whenever the API is more accessible and I get some free time.",
 	button1 = OKAY,
 	timeout = 0,
 	whileDead = 1,
@@ -62,7 +62,9 @@ StaticPopupDialogs["ICEHUD_BUFF_DISMISS_UNAVAILABLE"] =
 
 local function OnBuffMouseUp(frame, button)
 	if IceHUD.WowVer >= 40000 then
-		StaticPopup_Show("ICEHUD_BUFF_DISMISS_UNAVAILABLE")
+		if button == "RightButton" then
+			StaticPopup_Show("ICEHUD_BUFF_DISMISS_UNAVAILABLE")
+		end
 	else
 --[[		if( button == "RightButton" ) then
 			if buffs[i].type == "mh" then
