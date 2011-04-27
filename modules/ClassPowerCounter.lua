@@ -10,6 +10,9 @@ IceClassPowerCounter.prototype.lastNumReady = 0
 IceClassPowerCounter.prototype.runeCoords = {}
 IceClassPowerCounter.prototype.runeShineFadeSpeed = 0.4
 IceClassPowerCounter.prototype.minLevel = 9
+IceClassPowerCounter.prototype.DesiredAnimDuration = 0.6
+IceClassPowerCounter.prototype.DesiredScaleMod = .4
+IceClassPowerCounter.prototype.DesiredAnimPause = 0.5
 
 -- Constructor --
 function IceClassPowerCounter.prototype:init(name)
@@ -456,28 +459,47 @@ function IceClassPowerCounter.prototype:UpdateRunePower()
 end
 
 function IceClassPowerCounter.prototype:StartRunesFullAnimation()
-	if not self.frame.anim then
-		local grp = self.frame:CreateAnimationGroup()
-		grp:SetLooping("BOUNCE")
-
-		-- lots of magic numbers here. i wonder if it's worth making them configurable or not...probably not.
-		local scale = grp:CreateAnimation("Scale")
-		scale:SetStartDelay(0.5)
-		scale:SetEndDelay(0)
-		scale:SetDuration(0.75)
-		scale:SetOrigin("CENTER", 0, 0)
-		scale:SetScale(1.5, 1.5)
-
-		self.frame.anim = grp
+	if not self.AnimUpdate then
+		self.AnimUpdate = function() self:UpdateRuneAnimation() end
 	end
 
-	self.frame.anim:Play()
+	self.AnimStartTime = GetTime()
+	self.AnimDirection = 1
+	self.frame:SetScript("OnUpdate", self.AnimUpdate)
+end
+
+function IceClassPowerCounter.prototype:UpdateRuneAnimation(frame, elapsed)
+	local scale = self.frame:GetScale()
+	local now = GetTime()
+	local perc = IceHUD:Clamp((now - self.AnimStartTime) / self.DesiredAnimDuration, 0, 1)
+
+	if self.AnimDirection > 0 then
+		scale = 1 + (self.DesiredScaleMod * perc)
+
+		if perc >= 1 then
+			self.AnimDirection = -1
+			self.AnimStartTime = now
+		end
+	elseif self.AnimDirection < 0 then
+		scale = (1 + self.DesiredScaleMod) - (self.DesiredScaleMod * perc)
+
+		if perc >= 1 then
+			self.AnimDirection = 0
+			self.AnimStartTime = now
+		end
+	else
+		if now - self.AnimStartTime >= self.DesiredAnimPause then
+			self.AnimDirection = 1
+			self.AnimStartTime = now
+		end
+	end
+
+	self.frame:SetScale(scale)
 end
 
 function IceClassPowerCounter.prototype:StopRunesFullAnimation()
-	if self.frame.anim and self.frame.anim:IsPlaying() then
-		self.frame.anim:Stop()
-	end
+	self.frame:SetScript("OnUpdate", nil)
+	self.frame:SetScale(1)
 end
 
 function IceClassPowerCounter.prototype:ShineFinished(rune)
@@ -485,7 +507,7 @@ function IceClassPowerCounter.prototype:ShineFinished(rune)
 end
 
 function IceClassPowerCounter.prototype:GetRuneTexture(rune)
-	assert(true, "Must override GetRuneTexture in child classes")
+	assert(false, "Must override GetRuneTexture in child classes")
 end
 
 
