@@ -1,16 +1,11 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local PetHealth = IceCore_CreateClass(IceUnitBar)
 
-PetHealth.prototype.happiness = nil
-
-
 -- Constructor --
 function PetHealth.prototype:init()
 	PetHealth.super.prototype.init(self, "PetHealth", "pet")
 
 	self:SetDefaultColor("PetHealthHappy", 37, 164, 30)
-	self:SetDefaultColor("PetHealthContent", 164, 164, 30)
-	self:SetDefaultColor("PetHealthUnhappy", 164, 30, 30)
 
 	self.scalingEnabled = true
 end
@@ -54,12 +49,6 @@ function PetHealth.prototype:Enable(core)
 	self:RegisterEvent("UNIT_HEALTH", "UpdateEvent")
 	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateEvent")
 
-	if IceHUD.WowVer >= 40000 then
-		self:RegisterEvent("UNIT_POWER", "PetHappiness")
-	else
-		self:RegisterEvent("UNIT_HAPPINESS", "PetHappiness")
-	end
-
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckVehicle")
@@ -75,24 +64,9 @@ function PetHealth.prototype:Disable(core)
 	UnregisterUnitWatch(self.frame)
 end
 
-function PetHealth.prototype:PetHappiness(event, unit, powertype)
-	if (unit and (unit ~= self.unit)) then
-		return
-	end
-
-	if IceHUD.WowVer >= 40000 and (powertype == nil or powertype ~= "HAPPINESS") then
-		return
-	end
-
-	self.happiness = GetPetHappiness()
-	self.happiness = self.happiness or 3 -- '3' means happy
-	self:Update(unit)
-end
-
 
 function PetHealth.prototype:CheckPet()
 	if (UnitExists(self.unit)) then
-		self:PetHappiness(nil, self.unit, "HAPPINESS")
 		self:Update(self.unit)
 	end
 end
@@ -109,11 +83,6 @@ function PetHealth.prototype:Update(unit)
 	end
 
 	local color = "PetHealthHappy"
-	if (self.happiness == 2) then
-		color = "PetHealthContent"
-	elseif(self.happiness == 1) then
-		color = "PetHealthUnhappy"
-	end
 
 	if (self.moduleSettings.scaleHealthColor) then
 		color = "ScaledHealthColor"
