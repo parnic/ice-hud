@@ -11,7 +11,7 @@ function PetInfo.prototype:GetDefaultSettings()
 
 	settings["enabled"] = false
 	settings["vpos"] = -150
-	settings["line2Tag"] = "[Level:DifficultyColor] [SmartRace:ClassColor] [HappyText:HappyColor] [PvPIcon] [InCombat ? 'Combat':Red]"
+	settings["line2Tag"] = "[Level:DifficultyColor] [SmartRace:ClassColor] [PvPIcon] [InCombat ? 'Combat':Red]"
 
 	return settings
 end
