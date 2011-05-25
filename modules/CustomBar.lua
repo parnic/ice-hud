@@ -554,6 +554,10 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
+	if not unitName or not buffName then
+		return nil
+	end
+
 	if unitName == "main hand weapon" or unitName == "off hand weapon" then
 		local hasMainHandEnchant, mainHandExpiration, mainHandCharges, hasOffHandEnchant, offHandExpiration, offHandCharges
 			= GetWeaponEnchantInfo()
