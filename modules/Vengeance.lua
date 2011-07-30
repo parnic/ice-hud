@@ -98,7 +98,8 @@ function Vengeance.prototype:UpdateMax(event, unit)
 		return
 	end
 
-	self.max = floor(0.1*UnitHealthMax(self.unit))
+	local Stam, MaxHealth = UnitStat(self.unit, 3), UnitHealthMax(self.unit)
+	self.max = floor(Stam + (MaxHealth - ((Stam - 19) * 14) - 6) / 10)
 	self:Update()
 end
 
