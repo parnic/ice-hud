@@ -597,7 +597,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 			duration = self.moduleSettings.maxDuration
 		end
 
-		if checkId then
+		if checkId and self.moduleSettings.exactMatch then
 			validId = spellId == mySpellId
 		end
 
