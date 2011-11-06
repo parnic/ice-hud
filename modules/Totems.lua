@@ -400,6 +400,6 @@ end
 
 -- Load us up
 local _, unitClass = UnitClass("player")
-if (unitClass == "SHAMAN") then
+if (unitClass == "SHAMAN") or (unitClass == "DRUID") then
 	IceHUD.Totems = Totems:new()
 end
