@@ -774,10 +774,27 @@ function IceTargetInfo.prototype:GetOptions()
 		order = 39
 	}
 
+	opts["mouseTooltip"] = {
+		type = 'toggle',
+		name = L["Show tooltip"],
+		desc = L["Show the tooltip for this unit when the mouse is hovering over it."],
+		get = function()
+			return self.moduleSettings.mouseTooltip
+
+		set = function(info, v)
+			self.moduleSettings.mouseTooltip = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 39.01
+	}
+
 	opts["textHeader"] = {
 		type = 'header',
 		name = L["Text Settings"],
-		order = 39.01
+		order = 39.05
 	}
 
 	opts["line1Tag"] = {
@@ -950,6 +967,7 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 	defaults["zoom"] = 0.08
 	defaults["mouseTarget"] = true
 	defaults["mouseBuff"] = true
+	defaults["mouseTooltip"] = true
 	defaults["line1Tag"] = "[Name:HostileColor]"
 --  defaults["line2Tag"] = "[Level:DifficultyColor] [[IsPlayer ? Race ! CreatureType]:ClassColor] [[IsPlayer ? Class]:ClassColor] [[~PvP ? \"PvE\" ! \"PvP\"]:HostileColor] [IsLeader ? \"Leader\":Yellow] [InCombat ? \"Combat\":Red] [Classification]"
 	defaults["line2Tag"] = "[Level:DifficultyColor] [SmartRace:ClassColor] [SmartClass:ClassColor] [PvPIcon] [IsLeader ? 'Leader':Yellow] [InCombat ? 'Combat':Red] [Classification]"
@@ -1648,13 +1666,17 @@ end
 
 
 function IceTargetInfo.prototype:OnEnter(frame)
-	UnitFrame_OnEnter(frame)
+	if self.moduleSettings.mouseTooltip then
+		UnitFrame_OnEnter(frame)
+	end
 	self.frame.highLight:Show()
 end
 
 
 function IceTargetInfo.prototype:OnLeave(frame)
-	UnitFrame_OnLeave(frame)
+	if self.moduleSettings.mouseTooltip then
+		UnitFrame_OnLeave(frame)
+	end
 	self.frame.highLight:Hide()
 end
 
