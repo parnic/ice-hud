@@ -780,7 +780,7 @@ function IceTargetInfo.prototype:GetOptions()
 		desc = L["Show the tooltip for this unit when the mouse is hovering over it."],
 		get = function()
 			return self.moduleSettings.mouseTooltip
-
+		end,
 		set = function(info, v)
 			self.moduleSettings.mouseTooltip = v
 			self:Redraw()
