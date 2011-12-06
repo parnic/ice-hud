@@ -521,6 +521,8 @@ function IceCustomCDBar.prototype:EnableUpdates(enable_update)
 --	 	end
 	end
 
+	self.handlesOwnUpdates = enable_update
+
 	if enable_update then
 		if not self.CustomUpdateFunc then
 			self.CustomUpdateFunc = function() self:UpdateCustomBar(true) end

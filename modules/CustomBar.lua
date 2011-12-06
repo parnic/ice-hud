@@ -72,9 +72,11 @@ function IceCustomBar.prototype:ConditionalSubscribe()
 				self.CustomBarUpdateFunc = function() self:UpdateCustomBar() end
 			end
 
+			self.handlesOwnUpdates = true
 			IceHUD.IceCore:RequestUpdates(self, self.CustomBarUpdateFunc)
 		end
 	else
+		self.handlesOwnUpdates = false
 		IceHUD.IceCore:RequestUpdates(self, nil)
 	end
 end
@@ -700,6 +702,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 				self.UpdateCustomBarFunc = function() self:UpdateCustomBar(self.unit, true) end
 			end
 
+			self.handlesOwnUpdates = true
 			IceHUD.IceCore:RequestUpdates(self, self.UpdateCustomBarFunc)
 		end
 
@@ -718,6 +721,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 		self:UpdateBar(0, "undef")
 		self:Show(false)
 		if not self:ShouldAlwaysSubscribe() then
+			self.handlesOwnUpdates = false
 			IceHUD.IceCore:RequestUpdates(self, nil)
 		end
 	end

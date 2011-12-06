@@ -848,7 +848,11 @@ end
 
 function IceCore.prototype:RequestUpdates(module, func)
 	if self.updatees[module] ~= func then
-		self.updatees[module] = func
+		-- Parnic: this prevents modules who are handling their own updates (as opposed to relying on IceBarElement)
+		--         from having their update request yanked out from under them.
+		if func ~= nil or not module.handlesOwnUpdates then
+			self.updatees[module] = func
+		end
 	end
 
 	local count = 0
