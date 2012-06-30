@@ -1552,7 +1552,11 @@ function IceTargetInfo.prototype:TargetName(event, unit)
 		end
 
 
-		self.leader = UnitIsPartyLeader(self.unit) and " |cffcccc11Leader|r" or ""
+		if IceHUD.WowVer < 50000 then
+			self.leader = UnitIsPartyLeader(self.unit) and " |cffcccc11Leader|r" or ""
+		else
+			self.leader = UnitIsGroupLeader(self.unit) and " |cffcccc11Leader|r" or ""
+		end
 		self:Update(unit)
 	end
 end

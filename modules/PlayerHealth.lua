@@ -74,7 +74,11 @@ function PlayerHealth.prototype:Enable(core)
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckCombat")
 
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "CheckLeader")
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckLeader")
+	if IceHUD.WowVer >= 50000 then
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", "CheckLeader")
+	else
+		self:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckLeader")
+	end
 	self:RegisterEvent("LFG_PROPOSAL_UPDATE", "CheckPartyRole")
 	self:RegisterEvent("LFG_PROPOSAL_FAILED", "CheckPartyRole")
 	self:RegisterEvent("LFG_ROLE_UPDATE", "CheckPartyRole")
@@ -1091,7 +1095,13 @@ function PlayerHealth.prototype:CheckPartyRole()
 end
 
 function PlayerHealth.prototype:CheckLeader()
-	if configMode or IsPartyLeader() then
+	local isLeader
+	if IceHUD.WowVer >= 50000 then
+		isLeader = UnitIsGroupLeader("player")
+	else
+		isLeader = IsPartyLeader()
+	end
+	if configMode or isLeader then
 		if (configMode or self.moduleSettings.showLeaderIcon) and not self.frame.leaderIcon then
 			self.frame.leaderIcon = self:CreateTexCoord(self.frame.leaderIcon, "Interface\\GroupFrame\\UI-Group-LeaderIcon", 20, 20,
 						self.moduleSettings.leaderIconScale, 0, 1, 0, 1)
@@ -1338,7 +1348,11 @@ function PlayerHealth.prototype:ShowBlizzardParty()
 		if frame then
 			frame.Show = nil
 			frame:GetScript("OnLoad")(frame)
-			frame:GetScript("OnEvent")(frame, "PARTY_MEMBERS_CHANGED")
+			if IceHUD.WowVer >= 50000 then
+				frame:GetScript("OnEvent")(frame, "GROUP_ROSTER_UPDATE")
+			else
+				frame:GetScript("OnEvent")(frame, "PARTY_MEMBERS_CHANGED")
+			end
 
 			PartyMemberFrame_UpdateMember(frame)
 		end

@@ -333,7 +333,10 @@ function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints)
 		maxduration = maxduration + glyphBonusSec
 	end
 
-	_, _, _, _, rank = GetTalentInfo(impSndTalentPage, impSndTalentIdx)
+	local rank = 0
+	if IceHUD.WowVer < 50000 then
+		_, _, _, _, rank = GetTalentInfo(impSndTalentPage, impSndTalentIdx)
+	end
 
 	maxduration = maxduration * (1 + (rank * impSndBonusPerRank))
 

@@ -307,7 +307,7 @@ end
 -- blizzard interface options
 local blizOptionsPanel = CreateFrame("FRAME", "IceHUDConfigPanel", UIParent)
 blizOptionsPanel.name = "IceHUD"
-blizOptionsPanel.button = CreateFrame("BUTTON", "IceHUDOpenConfigButton", blizOptionsPanel, "UIPanelButtonTemplate2")
+blizOptionsPanel.button = CreateFrame("BUTTON", "IceHUDOpenConfigButton", blizOptionsPanel, IceHUD.WowVer >= 50000 and "UIPanelButtonTemplate" or "UIPanelButtonTemplate2")
 blizOptionsPanel.button:SetText("Open IceHUD configuration")
 blizOptionsPanel.button:SetWidth(240)
 blizOptionsPanel.button:SetHeight(30)
