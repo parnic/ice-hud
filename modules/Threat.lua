@@ -232,7 +232,13 @@ function IceThreat.prototype:Update(unit)
 		unit = self.unit
 	end
 
-	if self.moduleSettings.onlyShowInGroups and (GetNumPartyMembers() == 0 and not UnitExists("pet")) then
+	local isInGroup = false
+	if IceHUD.WowVer >= 50000 then
+		isInGroup = GetNumGroupMembers() > 0
+	else
+		isInGroup = GetNumPartyMembers() > 0
+	end
+	if self.moduleSettings.onlyShowInGroups and (not isInGroup and not UnitExists("pet")) then
 		self:Show(false)
 		return
 	end
