@@ -132,7 +132,8 @@ function GlobalCoolDown.prototype:GetSpellId()
 		PALADIN=20154, -- seal of righteousness
 		SHAMAN=403, -- lightning bolt
 		HUNTER=3044, -- arcane shot
-		DEATHKNIGHT=47541 -- death coil
+		DEATHKNIGHT=47541, -- death coil
+		MONK=100780, -- jab
 	}
 
 	local _, unitClass = UnitClass("player")
