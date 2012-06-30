@@ -22,7 +22,7 @@ end
 function HolyPower.prototype:GetOptions()
 	local opts = HolyPower.super.prototype.GetOptions(self)
 
-	opts.hideBlizz.desc = "Hides Blizzard Holy Power frame and disables all events related to it.\n\nNOTE: Blizzard attaches the holy power UI to the player's unitframe, so if you have that hidden in PlayerHealth, then this won't do anything."
+	opts.hideBlizz.desc = L["Hides Blizzard Holy Power frame and disables all events related to it.\n\nNOTE: Blizzard attaches the holy power UI to the player's unitframe, so if you have that hidden in PlayerHealth, then this won't do anything."]
 
 	return opts
 end

@@ -6,7 +6,7 @@ function ShardCounter.prototype:init()
 
 	self:SetDefaultColor("ShardCounterNumeric", 218, 231, 31)
 
-	-- pulled from PaladinPowerBar.xml in Blizzard's UI source
+	-- pulled from ShardBar.xml in Blizzard's UI source
 	self.runeCoords =
 	{
 		{0.01562500, 0.28125000, 0.00781250, 0.13281250},

@@ -79,6 +79,7 @@ modules\Shards.lua
 modules\EclipseBar.lua
 modules\Vengeance.lua
 modules\PlayerAlternatePower.lua
+modules\HarmonyPower.lua
 
 #@do-not-package@
 IceHUD_Options\Options.lua

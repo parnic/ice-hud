@@ -1,0 +1,84 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
+local HarmonyPower = IceCore_CreateClass(IceClassPowerCounter)
+
+function HarmonyPower.prototype:init()
+	HarmonyPower.super.prototype.init(self, "HarmonyPower")
+
+	self:SetDefaultColor("HarmonyPowerNumeric", 218, 231, 31)
+
+	-- pulled from MonkHarmonyBar.xml in Blizzard's UI source
+	self.runeCoords =
+	{
+		{0.00390625, 0.08593750, 0.71093750, 0.87500000},
+		{0.00390625, 0.08593750, 0.71093750, 0.87500000},
+		{0.00390625, 0.08593750, 0.71093750, 0.87500000},
+		{0.00390625, 0.08593750, 0.71093750, 0.87500000},
+		{0.00390625, 0.08593750, 0.71093750, 0.87500000},
+	}
+	self.numRunes = 4
+	self.numericColor = "HarmonyPowerNumeric"
+	self.unitPower = SPELL_POWER_LIGHT_FORCE
+	self.minLevel = MONKHARMONYBAR_SHOW_LEVEL
+	self.bTreatEmptyAsFull = true
+	self.unit = "player"
+	self.runeWidth = self.runeHeight
+end
+
+function HarmonyPower.prototype:UpdateRunePower()
+	local numRunes = UnitPowerMax(self.unit, self.unitPower)
+
+	if self.fakeNumRunes ~= nil and self.fakeNumRunes > 0 then
+		numRunes = self.fakeNumRunes
+	end
+
+	if numRunes ~= self.numRunes then
+		if numRunes < self.numRunes and #self.frame.graphical >= numRunes then
+			for i=numRunes + 1, #self.frame.graphical do
+				self.frame.graphical[i]:Hide()
+			end
+		end
+		self.numRunes = numRunes
+
+		self:CreateRuneFrame()
+
+		local width = self.runeHeight
+		if self.moduleSettings.runeMode == "Graphical" then
+			width = self.runeWidth
+		end
+		self.frame:SetWidth(width*self.numRunes)
+	end
+	HarmonyPower.super.prototype.UpdateRunePower(self)
+end
+
+function HarmonyPower.prototype:GetOptions()
+	local opts = HarmonyPower.super.prototype.GetOptions(self)
+
+	opts.hideBlizz.desc = L["Hides Blizzard Harmony Power frame and disables all events related to it.\n\nNOTE: Blizzard attaches the harmony power UI to the player's unitframe, so if you have that hidden in PlayerHealth, then this won't do anything."]
+
+	return opts
+end
+
+function HarmonyPower.prototype:GetRuneTexture(rune)
+	if not rune or rune ~= tonumber(rune) then
+		return
+	end
+	return "Interface\\PlayerFrame\\MonkUI"
+end
+
+function HarmonyPower.prototype:ShowBlizz()
+	MonkHarmonyBar:Show()
+
+	MonkHarmonyBar:GetScript("OnLoad")(MonkHarmonyBar)
+end
+
+function HarmonyPower.prototype:HideBlizz()
+	MonkHarmonyBar:Hide()
+
+	MonkHarmonyBar:UnregisterAllEvents()
+end
+
+-- Load us up
+local _, unitClass = UnitClass("player")
+if (unitClass == "MONK" and IceHUD.WowVer >= 50000) then
+	IceHUD.HarmonyPower = HarmonyPower:new()
+end
