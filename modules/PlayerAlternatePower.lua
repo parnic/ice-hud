@@ -1,18 +1,20 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
-local PlayerAlternatePower = IceCore_CreateClass(IceUnitBar)
+IceHUDPlayerAlternatePower = IceCore_CreateClass(IceUnitBar)
 
 -- Constructor --
-function PlayerAlternatePower.prototype:init(moduleName, unit)
-	PlayerAlternatePower.super.prototype.init(self, "PlayerAlternatePower", "player")
+function IceHUDPlayerAlternatePower.prototype:init(moduleName, unit)
+	IceHUDPlayerAlternatePower.super.prototype.init(self, moduleName or "PlayerAlternatePower", "player")
 
 	self.bTreatEmptyAsFull = true
 	self.power = 0
 	self.maxPower = 0
 	self.powerPercent = 0
+	self.powerIndex = ALTERNATE_POWER_INDEX
+	self.powerName = "MANA"
 end
 
-function PlayerAlternatePower.prototype:GetDefaultSettings()
-	local settings = PlayerAlternatePower.super.prototype.GetDefaultSettings(self)
+function IceHUDPlayerAlternatePower.prototype:GetDefaultSettings()
+	local settings = IceHUDPlayerAlternatePower.super.prototype.GetDefaultSettings(self)
 
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = -1
@@ -23,8 +25,8 @@ function PlayerAlternatePower.prototype:GetDefaultSettings()
 	return settings
 end
 
-function PlayerAlternatePower.prototype:Enable(core)
-	PlayerAlternatePower.super.prototype.Enable(self, core)
+function IceHUDPlayerAlternatePower.prototype:Enable(core)
+	IceHUDPlayerAlternatePower.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_POWER", "UpdateEvent")
 	self:RegisterEvent("UNIT_MAXPOWER", "UpdateEvent")
@@ -41,7 +43,7 @@ function PlayerAlternatePower.prototype:Enable(core)
 	end
 end
 
-function PlayerAlternatePower.prototype:PowerBarShow(event, unit)
+function IceHUDPlayerAlternatePower.prototype:PowerBarShow(event, unit)
 	if unit ~= self.unit then
 		return
 	end
@@ -50,7 +52,7 @@ function PlayerAlternatePower.prototype:PowerBarShow(event, unit)
 	self:Update(self.unit)
 end
 
-function PlayerAlternatePower.prototype:PowerBarHide(event, unit)
+function IceHUDPlayerAlternatePower.prototype:PowerBarHide(event, unit)
 	if unit ~= self.unit then
 		return
 	end
@@ -59,18 +61,18 @@ function PlayerAlternatePower.prototype:PowerBarHide(event, unit)
 	self:Update(self.unit)
 end
 
-function PlayerAlternatePower.prototype:UpdateEvent(event, unit)
+function IceHUDPlayerAlternatePower.prototype:UpdateEvent(event, unit)
 	self:Update(unit)
 end
 
-function PlayerAlternatePower.prototype:Update(unit)
-	PlayerAlternatePower.super.prototype.Update(self)
+function IceHUDPlayerAlternatePower.prototype:Update(unit)
+	IceHUDPlayerAlternatePower.super.prototype.Update(self)
 	if (unit and (unit ~= self.unit)) then
 		return
 	end
 
-	self.maxPower = UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX)
-	self.power = UnitPower(self.unit, ALTERNATE_POWER_INDEX)
+	self.maxPower = UnitPowerMax(self.unit, self.powerIndex)
+	self.power = UnitPower(self.unit, self.powerIndex)
 	if self.maxPower > 0 then
 		self.powerPercent = self.power / self.maxPower
 	else
@@ -79,8 +81,8 @@ function PlayerAlternatePower.prototype:Update(unit)
 
 	self:UpdateBar(self.powerPercent)
 
-	local texture, r, g, b = UnitAlternatePowerTextureInfo(self.unit, ALT_POWER_TEX_FILL)
-	self.barFrame.bar:SetVertexColor(r, g, b, self.alpha)
+	local info = PowerBarColor[self.powerName];
+	self.barFrame.bar:SetVertexColor(info.r, info.g, info.b, self.alpha)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		self:SetBottomText1(math.floor(self.powerPercent * 100))
@@ -88,8 +90,8 @@ function PlayerAlternatePower.prototype:Update(unit)
 	end
 end
 
-function PlayerAlternatePower.prototype:GetOptions()
-	local opts = PlayerAlternatePower.super.prototype.GetOptions(self)
+function IceHUDPlayerAlternatePower.prototype:GetOptions()
+	local opts = IceHUDPlayerAlternatePower.super.prototype.GetOptions(self)
 
 	opts["lowThresholdColor"] = nil
 
@@ -117,15 +119,15 @@ function PlayerAlternatePower.prototype:GetOptions()
 	return opts
 end
 
-function PlayerAlternatePower.prototype:ShowBlizz()
+function IceHUDPlayerAlternatePower.prototype:ShowBlizz()
 	PlayerPowerBarAlt:GetScript("OnLoad")(PlayerPowerBarAlt)
 end
 
-function PlayerAlternatePower.prototype:HideBlizz()
+function IceHUDPlayerAlternatePower.prototype:HideBlizz()
 	PlayerPowerBarAlt:Hide()
 
 	PlayerPowerBarAlt:UnregisterAllEvents()
 end
 
 -- Load us up
-IceHUD.PlayerAlternatePower = PlayerAlternatePower:new()
+IceHUD.PlayerAlternatePower = IceHUDPlayerAlternatePower:new()

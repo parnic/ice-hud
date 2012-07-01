@@ -80,6 +80,7 @@ modules\EclipseBar.lua
 modules\Vengeance.lua
 modules\PlayerAlternatePower.lua
 modules\HarmonyPower.lua
+modules\MonkManaBar.lua
 
 #@do-not-package@
 IceHUD_Options\Options.lua
