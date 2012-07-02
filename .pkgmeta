@@ -49,7 +49,6 @@ externals:
         url: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
     libs/LibDualSpec-1.0:
         url: git://git.wowace.com/wow/libdualspec-1-0/mainline.git
-        tag: latest
 
 optional-dependencies:
     - libdogtag-3-0
