@@ -118,7 +118,13 @@ function EclipseBar.prototype:UpdateShown()
 	local form  = GetShapeshiftFormID()
 
 	if form == MOONKIN_FORM or not form then
-		if GetPrimaryTalentTree() == 1 then
+		local PrimaryTalentTree = 0
+		if IceHUD.WowVer >= 50000 then
+			PrimaryTalentTree = GetSpecialization()
+		else
+			PrimaryTalentTree = GetPrimaryTalentTree()
+		end
+		if PrimaryTalentTree == 1 then
 			self:Show(true)
 		else
 			self:Show(false)
