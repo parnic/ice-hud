@@ -1005,13 +1005,7 @@ function PlayerHealth.prototype:CheckCombat()
 end
 
 function PlayerHealth.prototype:CheckPartyRole()
-	local IsLFGParty
-	local mode, submode
-
-	mode, submode= GetLFGMode()
-	IsLFGParty = (mode ~= nil and mode ~= "abandonedInDungeon" and mode ~= "queued")
-
-	if configMode or IsLFGParty then
+	if configMode or IceHUD:GetIsInLFGGroup() then
 		if (configMode or self.moduleSettings.showPartyRoleIcon) and not self.frame.PartyRoleIcon then
 			local isTank, isHeal, isDPS
 			local proposalExists, typeID, id, name

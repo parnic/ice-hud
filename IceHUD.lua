@@ -554,6 +554,39 @@ function IceHUD:CreateCustomModuleAndNotify(moduleKey, settings)
 	end
 end
 
+local function CheckLFGMode(mode)
+	return (mode ~= nil and mode ~= "abandonedInDungeon" and mode ~= "queued")
+end
+
+function IceHUD:GetIsInLFGGroup()
+	local mode, submode
+	if IceHUD.WowVer >= 50000 then
+		mode, submode = GetLFGMode(LE_LFG_CATEGORY_LFD)
+	else
+		mode, submode = GetLFGMode()
+	end
+	local IsInLFGGroup = CheckLFGMode(mode)
+
+	if IceHUD.WowVer < 50000 then
+		return IsInLFGGroup
+	end
+
+	if not IsInLFGGroup then
+		mode, submode = GetLFGMode(LE_LFG_CATEGORY_RF)
+		IsInLFGGroup = CheckLFGMode(mode)
+	end
+	if not IsInLFGGroup then
+		mode, submode = GetLFGMode(LE_LFG_CATEGORY_SCENARIO)
+		IsInLFGGroup = CheckLFGMode(mode)
+	end
+	if not IsInLFGGroup then
+		mode, submode = GetLFGMode(LE_LFG_CATEGORY_LFR)
+		IsInLFGGroup = CheckLFGMode(mode)
+	end
+
+	return IsInLFGGroup
+end
+
 local BLACKLISTED_UNIT_MENU_OPTIONS = {
 	SET_FOCUS = "ICEHUD_SET_FOCUS",
 	CLEAR_FOCUS = "ICEHUD_CLEAR_FOCUS",

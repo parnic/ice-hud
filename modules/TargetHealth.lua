@@ -1067,13 +1067,7 @@ function IceTargetHealth.prototype:UpdateBar(scale, color, alpha)
 end
 
 function IceTargetHealth.prototype:CheckPartyRole()
-	local IsLFGParty
-	local mode, submode
-
-	mode, submode= GetLFGMode()
-	IsLFGParty = (mode ~= nil and mode ~= "abandonedInDungeon" and mode ~= "queued")
-
-	if self.configMode or IsLFGParty then
+	if self.configMode or IceHUD:GetIsInLFGGroup() then
 		if self.configMode or self.moduleSettings.showPartyRoleIcon then
 			local isTank, isHeal, isDPS
 			local proposalExists, typeID, id, name
