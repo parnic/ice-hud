@@ -9,14 +9,18 @@ function HolyPower.prototype:init()
 	-- pulled from PaladinPowerBar.xml in Blizzard's UI source
 	self.runeCoords =
 	{
-		{0.00390625, 0.14453125, 0.64843750, 0.82031250},
-		{0.00390625, 0.12500000, 0.83593750, 0.96875000},
-		{0.15234375, 0.25781250, 0.64843750, 0.81250000},
+		{0.00390625, 0.14453125, 0.78906250, 0.96093750},
+		{0.15234375, 0.27343750, 0.78906250, 0.92187500},
+		{0.28125000, 0.38671875, 0.64843750, 0.81250000},
+		{0.28125000, 0.38671875, 0.82812500, 0.92187500},
+		{0.39453125, 0.49609375, 0.64843750, 0.74218750},
 	}
 	self.numericColor = "HolyPowerNumeric"
 	self.unitPower = SPELL_POWER_HOLY_POWER
 	self.minLevel = PALADINPOWERBAR_SHOW_LEVEL
 	self.bTreatEmptyAsFull = true
+	self.unit = "player"
+	self.numConsideredFull = HOLY_POWER_FULL
 end
 
 function HolyPower.prototype:GetOptions()
@@ -45,6 +49,26 @@ function HolyPower.prototype:HideBlizz()
 	PaladinPowerBar:Hide()
 
 	PaladinPowerBar:UnregisterAllEvents()
+end
+
+function HolyPower.prototype:UpdateRunePower()
+	local numRunes = UnitPowerMax(self.unit, self.unitPower)
+
+	if self.fakeNumRunes ~= nil and self.fakeNumRunes > 0 then
+		numRunes = self.fakeNumRunes
+	end
+
+	if numRunes ~= self.numRunes then
+		if numRunes < self.numRunes and #self.frame.graphical >= numRunes then
+			for i=numRunes + 1, #self.frame.graphical do
+				self.frame.graphical[i]:Hide()
+			end
+		end
+		self.numRunes = numRunes
+
+		self:CreateRuneFrame()
+	end
+	HolyPower.super.prototype.UpdateRunePower(self)
 end
 
 -- Load us up

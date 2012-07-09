@@ -6,6 +6,7 @@ local IceHUD = _G.IceHUD
 IceClassPowerCounter.prototype.runeHeight = 22
 IceClassPowerCounter.prototype.runeWidth = 36
 IceClassPowerCounter.prototype.numRunes = 3
+IceClassPowerCounter.prototype.numConsideredFull = 99
 IceClassPowerCounter.prototype.lastNumReady = 0
 IceClassPowerCounter.prototype.runeCoords = {}
 IceClassPowerCounter.prototype.runeShineFadeSpeed = 0.4
@@ -443,9 +444,9 @@ function IceClassPowerCounter.prototype:UpdateRunePower()
 	end
 
 	if self.moduleSettings.pulseWhenFull then
-		if numReady > self.lastNumReady and numReady == self.numRunes then
+		if numReady > self.lastNumReady and (numReady == self.numRunes or numReady >= self.numConsideredFull) then
 			self:StartRunesFullAnimation()
-		elseif numReady < self.numRunes then
+		elseif numReady < self.numRunes and numReady < self.numConsideredFull then
 			self:StopRunesFullAnimation()
 		end
 	end
