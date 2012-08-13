@@ -126,7 +126,7 @@ function GlobalCoolDown.prototype:GetSpellId()
 		ROGUE=1752, -- sinister strike
 		PRIEST=585, -- smite
 		DRUID=5176, -- wrath
-		WARRIOR=772, -- rend
+		WARRIOR=34428, -- victory rush (not available until 5, sadly)
 		MAGE=133, -- fireball
 		WARLOCK=686, -- shadow bolt
 		PALADIN=20154, -- seal of righteousness
