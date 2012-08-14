@@ -127,9 +127,9 @@ function GlobalCoolDown.prototype:GetSpellId()
 		PRIEST=585, -- smite
 		DRUID=5176, -- wrath
 		WARRIOR=34428, -- victory rush (not available until 5, sadly)
-		MAGE=133, -- fireball
+		MAGE=44614, -- frostfire bolt
 		WARLOCK=686, -- shadow bolt
-		PALADIN=20154, -- seal of righteousness
+		PALADIN=105361, -- seal of command (level 3)
 		SHAMAN=403, -- lightning bolt
 		HUNTER=3044, -- arcane shot
 		DEATHKNIGHT=47541, -- death coil
