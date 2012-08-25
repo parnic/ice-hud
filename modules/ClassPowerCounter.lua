@@ -14,6 +14,7 @@ IceClassPowerCounter.prototype.minLevel = 9
 IceClassPowerCounter.prototype.DesiredAnimDuration = 0.6
 IceClassPowerCounter.prototype.DesiredScaleMod = .4
 IceClassPowerCounter.prototype.DesiredAnimPause = 0.5
+IceClassPowerCounter.prototype.requiredSpec = nil
 
 -- Constructor --
 function IceClassPowerCounter.prototype:init(name)
@@ -371,15 +372,36 @@ end
 
 function IceClassPowerCounter.prototype:CheckValidLevel(event, level)
 	if not level then
-		return
+		if event == "PLAYER_TALENT_UPDATE" then
+			level = UnitLevel("player")
+		else
+			return
+		end
 	end
 
 	if level < self.minLevel then
 		self:RegisterEvent("PLAYER_LEVEL_UP", "CheckValidLevel")
 		self:Show(false)
 	else
+		self:CheckValidSpec()
+	end
+end
+
+function IceClassPowerCounter.prototype:CheckValidSpec()
+	if self.requiredSpec == nil then
 		self:DisplayCounter()
 		self:Show(true)
+		return
+	end
+
+	self:RegisterEvent("PLAYER_TALENT_UPDATE", "CheckValidLevel")
+
+	local spec = GetSpecialization()
+	if spec == self.requiredSpec then
+		self:DisplayCounter()
+		self:Show(true)
+	else
+		self:Show(false)
 	end
 end
 
