@@ -23,6 +23,8 @@ function ShardCounter.prototype:Enable(core)
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "UpdatePowerType")
 	end
 	self:UpdatePowerType()
+
+	self.frame:SetWidth(self.runeWidth * self.numRunes)
 end
 
 function ShardCounter.prototype:UpdateRunePower(event, arg1, arg2)
