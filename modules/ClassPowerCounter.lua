@@ -15,6 +15,8 @@ IceClassPowerCounter.prototype.DesiredAnimDuration = 0.6
 IceClassPowerCounter.prototype.DesiredScaleMod = .4
 IceClassPowerCounter.prototype.DesiredAnimPause = 0.5
 IceClassPowerCounter.prototype.requiredSpec = nil
+IceClassPowerCounter.prototype.shouldShowUnmodified = false
+IceClassPowerCounter.prototype.unmodifiedMaxPerRune = 10
 
 -- Constructor --
 function IceClassPowerCounter.prototype:init(name)
@@ -427,15 +429,20 @@ function IceClassPowerCounter.prototype:Disable(core)
 	end
 end
 
-function IceClassPowerCounter.prototype:UpdateRunePower()
+function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
+	if event and (event == "UNIT_POWER" or event == "UNIT_POWER_FREQUENT") and arg1 ~= "player" and arg1 ~= "vehicle" then
+		return
+	end
+
 	local numReady = UnitPower("player", self.unitPower)
+	local percentReady = self.shouldShowUnmodified and (UnitPower("player", self.unitPower, true) / self.unmodifiedMaxPerRune) or numReady
 
 	if self.moduleSettings.runeMode == "Numeric" then
-		self.frame.numeric:SetText(tostring(numReady))
+		self.frame.numeric:SetText(tostring(percentReady))
 		self.frame.numeric:SetTextColor(self:GetColor(self.numericColor))
 	else
 		for i=1, self.numRunes do
-			if i <= numReady then
+			if i <= ceil(percentReady) then
 				if self.moduleSettings.runeMode == "Graphical" then
 					self.frame.graphical[i].rune:SetVertexColor(1, 1, 1)
 				else
@@ -446,14 +453,34 @@ function IceClassPowerCounter.prototype:UpdateRunePower()
 					self.frame.graphical[i]:Show()
 				end
 
-				if i > self.lastNumReady and self.moduleSettings.flashWhenBecomingReady then
-					local fadeInfo={
-						mode = "IN",
-						timeToFade = self.runeShineFadeSpeed,
-						finishedFunc = function() self:ShineFinished(i) end,
-						finishedArg1 = i
-					}
-					UIFrameFade(self.frame.graphical[i].shine, fadeInfo);
+				if i > numReady then
+					local left, right, top, bottom = 0, 1, 0, 1
+					if self.moduleSettings.runeMode == "Graphical" then
+						left, right, top, bottom = unpack(self.runeCoords[i])
+					end
+					local currPercent = percentReady - numReady
+					top = bottom - (currPercent * (bottom - top))
+					self.frame.graphical[i].rune:SetTexCoord(left, right, top, bottom)
+					self.frame.graphical[i].rune:SetHeight(currPercent * self.runeHeight)
+				elseif i > self.lastNumReady then
+					if self.runeCoords ~= nil and #self.runeCoords >= i then
+						local left, right, top, bottom = 0, 1, 0, 1
+						if self.moduleSettings.runeMode == "Graphical" then
+							left, right, top, bottom = unpack(self.runeCoords[i])
+						end
+						self.frame.graphical[i].rune:SetTexCoord(left, right, top, bottom)
+						self.frame.graphical[i].rune:SetHeight(self.runeHeight)
+					end
+
+					if self.moduleSettings.flashWhenBecomingReady then
+						local fadeInfo={
+							mode = "IN",
+							timeToFade = self.runeShineFadeSpeed,
+							finishedFunc = function() self:ShineFinished(i) end,
+							finishedArg1 = i
+						}
+						UIFrameFade(self.frame.graphical[i].shine, fadeInfo);
+					end
 				end
 			else
 				if self.moduleSettings.inactiveDisplayMode == "Darkened" then
@@ -586,11 +613,9 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 	if (not self.frame.graphical[i]) then
 		self.frame.graphical[i] = CreateFrame("Frame", nil, self.frame)
 		self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
-		self.frame.graphical[i]:SetWidth(self.runeWidth)
-		self.frame.graphical[i]:SetHeight(self.runeHeight)
 
 		self.frame.graphical[i].rune = self.frame.graphical[i]:CreateTexture(nil, "LOW")
-		self.frame.graphical[i].rune:SetAllPoints(self.frame.graphical[i])
+		self.frame.graphical[i].rune:SetPoint("BOTTOM", self.frame.graphical[i], "BOTTOM")
 		self.frame.graphical[i].rune:SetVertexColor(0, 0, 0)
 		self:SetupRuneTexture(i)
 
@@ -607,6 +632,11 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 
 		self.frame.graphical[i]:Hide()
 	end
+
+	self.frame.graphical[i]:SetWidth(self.runeWidth)
+	self.frame.graphical[i]:SetHeight(self.runeHeight)
+	self.frame.graphical[i].rune:SetWidth(self.runeWidth)
+	self.frame.graphical[i].rune:SetHeight(self.runeHeight)
 end
 
 function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
@@ -709,7 +739,7 @@ function IceClassPowerCounter.prototype:AlphaPassThroughTarget()
 end
 
 function IceClassPowerCounter.prototype:HideBlizz()
-	assert(true, "Must override HideBlizz in child classes.")
+	assert(false, "Must override HideBlizz in child classes.")
 end
 
 function IceClassPowerCounter.prototype:UseTargetAlpha()
