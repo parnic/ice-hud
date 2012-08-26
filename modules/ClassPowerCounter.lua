@@ -18,6 +18,9 @@ IceClassPowerCounter.prototype.requiredSpec = nil
 IceClassPowerCounter.prototype.shouldShowUnmodified = false
 IceClassPowerCounter.prototype.unmodifiedMaxPerRune = 10
 
+IceClassPowerCounter.prototype.growModes = { width = 1, height = 2 }
+IceClassPowerCounter.prototype.currentGrowMode = nil
+
 -- Constructor --
 function IceClassPowerCounter.prototype:init(name)
 	assert(name ~= nil, "ClassPowerCounter cannot be instantiated directly - supply a name from the child class and pass it up.")
@@ -453,15 +456,25 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 					self.frame.graphical[i]:Show()
 				end
 
-				if i > numReady then
+				if i > numReady or self.numRunes == 1 then
 					local left, right, top, bottom = 0, 1, 0, 1
 					if self.moduleSettings.runeMode == "Graphical" then
 						left, right, top, bottom = unpack(self.runeCoords[i])
 					end
+
 					local currPercent = percentReady - numReady
-					top = bottom - (currPercent * (bottom - top))
+					if self.numRunes == 1 then
+						currPercent = numReady / UnitPowerMax("player", self.unitPower)
+					end
+
+					if self.currentGrowMode == self.growModes["height"] then
+						top = bottom - (currPercent * (bottom - top))
+						self.frame.graphical[i].rune:SetHeight(currPercent * self.runeHeight)
+					elseif self.currentGrowMode == self.growModes["width"] then
+						right = left + (currPercent * (right - left))
+						self.frame.graphical[i].rune:SetWidth(currPercent * self.runeWidth)
+					end
 					self.frame.graphical[i].rune:SetTexCoord(left, right, top, bottom)
-					self.frame.graphical[i].rune:SetHeight(currPercent * self.runeHeight)
 				elseif i > self.lastNumReady then
 					if self.runeCoords ~= nil and #self.runeCoords >= i then
 						local left, right, top, bottom = 0, 1, 0, 1
@@ -593,7 +606,7 @@ function IceClassPowerCounter.prototype:CreateRuneFrame()
 	-- create numeric runes
 	self.frame.numeric = self:FontFactory(self.moduleSettings.runeFontSize, self.frame, self.frame.numeric)
 
-	self.frame.numeric:SetWidth(50)
+	self.frame.numeric:SetWidth(100)
 	self.frame.numeric:SetJustifyH("CENTER")
 
 	self.frame.numeric:SetAllPoints(self.frame)
@@ -615,7 +628,6 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 		self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
 
 		self.frame.graphical[i].rune = self.frame.graphical[i]:CreateTexture(nil, "LOW")
-		self.frame.graphical[i].rune:SetPoint("BOTTOM", self.frame.graphical[i], "BOTTOM")
 		self.frame.graphical[i].rune:SetVertexColor(0, 0, 0)
 		self:SetupRuneTexture(i)
 
@@ -637,6 +649,11 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 	self.frame.graphical[i]:SetHeight(self.runeHeight)
 	self.frame.graphical[i].rune:SetWidth(self.runeWidth)
 	self.frame.graphical[i].rune:SetHeight(self.runeHeight)
+	if self.currentGrowMode == self.growModes["width"] then
+		self.frame.graphical[i].rune:SetPoint("LEFT", self.frame.graphical[i], "LEFT")
+	else
+		self.frame.graphical[i].rune:SetPoint("BOTTOM", self.frame.graphical[i], "BOTTOM")
+	end
 end
 
 function IceClassPowerCounter.prototype:SetupRuneTexture(rune)

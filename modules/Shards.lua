@@ -17,7 +17,10 @@ function ShardCounter.prototype:Enable(core)
 
 	if IceHUD.WowVer >= 50000 then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE", "UpdatePowerType")
+		self:RegisterEvent("UNIT_DISPLAYPOWER", "UpdatePowerType")
+		self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "UpdatePowerType")
 		self:RegisterEvent("UNIT_POWER_FREQUENT", "UpdateRunePower")
+		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "UpdatePowerType")
 	end
 	self:UpdatePowerType()
 end
@@ -38,14 +41,18 @@ function ShardCounter.prototype:UpdateRunePower(event, arg1, arg2)
 	ShardCounter.super.prototype.UpdateRunePower(self, event, arg1, arg2)
 end
 
-function ShardCounter.prototype:UpdatePowerType()
+function ShardCounter.prototype:UpdatePowerType(event)
 	if IceHUD.WowVer >= 50000 then
 		CurrentSpec = GetSpecialization()
 	else
 		-- all warlocks use shards in pre-5.0, so just act like our spec is affliction
 		CurrentSpec = SPEC_WARLOCK_AFFLICTION
 	end
+
 	self.shouldShowUnmodified = false
+	self.requiredSpec = CurrentSpec
+	self.currentGrowMode = nil
+
 	if CurrentSpec == SPEC_WARLOCK_AFFLICTION then
 		self.runeCoords =
 		{
@@ -56,6 +63,15 @@ function ShardCounter.prototype:UpdatePowerType()
 		self.unitPower = SPELL_POWER_SOUL_SHARDS
 		self.runeHeight = 23
 		self.runeWidth = 26
+		self.numRunes = 3
+		self.numConsideredFull = 99
+
+		if not IsPlayerSpell(WARLOCK_SOULBURN) then
+			self.requiredSpec = -1
+			self:RegisterEvent("SPELLS_CHANGED", "UpdatePowerType")
+		else
+			self:UnregisterEvent("SPELLS_CHANGED", "UpdatePowerType")
+		end
 	elseif CurrentSpec == SPEC_WARLOCK_DESTRUCTION then
 		self.runeCoords =
 		{
@@ -68,23 +84,52 @@ function ShardCounter.prototype:UpdatePowerType()
 		self.runeHeight = 28
 		self.runeWidth = 31
 		self.unmodifiedMaxPerRune = MAX_POWER_PER_EMBER
+		self.numRunes = 3
+		self.numConsideredFull = 3
+		self.currentGrowMode = self.growModes["height"]
+
+		if not IsPlayerSpell(WARLOCK_BURNING_EMBERS) then
+			self.requiredSpec = -1
+			self:RegisterEvent("SPELLS_CHANGED", "UpdatePowerType")
+		else
+			self:UnregisterEvent("SPELLS_CHANGED", "UpdatePowerType")
+		end
 	elseif CurrentSpec == SPEC_WARLOCK_DEMONOLOGY then
 		self.runeCoords =
 		{
-			{0.00390625, 0.03125000, 0.09765625, 0.18359375},
-			{0.00390625, 0.03125000, 0.09765625, 0.18359375},
-			{0.00390625, 0.03125000, 0.09765625, 0.18359375},
+			{0.03906250, 0.55468750, 0.10546875, 0.19921875},
 		}
 		self.unitPower = SPELL_POWER_DEMONIC_FURY
 		self.runeHeight = 28
-		self.runeWidth = 31
+		self.runeWidth = 93
+		self.numRunes = 1
+		self.numConsideredFull = 99
+		self.currentGrowMode = self.growModes["width"]
+
+		for i=self.numRunes + 1, #self.frame.graphical do
+			self.frame.graphical[i]:Hide()
+		end
+	else
+		self.requiredSpec = -1
+		self:RegisterEvent("SPELLS_CHANGED", "UpdatePowerType")
 	end
 
+	self:CheckValidSpec()
 	self:CreateFrame()
 	for i=1, self.numRunes do
 		self:SetupRuneTexture(i)
 	end
 	self:UpdateRunePower()
+end
+
+function ShardCounter.prototype:SetDisplayMode()
+	if CurrentSpec == SPEC_WARLOCK_DEMONOLOGY then
+		if self.moduleSettings.runeMode ~= "Numeric" and self.moduleSettings.runeMode ~= "Graphical" then
+			self.moduleSettings.runeMode = "Graphical"
+		end
+	end
+
+	ShardCounter.super.prototype.SetDisplayMode(self)
 end
 
 function ShardCounter.prototype:GetOptions()
