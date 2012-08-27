@@ -68,11 +68,13 @@ function ShardCounter.prototype:UpdatePowerType(event)
 		self.numRunes = 3
 		self.numConsideredFull = 99
 
-		if not IsPlayerSpell(WARLOCK_SOULBURN) then
-			self.requiredSpec = -1
-			self:RegisterEvent("SPELLS_CHANGED", "UpdatePowerType")
-		else
-			self:UnregisterEvent("SPELLS_CHANGED", "UpdatePowerType")
+		if IceHUD.WowVer >= 50000 then
+			if not IsPlayerSpell(WARLOCK_SOULBURN) then
+				self.requiredSpec = -1
+				self:RegisterEvent("SPELLS_CHANGED", "UpdatePowerType")
+			else
+				self:UnregisterEvent("SPELLS_CHANGED", "UpdatePowerType")
+			end
 		end
 	elseif CurrentSpec == SPEC_WARLOCK_DESTRUCTION then
 		self.runeCoords =
