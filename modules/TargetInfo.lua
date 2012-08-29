@@ -107,6 +107,7 @@ end
 function IceTargetInfo.prototype:Enable(core)
 	IceTargetInfo.super.prototype.Enable(self, core)
 
+	local _
 	_, self.playerClass = UnitClass("player")
 
 	if IceHUD.IceCore:ShouldUseDogTags() then

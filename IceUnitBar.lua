@@ -46,6 +46,7 @@ end
 
 function IceUnitBar.prototype:SetUnit(unit)
 	self.unit = unit
+	local _
 	_, self.unitClass = UnitClass(self.unit)
 end
 
