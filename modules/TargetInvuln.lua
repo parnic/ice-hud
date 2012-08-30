@@ -6,6 +6,12 @@ TargetInvuln.prototype.buffName = nil
 TargetInvuln.prototype.buffRemaining = 0
 TargetInvuln.prototype.buffDuration = 0
 
+local GetNumPartyMembers, GetNumRaidMembers = GetNumPartyMembers, GetNumRaidMembers
+if IceHUD.WowVer >= 50000 then
+	GetNumPartyMembers = GetNumGroupMembers
+	GetNumRaidMembers = GetNumGroupMembers
+end
+
 -- list of spell ID's for each CC type so we can avoid localization issues
 local InvulnList= {
 	-- Anti-Magic Shell

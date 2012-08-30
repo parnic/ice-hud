@@ -6,6 +6,12 @@ TargetCC.prototype.debuffName = nil
 TargetCC.prototype.debuffRemaining = 0
 TargetCC.prototype.debuffDuration = 0
 
+local GetNumPartyMembers, GetNumRaidMembers = GetNumPartyMembers, GetNumRaidMembers
+if IceHUD.WowVer >= 50000 then
+	GetNumPartyMembers = GetNumGroupMembers
+	GetNumRaidMembers = GetNumGroupMembers
+end
+
 -- list of spell ID's for each CC type so we can avoid localization issues
 local StunCCList = {
 	-- kidney shot

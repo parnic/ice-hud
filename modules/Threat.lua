@@ -14,6 +14,15 @@ IceThreat.aggroBar = nil
 IceThreat.aggroBarMulti = nil
 IceThreat.prototype.scheduledEvent = nil
 
+local GetNumPartyMembers, GetNumRaidMembers = GetNumPartyMembers, GetNumRaidMembers
+local MAX_NUM_RAID_MEMBERS, MAX_NUM_PARTY_MEMBERS = MAX_NUM_RAID_MEMBERS, MAX_NUM_PARTY_MEMBERS
+if IceHUD.WowVer >= 50000 then
+	GetNumPartyMembers = GetNumGroupMembers
+	GetNumRaidMembers = GetNumGroupMembers
+	MAX_NUM_PARTY_MEMBERS = MAX_PARTY_MEMBERS
+	MAX_NUM_RAID_MEMBERS = MAX_RAID_MEMBERS
+end
+
 local MAX_NUM_RAID_MEMBERS = 40
 local MAX_NUM_PARTY_MEMBERS = 5
 
