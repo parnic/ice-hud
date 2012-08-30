@@ -625,6 +625,7 @@ local function munge_unit_menu(menu)
 	end
 
 	local found = false
+	local _, v
 	for _, v in ipairs(data) do
 		if BLACKLISTED_UNIT_MENU_OPTIONS[v] then
 			found = true

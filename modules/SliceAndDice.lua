@@ -334,6 +334,7 @@ function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints)
 	end
 
 	local rank = 0
+	local _
 	if IceHUD.WowVer < 50000 then
 		_, _, _, _, rank = GetTalentInfo(impSndTalentPage, impSndTalentIdx)
 	end
@@ -383,6 +384,7 @@ end
 
 function SliceAndDice.prototype:GetItemIdFromItemLink(linkStr)
 	local itemId
+	local _
 
 	if linkStr then
 		_, itemId, _, _, _, _, _, _, _ = strsplit(":", linkStr)
