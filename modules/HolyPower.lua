@@ -36,6 +36,27 @@ function HolyPower.prototype:init()
 	end
 end
 
+function HolyPower.prototype:SetDisplayMode()
+	local updated = false
+	if self.moduleSettings.runeMode == "Graphical" then
+		if self.runeHeight ~= 22 then
+			self.runeHeight = 22
+			updated = true
+		end
+	else
+		if self.runeHeight ~= self.runeWidth then
+			self.runeHeight = self.runeWidth
+			updated = true
+		end
+	end
+
+	if updated then
+		self:CreateRuneFrame()
+	end
+
+	HolyPower.super.prototype.SetDisplayMode(self)
+end
+
 function HolyPower.prototype:GetOptions()
 	local opts = HolyPower.super.prototype.GetOptions(self)
 
