@@ -116,6 +116,50 @@ function IceClassPowerCounter.prototype:GetOptions()
 		order = 34
 	}
 
+	opts["alsoShowNumeric"] = {
+		type = 'toggle',
+		name = L["Also show numeric"],
+		desc = L["If this is set, the numeric value of the current rune count will show on top of the runes display."],
+		get = function(info)
+			return self.moduleSettings.alsoShowNumeric
+		end,
+		set = function(info, v)
+			self.moduleSettings.alsoShowNumeric = v
+			self:SetDisplayMode()
+			self:UpdateRunePower()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return self.moduleSettings.runeMode == "Numeric"
+		end,
+		order = 34.01,
+	}
+
+	opts["numericVerticalOffset"] = {
+		type = 'range',
+		min = -500,
+		max = 500,
+		step = 1,
+		name = L["Numeric vertical offset"],
+		desc = L["How far to offset the numeric display up or down."],
+		get = function(info)
+			return self.moduleSettings.numericVerticalOffset
+		end,
+		set = function(info, v)
+			self.moduleSettings.numericVerticalOffset = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return self.moduleSettings.runeMode == "Numeric" or not self.moduleSettings.alsoShowNumeric
+		end,
+		order = 34.02,
+	}
+
 	opts["runeGap"] = {
 		type = 'range',
 		name = L["Rune gap"],
@@ -346,6 +390,8 @@ function IceClassPowerCounter.prototype:GetDefaultSettings()
 	defaults["hideFriendly"] = false
 	defaults["pulseWhenFull"] = true
 	defaults["overrideAlpha"] = true
+	defaults["numericVerticalOffset"] = 0
+	defaults["alwaysShowNumeric"] = false
 
 	return defaults
 end
@@ -440,10 +486,12 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 	local numReady = UnitPower("player", self.unitPower)
 	local percentReady = self.shouldShowUnmodified and (UnitPower("player", self.unitPower, true) / self.unmodifiedMaxPerRune) or numReady
 
-	if self.moduleSettings.runeMode == "Numeric" then
+	if self.moduleSettings.runeMode == "Numeric" or self.moduleSettings.alsoShowNumeric then
 		self.frame.numeric:SetText(tostring(percentReady))
 		self.frame.numeric:SetTextColor(self:GetColor(self.numericColor))
-	else
+	end
+
+	if self.moduleSettings.runeMode ~= "Numeric" then
 		for i=1, self.numRunes do
 			if i <= ceil(percentReady) then
 				if self.moduleSettings.runeMode == "Graphical" then
@@ -577,7 +625,7 @@ end
 function IceClassPowerCounter.prototype:CreateFrame()
 	IceClassPowerCounter.super.prototype.CreateFrame(self)
 
-	self.frame:SetFrameStrata("BACKGROUND")
+	self.frame:SetFrameStrata("LOW")
 	self.frame:SetHeight(self.runeHeight)
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
@@ -588,13 +636,16 @@ function IceClassPowerCounter.prototype:CreateFrame()
 end
 
 function IceClassPowerCounter.prototype:SetDisplayMode()
-	if self.moduleSettings.runeMode == "Numeric" then
+	if self.moduleSettings.runeMode == "Numeric" or self.moduleSettings.alsoShowNumeric then
 		self.frame.numeric:Show()
 		for i=1, self.numRunes do
 			self.frame.graphical[i]:Hide()
 		end
 	else
 		self.frame.numeric:Hide()
+	end
+
+	if self.moduleSettings.runeMode ~= "Numeric" then
 		for i=1, self.numRunes do
 			self:SetupRuneTexture(i)
 			self.frame.graphical[i]:Show()
@@ -609,7 +660,7 @@ function IceClassPowerCounter.prototype:CreateRuneFrame()
 	self.frame.numeric:SetWidth(100)
 	self.frame.numeric:SetJustifyH("CENTER")
 
-	self.frame.numeric:SetAllPoints(self.frame)
+	self.frame.numeric:SetPoint("CENTER", self.frame, "CENTER", 0, self.moduleSettings.numericVerticalOffset)
 	self.frame.numeric:Hide()
 
 	if (not self.frame.graphical) then
