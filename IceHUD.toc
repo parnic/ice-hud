@@ -27,7 +27,6 @@ IceBarElement.lua
 IceUnitBar.lua
 IceCastBar.lua
 
-
 # IceHUD modules
 # - Feel free to comment these out if you like
 modules\PlayerHealth.lua
