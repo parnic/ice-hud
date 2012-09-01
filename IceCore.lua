@@ -34,6 +34,13 @@ IceCore.prototype.enabled = nil
 IceCore.prototype.presets = {}
 IceCore.prototype.bConfigMode = false
 
+IceCore.TextDecorationStyle = {
+	Shadow = L["Shadow"],
+	Outline = L["Outline"],
+	ThickOutline = L["Thick outline"],
+	NoDecoration = L["No decoration"],
+}
+
 local SUNDER_SPELL_ID = 7386
 local LACERATE_SPELL_ID = 33745
 local MAELSTROM_SPELL_ID = 53817
@@ -82,6 +89,8 @@ function IceCore.prototype:SetupDefaults()
 
 			updatePeriod = 0.033,
 			minimap = {},
+
+			TextDecoration = "Shadow",
 		},
 		global = {
 			lastRunVersion = 0,
@@ -497,6 +506,21 @@ function IceCore.prototype:GetModuleOptions()
 		fontSize = 'large',
 		name = L["Click the + next to |cffffdc42Module Settings|r to see the available modules that you can tweak.\n\nAlso notice that some modules have a + next to them. This will open up additional settings such as text tweaks and icon tweaks on that module."],
 		order = 1
+	}
+
+	options["bbbGlobalTextSettings"] = {
+		type = 'select',
+		name = L["Text appearance"],
+		desc = L["This controls how all non-DogTag text on all modules appears.\n\nNOTE: Requires a UI reload to take effect."],
+		get = function(info)
+			return self.settings.TextDecoration
+		end,
+		set = function(info, v)
+			self.settings.TextDecoration = v
+			StaticPopup_Show("ICEHUD_CHANGED_DOGTAG")
+		end,
+		values = IceCore.TextDecorationStyle,
+		order = 2
 	}
 
 	for i = 1, table.getn(self.elements) do

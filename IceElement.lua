@@ -382,13 +382,23 @@ function IceElement.prototype:FontFactory(size, frame, font, flags)
 		fontString = font
 	end
 
+	if not flags then
+		if self.settings.TextDecoration == "Outline" then
+			flags = "OUTLINE"
+		elseif self.settings.TextDecoration == "ThickOutline" then
+			flags = "THICKOUTLINE"
+		end
+	end
+
 	if not fontString:SetFont(SML:Fetch('font', self.settings.fontFamily), size, flags) then
 		fontString:SetFont("Fonts\\FRIZQT__.TTF", size, flags)
 	end
 
 	if not (flags) then
-		fontString:SetShadowColor(0, 0, 0, 1)
-		fontString:SetShadowOffset(1, -1)
+		if self.settings.TextDecoration == "Shadow" then
+			fontString:SetShadowColor(0, 0, 0, 1)
+			fontString:SetShadowOffset(1, -1)
+		end
 	end
 
 	return fontString
