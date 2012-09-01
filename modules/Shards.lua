@@ -45,8 +45,6 @@ function ShardCounter.prototype:Enable(core)
 		self:RegisterEvent("UNIT_MAXPOWER", "UpdatePowerType")
 	end
 	self:UpdatePowerType()
-
-	self.frame:SetWidth(self.runeWidth * self.numRunes)
 end
 
 function ShardCounter.prototype:UpdateRunePower(event, arg1, arg2)
