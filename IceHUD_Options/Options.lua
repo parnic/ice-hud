@@ -65,7 +65,10 @@ Expand "|cffffdc42Module Settings|r", expand PlayerHealth (or TargetHealth for t
 Expand "|cffffdc42Module Settings|r", expand PlayerInfo (or TargetInfo for targets), select Buff Settings or Debuff Settings, and un-check "show buffs" (or "show debuffs").
 
 |cff9999ff12. How do I turn off these big huge bars that pulse whenever one of my abilities procs?|r
-This isn't |cff9999ffIceHUD|r - it's Blizzard's new Spell Alerts they added in 4.0.1. Interface options => Combat => "Show Spell Alerts" to turn them off or search for a mod to tweak their positioning/size/etc.]]
+This isn't |cff9999ffIceHUD|r - it's Blizzard's new Spell Alerts they added in 4.0.1. Interface options => Combat => "Show Spell Alerts" to turn them off or search for a mod to tweak their positioning/size/etc.
+
+|cff9999ff13. I don't like where some of the bars are placed. How do I put the health/mana on the left/right?|r
+Expand "|cffffdc42Module Settings|r", expand whatever module you want to move (e.g. PlayerHealth, PlayerMana), and adjust the "Side" and "Offset" settings. "Side" controls whether it's on the left or the right and "Offset" controls how far from center it is.]]
 				}
 			}
 		},
