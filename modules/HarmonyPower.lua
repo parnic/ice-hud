@@ -18,13 +18,23 @@ function HarmonyPower.prototype:init()
 	self.numRunes = 4
 	self.numericColor = "HarmonyPowerNumeric"
 	self.unitPower = SPELL_POWER_LIGHT_FORCE
-	self.minLevel = MONKHARMONYBAR_SHOW_LEVEL
+	self.minLevel = 0
 	self.bTreatEmptyAsFull = true
 	self.unit = "player"
 	self.runeWidth = self.runeHeight
 end
 
-function HarmonyPower.prototype:UpdateRunePower()
+function HarmonyPower.prototype:Enable(core)
+	HarmonyPower.super.prototype.Enable(self, core)
+
+	self:RegisterEvent("UNIT_POWER_FREQUENT", "UpdateRunePower")
+end
+
+function HarmonyPower.prototype:UpdateRunePower(event, arg1, arg2)
+	if event == "UNIT_POWER_FREQUENT" and (arg1 ~= self.unit or (arg2 ~= "LIGHT_FORCE" and arg2 ~= "DARK_FORCE")) then
+		return
+	end
+
 	local numRunes = UnitPowerMax(self.unit, self.unitPower)
 
 	if self.fakeNumRunes ~= nil and self.fakeNumRunes > 0 then
@@ -37,9 +47,16 @@ function HarmonyPower.prototype:UpdateRunePower()
 				self.frame.graphical[i]:Hide()
 			end
 		end
+		local oldNumRunes = self.numRunes
 		self.numRunes = numRunes
 
 		self:CreateRuneFrame()
+
+		if oldNumRunes < self.numRunes and #self.frame.graphical >= self.numRunes then
+			for i=oldNumRunes, self.numRunes do
+				self.frame.graphical[i]:Show()
+			end
+		end
 
 		local width = self.runeHeight
 		if self.moduleSettings.runeMode == "Graphical" then

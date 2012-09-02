@@ -430,7 +430,7 @@ function IceClassPowerCounter.prototype:CheckValidLevel(event, level)
 		end
 	end
 
-	if level < self.minLevel then
+	if self.minLevel and level < self.minLevel then
 		self:RegisterEvent("PLAYER_LEVEL_UP", "CheckValidLevel")
 		self:Show(false)
 	else
