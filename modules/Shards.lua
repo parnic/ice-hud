@@ -60,6 +60,10 @@ function ShardCounter.prototype:UpdateRunePower(event, arg1, arg2)
 		end
 	end
 
+	if event == "PLAYER_ENTERING_WORLD" then
+		self:UpdatePowerType(event)
+	end
+
 	ShardCounter.super.prototype.UpdateRunePower(self, event, arg1, arg2)
 end
 
@@ -78,9 +82,15 @@ function ShardCounter.prototype:UpdatePowerType(event)
 	if CurrentSpec == SPEC_WARLOCK_AFFLICTION then
 		self.runeCoords = AfflictionCoords
 		self.unitPower = SPELL_POWER_SOUL_SHARDS
+
+		local powerMax = UnitPowerMax("player", self.unitPower)
+		if powerMax == 0 then -- abort abort! this is bad.
+			return
+		end
+
 		self.runeHeight = 23
 		self.runeWidth = 26
-		self.numRunes = UnitPowerMax("player", self.unitPower)
+		self.numRunes = powerMax
 		self.numConsideredFull = 99
 
 		if IceHUD.WowVer >= 50000 then
@@ -94,11 +104,17 @@ function ShardCounter.prototype:UpdatePowerType(event)
 	elseif CurrentSpec == SPEC_WARLOCK_DESTRUCTION then
 		self.runeCoords = DestructionCoords
 		self.unitPower = SPELL_POWER_BURNING_EMBERS
+
+		local powerMax = UnitPowerMax("player", self.unitPower)
+		if powerMax == 0 then -- abort abort! this is bad.
+			return
+		end
+
 		self.shouldShowUnmodified = true
 		self.runeHeight = 28
 		self.runeWidth = 31
 		self.unmodifiedMaxPerRune = MAX_POWER_PER_EMBER
-		self.numRunes = UnitPowerMax("player", self.unitPower)
+		self.numRunes = powerMax
 		self.numConsideredFull = self.numRunes
 		self.currentGrowMode = self.growModes["height"]
 
