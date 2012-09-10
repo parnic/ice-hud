@@ -29,6 +29,7 @@ function HolyPower.prototype:init()
 	self.minLevel = PALADINPOWERBAR_SHOW_LEVEL
 	self.bTreatEmptyAsFull = true
 	self.unit = "player"
+	self.numRunes = 5
 	if IceHUD.WowVer >= 50000 then
 		self.numConsideredFull = HOLY_POWER_FULL
 	else
@@ -85,7 +86,7 @@ function HolyPower.prototype:HideBlizz()
 	PaladinPowerBar:UnregisterAllEvents()
 end
 
-function HolyPower.prototype:UpdateRunePower()
+function HolyPower.prototype:UpdateRunePower(event)
 	local numRunes = UnitPowerMax(self.unit, self.unitPower)
 
 	if self.fakeNumRunes ~= nil and self.fakeNumRunes > 0 then
@@ -93,6 +94,7 @@ function HolyPower.prototype:UpdateRunePower()
 	end
 
 	if numRunes ~= self.numRunes then
+		local oldNumRunes = self.numRunes
 		if numRunes < self.numRunes and #self.frame.graphical >= numRunes then
 			for i=numRunes + 1, #self.frame.graphical do
 				self.frame.graphical[i]:Hide()
@@ -101,6 +103,12 @@ function HolyPower.prototype:UpdateRunePower()
 		self.numRunes = numRunes
 
 		self:CreateRuneFrame()
+
+		if numRunes > oldNumRunes then
+			for i=oldNumRunes + 1, #self.frame.graphical do
+				self.frame.graphical[i]:Show()
+			end
+		end
 	end
 	HolyPower.super.prototype.UpdateRunePower(self)
 end
