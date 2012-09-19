@@ -1691,6 +1691,10 @@ function IceTargetInfo.prototype:BuffOnEnter(this)
 		return
 	end
 
+	if not self.unit or not this.id then
+		return
+	end
+
 	GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT")
 	if this.type == "buff" then
 		GameTooltip:SetUnitBuff(self.unit, this.id)
