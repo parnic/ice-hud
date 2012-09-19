@@ -23,6 +23,11 @@ local sndDuration = 0
 local CurrMaxSnDDuration = 0
 local PotentialSnDDuration = 0
 
+if IceHUD.WowVer >= 50000 then
+	baseTime = 12
+	gapPerComboPoint = 6
+end
+
 -- Constructor --
 function SliceAndDice.prototype:init()
 	SliceAndDice.super.prototype.init(self, "SliceAndDice", "player")
@@ -327,17 +332,17 @@ function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints)
 		maxduration = maxduration + netherbladeBonus
 	end
 
-	if self:HasGlyphBonus() then
-		maxduration = maxduration + glyphBonusSec
-	end
-
-	local rank = 0
-	local _
 	if IceHUD.WowVer < 50000 then
-		_, _, _, _, rank = GetTalentInfo(impSndTalentPage, impSndTalentIdx)
-	end
+		if self:HasGlyphBonus() then
+			maxduration = maxduration + glyphBonusSec
+		end
 
-	maxduration = maxduration * (1 + (rank * impSndBonusPerRank))
+		local rank = 0
+		local _
+		_, _, _, _, rank = GetTalentInfo(impSndTalentPage, impSndTalentIdx)
+
+		maxduration = maxduration * (1 + (rank * impSndBonusPerRank))
+	end
 
 	return maxduration
 end
