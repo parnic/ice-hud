@@ -36,6 +36,10 @@ function HarmonyPower.prototype:UpdateRunePower(event, arg1, arg2)
 	end
 
 	local numRunes = UnitPowerMax(self.unit, self.unitPower)
+	-- totally invalid....right?
+	if numRunes == 0 then
+		return
+	end
 
 	if self.fakeNumRunes ~= nil and self.fakeNumRunes > 0 then
 		numRunes = self.fakeNumRunes

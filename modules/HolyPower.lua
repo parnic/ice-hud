@@ -88,6 +88,9 @@ end
 
 function HolyPower.prototype:UpdateRunePower(event)
 	local numRunes = UnitPowerMax(self.unit, self.unitPower)
+	if numRunes == 0 then
+		return
+	end
 
 	if self.fakeNumRunes ~= nil and self.fakeNumRunes > 0 then
 		numRunes = self.fakeNumRunes
