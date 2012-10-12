@@ -540,23 +540,9 @@ function IceCustomCount.prototype:GetGradientColor(curr)
 	local mr, mg, mb = self:GetCustomMinColor()
 	local scale = (curr-1)/(self.moduleSettings.maxCount-1)
 
-	if r < mr then
-		r = ((r-mr)*scale) + mr
-	else
-		r = ((mr-r)*scale) + r
-	end
-
-	if g < mg then
-		g = ((g-mg)*scale) + mg
-	else
-		g = ((mg-g)*scale) + g
-	end
-
-	if b < mb then
-		b = ((b-mb)*scale) + mb
-	else
-		b = ((mb-b)*scale) + b
-	end
+	r = r * scale + mr * (1-scale)
+	g = g * scale + mg * (1-scale)
+	b = b * scale + mb * (1-scale)
 
 	return r, g, b
 end
