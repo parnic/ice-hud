@@ -1151,6 +1151,10 @@ function PlayerHealth.prototype:CheckPvP()
 		minx, maxx, miny, maxy = 0.05, 0.605, 0.015, 0.57
 	elseif UnitIsPVP(self.unit) then
 		pvpMode = UnitFactionGroup(self.unit)
+		
+		if pvpMode == "Neutral" then
+			pvpMode = "FFA"
+		end
 
 		if pvpMode == "Alliance" then
 			minx, maxx, miny, maxy = 0.07, 0.58, 0.06, 0.57

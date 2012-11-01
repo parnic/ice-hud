@@ -994,6 +994,10 @@ function IceTargetHealth.prototype:CheckPvP()
 	elseif UnitIsPVP(self.unit) then
 		pvpMode = UnitFactionGroup(self.unit)
 
+		if pvpMode == "Neutral" then
+			pvpMode = "FFA"
+		end
+
 		if pvpMode == "Alliance" then
 			minx, maxx, miny, maxy = 0.07, 0.58, 0.06, 0.57
 		else
