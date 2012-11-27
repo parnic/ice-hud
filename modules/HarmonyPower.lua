@@ -17,7 +17,11 @@ function HarmonyPower.prototype:init()
 	}
 	self.numRunes = 4
 	self.numericColor = "HarmonyPowerNumeric"
-	self.unitPower = SPELL_POWER_LIGHT_FORCE
+	if IceHUD.WowVer >= 50100 then
+		self.unitPower = SPELL_POWER_CHI
+	else
+		self.unitPower = SPELL_POWER_LIGHT_FORCE
+	end
 	self.minLevel = 0
 	self.bTreatEmptyAsFull = true
 	self.unit = "player"
@@ -31,7 +35,7 @@ function HarmonyPower.prototype:Enable(core)
 end
 
 function HarmonyPower.prototype:UpdateRunePower(event, arg1, arg2)
-	if event == "UNIT_POWER_FREQUENT" and (arg1 ~= self.unit or (arg2 ~= "LIGHT_FORCE" and arg2 ~= "DARK_FORCE")) then
+	if event == "UNIT_POWER_FREQUENT" and (arg1 ~= self.unit or (arg2 ~= "CHI" and arg2 ~= "LIGHT_FORCE" and arg2 ~= "DARK_FORCE")) then
 		return
 	end
 
