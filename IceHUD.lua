@@ -590,6 +590,7 @@ end
 local BLACKLISTED_UNIT_MENU_OPTIONS = {
 	SET_FOCUS = "ICEHUD_SET_FOCUS",
 	CLEAR_FOCUS = "ICEHUD_CLEAR_FOCUS",
+    PET_DISMISS = "ICEHUD_PET_DISMISS",
 	LOCK_FOCUS_FRAME = true,
 	UNLOCK_FOCUS_FRAME = true,
 }
@@ -603,6 +604,12 @@ UnitPopupButtons["ICEHUD_SET_FOCUS"] = {
 UnitPopupButtons["ICEHUD_CLEAR_FOCUS"] = {
 	text = L["Type %s to clear focus"]:format(SLASH_CLEARFOCUS1),
 	tooltipText = L["Blizzard currently does not provide a proper way to right-click focus with custom unit frames."],
+	dist = 0,
+}
+
+UnitPopupButtons["ICEHUD_PET_DISMISS"] = {
+	text = L["Use your Dismiss Pet spell to dismiss a pet"],
+	tooltipText = L["Blizzard currently does not provide a proper way to right-click dismiss a pet with custom unit frames."],
 	dist = 0,
 }
 
