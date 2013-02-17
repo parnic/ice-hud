@@ -394,7 +394,7 @@ function Totems.prototype:CreateTotem(i, name)
 
 	-- it looks like HookScript will continue to add handlers every time instead of replacing them like SetScript
 	if (bWasNewFrame) then
-		self.frame.graphical[i]:HookScript("OnMouseUp", self.graphicalOnMouseUp)
+		--self.frame.graphical[i]:HookScript("OnMouseUp", self.graphicalOnMouseUp)
 	end
 end
 
