@@ -150,14 +150,16 @@ function ShardCounter.prototype:UpdatePowerType(event)
 	self:UpdateRunePower()
 end
 
-function ShardCounter.prototype:SetDisplayMode()
+function ShardCounter.prototype:GetRuneMode()
+	local CurrentRuneMode = ShardCounter.super.prototype.GetRuneMode(self)
+
 	if CurrentSpec == SPEC_WARLOCK_DEMONOLOGY then
-		if self.moduleSettings.runeMode ~= "Numeric" and self.moduleSettings.runeMode ~= "Graphical" then
-			self.moduleSettings.runeMode = "Graphical"
+		if CurrentRuneMode ~= "Numeric" and CurrentRuneMode ~= "Graphical" then
+			CurrentRuneMode = "Graphical"
 		end
 	end
 
-	ShardCounter.super.prototype.SetDisplayMode(self)
+	return CurrentRuneMode
 end
 
 function ShardCounter.prototype:GetOptions()

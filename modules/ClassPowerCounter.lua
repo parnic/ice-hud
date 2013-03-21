@@ -486,15 +486,15 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 	local numReady = UnitPower("player", self.unitPower)
 	local percentReady = self.shouldShowUnmodified and (UnitPower("player", self.unitPower, true) / self.unmodifiedMaxPerRune) or numReady
 
-	if self.moduleSettings.runeMode == "Numeric" or self.moduleSettings.alsoShowNumeric then
+	if self:GetRuneMode() == "Numeric" or self.moduleSettings.alsoShowNumeric then
 		self.frame.numeric:SetText(tostring(percentReady))
 		self.frame.numeric:SetTextColor(self:GetColor(self.numericColor))
 	end
 
-	if self.moduleSettings.runeMode ~= "Numeric" then
+	if self:GetRuneMode() ~= "Numeric" then
 		for i=1, self.numRunes do
 			if i <= ceil(percentReady) then
-				if self.moduleSettings.runeMode == "Graphical" then
+				if self:GetRuneMode() == "Graphical" then
 					self.frame.graphical[i].rune:SetVertexColor(1, 1, 1)
 				else
 					self:SetCustomColor(i)
@@ -506,7 +506,7 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 
 				if i > numReady or self.numRunes == 1 then
 					local left, right, top, bottom = 0, 1, 0, 1
-					if self.moduleSettings.runeMode == "Graphical" then
+					if self:GetRuneMode() == "Graphical" then
 						left, right, top, bottom = unpack(self.runeCoords[i])
 					end
 
@@ -526,7 +526,7 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 				elseif i > self.lastNumReady then
 					if self.runeCoords ~= nil and #self.runeCoords >= i then
 						local left, right, top, bottom = 0, 1, 0, 1
-						if self.moduleSettings.runeMode == "Graphical" then
+						if self:GetRuneMode() == "Graphical" then
 							left, right, top, bottom = unpack(self.runeCoords[i])
 						end
 						self.frame.graphical[i].rune:SetTexCoord(left, right, top, bottom)
@@ -635,8 +635,12 @@ function IceClassPowerCounter.prototype:CreateFrame()
 	self:SetDisplayMode()
 end
 
+function IceClassPowerCounter.prototype:GetRuneMode()
+	return self.moduleSettings.runeMode
+end
+
 function IceClassPowerCounter.prototype:SetDisplayMode()
-	if self.moduleSettings.runeMode == "Numeric" or self.moduleSettings.alsoShowNumeric then
+	if self:GetRuneMode() == "Numeric" or self.moduleSettings.alsoShowNumeric then
 		self.frame.numeric:Show()
 		for i=1, self.numRunes do
 			self.frame.graphical[i]:Hide()
@@ -645,7 +649,7 @@ function IceClassPowerCounter.prototype:SetDisplayMode()
 		self.frame.numeric:Hide()
 	end
 
-	if self.moduleSettings.runeMode ~= "Numeric" then
+	if self:GetRuneMode() ~= "Numeric" then
 		for i=1, self.numRunes do
 			self:SetupRuneTexture(i)
 			self.frame.graphical[i]:Show()
@@ -713,7 +717,7 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 
 	local width = self.runeHeight
 	local a,b,c,d = 0, 1, 0, 1
-	if self.moduleSettings.runeMode == "Graphical" then
+	if self:GetRuneMode() == "Graphical" then
 		width = self.runeWidth
 		a,b,c,d = unpack(self.runeCoords[rune])
 	end
@@ -728,15 +732,15 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 		self.frame.graphical[rune]:SetPoint("TOPLEFT", 0, -1 * ((rune-1) * (self.runeHeight-5) + (rune-1) + ((rune-1) * self.moduleSettings.runeGap)))
 	end
 
-	if self.moduleSettings.runeMode == "Graphical" then
+	if self:GetRuneMode() == "Graphical" then
 		self.frame.graphical[rune].rune:SetTexture(self:GetRuneTexture(rune))
-	elseif self.moduleSettings.runeMode == "Graphical Bar" then
+	elseif self:GetRuneMode() == "Graphical Bar" then
 		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "Combo")
-	elseif self.moduleSettings.runeMode == "Graphical Circle" then
+	elseif self:GetRuneMode() == "Graphical Circle" then
 		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "ComboRound")
-	elseif self.moduleSettings.runeMode == "Graphical Glow" then
+	elseif self:GetRuneMode() == "Graphical Glow" then
 		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "ComboGlow")
-	elseif self.moduleSettings.runeMode == "Graphical Clean Circle" then
+	elseif self:GetRuneMode() == "Graphical Clean Circle" then
 		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "ComboCleanCurves")
 	end
 end
