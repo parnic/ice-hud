@@ -4,6 +4,7 @@ local SliceAndDice = IceCore_CreateClass(IceUnitBar)
 local IceHUD = _G.IceHUD
 
 local NetherbladeItemIdList = {29044, 29045, 29046, 29047, 29048}
+local NineTailedItemIdList = {96679, 96680, 96681, 96682, 96683, 95305, 95306, 95307, 95308, 95309, 95935, 95936, 95937, 95938, 95939}
 -- Parnic - bah, have to abandon the more robust string representation of each slot because of loc issues...
 local NetherbladeEquipLocList = {1, 3, 5, 7, 10} --"HeadSlot", "ShoulderSlot", "ChestSlot", "LegsSlot", "HandsSlot"}
 
@@ -332,6 +333,10 @@ function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints)
 		maxduration = maxduration + netherbladeBonus
 	end
 
+	if self:HasNineTailedBonus() then
+		maxduration = maxduration + gapPerComboPoint
+	end
+
 	if IceHUD.WowVer < 50000 then
 		if self:HasGlyphBonus() then
 			maxduration = maxduration + glyphBonusSec
@@ -363,6 +368,32 @@ function SliceAndDice.prototype:HasNetherbladeBonus()
 		-- check if the item id in that slot is part of the netherblade item id list
 		if self:IsItemIdInList(itemId, NetherbladeItemIdList) then
 			-- increment the fact that we have this piece of netherblade
+			numPieces = numPieces + 1
+
+			-- check if we've met the set bonus for slice and dice
+			if numPieces >= 2 then
+				return true
+			end
+		end
+	end
+end
+
+function SliceAndDice.prototype:HasNineTailedBonus()
+	local numPieces
+	local linkStr, itemId
+
+	numPieces = 0
+
+	-- run through all the possible equip locations of a nine-tailed piece
+	for i=1,#NetherbladeEquipLocList do
+		-- pull the link string for the item in this equip loc
+		linkStr = GetInventoryItemLink(self.unit, NetherbladeEquipLocList[i])
+		-- get the item id out of that link string
+		itemId = self:GetItemIdFromItemLink(linkStr)
+
+		-- check if the item id in that slot is part of the nine-tailed item id list
+		if self:IsItemIdInList(itemId, NineTailedItemIdList) then
+			-- increment the fact that we have this piece of nine-tailed
 			numPieces = numPieces + 1
 
 			-- check if we've met the set bonus for slice and dice
