@@ -82,6 +82,9 @@ modules\PlayerAlternatePower.lua
 modules\HarmonyPower.lua
 modules\MonkManaBar.lua
 modules\ShadowOrbs.lua
+modules\TargetAbsorb.lua
+modules\PlayerAbsorb.lua
+modules\FocusAbsorb.lua
 
 #@do-not-package@
 IceHUD_Options\Options.lua
