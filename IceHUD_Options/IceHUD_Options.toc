@@ -1,4 +1,4 @@
-## Interface: 50300
+## Interface: 50400
 ## Title: IceHUD |cff7fff7f-Options-|r
 ## Author: Parnic
 ## Version: @project-version@
