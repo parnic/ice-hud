@@ -345,6 +345,27 @@ function IceCustomCDBar.prototype:GetOptions()
 		order = 31.3,
 	}
 
+	opts["bOnlyShowWithTarget"] = {
+		type = 'toggle',
+		name = L["Only show with a target selected"],
+		desc = L["Use this for abilities that don't require a target to cast, but you only want to see them when you have a target"],
+		width = 'double',
+		get = function()
+			return self.moduleSettings.bOnlyShowWithTarget
+		end,
+		set = function(info, v)
+			self.moduleSettings.bOnlyShowWithTarget = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return self.moduleSettings.displayMode == "Always"
+		end,
+		order = 31.4,
+	}
+
 	opts["iconSettings"] = {
 		type = 'group',
 		name = "|c"..self.configColor..L["Icon Settings"].."|r",
@@ -643,8 +664,8 @@ function IceCustomCDBar.prototype:IsReady()
 	local checkSpell = self:GetSpellNameOrId(self.moduleSettings.cooldownToTrack)
 
 	if (IsUsableSpell(checkSpell) == 1) then
-		if not self.moduleSettings.bIgnoreRange and SpellHasRange(checkSpell) then
-			if (UnitExists("target") and IsSpellInRange(checkSpell, "target") == 1) then
+		if (not self.moduleSettings.bIgnoreRange and SpellHasRange(checkSpell)) or (self.moduleSettings.bOnlyShowWithTarget) then
+			if UnitExists("target") and (not SpellHasRange(checkSpell) or IsSpellInRange(checkSpell, "target") == 1) then
 				is_ready = 1
 			end
 		else
