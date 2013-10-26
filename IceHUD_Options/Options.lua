@@ -350,8 +350,25 @@ This module is called HarmonyPower. Harmony was the original name for Chi back w
 						IceHUD.IceCore.settings.bTreatFriendlyAsTarget = value
 						IceHUD.IceCore:Redraw()
 					end,
-					order = 32
+					order = 33,
 				},
+
+				bHideDuringPetBattles = {
+					type = 'toggle',
+					name = L["Hide during pet battles"],
+					desc = L["This will hide the entire mod during pet battles."],
+					width = 'double',
+					get = function()
+						return IceHUD.IceCore.settings.bHideDuringPetBattles
+					end,
+					set = function(info, value)
+						IceHUD.IceCore.settings.bHideDuringPetBattles = value
+						if not value then
+							IceHUD.IceCore.IceHUDFrame:Show()
+						end
+					end,
+					order = 34,
+				}
 			}
 		},
 

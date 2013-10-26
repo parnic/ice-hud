@@ -91,6 +91,8 @@ function IceCore.prototype:SetupDefaults()
 			minimap = {},
 
 			TextDecoration = "Shadow",
+
+			bHideDuringPetBattles = true,
 		},
 		global = {
 			lastRunVersion = 0,
@@ -239,6 +241,20 @@ function IceCore.prototype:Enable(userToggle)
 	if IceHUD.optionsLoaded then
 		IceHUD_Options:GenerateModuleOptions()
 	end
+
+	self.IceHUDFrame:RegisterEvent("PET_BATTLE_OPENING_START")
+	self.IceHUDFrame:RegisterEvent("PET_BATTLE_OVER")
+	self.IceHUDFrame:SetScript("OnEvent", function(self, event, ...)
+		if (event == "PET_BATTLE_OPENING_START") then
+			if IceHUD.IceCore.settings.bHideDuringPetBattles then
+				self:Hide()
+			end
+		elseif (event == "PET_BATTLE_OVER") then
+			if IceHUD.IceCore.settings.bHideDuringPetBattles then
+				self:Show()
+			end
+		end
+	end)
 
 	self.enabled = true
 end
@@ -470,6 +486,10 @@ function IceCore.prototype:Disable(userToggle)
 			table.remove(self.elements, i)
 		end
 	end
+
+	self.IceHUDFrame:UnregisterEvent("PET_BATTLE_OPENING_START")
+	self.IceHUDFrame:UnregisterEvent("PET_BATTLE_OVER")
+	self.IceHUDFrame:SetScript("OnEvent", nil)
 
 	self.enabled = false
 end
