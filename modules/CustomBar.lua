@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceCustomBar = IceCore_CreateClass(IceUnitBar)
 
+local DogTag = nil
+
 local IceHUD = _G.IceHUD
 
 local validUnits = {"player", "target", "focus", "focustarget", "pet", "pettarget", "vehicle", "targettarget", "main hand weapon", "off hand weapon"}
@@ -25,6 +27,13 @@ end
 function IceCustomBar.prototype:Enable(core)
 	IceCustomBar.super.prototype.Enable(self, core)
 
+	if IceHUD.IceCore:ShouldUseDogTags() then
+		DogTag = LibStub("LibDogTag-3.0", true)
+		if DogTag then
+			LibStub("LibDogTag-Unit-3.0", true)
+		end
+	end
+
 	self:RegisterEvent("UNIT_AURA", "UpdateCustomBarEvent")
 	self:RegisterEvent("UNIT_PET", "UpdateCustomBarEvent")
 	self:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomBarEvent")
@@ -41,6 +50,10 @@ function IceCustomBar.prototype:Enable(core)
 
 	self.unit = self.moduleSettings.myUnit
 	self:ConditionalSubscribe()
+
+	if not self.moduleSettings.usesDogTagStrings then
+		self.moduleSettings.usesDogTagStrings = true
+	end
 
 	self:UpdateCustomBar(self.unit)
 
@@ -102,7 +115,7 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 8
 	settings["upperText"]=""
-	settings["usesDogTagStrings"] = false
+	--settings["usesDogTagStrings"] = false
 	settings["lockLowerFontAlpha"] = false
 	settings["lowerText"] = ""
 	settings["lowerTextVisible"] = false
@@ -233,6 +246,7 @@ function IceCustomBar.prototype:GetOptions()
 		set = function(info, v)
 			self.moduleSettings.myUnit = info.option.values[v]
 			self.unit = info.option.values[v]
+			self:RegisterFontStrings()
 			self:ConditionalSubscribe()
 			self:Redraw()
 			self:UpdateCustomBar(self.unit)
@@ -726,6 +740,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 		end
 	end
 
+	local fullString = self.moduleSettings.upperText
 	if (remaining ~= nil) then
 		local buffString = ""
 		if self.moduleSettings.buffTimerDisplay == "seconds" then
@@ -744,13 +759,17 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 				end
 			end
 		end
-		self:SetBottomText1(self.moduleSettings.upperText .. (not self.bIsAura and (" " .. buffString) or ""))
+		fullString = self.moduleSettings.upperText .. (not self.bIsAura and (" " .. buffString) or "")
 	else
 		self.auraBuffCount = 0
-		self:SetBottomText1(self.moduleSettings.upperText)
 	end
 
-	self:SetBottomText2(self.moduleSettings.lowerText)
+	if DogTag ~= nil then
+		DogTag:AddFontString(self.frame.bottomUpperText, self.frame, fullString, "Unit", { unit = self.unit })
+	else
+		self:SetBottomText1(fullString)
+		self:SetBottomText2(self.moduleSettings.lowerText)
+	end
 
 	self.barFrame.bar:SetVertexColor(self:GetBarColor())
 	if self.flashFrame and self.flashFrame.flash then
