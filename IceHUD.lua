@@ -649,6 +649,9 @@ local function munge_unit_menu(menu)
 	local new_data = {}
 	for _, v in ipairs(data) do
 		local blacklisted = BLACKLISTED_UNIT_MENU_OPTIONS[v]
+		if v == "PET_DISMISS" and select(2, UnitClass("player")) == "WARLOCK" then
+			blacklisted = false
+		end
 		if not blacklisted then
 			new_data[#new_data+1] = v
 		elseif blacklisted ~= true then
