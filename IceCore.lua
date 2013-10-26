@@ -145,7 +145,7 @@ function IceCore.prototype:CheckDisplayUpdateMessage()
 --@end-debug@
 	if self.accountSettings.lastRunVersion < thisVersion then
 		if self.accountSettings.lastRunVersion < 549 then
-			StaticPopup_Show("ICEHUD_CONVERTED_TO_ACE3")
+			--StaticPopup_Show("ICEHUD_CONVERTED_TO_ACE3")
 		end
 		if self.accountSettings.lastRunVersion < 707 and self.accountSettings.lastRunVersion > 0 then
 			-- update from the old default that may have been saved with the user's settings
@@ -153,7 +153,7 @@ function IceCore.prototype:CheckDisplayUpdateMessage()
 				self.settings.updatePeriod = 0.033
 			end
 
-			StaticPopup_Show("ICEHUD_UPDATE_PERIOD_MATTERS")
+			--StaticPopup_Show("ICEHUD_UPDATE_PERIOD_MATTERS")
 		end
 		if self.accountSettings.lastRunVersion < 710 then
 			if self.settings.modules["MaelstromCount"] == nil then
