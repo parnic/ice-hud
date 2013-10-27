@@ -294,6 +294,31 @@ function MirrorBarHandler.prototype:GetOptions()
 		order = 34
 	}
 
+	opts["barRotate"] =
+		{
+			type = 'toggle',
+			name = L["Rotate 90 degrees"],
+			desc = L["This will rotate this module by 90 degrees to give a horizontal orientation.\n\nWARNING: This feature is brand new and a bit rough around the edges. You will need to greatly adjust the vertical and horizontal offset of this bar plus move the text around in order for it to look correct.\n\nAnd I mean greatly."],
+			get = function(info)
+				return self.moduleSettings.rotateBar
+			end,
+			set = function(info, v)
+				self.moduleSettings.rotateBar = v
+				for i = 1, table.getn(self.bars) do
+					if v then
+						self.bars[i]:RotateHorizontal()
+					else
+						self.bars[i]:ResetRotation()
+					end
+				end
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self:IsEnabled()
+			end,
+			order = 35
+		}
+
 	opts["textSettings"] =
 	{
 		type = 'group',
@@ -514,6 +539,7 @@ function MirrorBarHandler.prototype:SetSettings(bar)
 	bar.moduleSettings.barVisible = self.moduleSettings.barVisible
 	bar.moduleSettings.barVerticalOffset = self.moduleSettings.barVerticalOffset
 	bar.moduleSettings.alwaysFullAlpha = self.moduleSettings.alwaysFullAlpha
+	bar.moduleSettings.rotateBar = self.moduleSettings.rotateBar
 end
 
 
