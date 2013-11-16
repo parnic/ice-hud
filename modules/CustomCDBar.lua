@@ -665,7 +665,8 @@ function IceCustomCDBar.prototype:IsReady()
 
 	if (IsUsableSpell(checkSpell) == 1) then
 		if (not self.moduleSettings.bIgnoreRange and SpellHasRange(checkSpell)) or (self.moduleSettings.bOnlyShowWithTarget) then
-			if UnitExists("target") and (not SpellHasRange(checkSpell) or IsSpellInRange(checkSpell, "target") == 1) then
+			if (UnitExists("target") and (not SpellHasRange(checkSpell) or IsSpellInRange(checkSpell, "target") == 1))
+				or (not UnitExists("target") and IsSpellInRange(checkSpell, "player")) then
 				is_ready = 1
 			end
 		else
