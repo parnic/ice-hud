@@ -69,6 +69,13 @@ function IceCustomBar.prototype:Enable(core)
 	self:SetCustomTextColor(self.frame.bottomLowerText, self.moduleSettings.lowerTextColor)
 end
 
+function IceCustomBar.prototype:Disable(core)
+	self.handlesOwnUpdates = false
+	IceHUD.IceCore:RequestUpdates(self, nil)
+
+	IceCustomBar.super.prototype.Disable(self, core)
+end
+
 function IceCustomBar.prototype:FixupTextColors()
 	if not self.moduleSettings.upperTextColor then
 		self.moduleSettings.upperTextColor = {r=1, g=1, b=1}
