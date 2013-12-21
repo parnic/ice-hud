@@ -396,7 +396,7 @@ function ComboPoints.prototype:UpdateComboPoints()
 		-- Parnic: apparently some fights have combo points while the player is in a vehicle?
 		local isInVehicle = UnitHasVehicleUI("player")
 		points = GetComboPoints(isInVehicle and "vehicle" or "player", "target")
-		_, _, _, anticipate = UnitAura("player", AnticipationAuraName) 
+		_, _, _, anticipate = UnitAura("player", AnticipationAuraName)
 	else
 		points = GetComboPoints("target")
 	end
@@ -449,9 +449,9 @@ do
 			local _, _, _, newAntStacks = UnitAura("player", AnticipationAuraName)
 			if newAntStacks ~= antStacks then
 				antStacks = newAntStacks
-				self:UpdateComboPoints()         
+				self:UpdateComboPoints()
 			end
-		end 
+		end
 	end
 
 	function ComboPoints.prototype:AddAnticipation() -- Handles both PLAYER_TALENT_CHANGED event and activation from options or initialization.
@@ -465,8 +465,4 @@ end
 
 
 -- Load us up
--- Parnic: removed the rogue-/druid-only restriction since the Malygos fight needs combo points on the drakes
---local _, unitClass = UnitClass("player")
---if (unitClass == "DRUID" or unitClass == "ROGUE") then
-	IceHUD.ComboPoints = ComboPoints:new()
---end
+IceHUD.ComboPoints = ComboPoints:new()
