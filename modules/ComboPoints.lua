@@ -3,6 +3,9 @@ local ComboPoints = IceCore_CreateClass(IceElement)
 
 local IceHUD = _G.IceHUD
 
+local AnticipationAuraName = "Anticipation"
+local AnticipationSpellId = 114015
+
 ComboPoints.prototype.comboSize = 20
 
 -- Constructor --
@@ -10,6 +13,7 @@ function ComboPoints.prototype:init()
 	ComboPoints.super.prototype.init(self, "ComboPoints")
 
 	self:SetDefaultColor("ComboPoints", 1, 1, 0)
+	self:SetDefaultColor("AnticipationPoints", 1, 0, 1)
 	self.scalingEnabled = true
 end
 
@@ -146,6 +150,24 @@ function ComboPoints.prototype:GetOptions()
 		order = 33.2
 	}
 
+	opts["anticipation"] = {
+		type = "toggle",
+		name = L["Show Anticipation"],
+		desc = L["Show points stored by the Anticipation talent"],
+		get = function()
+			return self.moduleSettings.showAnticipation
+		end,
+		set = function(info, v)
+			self.moduleSettings.showAnticipation = v
+			self:AddAnticipation() -- This will activate or deactivate as needed
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 33.3
+	}
+
 	opts["gradient"] = {
 		type = "toggle",
 		name = L["Change color"],
@@ -179,6 +201,7 @@ function ComboPoints.prototype:GetDefaultSettings()
 	defaults["alwaysFullAlpha"] = true
 	defaults["graphicalLayout"] = "Horizontal"
 	defaults["comboGap"] = 0
+	defaults["showAnticipation"] = true
 	return defaults
 end
 
@@ -201,6 +224,8 @@ function ComboPoints.prototype:Enable(core)
 		self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
 		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateComboPoints")
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateComboPoints")
+		self:RegisterEvent("PLAYER_TALENT_UPDATE", "AddAnticipation")
+		self:AddAnticipation()
 	else
 		self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateComboPoints")
 	end
@@ -251,7 +276,10 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 	if (not self.frame.graphicalBG) then
 		self.frame.graphicalBG = {}
 		self.frame.graphical = {}
+		self.frame.graphicalAnt = {}
 	end
+
+	local i
 
 	-- create backgrounds
 	for i = 1, 5 do
@@ -320,23 +348,61 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 
 		self.frame.graphical[i]:Hide()
 	end
+
+	-- create Anticipation points
+	for i = 1, 5 do
+		if (not self.frame.graphicalAnt[i]) then
+			local frame = CreateFrame("Frame", nil, self.frame)
+			self.frame.graphicalAnt[i] = frame
+			frame.texture = frame:CreateTexture()
+			frame.texture:SetAllPoints(frame)
+		end
+
+		if forceTextureUpdate then
+			if self.moduleSettings.comboMode == "Graphical Bar" then
+				self.frame.graphicalAnt[i].texture:SetTexture(IceElement.TexturePath .. "Combo")
+			elseif self.moduleSettings.comboMode == "Graphical Circle" then
+				self.frame.graphicalAnt[i].texture:SetTexture(IceElement.TexturePath .. "ComboRound")
+			elseif self.moduleSettings.comboMode == "Graphical Glow" then
+				self.frame.graphicalAnt[i].texture:SetTexture(IceElement.TexturePath .. "ComboGlow")
+			elseif self.moduleSettings.comboMode == "Graphical Clean Circle" then
+				self.frame.graphicalAnt[i].texture:SetTexture(IceElement.TexturePath .. "ComboCleanCurves")
+			end
+		end
+
+		self.frame.graphicalAnt[i]:SetFrameStrata("LOW")
+		self.frame.graphicalAnt[i]:SetFrameLevel(self.frame.graphical[i]:GetFrameLevel() + 1)
+		self.frame.graphicalAnt[i]:SetWidth(math.floor(self.comboSize / 2))
+		self.frame.graphicalAnt[i]:SetHeight(math.floor(self.comboSize / 2))
+
+		self.frame.graphicalAnt[i]:SetPoint("CENTER", self.frame.graphical[i], "CENTER")
+
+		local r, g, b = self:GetColor("AnticipationPoints")
+		if (self.moduleSettings.gradient) then
+			r = r - 0.25 * (i - 1) -- Go to straight blue, which is most visible against the redorange
+		end
+		self.frame.graphicalAnt[i].texture:SetVertexColor(r, g, b)
+
+		self.frame.graphicalAnt[i]:Hide()
+	end
+
 end
 
 function ComboPoints.prototype:UpdateComboPoints()
-	local points
+	local points, anticipate, _
 	if IceHUD.IceCore:IsInConfigMode() then
 		points = 5
 	elseif IceHUD.WowVer >= 30000 then
 		-- Parnic: apparently some fights have combo points while the player is in a vehicle?
 		local isInVehicle = UnitHasVehicleUI("player")
 		points = GetComboPoints(isInVehicle and "vehicle" or "player", "target")
+		_, _, _, anticipate = UnitAura("player", AnticipationAuraName) 
 	else
 		points = GetComboPoints("target")
 	end
 
-	if (points == 0) then
-		points = nil
-	end
+	points = points or 0
+	anticipate = self.moduleSettings.showAnticipation and anticipate or 0
 
 	if (self.moduleSettings.comboMode == "Numeric") then
 		local r, g, b = self:GetColor("ComboPoints")
@@ -345,28 +411,57 @@ function ComboPoints.prototype:UpdateComboPoints()
 		end
 		self.frame.numeric:SetTextColor(r, g, b, 0.7)
 
-		self.frame.numeric:SetText(points)
+		local pointsText = tostring(points)
+		if anticipate > 0 then
+			pointsText = pointsText.."+"..tostring(anticipate)
+		end
+		self.frame.numeric:SetText(pointsText)
 	else
 		self.frame.numeric:SetText()
 
 		for i = 1, table.getn(self.frame.graphical) do
-			if (points ~= nil) then
+			if (points > 0) or (anticipate > 0) then
 				self.frame.graphicalBG[i]:Show()
 			else
 				self.frame.graphicalBG[i]:Hide()
 			end
 
-			if (points ~= nil and i <= points) then
+			if (i <= points) then
 				self.frame.graphical[i]:Show()
 			else
 				self.frame.graphical[i]:Hide()
+			end
+
+			if (i <= anticipate) then
+				self.frame.graphicalAnt[i]:Show()
+			else
+				self.frame.graphicalAnt[i]:Hide()
 			end
 		end
 	end
 end
 
+do
+	local antStacks
 
+	function ComboPoints.prototype:CheckAnticipation(e, unit) -- UNIT_AURA handler
+		if UnitIsUnit(unit, "player") then
+			local _, _, _, newAntStacks = UnitAura("player", AnticipationAuraName)
+			if newAntStacks ~= antStacks then
+				antStacks = newAntStacks
+				self:UpdateComboPoints()         
+			end
+		end 
+	end
 
+	function ComboPoints.prototype:AddAnticipation() -- Handles both PLAYER_TALENT_CHANGED event and activation from options or initialization.
+		if self.moduleSettings.showAnticipation and IsSpellKnown(AnticipationSpellId) then
+			self:RegisterEvent("UNIT_AURA", "CheckAnticipation") -- CallbackHandler will just reassign if it's there, so no harm
+		else
+			self:UnregisterEvent("UNIT_AURA") -- Doesn't error if it wasn't there
+		end
+	end
+end
 
 
 -- Load us up
