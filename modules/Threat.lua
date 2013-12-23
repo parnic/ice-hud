@@ -58,6 +58,7 @@ function IceThreat.prototype:GetDefaultSettings()
 	settings["displaySecondPlaceThreat"] = true
 	settings["secondPlaceThreatAlpha"] = 0.75
 	settings["bAllowExpand"] = false
+	settings["showTankName"] = true
 	return settings
 end
 
@@ -174,6 +175,23 @@ function IceThreat.prototype:GetOptions()
 		max = 1,
 		step = 0.05,
 		order = 27.9
+	}
+
+	opts["showTankName"] = {
+		type = 'toggle',
+		name = L["Show tank name"],
+		desc = L["Shows the name of the threat holder colorized by his or her role"],
+		get = function()
+			return self.moduleSettings.showTankName
+		end,
+		set = function(info, v)
+			self.moduleSettings.showTankName = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 29.1,
 	}
 
 	return opts
@@ -327,7 +345,22 @@ threatValue = 100
 
 	-- set percentage text
 	self:SetBottomText1( IceHUD:MathRound(self.moduleSettings.showScaledThreat and scaledPercent or rawPercent) .. "%" )
-	self:SetBottomText2()
+	if not self.moduleSettings.showTankName or isTanking then
+		-- nothing if we are the target
+		self:SetBottomText2()
+	else
+		-- display the name of the current threat holder
+		local name = select(1, UnitName("targettarget"))
+		local color
+		if UnitGroupRolesAssigned("targettarget") == "TANK" or GetPartyAssignment("MAINTANK", "targettarget") then
+			color = "ThreatLow"
+		elseif GetPartyAssignment("MAINASSIST", "targettarget") then
+			color = "ThreatMedium"
+		else
+			color = "ThreatHigh"
+		end
+		self:SetBottomText2(name, color)
+	end
 
 	if ( isTanking ) then
 		rangeMulti = 1
