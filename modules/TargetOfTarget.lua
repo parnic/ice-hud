@@ -539,7 +539,7 @@ function TargetOfTarget.prototype:Update()
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		local name = UnitName(self.unit)
-		local healthPercentage = math.floor( (health/maxHealth)*100 )
+		local healthPercentage = maxHealth ~= 0 and math.floor( (health/maxHealth)*100 ) or 0
 
 		self.frame.totName:SetTextColor(1,1,1, 0.9)
 		self.frame.totHealth:SetTextColor(1,1,1, 0.9)

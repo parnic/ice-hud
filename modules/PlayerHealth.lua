@@ -1216,7 +1216,7 @@ function PlayerHealth.prototype:Update(unit)
 		local percent
 
 		if incomingHealAmt > 0 then
-			percent = ((self.health + incomingHealAmt) / self.maxHealth)
+			percent = self.maxHealth ~= 0 and ((self.health + incomingHealAmt) / self.maxHealth) or 0
 			if self.moduleSettings.reverse then
 				percent = 1 - percent
 				-- Rokiyo: I'm thinking the frama strata should also to be set to medium if we're in reverse.
