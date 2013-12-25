@@ -415,7 +415,12 @@ function ComboPoints.prototype:UpdateComboPoints()
 		if anticipate > 0 then
 			pointsText = pointsText.."+"..tostring(anticipate)
 		end
-		self.frame.numeric:SetText(pointsText)
+
+		if points == 0 and anticipate == 0 then
+			self.frame.numeric:SetText(nil)
+		else
+			self.frame.numeric:SetText(pointsText)
+		end
 	else
 		self.frame.numeric:SetText()
 
