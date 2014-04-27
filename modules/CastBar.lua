@@ -15,8 +15,6 @@ function CastBar.prototype:init()
 	self:SetDefaultColor("CastNotInRange", 200, 200, 200)
 
 	self.unit = "player"
-
-	self:CVarUpdate()
 end
 
 
@@ -303,6 +301,8 @@ function CastBar.prototype:Enable(core)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckVehicle")
 
 	self:RegisterEvent("CVAR_UPDATE", "CVarUpdate")
+
+	self:CVarUpdate()
 
 	if self.moduleSettings.enabled and not self.moduleSettings.showBlizzCast then
 		self:ToggleBlizzCast(false)
