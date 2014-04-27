@@ -15,6 +15,8 @@ function CastBar.prototype:init()
 	self:SetDefaultColor("CastNotInRange", 200, 200, 200)
 
 	self.unit = "player"
+
+	self:CVarUpdate()
 end
 
 
@@ -300,6 +302,8 @@ function CastBar.prototype:Enable(core)
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckVehicle")
 
+	self:RegisterEvent("CVAR_UPDATE", "CVarUpdate")
+
 	if self.moduleSettings.enabled and not self.moduleSettings.showBlizzCast then
 		self:ToggleBlizzCast(false)
 	end
@@ -334,6 +338,10 @@ function CastBar.prototype:CheckVehicle()
 	end
 end
 
+function CastBar.prototype:CVarUpdate(...)
+	self.useFixedLatency = GetCVar("reducedLagTolerance") == "1"
+	self.fixedLatency = tonumber(GetCVar("maxSpellStartRecoveryoffset")) / 1000
+end
 
 function CastBar.prototype:Disable(core)
 	CastBar.super.prototype.Disable(self, core)
@@ -398,6 +406,8 @@ function CastBar.prototype:SpellCastStart(event, unit, spell, rank)
 	local scale
 	if self.unit == "vehicle" then
 		scale = 0
+	elseif self.useFixedLatency then
+		scale = IceHUD:Clamp(self.fixedLatency / self.actionDuration, 0, 1)
 	else
 		local now = GetTime()
 		local lag = now - (self.spellCastSent or now)
@@ -423,6 +433,8 @@ function CastBar.prototype:SpellCastChannelStart(event, unit)
 	local scale
 	if self.unit == "vehicle" then
 		scale = 0
+	elseif self.useFixedLatency then
+		scale = IceHUD:Clamp(self.fixedLatency / self.actionDuration, 0, 1)
 	else
 		local now = GetTime()
 		local lag = now - (self.spellCastSent or now)
