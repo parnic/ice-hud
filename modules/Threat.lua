@@ -340,7 +340,7 @@ threatValue = 100
 			scaledPercentZeroToOne = rawPercent / 100
 		end
 
-		IceHUD:Debug( "isTanking="..(isTanking or "nil").." threatState="..(threatState or "nil").." scaledPercent="..(scaledPercent or "nil").." rawPercent="..(rawPercent or "nil").." threatValue="..(threatValue or "nil").." secondhighest="..(secondHighestThreat or "nil"))
+		IceHUD:Debug( "isTanking="..(tostring(isTanking) or "nil").." threatState="..(tostring(threatState) or "nil").." scaledPercent="..(tostring(scaledPercent) or "nil").." rawPercent="..(tostring(rawPercent) or "nil").." threatValue="..(tostring(threatValue) or "nil").." secondhighest="..(tostring(secondHighestThreat) or "nil"))
 	end
 
 	-- set percentage text
