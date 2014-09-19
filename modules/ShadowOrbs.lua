@@ -6,22 +6,52 @@ function ShadowOrbs.prototype:init()
 
 	self:SetDefaultColor("ShadowOrbsNumeric", 218, 231, 31)
 
-	-- pulled from PriestBar.xml in Blizzard's UI source
-	self.runeCoords =
-	{
-		{0.45703125, 0.60546875, 0.44531250, 0.73437500},
-		{0.45703125, 0.60546875, 0.44531250, 0.73437500},
-		{0.45703125, 0.60546875, 0.44531250, 0.73437500},
-	}
 	self.numericColor = "ShadowOrbsNumeric"
 	self.unitPower = SPELL_POWER_SHADOW_ORBS
 	self.minLevel = SHADOW_ORBS_SHOW_LEVEL
 	self.bTreatEmptyAsFull = true
 	self.unit = "player"
-	self.numConsideredFull = PRIEST_BAR_NUM_ORBS
+	if IceHUD.WowVer >= 60000 then
+		self.numConsideredFull = PRIEST_BAR_NUM_LARGE_ORBS
+		-- pulled from PriestBar.xml in Blizzard's UI source
+		self.runeCoords = { }
+		for i=1, PRIEST_BAR_NUM_SMALL_ORBS do
+			self.runeCoords[i] = {0.45703125, 0.60546875, 0.44531250, 0.73437500}
+		end
+		if IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
+			self.numRunes = PRIEST_BAR_NUM_SMALL_ORBS
+		else
+			self.numRunes = PRIEST_BAR_NUM_LARGE_ORBS
+		end
+	else
+		self.numConsideredFull = PRIEST_BAR_NUM_ORBS
+
+		-- pulled from PriestBar.xml in Blizzard's UI source
+		self.runeCoords = { }
+		for i=1, PRIEST_BAR_NUM_ORBS do
+			self.runeCoords[i] = {0.45703125, 0.60546875, 0.44531250, 0.73437500}
+		end
+	end
 	self.runeHeight = 36
 	self.runeWidth = 36
 	self.requiredSpec = SPEC_PRIEST_SHADOW
+end
+
+function ShadowOrbs.prototype:Enable(core)
+	ShadowOrbs.super.prototype.Enable(self, core)
+
+	if IceHUD.WowVer >= 60000 then
+		if not IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
+			self:RegisterEvent("SPELLS_CHANGED", "CheckHasMoreOrbs")
+		end
+	end
+end
+
+function ShadowOrbs.prototype:CheckHasMoreOrbs(event)
+	if IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
+		self:UnregisterEvent("SPELLS_CHANGED")
+		self:UpdateRunePower()
+	end
 end
 
 function ShadowOrbs.prototype:GetOptions()
