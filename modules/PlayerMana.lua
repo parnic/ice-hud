@@ -120,7 +120,7 @@ function PlayerMana.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckVehicle")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
 
 	if not self.CustomOnUpdate then
 		self.CustomOnUpdate = function() self:Update(self.unit) end
@@ -131,6 +131,11 @@ function PlayerMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
 	self:ManaType(nil, self.unit)
+end
+
+function PlayerMana.prototype:EnteringWorld()
+	self:CheckVehicle()
+	self:CheckCombat()
 end
 
 function PlayerMana.prototype:CheckVehicle()
