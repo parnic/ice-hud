@@ -663,7 +663,7 @@ function IceCustomCDBar.prototype:IsReady()
 	local is_ready = nil
 	local checkSpell = self:GetSpellNameOrId(self.moduleSettings.cooldownToTrack)
 
-	if (IsUsableSpell(checkSpell) == 1) then
+	if (IsUsableSpell(checkSpell)) then
 		if (not self.moduleSettings.bIgnoreRange and SpellHasRange(checkSpell)) or (self.moduleSettings.bOnlyShowWithTarget) then
 			if (UnitExists("target") and (not SpellHasRange(checkSpell) or IsSpellInRange(checkSpell, "target") == 1))
 				or (not UnitExists("target") and not self.moduleSettings.bOnlyShowWithTarget and IsSpellInRange(checkSpell, "player")) then
