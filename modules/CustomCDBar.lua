@@ -3,7 +3,7 @@ IceCustomCDBar = IceCore_CreateClass(IceBarElement)
 
 local IceHUD = _G.IceHUD
 
-local validDisplayModes = {"Always", "When ready", "When cooling down"}
+local validDisplayModes = {"Always", "When ready", "When cooling down", "When targeting"}
 local validBuffTimers = {"none", "seconds", "minutes:seconds", "minutes"}
 local AuraIconWidth = 20
 local AuraIconHeight = 20
@@ -361,7 +361,7 @@ function IceCustomCDBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		hidden = function()
-			return self.moduleSettings.displayMode == "Always"
+			return self.moduleSettings.displayMode ~= "When ready"
 		end,
 		order = 31.4,
 	}
@@ -699,6 +699,12 @@ function IceCustomCDBar.prototype:Show(bShouldShow, bForceHide)
 			--end
 		elseif self.moduleSettings.displayMode == "When ready" then
 			if not self.coolingDown and self:IsReady() then
+				IceCustomCDBar.super.prototype.Show(self, true)
+			else
+				IceCustomCDBar.super.prototype.Show(self, false)
+			end
+		elseif self.moduleSettings.displayMode == "When targeting" then
+		    if UnitExists("target") then
 				IceCustomCDBar.super.prototype.Show(self, true)
 			else
 				IceCustomCDBar.super.prototype.Show(self, false)
