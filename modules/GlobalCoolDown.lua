@@ -1,6 +1,8 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local GlobalCoolDown = IceCore_CreateClass(IceBarElement)
 
+local maxSpellCastSkipTimeMs = 1500
+
 -- Constructor --
 function GlobalCoolDown.prototype:init()
 	GlobalCoolDown.super.prototype.init(self, "GlobalCoolDown")
@@ -53,6 +55,7 @@ function GlobalCoolDown.prototype:GetDefaultSettings()
 	settings["barVisible"]["bg"] = false
 	settings["usesDogTagStrings"] = false
 	settings["bHideMarkerSettings"] = true
+	settings["showDuringCast"] = true
 
 	return settings
 end
@@ -65,6 +68,22 @@ function GlobalCoolDown.prototype:GetOptions()
 	opts["textSettings"] = nil
 	opts.alwaysFullAlpha = nil
 
+	opts["showDuringCast"] = {
+		type = 'toggle',
+		name = L["Show during cast"],
+		desc = L["Whether to show this bar when a spellcast longer than the global cooldown is being cast."],
+		get = function()
+			return self.moduleSettings.showDuringCast
+		end,
+		set = function(info, v)
+			self.moduleSettings.showDuringCast = v
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 21,
+	}
+
 	return opts
 end
 
@@ -72,9 +91,35 @@ function GlobalCoolDown.prototype:IsFull(scale)
 	return false
 end
 
+function GlobalCoolDown.prototype:GetSpellCastTime(spell)
+	if not spell then
+		return nil, nil
+	end
+
+	local spellname, castTime, _
+	if IceHUD.WowVer < 60000 then
+		spellName, _, _, _, _, _, castTime = GetSpellInfo(spell)
+	else
+		spellName, _, _, castTime = GetSpellInfo(spell)
+	end
+
+	if spellName == nil or spellName == "" then
+		return nil, nil
+	else
+		return castTime
+	end
+end
+
 function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell)
 	if unit ~= "player" or not spell then
 		return
+	end
+
+	if not self.moduleSettings.showDuringCast then
+		local castTime = self:GetSpellCastTime(spell)
+		if castTime and castTime > maxSpellCastSkipTimeMs then
+			return
+		end
 	end
 
 	local start, dur = GetSpellCooldown(self.CDSpellId)
