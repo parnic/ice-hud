@@ -374,7 +374,7 @@ function IceClassPowerCounter.prototype:GetDefaultSettings()
 	local defaults =  IceClassPowerCounter.super.prototype.GetDefaultSettings(self)
 
 	defaults["vpos"] = 0
-	defaults["hpos"] = 10
+	defaults["hpos"] = 0
 	defaults["runeFontSize"] = 20
 	defaults["runeMode"] = "Graphical"
 	defaults["usesDogTagStrings"] = false
@@ -605,12 +605,18 @@ function IceClassPowerCounter.prototype:UpdateRuneAnimation(frame, elapsed)
 		end
 	end
 
-	self.frame:SetScale(scale)
+	for i=1, #self.frame.graphical do
+		self.frame.graphical[i]:SetScale(scale)
+	end
+	self.frame.numericParent:SetScale(scale)
 end
 
 function IceClassPowerCounter.prototype:StopRunesFullAnimation()
 	self.frame:SetScript("OnUpdate", nil)
-	self.frame:SetScale(1)
+	for i=1, #self.frame.graphical do
+		self.frame.graphical[i]:SetScale(1)
+	end
+	self.frame.numericParent:SetScale(1)
 end
 
 function IceClassPowerCounter.prototype:ShineFinished(rune)
@@ -659,11 +665,15 @@ end
 
 function IceClassPowerCounter.prototype:CreateRuneFrame()
 	-- create numeric runes
-	self.frame.numeric = self:FontFactory(self.moduleSettings.runeFontSize, self.frame, self.frame.numeric)
+	if self.frame.numericParent == nil then
+		self.frame.numericParent = CreateFrame("Frame", nil, self.frame)
+	end
+	self.frame.numericParent:SetAllPoints(self.frame)
+	self.frame.numeric = self:FontFactory(self.moduleSettings.runeFontSize, self.frame.numericParent, self.frame.numeric)
 
 	self.frame.numeric:SetJustifyH("CENTER")
 
-	self.frame.numeric:SetPoint("CENTER", self.frame, "CENTER", 0, self.moduleSettings.numericVerticalOffset)
+	self.frame.numeric:SetPoint("CENTER", self.frame.numericParent, "CENTER", 0, self.moduleSettings.numericVerticalOffset)
 	self.frame.numeric:Hide()
 
 	if (not self.frame.graphical) then
@@ -726,10 +736,11 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 	self.frame.graphical[rune].rune:SetTexCoord(a, b, c, d)
 	self.frame.graphical[rune]:SetWidth(width)
 	self.frame:SetWidth(width*self.numRunes)
+	local runeAdjust = rune - (self.numRunes / 2) - 0.5
 	if self.moduleSettings.displayMode == "Horizontal" then
-		self.frame.graphical[rune]:SetPoint("TOPLEFT", (rune-1) * (width-5) + (rune-1) + ((rune-1) * self.moduleSettings.runeGap), 0)
+		self.frame.graphical[rune]:SetPoint("CENTER", runeAdjust * (width-5) + runeAdjust + (runeAdjust * self.moduleSettings.runeGap), 0)
 	else
-		self.frame.graphical[rune]:SetPoint("TOPLEFT", 0, -1 * ((rune-1) * (self.runeHeight-5) + (rune-1) + ((rune-1) * self.moduleSettings.runeGap)))
+		self.frame.graphical[rune]:SetPoint("CENTER", 0, -1 * (runeAdjust * (self.runeHeight-5) + runeAdjust + (runeAdjust * self.moduleSettings.runeGap)))
 	end
 
 	if self:GetRuneMode() == "Graphical" then
