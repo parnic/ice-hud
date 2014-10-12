@@ -5,7 +5,7 @@ local DogTag = nil
 
 local IceHUD = _G.IceHUD
 
-local validUnits = {"player", "target", "focus", "focustarget", "pet", "pettarget", "vehicle", "targettarget", "main hand weapon", "off hand weapon"}
+local validUnits = {"player", "target", "focus", "focustarget", "pet", "pettarget", "vehicle", "targettarget", "main hand weapon", "off hand weapon", "other"}
 local buffOrDebuff = {"buff", "debuff"}
 local validBuffTimers = {"none", "seconds", "minutes:seconds", "minutes"}
 local AuraIconWidth = 20
@@ -48,7 +48,7 @@ function IceCustomBar.prototype:Enable(core)
 
 	self:Show(true)
 
-	self.unit = self.moduleSettings.myUnit
+	self.unit = self:GetUnitToTrack()
 	self:ConditionalSubscribe()
 
 	if not self.moduleSettings.usesDogTagStrings then
@@ -74,6 +74,18 @@ function IceCustomBar.prototype:Disable(core)
 	IceHUD.IceCore:RequestUpdates(self, nil)
 
 	IceCustomBar.super.prototype.Disable(self, core)
+end
+
+function IceCustomBar.prototype:GetUnitToTrack()
+	if self.moduleSettings.myUnit == "other" then
+		if self.moduleSettings.customUnit ~= nil and self.moduleSettings.customUnit ~= "" then
+			return self.moduleSettings.customUnit
+		else
+			return validUnits[1]
+		end
+	else
+		return self.moduleSettings.myUnit
+	end
 end
 
 function IceCustomBar.prototype:FixupTextColors()
@@ -144,6 +156,7 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["exactMatch"] = false
 	settings["lowerTextColor"] = {r=1, g=1, b=1}
 	settings["upperTextColor"] = {r=1, g=1, b=1}
+	settings["customUnit"] = "player"
 
 	return settings
 end
@@ -252,7 +265,7 @@ function IceCustomBar.prototype:GetOptions()
 		end,
 		set = function(info, v)
 			self.moduleSettings.myUnit = info.option.values[v]
-			self.unit = info.option.values[v]
+			self.unit = self:GetUnitToTrack()
 			self:RegisterFontStrings()
 			self:ConditionalSubscribe()
 			self:Redraw()
@@ -263,6 +276,29 @@ function IceCustomBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 30.4,
+	}
+
+	opts["customUnitToTrack"] = {
+		type = 'input',
+		name = L["Custom unit"],
+		desc = L["Any valid unit id such as: party1, raid14, targettarget, etc. Not guaranteed to work with all unit ids.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
+		get = function()
+			return self.moduleSettings.customUnit
+		end,
+		set = function(info, v)
+			self.moduleSettings.customUnit = v
+			self.unit = self:GetUnitToTrack()
+			self:RegisterFontStrings()
+			self:ConditionalSubscribe()
+			self:Redraw()
+			self:UpdateCustomBar(self.unit)
+			IceHUD:NotifyOptionsChange()
+		end,
+		hidden = function()
+			return self.moduleSettings.myUnit ~= "other"
+		end,
+		usage = "<what custom unit to track when unitToTrack is set to 'other'>",
+		order = 30.45,
 	}
 
 	opts["buffOrDebuff"] = {
