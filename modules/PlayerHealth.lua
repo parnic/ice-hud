@@ -427,8 +427,8 @@ function PlayerHealth.prototype:GetOptions()
 				type = "range",
 				name = L["Status Icon Horizontal Offset"],
 				desc = L["How much to offset the status icon (resting/combat) from the bar horizontally"],
-				min = 0,
-				max = 250,
+				min = -700,
+				max = 900,
 				step = 1,
 				get = function()
 					return self.moduleSettings.statusIconOffset['x']
@@ -446,8 +446,8 @@ function PlayerHealth.prototype:GetOptions()
 				type = "range",
 				name = L["Status Icon Vertical Offset"],
 				desc = L["How much to offset the status icon (resting/combat) from the bar vertically"],
-				min = -300,
-				max = 50,
+				min = -700,
+				max = 550,
 				step = 1,
 				get = function()
 					return self.moduleSettings.statusIconOffset['y']
@@ -506,8 +506,8 @@ function PlayerHealth.prototype:GetOptions()
 				type = "range",
 				name = L["Leader Icon Horizontal Offset"],
 				desc = L["How much to offset the leader icon from the bar horizontally"],
-				min = 0,
-				max = 250,
+				min = -700,
+				max = 900,
 				step = 1,
 				get = function()
 					return self.moduleSettings.leaderIconOffset['x']
@@ -525,8 +525,8 @@ function PlayerHealth.prototype:GetOptions()
 				type = "range",
 				name = L["Leader Icon Vertical Offset"],
 				desc = L["How much to offset the leader icon from the bar vertically"],
-				min = -300,
-				max = 50,
+				min = -700,
+				max = 550,
 				step = 1,
 				get = function()
 					return self.moduleSettings.leaderIconOffset['y']
@@ -585,8 +585,8 @@ function PlayerHealth.prototype:GetOptions()
 				type = "range",
 				name = L["Loot Master Icon Horizontal Offset"],
 				desc = L["How much to offset the loot master icon from the bar horizontally"],
-				min = 0,
-				max = 250,
+				min = -700,
+				max = 900,
 				step = 1,
 				get = function()
 					return self.moduleSettings.lootMasterIconOffset['x']
@@ -604,8 +604,8 @@ function PlayerHealth.prototype:GetOptions()
 				type = "range",
 				name = L["Loot Master Icon Vertical Offset"],
 				desc = L["How much to offset the loot master icon from the bar vertically"],
-				min = -300,
-				max = 50,
+				min = -700,
+				max = 550,
 				step = 1,
 				get = function()
 					return self.moduleSettings.lootMasterIconOffset['y']
@@ -664,8 +664,8 @@ function PlayerHealth.prototype:GetOptions()
 				type = "range",
 				name = L["PvP Icon Horizontal Offset"],
 				desc = L["How much to offset the PvP icon from the bar horizontally"],
-				min = 0,
-				max = 250,
+				min = -700,
+				max = 900,
 				step = 1,
 				get = function()
 					return self.moduleSettings.PvPIconOffset['x']
@@ -683,8 +683,8 @@ function PlayerHealth.prototype:GetOptions()
 				type = "range",
 				name = L["PvP Icon Vertical Offset"],
 				desc = L["How much to offset the PvP icon from the bar vertically"],
-				min = -300,
-				max = 50,
+				min = -700,
+				max = 550,
 				step = 1,
 				get = function()
 					return self.moduleSettings.PvPIconOffset['y']
@@ -742,8 +742,8 @@ function PlayerHealth.prototype:GetOptions()
 				type = "range",
 				name = L["Party Role Icon Horizontal Offset"],
 				desc = L["How much to offset the Party Role icon from the bar horizontally"],
-				min = 0,
-				max = 250,
+				min = -700,
+				max = 900,
 				step = 1,
 				get = function()
 					return self.moduleSettings.PartyRoleIconOffset['x']
@@ -761,8 +761,8 @@ function PlayerHealth.prototype:GetOptions()
 				type = "range",
 				name = L["Party Role Icon Vertical Offset"],
 				desc = L["How much to offset the Party Role icon from the bar vertically"],
-				min = -300,
-				max = 50,
+				min = -700,
+				max = 550,
 				step = 1,
 				get = function()
 					return self.moduleSettings.PartyRoleIconOffset['y']
