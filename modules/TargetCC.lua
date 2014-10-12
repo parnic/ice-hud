@@ -213,6 +213,8 @@ function TargetCC.prototype:init(moduleName, unit)
 	self.previousDebuff = nil
 	self.previousDebuffTarget = nil
 	self.previousDebuffTime = nil
+
+	self.bTreatEmptyAsFull = true
 end
 
 -- grabs the list of CC's and pulls the localized spell name using the wow api
