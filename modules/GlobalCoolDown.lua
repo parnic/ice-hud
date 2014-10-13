@@ -56,6 +56,7 @@ function GlobalCoolDown.prototype:GetDefaultSettings()
 	settings["usesDogTagStrings"] = false
 	settings["bHideMarkerSettings"] = true
 	settings["showDuringCast"] = true
+	settings["barVisible"]["bg"] = false
 
 	return settings
 end
@@ -66,7 +67,6 @@ function GlobalCoolDown.prototype:GetOptions()
 
 	opts["lowThreshold"] = nil
 	opts["textSettings"] = nil
-	opts.alwaysFullAlpha = nil
 
 	opts["showDuringCast"] = {
 		type = 'toggle',
@@ -134,10 +134,11 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell)
 			self.LastScale = 1
 			self.DesiredScale = 0
 			self.CurrLerpTime = 0
+			self.lastLerpTime = GetTime()
 			self.moduleSettings.desiredLerpTime = dur or 1
 			self.CurrSpell = spell
 
-			self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
+			self:UpdateBar(0, "GlobalCoolDown")
 			self:Show(true)
 		end
 	end
