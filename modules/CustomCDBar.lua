@@ -670,9 +670,12 @@ function IceCustomCDBar.prototype:UpdateIcon()
 				self.barFrame.icon:SetTexture(icon)
 			end
 		else
-			local name, _, _, _, _, _, _, _, _, texture = GetItemInfo(GetInventoryItemID("player", GetInventorySlotInfo(validInventorySlotNames[self.moduleSettings.itemToTrack])))
-			if name and texture then
-				self.barFrame.icon:SetTexture(texture)
+			local itemId = GetInventoryItemID("player", GetInventorySlotInfo(validInventorySlotNames[self.moduleSettings.itemToTrack]))
+			if itemId then
+				local name, _, _, _, _, _, _, _, _, texture = GetItemInfo(itemId)
+				if name and texture then
+					self.barFrame.icon:SetTexture(texture)
+				end
 			end
 		end
 
