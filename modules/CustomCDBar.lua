@@ -166,7 +166,7 @@ end
 function IceCustomCDBar.prototype:GetDisplayText(fromValue)
 	local v = fromValue
 
-	if self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL then
+	if not self.moduleSettings.cooldownType or self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL then
 		if tonumber(fromValue) ~= nil then
 			local spellName = GetSpellInfo(tonumber(fromValue))
 			if spellName then
@@ -250,11 +250,11 @@ function IceCustomCDBar.prototype:GetOptions()
 		desc = L["The type of thing to track the cooldown of"],
 		values = cooldownTypes,
 		get = function()
-			return self.moduleSettings.cooldownType
+			return self.moduleSettings.cooldownType or COOLDOWN_TYPE_SPELL
 		end,
 		set = function(info, v)
 			local updateUpperText = false
-			local dispStr = self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL and self.moduleSettings.cooldownToTrack or self.moduleSettings.itemToTrack
+			local dispStr = (not self.moduleSettings.cooldownType or self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL) and self.moduleSettings.cooldownToTrack or self.moduleSettings.itemToTrack
 			if self:GetDisplayText(dispStr)
 				== self.moduleSettings.upperText then
 					updateUpperText = true
@@ -262,7 +262,7 @@ function IceCustomCDBar.prototype:GetOptions()
 
 			self.moduleSettings.cooldownType = v
 
-			dispStr = self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL and self.moduleSettings.cooldownToTrack or self.moduleSettings.itemToTrack
+			dispStr = (not self.moduleSettings.cooldownType or self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL) and self.moduleSettings.cooldownToTrack or self.moduleSettings.itemToTrack
 			if updateUpperText then
 				self.moduleSettings.upperText = self:GetDisplayText(dispStr)
 			end
@@ -302,7 +302,7 @@ function IceCustomCDBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		hidden = function()
-			return self.moduleSettings.cooldownType ~= COOLDOWN_TYPE_SPELL
+			return self.moduleSettings.cooldownType and self.moduleSettings.cooldownType ~= COOLDOWN_TYPE_SPELL
 		end,
 		usage = "<which spell to track>",
 		order = 30.6,
@@ -314,7 +314,7 @@ function IceCustomCDBar.prototype:GetOptions()
 		desc = L["Which item cooldown this bar will be tracking."],
 		values = localizedInventorySlotNames,
 		get = function()
-			return self.moduleSettings.itemToTrack
+			return self.moduleSettings.itemToTrack or 15
 		end,
 		set = function(info, v)
 			if self:GetDisplayText(self.moduleSettings.itemToTrack) == self.moduleSettings.upperText then
@@ -424,7 +424,7 @@ function IceCustomCDBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		hidden = function()
-			return self.moduleSettings.cooldownType ~= COOLDOWN_TYPE_SPELL
+			return self.moduleSettings.cooldownType and self.moduleSettings.cooldownType ~= COOLDOWN_TYPE_SPELL
 		end,
 		order = 31.2,
 	}
@@ -663,13 +663,13 @@ end
 
 function IceCustomCDBar.prototype:UpdateIcon()
 	if self.barFrame.icon then
-		if self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL then
+		if not self.moduleSettings.cooldownType or self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL then
 			local name, rank, icon = GetSpellInfo(self.moduleSettings.cooldownToTrack)
 
 			if icon ~= nil then
 				self.barFrame.icon:SetTexture(icon)
 			end
-		else
+		elseif self.moduleSettings.itemToTrack then
 			local itemId = GetInventoryItemID("player", GetInventorySlotInfo(validInventorySlotNames[self.moduleSettings.itemToTrack]))
 			if itemId then
 				local name, _, _, _, _, _, _, _, _, texture = GetItemInfo(itemId)
@@ -700,7 +700,7 @@ function IceCustomCDBar.prototype:UpdateItemUnitInventoryChanged(event, unit)
 end
 
 function IceCustomCDBar.prototype:UpdateCustomBarEvent()
-	if self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL then
+	if not self.moduleSettings.cooldownType or self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL then
 		self:UpdateCustomBar()
 	end
 end
@@ -711,10 +711,10 @@ function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
 	local auraIcon = nil
 
 	if not fromUpdate then
-		if self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL then
+		if not self.moduleSettings.cooldownType or self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL then
 			self.cooldownDuration, remaining =
 				self:GetCooldownDuration(self.moduleSettings.cooldownToTrack)
-		else
+		elseif self.moduleSettings.itemToTrack then
 			local start = nil
 			start, self.cooldownDuration = GetInventoryItemCooldown("player", GetInventorySlotInfo(validInventorySlotNames[self.moduleSettings.itemToTrack]))
 			if start and start > 0 then
@@ -797,7 +797,7 @@ end
 
 function IceCustomCDBar.prototype:IsReady()
 	local is_ready = nil
-	if self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL then
+	if not self.moduleSettings.cooldownType or self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL then
 		local checkSpell = self:GetSpellNameOrId(self.moduleSettings.cooldownToTrack)
 
 		if (IsUsableSpell(checkSpell)) then
