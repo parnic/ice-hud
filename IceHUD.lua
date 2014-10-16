@@ -372,7 +372,7 @@ function IceHUD:GetDebuffCount(unit, ability, onlyMine, matchByName)
 end
 
 function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
-	if not unit then
+	if not unit or not ability then
 		return 0
 	end
 

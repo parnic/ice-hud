@@ -549,6 +549,10 @@ end
 
 
 function IceCustomCount.prototype:UpdateCustomCount()
+	if not self.moduleSettings.auraName then
+		return
+	end
+
 	local points
 	if IceHUD.IceCore:IsInConfigMode() then
 		points = tonumber(self.moduleSettings.maxCount)
