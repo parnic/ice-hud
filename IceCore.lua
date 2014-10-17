@@ -266,7 +266,7 @@ function IceCore.prototype:RedirectRemovedModules()
 			local bFound = false
 
 			for k,v in pairs(self.elements) do
-				if v.moduleSettings.customBarType == "Counter"
+				if v.moduleSettings.customBarType == "Counter" and v.moduleSettings.auraName
 					and string.upper(v.moduleSettings.auraName) == string.upper(GetSpellInfo(SUNDER_SPELL_ID)) then
 					bFound = true
 					break
@@ -302,7 +302,7 @@ function IceCore.prototype:RedirectRemovedModules()
 		if self.settings.modules["LacerateCount"].enabled or self.settings.modules["LacerateCount"].enabled == nil then
 			local bFound = false
 			for k,v in pairs(self.elements) do
-				if v.moduleSettings.customBarType == "Counter"
+				if v.moduleSettings.customBarType == "Counter" and v.moduleSettings.auraName
 					and string.upper(v.moduleSettings.auraName) == string.upper(GetSpellInfo(LACERATE_SPELL_ID)) then
 					bFound = true
 					break
@@ -339,7 +339,7 @@ function IceCore.prototype:RedirectRemovedModules()
 		if self.settings.modules["MaelstromCount"].enabled or self.settings.modules["MaelstromCount"].enabled == nil then
 			local bFound = false
 			for k,v in pairs(self.elements) do
-				if v.moduleSettings.customBarType == "Counter"
+				if v.moduleSettings.customBarType == "Counter" and v.moduleSettings.auraName
 					and string.upper(v.moduleSettings.auraName) == string.upper(GetSpellInfo(MAELSTROM_SPELL_ID)) then
 					bFound = true
 					break
