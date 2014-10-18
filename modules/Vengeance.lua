@@ -120,6 +120,7 @@ end
 
 -- Load for tanks only
 local _, unitClass = UnitClass("player")
-if ((unitClass == "DEATHKNIGHT" or unitClass == "DRUID" or unitClass == "PALADIN" or unitClass == "WARRIOR" or unitClass == "MONK") and IceHUD.WowVer >= 40000) then
+if ((unitClass == "DEATHKNIGHT" or unitClass == "DRUID" or unitClass == "PALADIN" or unitClass == "WARRIOR" or unitClass == "MONK")
+	and IceHUD.WowVer >= 40000 and IceHUD.WowVer < 60000) then
   IceHUD.Vengeance = Vengeance:new()
 end
