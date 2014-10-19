@@ -261,7 +261,7 @@ end
 
 function IceCore.prototype:RedirectRemovedModules()
 	local _, class = UnitClass("player")
-	if class == "WARRIOR" and self.settings.modules["SunderCount"] then
+	if class == "WARRIOR" and self.settings.modules["SunderCount"] and IceHUD.WowVer < 60000 then
 		if self.settings.modules["SunderCount"].enabled or self.settings.modules["SunderCount"].enabled == nil then
 			local bFound = false
 
