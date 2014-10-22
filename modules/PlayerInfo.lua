@@ -60,30 +60,31 @@ StaticPopupDialogs["ICEHUD_BUFF_DISMISS_UNAVAILABLE"] =
 	hideOnEscape = 0,
 }
 
-local function OnBuffMouseUp(frame, button)
-	if IceHUD.WowVer >= 40000 then
-		if button == "RightButton" then
-			StaticPopup_Show("ICEHUD_BUFF_DISMISS_UNAVAILABLE")
-		end
-	else
---[[		if( button == "RightButton" ) then
-			if buffs[i].type == "mh" then
-				CancelItemTempEnchantment(1)
-			elseif buffs[i].type == "oh" then
-				CancelItemTempEnchantment(2)
-			else
-				CancelUnitBuff("player", i)
-			end
-		end]]
+-- playerinfo buffclick event handle
+function PlayerInfo.prototype:BuffClick(this,event)
+    -- We want to catch the rightbutton click.
+    -- We also need to check for combat lockdown. The api won't allow cancelling during combat lockdown.
+    if( event == "RightButton" ) and not InCombatLockdown() then
+        if this.type == "mh" then
+            CancelItemTempEnchantment(1)
+        elseif this.type == "oh" then
+            CancelItemTempEnchantment(2)
+        else
+            CancelUnitBuff(self.unit, this.id)
+        end
 	end
 end
 
 function PlayerInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
 	local buffs = PlayerInfo.super.prototype.CreateIconFrames(self, parent, direction, buffs, type)
 
+    if not self.MyOnClickBuffFunc then
+        self.MyOnClickBuffFunc = function(this,event) self:BuffClick(this,event) end
+    end
+
 	for i = 1, IceCore.BuffLimit do
 		if (self.moduleSettings.mouseBuff) then
-			buffs[i]:SetScript("OnMouseUp", OnBuffMouseUp)
+			buffs[i]:SetScript("OnMouseUp", self.MyOnClickBuffFunc)
 		else
 			buffs[i]:SetScript("OnMouseUp", nil)
 		end
