@@ -30,6 +30,23 @@ function ComboPointsBar.prototype:GetOptions()
 		order = 31
 	}
 
+	opts["bShowWithNoTarget"] =
+	{
+		type = 'toggle',
+		name = L["Show with no target"],
+		desc = L["Whether or not to display when you have no target selected but have combo points available"],
+		get = function()
+			return self.moduleSettings.bShowWithNoTarget
+		end,
+		set = function(info, v)
+			self.moduleSettings.bShowWithNoTarget = v
+			self:UpdateComboPoints()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+	}
+
 	return opts
 end
 
@@ -40,6 +57,7 @@ function ComboPointsBar.prototype:GetDefaultSettings()
 	defaults.enabled = false
 	defaults.alwaysDisplay = false
 	defaults.desiredLerpTime = 0.05
+	defaults.bShowWithNoTarget = true
 	return defaults
 end
 
@@ -69,7 +87,12 @@ function ComboPointsBar.prototype:UpdateComboPoints()
 	elseif IceHUD.WowVer >= 30000 then
 		-- Parnic: apparently some fights have combo points while the player is in a vehicle?
 		local isInVehicle = UnitHasVehicleUI("player")
-		points = GetComboPoints(isInVehicle and "vehicle" or "player", "target")
+		local checkUnit = isInVehicle and "vehicle" or "player"
+		if IceHUD.WowVer >= 60000 then
+			points = UnitPower(checkUnit, 4)
+		else
+			points = GetComboPoints(checkUnit, "target")
+		end
 	else
 		points = GetComboPoints("target")
 	end
@@ -78,7 +101,7 @@ function ComboPointsBar.prototype:UpdateComboPoints()
 		points = nil
 	end
 
-	if points == nil or points == 0 then
+	if points == nil or points == 0 or (not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget) then
 		self:Show(self.moduleSettings.alwaysDisplay)
 		self:UpdateBar(0, "undef")
 	else

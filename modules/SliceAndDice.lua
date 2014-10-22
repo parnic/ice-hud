@@ -50,7 +50,7 @@ function SliceAndDice.prototype:Enable(core)
 	SliceAndDice.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_AURA", "UpdateSliceAndDice")
-	self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateDurationBar")
+	self:RegisterEvent("UNIT_COMBO_POINTS", "ComboPointsChanged")
 
 	if not self.moduleSettings.alwaysFullAlpha then
 		self:Show(false)
@@ -61,14 +61,13 @@ function SliceAndDice.prototype:Enable(core)
 	self:SetBottomText1("")
 end
 
-function SliceAndDice.prototype:TargetChanged()
-	SliceAndDice.super.prototype.TargetChanged(self)
-	self:UpdateDurationBar()
-	self:UpdateSliceAndDice()
-end
-
 function SliceAndDice.prototype:Disable(core)
 	SliceAndDice.super.prototype.Disable(self, core)
+end
+
+function SliceAndDice.prototype:ComboPointsChanged()
+	self:TargetChanged()
+	self:UpdateDurationBar()
 end
 
 -- OVERRIDE
@@ -90,6 +89,7 @@ function SliceAndDice.prototype:GetDefaultSettings()
 	settings["lowerTextVisible"] = false
 	settings["hideAnimationSettings"] = true
 	settings["bAllowExpand"] = true
+	settings["bShowWithNoTarget"] = true
 
 	return settings
 end
@@ -135,6 +135,23 @@ function SliceAndDice.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end
+	}
+
+	opts["bShowWithNoTarget"] =
+	{
+		type = 'toggle',
+		name = L["Show with no target"],
+		desc = L["Whether or not to display when you have no target selected but have combo points available"],
+		get = function()
+			return self.moduleSettings.bShowWithNoTarget
+		end,
+		set = function(info, v)
+			self.moduleSettings.bShowWithNoTarget = v
+			self:ComboPointsChanged()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
 	}
 
 	return opts
@@ -212,8 +229,18 @@ function SliceAndDice.prototype:MyOnUpdate()
 	if self.bUpdateSnd then
 		self:UpdateSliceAndDice(nil, self.unit, true)
 	end
-	if self.target then
+	if self.target or self.moduleSettings.bShowWithNoTarget then
 		self:UpdateDurationBar()
+	end
+end
+
+local function SNDGetComboPoints(unit)
+	if IceHUD.WowVer >= 60000 then
+		return UnitPower(unit, 4)
+	elseif IceHUD.WowVer >= 30000 then
+		return GetComboPoints(unit, "target")
+	else
+		return GetComboPoints()
 	end
 end
 
@@ -249,7 +276,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
 	else
 		self:UpdateBar(0, "SliceAndDice")
 
-		if ((IceHUD.WowVer >= 30000 and GetComboPoints(self.unit, "target") == 0) or (IceHUD.WowVer < 30000 and GetComboPoints() == 0)) or not UnitExists("target") then
+		if SNDGetComboPoints(self.unit) == 0 or (not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget) then
 			if self.bIsVisible then
 				self.bUpdateSnd = nil
 			end
@@ -267,18 +294,24 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
 	end
 end
 
+function SliceAndDice.prototype:TargetChanged()
+	if self.moduleSettings.bShowWithNoTarget and SNDGetComboPoints(self.unit) > 0 then
+		self.target = true
+	else
+		self.target = UnitExists("target")
+	end
+	self:Update(self.unit)
+
+	self:UpdateDurationBar()
+	self:UpdateSliceAndDice()
+end
+
 function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 	if unit and unit ~= self.unit then
 		return
 	end
 
-	local points
-	if IceHUD.WowVer >= 30000 then
-		points = GetComboPoints(self.unit, "target")
-	else
-		points = GetComboPoints("target")
-	end
-	local scale
+	local points = SNDGetComboPoints(self.unit)
 
 	-- first, set the cached upper limit of SnD duration
 	CurrMaxSnDDuration = self:GetMaxBuffTime(maxComboPoints)
@@ -295,7 +328,7 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 	self.durationFrame:Show()
 
 	-- if we have combo points and a target selected, go ahead and show the bar so the duration bar can be seen
-	if points > 0 and UnitExists("target") then
+	if points > 0 and (UnitExists("target") or self.moduleSettings.bShowWithNoTarget) then
 		self:Show(true)
 	end
 
@@ -303,7 +336,7 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 		PotentialSnDDuration = self:GetMaxBuffTime(points)
 
 		-- compute the scale from the current number of combo points
-		scale = IceHUD:Clamp(PotentialSnDDuration / CurrMaxSnDDuration, 0, 1)
+		local scale = IceHUD:Clamp(PotentialSnDDuration / CurrMaxSnDDuration, 0, 1)
 
 		-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
 		if (self.moduleSettings.reverse) then

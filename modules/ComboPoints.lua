@@ -185,6 +185,23 @@ function ComboPoints.prototype:GetOptions()
 		order = 34
 	}
 
+	opts["bShowWithNoTarget"] =
+	{
+		type = 'toggle',
+		name = L["Show with no target"],
+		desc = L["Whether or not to display when you have no target selected but have combo points available"],
+		get = function()
+			return self.moduleSettings.bShowWithNoTarget
+		end,
+		set = function(info, v)
+			self.moduleSettings.bShowWithNoTarget = v
+			self:UpdateComboPoints()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+	}
+
 	return opts
 end
 
@@ -202,6 +219,7 @@ function ComboPoints.prototype:GetDefaultSettings()
 	defaults["graphicalLayout"] = "Horizontal"
 	defaults["comboGap"] = 0
 	defaults["showAnticipation"] = true
+	defaults["bShowWithNoTarget"] = true
 	return defaults
 end
 
@@ -395,7 +413,12 @@ function ComboPoints.prototype:UpdateComboPoints()
 	elseif IceHUD.WowVer >= 30000 then
 		-- Parnic: apparently some fights have combo points while the player is in a vehicle?
 		local isInVehicle = UnitHasVehicleUI("player")
-		points = GetComboPoints(isInVehicle and "vehicle" or "player", "target")
+		local checkUnit = isInVehicle and "vehicle" or "player"
+		if IceHUD.WowVer >= 60000 then
+			points = UnitPower(checkUnit, 4)
+		else
+			points = GetComboPoints(checkUnit, "target")
+		end
 		_, _, _, anticipate = UnitAura("player", AnticipationAuraName)
 	else
 		points = GetComboPoints("target")
@@ -416,7 +439,7 @@ function ComboPoints.prototype:UpdateComboPoints()
 			pointsText = pointsText.."+"..tostring(anticipate)
 		end
 
-		if points == 0 and anticipate == 0 then
+		if (points == 0 and anticipate == 0) or (not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget) then
 			self.frame.numeric:SetText(nil)
 		else
 			self.frame.numeric:SetText(pointsText)
@@ -425,19 +448,21 @@ function ComboPoints.prototype:UpdateComboPoints()
 		self.frame.numeric:SetText()
 
 		for i = 1, table.getn(self.frame.graphical) do
-			if (points > 0) or (anticipate > 0) then
+			local hideIfNoTarget = not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget
+
+			if ((points > 0) or (anticipate > 0)) and not hideIfNoTarget then
 				self.frame.graphicalBG[i]:Show()
 			else
 				self.frame.graphicalBG[i]:Hide()
 			end
 
-			if (i <= points) then
+			if (i <= points) and not hideIfNoTarget then
 				self.frame.graphical[i]:Show()
 			else
 				self.frame.graphical[i]:Hide()
 			end
 
-			if (i <= anticipate) then
+			if (i <= anticipate) and not hideIfNoTarget then
 				self.frame.graphicalAnt[i]:Show()
 			else
 				self.frame.graphicalAnt[i]:Hide()
