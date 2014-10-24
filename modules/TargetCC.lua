@@ -344,7 +344,7 @@ end
 function TargetCC.prototype:UpdateTargetDebuffs(event, unit, isUpdate)
 	local name, duration, remaining
 
-	if not isUpdate then
+	if not isUpdate or not self.lastUpdateTime then
 		self.debuffName, self.debuffDuration, self.debuffRemaining = self:GetMaxDebuffDuration(self.unit, self.debuffList)
 	else
 		self.debuffRemaining = math.max(0, self.debuffRemaining - (GetTime() - self.lastUpdateTime))
