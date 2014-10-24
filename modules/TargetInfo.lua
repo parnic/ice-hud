@@ -1390,7 +1390,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 				icon = [[Interface\Icons\Spell_Frost_Frost]]
 				duration = 60
 				expirationTime = GetTime() + 59
-				count = 1
+				count = math.random(5)
 			end
 
 			if icon then
