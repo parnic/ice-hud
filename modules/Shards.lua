@@ -195,15 +195,15 @@ function ShardCounter.prototype:GetRuneTexture(rune)
 end
 
 function ShardCounter.prototype:ShowBlizz()
-	ShardBarFrame:Show()
+	WarlockPowerFrame:Show()
 
-	ShardBarFrame:GetScript("OnLoad")(ShardBarFrame)
+	WarlockPowerFrame:GetScript("OnLoad")(WarlockPowerFrame)
 end
 
 function ShardCounter.prototype:HideBlizz()
-	ShardBarFrame:Hide()
+	WarlockPowerFrame:Hide()
 
-	ShardBarFrame:UnregisterAllEvents()
+	WarlockPowerFrame:UnregisterAllEvents()
 end
 
 -- Load us up
