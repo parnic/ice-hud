@@ -771,7 +771,7 @@ end
 function IceClassPowerCounter.prototype:GetGradientColor(curr)
 	local r, g, b = self:GetCustomColor()
 	local mr, mg, mb = self:GetCustomMinColor()
-	local scale = (curr-1)/(self.numRunes-1)
+	local scale = self.numRunes == 1 and 0 or ((curr-1)/(self.numRunes-1))
 
 	if r < mr then
 		r = ((r-mr)*scale) + mr
