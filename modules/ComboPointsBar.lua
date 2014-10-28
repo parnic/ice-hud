@@ -109,10 +109,14 @@ function ComboPointsBar.prototype:UpdateComboPoints()
 		local color = {}
 		self:SetScaledColor(color, (points - 1) / 4.0, self.settings.colors["ComboPointsBarMax"], self.settings.colors["ComboPointsBarMin"])
 		self:UpdateBar(points / 5.0, "undef")
-		self.barFrame.bar:SetVertexColor(color.r, color.g, color.b, 1)
+		self.barFrame.bar:SetVertexColor(color.r, color.g, color.b, self.alpha)
 	end
 
 	self:SetBottomText1(points or "0")
+end
+
+function ComboPointsBar.prototype:Update()
+	self:UpdateComboPoints()
 end
 
 IceHUD.ComboPointsBar = ComboPointsBar:new()
