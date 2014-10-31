@@ -71,7 +71,13 @@ This isn't |cff9999ffIceHUD|r - it's Blizzard's new Spell Alerts they added in 4
 Expand "|cffffdc42Module Settings|r", expand whatever module you want to move (e.g. PlayerHealth, PlayerMana), and adjust the "Side" and "Offset" settings. "Side" controls whether it's on the left or the right and "Offset" controls how far from center it is.
 
 |cff9999ff14. Which module displays Monk Chi power?|r
-This module is called HarmonyPower. Harmony was the original name for Chi back when 5.0 was in beta, so I used Blizzard's name for it while I was developing for Cataclysm. I feel like it's too late to change now that many people are familiar with the Harmony name.]]
+This module is called HarmonyPower. Harmony was the original name for Chi back when 5.0 was in beta, so I used Blizzard's name for it while I was developing for Cataclysm. I feel like it's too late to change now that many people are familiar with the Harmony name.
+
+|cff9999ff15. How do I add commas/periods into big numbers like health?|r
+If you have DogTags enabled, you can open the Text Settings for the module in question and add SeparateDigits() around the tag you're trying to split up. To display Health/MaxHealth with commas, use: [(SeparateDigits(HP):HPColor "/" SeparateDigits(MaxHP):HPColor):Bracket]. To use periods instead of commas, use: [(SeparateDigits(HP, "."):HPColor "/" SeparateDigits(MaxHP, "."):HPColor):Bracket]. Use the /dog help menu to build your own similar tags for Mana, etc.
+
+|cff9999ff16. The countdown timers on buffs and debuffs completely obscure the icon. How do I disable the timer text?|r
+IceHUD is not responsible for this countdown text and cannot control it. The 6.0 patch added an option in the game client to display counts on top of cooldowns. Look at the Action Bars menu under the game's Interface options. You can turn the text on or off there. Mods like OmniCC or CooldownCount will generally give you the same feature but allow you to control when, where, and how the text shows up.]]
 				}
 			}
 		},
