@@ -62,6 +62,10 @@ StaticPopupDialogs["ICEHUD_BUFF_DISMISS_UNAVAILABLE"] =
 
 -- playerinfo buffclick event handle
 function PlayerInfo.prototype:BuffClick(this,event)
+	if not self:AllowMouseBuffInteraction(this) then
+		return
+	end
+
     -- We want to catch the rightbutton click.
     -- We also need to check for combat lockdown. The api won't allow cancelling during combat lockdown.
     if( event == "RightButton" ) and not InCombatLockdown() then
