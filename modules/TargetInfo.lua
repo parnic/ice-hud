@@ -1669,6 +1669,19 @@ function IceTargetInfo.prototype:Update(unit)
 	self:UpdateAlpha()
 end
 
+function IceTargetInfo.prototype:UpdateAlpha()
+	IceTargetInfo.super.prototype.UpdateAlpha(self)
+
+	-- Temp until Blizzard fixes their cooldown wipes. http://www.wowinterface.com/forums/showthread.php?t=49950
+	for i = 1, #self.frame["buffFrame"].iconFrames do
+		self.frame["buffFrame"].iconFrames[i].cd:SetSwipeColor(0, 0, 0, self.alpha)
+		self.frame["buffFrame"].iconFrames[i].cd:SetDrawEdge(false)
+	end
+	for i = 1, #self.frame["debuffFrame"].iconFrames do
+		self.frame["debuffFrame"].iconFrames[i].cd:SetSwipeColor(0, 0, 0, self.alpha)
+		self.frame["debuffFrame"].iconFrames[i].cd:SetDrawEdge(false)
+	end
+end
 
 function IceTargetInfo.prototype:OnEnter(frame)
 	if self.moduleSettings.mouseTooltip then
@@ -1685,13 +1698,24 @@ function IceTargetInfo.prototype:OnLeave(frame)
 	self.frame.highLight:Hide()
 end
 
-
-function IceTargetInfo.prototype:BuffOnEnter(this)
+function IceTargetInfo.prototype:AllowMouseBuffInteraction(id)
 	if (not self:IsVisible()) then
-		return
+		return false
 	end
 
-	if not self.unit or not this.id then
+	if not self.unit or not id then
+		return false
+	end
+
+	if self.alpha == 0 then
+		return false
+	end
+
+	return true
+end
+
+function IceTargetInfo.prototype:BuffOnEnter(this)
+	if not self:AllowMouseBuffInteraction(this.id) then
 		return
 	end
 
