@@ -377,7 +377,7 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 	end
 
 	if unit == "main hand weapon" or unit == "off hand weapon" then
-		local hasMainHandEnchant, mainHandExpiration, mainHandCharges, hasOffHandEnchant, offHandExpiration, offHandCharges
+		local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID
 			= GetWeaponEnchantInfo()
 
 		if unit == "main hand weapon" and hasMainHandEnchant then

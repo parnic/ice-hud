@@ -141,7 +141,7 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 		PlayerInfo.super.prototype.UpdateBuffs(self)
 	end
 
-	local hasMainHandEnchant, mainHandExpiration, mainHandCharges, hasOffHandEnchant, offHandExpiration, offHandCharges
+	local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID
 		= GetWeaponEnchantInfo()
 
 	local startingNum = 0
