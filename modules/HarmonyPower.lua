@@ -33,6 +33,8 @@ function HarmonyPower.prototype:Enable(core)
 	HarmonyPower.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_POWER_FREQUENT", "UpdateRunePower")
+
+	self:Redraw()
 end
 
 function HarmonyPower.prototype:UpdateRunePower(event, arg1, arg2)
