@@ -85,6 +85,7 @@ modules\ShadowOrbs.lua
 modules\TargetAbsorb.lua
 modules\PlayerAbsorb.lua
 modules\FocusAbsorb.lua
+modules\Stagger.lua
 
 #@do-not-package@
 IceHUD_Options\Options.lua
