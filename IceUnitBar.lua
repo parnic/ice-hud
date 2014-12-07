@@ -85,7 +85,7 @@ function IceUnitBar.prototype:GetOptions()
 		end,
 		min = 0,
 		max = 1,
-		step = 0.05,
+		step = 0.01,
 		isPercent = true,
 		order = 30.091
 	}
