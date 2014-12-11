@@ -67,6 +67,13 @@ function ShardCounter.prototype:UpdateRunePower(event, arg1, arg2)
 	ShardCounter.super.prototype.UpdateRunePower(self, event, arg1, arg2)
 end
 
+function ShardCounter.prototype:CheckGreenFire()
+	if IsSpellKnown(WARLOCK_GREEN_FIRE) then
+		self:Redraw();
+		self:UnregisterEvent("SPELLS_CHANGED")
+	end
+end
+
 function ShardCounter.prototype:UpdatePowerType(event)
 	if IceHUD.WowVer >= 50000 then
 		CurrentSpec = GetSpecialization()
@@ -121,6 +128,8 @@ function ShardCounter.prototype:UpdatePowerType(event)
 		if not IsPlayerSpell(WARLOCK_BURNING_EMBERS) then
 			self.requiredSpec = -1
 			self:RegisterEvent("SPELLS_CHANGED", "UpdatePowerType")
+		elseif not IsSpellKnown(WARLOCK_GREEN_FIRE) then
+			self:RegisterEvent("SPELLS_CHANGED", "CheckGreenFire")
 		else
 			self:UnregisterEvent("SPELLS_CHANGED", "UpdatePowerType")
 		end
@@ -186,7 +195,11 @@ function ShardCounter.prototype:GetRuneTexture(rune)
 	end
 
 	if CurrentSpec == SPEC_WARLOCK_DESTRUCTION then
-		return "Interface\\PlayerFrame\\Warlock-DestructionUI"
+		if IsSpellKnown(WARLOCK_GREEN_FIRE) then
+			return "Interface\\PlayerFrame\\Warlock-DestructionUI-Green"
+		else
+			return "Interface\\PlayerFrame\\Warlock-DestructionUI"
+		end
 	elseif CurrentSpec == SPEC_WARLOCK_DEMONOLOGY then
 		return "Interface\\PlayerFrame\\Warlock-DemonologyUI"
 	end
