@@ -299,7 +299,6 @@ function StaggerBar.prototype:UpdateTimerFrame(event, unit, fromUpdate)
 end
 
 local _, unitClass = UnitClass("player")
-print(unitClass)
 if unitClass == "MONK" then
 	IceHUD.StaggerBar = StaggerBar:new()
 end
