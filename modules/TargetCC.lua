@@ -48,6 +48,8 @@ local StunCCList = {
 	47481,
     -- Fists of Fury
     113656,
+    -- Fist of Justice
+    105593,
 }
 
 local IncapacitateCCList = {
