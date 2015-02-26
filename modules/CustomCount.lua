@@ -7,7 +7,7 @@ IceCustomCount.prototype.countSize = 20
 IceCustomCount.prototype.lastPoints = 0
 
 local validUnits = {"player", "target", "focus", "pet", "vehicle", "targettarget", "main hand weapon", "off hand weapon"}
-local buffOrDebuff = {"buff", "debuff"}
+local buffOrDebuff = {"buff", "debuff", "charges", "spell count"}
 
 -- Constructor --
 function IceCustomCount.prototype:init()
@@ -90,7 +90,7 @@ function IceCustomCount.prototype:GetOptions()
 			IceHUD:NotifyOptionsChange()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or self.moduleSettings.auraType == "charges" or self.moduleSettings.auraType == "spell count"
 		end,
 		order = 30.4,
 	}
@@ -144,6 +144,7 @@ function IceCustomCount.prototype:GetOptions()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
+				or self.moduleSettings.auraType == "charges" or self.moduleSettings.auraType == "spell count"
 		end,
 		order = 30.7,
 	}
@@ -202,7 +203,7 @@ function IceCustomCount.prototype:GetOptions()
 			self:Redraw()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or self.moduleSettings.auraType == "charges"
 		end,
 		usage = "<the maximum number of valid applications>",
 		order = 30.9,
@@ -360,6 +361,14 @@ function IceCustomCount.prototype:GetCustomMinColor()
 	return self.moduleSettings.countMinColor.r, self.moduleSettings.countMinColor.g, self.moduleSettings.countMinColor.b, self.alpha
 end
 
+function IceCustomCount.prototype:GetMaxCount()
+	if self.moduleSettings.auraType == "charges" then
+		local _, max = GetSpellCharges(self.moduleSettings.auraName)
+		return max or 1
+	else
+		return self.moduleSettings.maxCount
+	end
+end
 
 -- OVERRIDE
 function IceCustomCount.prototype:GetDefaultSettings()
@@ -404,6 +413,7 @@ function IceCustomCount.prototype:Enable(core)
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomCount")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateCustomCount")
 	self:RegisterEvent("PLAYER_DEAD", "UpdateCustomCount")
+	self:RegisterEvent("SPELL_UPDATE_CHARGES", "UpdateCustomCount")
 
 	self.unit = self.moduleSettings.auraTarget or "player"
 
@@ -427,11 +437,11 @@ function IceCustomCount.prototype:CreateFrame()
 
 	self.frame:SetFrameStrata("BACKGROUND")
 	if self.moduleSettings.graphicalLayout == "Horizontal" then
-		self.frame:SetWidth((self.countSize + self.moduleSettings.countGap)*self.moduleSettings.maxCount)
+		self.frame:SetWidth((self.countSize + self.moduleSettings.countGap)*self:GetMaxCount())
 		self.frame:SetHeight(1)
 	else
 		self.frame:SetWidth(1)
-		self.frame:SetHeight((self.countSize + self.moduleSettings.countGap)*self.moduleSettings.maxCount)
+		self.frame:SetHeight((self.countSize + self.moduleSettings.countGap)*self:GetMaxCount())
 	end
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
@@ -458,8 +468,10 @@ function IceCustomCount.prototype:CreateCustomFrame(doTextureUpdate)
 		self.frame.graphical = {}
 	end
 
+	local max = self:GetMaxCount()
+
 	-- create backgrounds
-	for i = 1, self.moduleSettings.maxCount do
+	for i = 1, max do
 		if (not self.frame.graphicalBG[i]) then
 			local frame = CreateFrame("Frame", nil, self.frame)
 			self.frame.graphicalBG[i] = frame
@@ -493,7 +505,7 @@ function IceCustomCount.prototype:CreateCustomFrame(doTextureUpdate)
 	end
 
 	-- create counts
-	for i = 1, self.moduleSettings.maxCount do
+	for i = 1, max do
 		if (not self.frame.graphical[i]) then
 			local frame = CreateFrame("Frame", nil, self.frame)
 			self.frame.graphical[i] = frame
@@ -524,7 +536,7 @@ end
 
 
 function IceCustomCount.prototype:SetCustomColor()
-	for i=1, self.moduleSettings.maxCount do
+	for i=1, self:GetMaxCount() do
 		self.frame.graphicalBG[i].texture:SetVertexColor(self:GetCustomColor())
 
 		local r, g, b = self:GetCustomColor()
@@ -538,7 +550,7 @@ end
 function IceCustomCount.prototype:GetGradientColor(curr)
 	local r, g, b = self:GetCustomColor()
 	local mr, mg, mb = self:GetCustomMinColor()
-	local scale = (curr-1)/(self.moduleSettings.maxCount-1)
+	local scale = (curr-1)/(self:GetMaxCount()-1)
 
 	r = r * scale + mr * (1-scale)
 	g = g * scale + mg * (1-scale)
@@ -557,8 +569,14 @@ function IceCustomCount.prototype:UpdateCustomCount()
 	if IceHUD.IceCore:IsInConfigMode() then
 		points = tonumber(self.moduleSettings.maxCount)
 	else
-		points = IceHUD:GetAuraCount(self.moduleSettings.auraType == "buff" and "HELPFUL" or "HARMFUL",
-			self.unit, self.moduleSettings.auraName, self.moduleSettings.onlyMine, true)
+		if self.moduleSettings.auraType == "charges" then
+			points = GetSpellCharges(self.moduleSettings.auraName) or 0
+		elseif self.moduleSettings.auraType == "spell count" then
+			points = GetSpellCount(self.moduleSettings.auraName) or 0
+		else
+			points = IceHUD:GetAuraCount(self.moduleSettings.auraType == "buff" and "HELPFUL" or "HARMFUL",
+				self.unit, self.moduleSettings.auraName, self.moduleSettings.onlyMine, true)
+		end
 	end
 
 	self.lastPoints = points
