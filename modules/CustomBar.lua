@@ -157,6 +157,7 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["lowerTextColor"] = {r=1, g=1, b=1}
 	settings["upperTextColor"] = {r=1, g=1, b=1}
 	settings["customUnit"] = "player"
+	settings["minCount"] = 0
 
 	return settings
 end
@@ -384,6 +385,24 @@ function IceCustomBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
 		end,
 		order = 30.7,
+	}
+
+	opts["minCount"] = {
+		type = 'input',
+		name = L["Minimum stacks to show"],
+		desc = L["Only show the bar when the number of applications of this buff or debuff exceeds this number"],
+		get = function()
+			return self.moduleSettings.minCount and tostring(self.moduleSettings.minCount) or "0"
+		end,
+		set = function(info, v)
+			self.moduleSettings.minCount = tonumber(v)
+			self:Redraw()
+			self:UpdateCustomBar(self.unit)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 30.71,
 	}
 
 	opts["barColor"] = {
@@ -716,16 +735,15 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 
 	local now = GetTime()
 	local remaining = nil
-	local count = 0
 	local auraIcon = nil
 	local endTime = 0
 
 	if not fromUpdate then
 		if tonumber(self.moduleSettings.buffToTrack) == nil then
-			self.auraDuration, remaining, count, auraIcon, endTime =
+			self.auraDuration, remaining, self.auraBuffCount, auraIcon, endTime =
 				self:GetAuraDuration(self.unit, self.moduleSettings.buffToTrack)
 		else
-			self.auraDuration, remaining, count, auraIcon, endTime =
+			self.auraDuration, remaining, self.auraBuffCount, auraIcon, endTime =
 				self:GetAuraDuration(self.unit, GetSpellInfo(self.moduleSettings.buffToTrack))
 		end
 
@@ -753,7 +771,9 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 		end
 	end
 
-	if self.auraEndTime ~= nil and (self.auraEndTime == 0 or self.auraEndTime >= now) then
+	self.auraBuffCount = self.auraBuffCount or 0
+
+	if self.auraEndTime ~= nil and (self.auraEndTime == 0 or self.auraEndTime >= now) and (not self.moduleSettings.minCount or self.auraBuffCount > self.moduleSettings.minCount) then
 		if not self:ShouldAlwaysSubscribe() and not fromUpdate and not IceHUD.IceCore:IsUpdateSubscribed(self) then
 			if not self.UpdateCustomBarFunc then
 				self.UpdateCustomBarFunc = function() self:UpdateCustomBar(self.unit, true) end
@@ -803,8 +823,6 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 			end
 		end
 		fullString = self.moduleSettings.upperText .. (not self.bIsAura and (" " .. buffString) or "")
-	else
-		self.auraBuffCount = 0
 	end
 
 	if DogTag ~= nil then
