@@ -548,9 +548,10 @@ function IceCustomCount.prototype:SetCustomColor()
 end
 
 function IceCustomCount.prototype:GetGradientColor(curr)
+	local max = self:GetMaxCount()
 	local r, g, b = self:GetCustomColor()
 	local mr, mg, mb = self:GetCustomMinColor()
-	local scale = (curr-1)/(self:GetMaxCount()-1)
+	local scale = max > 1 and ((curr-1)/(max-1)) or 1
 
 	r = r * scale + mr * (1-scale)
 	g = g * scale + mg * (1-scale)
