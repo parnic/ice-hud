@@ -369,7 +369,8 @@ function Runes.prototype:CreateRune(i, type, name)
 		self.frame.graphical[i]:SetPoint("TOPLEFT", 0, -1 * ((runeSwapI-1) * (self.runeSize-5) + (runeSwapI-1) + ((runeSwapI-1) * self.moduleSettings.runeGap)))
 	end
 
-	self.frame.graphical[i].rune:SetTexture(self:GetRuneTexture(name))
+	local runeTex = self:GetRuneTexture(name)
+	self.frame.graphical[i].rune:SetTexture(runeTex)
 	self.frame.graphical[i].rune:SetVertexColor(self:GetColor("Runes"..name))
 	self.frame.graphical[i]:Show()
 
@@ -377,6 +378,8 @@ function Runes.prototype:CreateRune(i, type, name)
 	self.frame.graphical[i].cd:SetFrameLevel(self.frame.graphical[i]:GetFrameLevel()+1)
 	self.frame.graphical[i].cd:ClearAllPoints()
 	self.frame.graphical[i].cd:SetAllPoints(self.frame.graphical[i])
+	self.frame.graphical[i].cd:SetSwipeTexture(runeTex)
+	self.frame.graphical[i].cd:SetDrawEdge(false)
 
 	self.frame.graphical[i].shine:SetTexture("Interface\\ComboFrame\\ComboPoint")
 	self.frame.graphical[i].shine:SetBlendMode("ADD")
