@@ -773,7 +773,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 
 	self.auraBuffCount = self.auraBuffCount or 0
 
-	if self.auraEndTime ~= nil and (self.auraEndTime == 0 or self.auraEndTime >= now) and (not self.moduleSettings.minCount or self.auraBuffCount > self.moduleSettings.minCount) then
+	if self.auraEndTime ~= nil and (self.auraEndTime == 0 or self.auraEndTime >= now) and (not self.moduleSettings.minCount or self.auraBuffCount >= self.moduleSettings.minCount) then
 		if not self:ShouldAlwaysSubscribe() and not fromUpdate and not IceHUD.IceCore:IsUpdateSubscribed(self) then
 			if not self.UpdateCustomBarFunc then
 				self.UpdateCustomBarFunc = function() self:UpdateCustomBar(self.unit, true) end
