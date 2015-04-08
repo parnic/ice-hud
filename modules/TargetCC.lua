@@ -45,11 +45,14 @@ local StunCCList = {
 	-- shockwave
 	46968,
 	-- Gnaw
-	47481,
+	91800,
+	91797,
     -- Fists of Fury
     113656,
     -- Fist of Justice
     105593,
+    -- Remorseless Winter
+    115001,
 }
 
 local IncapacitateCCList = {
@@ -179,7 +182,7 @@ local RootCCList = {
 	-- Venom Web Spray
 	54706,
 	-- Chains of Ice
-	45524,
+	96294,
     -- Disable
     116095,
 }
@@ -228,6 +231,7 @@ function TargetCC.prototype:PopulateSpellList(debuffListVar, ccList, ccName)
 
 		if spellName and spellName ~= "" then
 			debuffListVar[spellName] = ccName
+			debuffListVar[ccList[i]] = ccName
 		end
 	end
 end
@@ -311,7 +315,7 @@ end
 
 function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 	local i = 1
-	local debuff, rank, texture, count, debuffType, duration, endTime, unitCaster = UnitAura(unitName, i, "HARMFUL")
+	local debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
 	local isMine = unitCaster == "player"
 	local result = {nil, nil, nil}
 	local remaining
@@ -319,7 +323,7 @@ function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 	while debuff do
 		remaining = endTime - GetTime()
 
-		if debuffNames[debuff] and (not self.moduleSettings.onlyShowForMyDebuffs or isMine) then
+		if debuffNames[spellId] and (not self.moduleSettings.onlyShowForMyDebuffs or isMine) then
 			if result[0] then
 				if result[2] < remaining then
 					result = {debuff, duration, remaining}
@@ -331,7 +335,7 @@ function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 
 		i = i + 1;
 
-		debuff, rank, texture, count, debuffType, duration, endTime, unitCaster = UnitAura(unitName, i, "HARMFUL")
+		debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
 		isMine = unitCaster == "player"
 	end
 
