@@ -224,9 +224,9 @@ function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
 		return
 	end
 
---	DEFAULT_CHAT_FRAME:AddMessage("Runes.prototype:UpdateRunePower: rune="..rune.." usable="..(usable and "yes" or "no").." GetRuneType(rune)="..GetRuneType(rune));
-
 	local start, duration, usable = GetRuneCooldown(rune)
+
+--	print("Runes.prototype:UpdateRunePower: rune="..rune.." usable="..(usable and "yes" or "no").." GetRuneType(rune)="..GetRuneType(rune));
 
 	if usable then
 		if self.moduleSettings.cooldownMode == "Cooldown" then
@@ -249,12 +249,12 @@ function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
 		end
 	else
 		if self.moduleSettings.cooldownMode == "Cooldown" then
-			self.frame.graphical[rune].cd:SetCooldown(GetRuneCooldown(rune))
+			self.frame.graphical[rune].cd:SetCooldown(start, duration)
 			self.frame.graphical[rune].cd:Show()
 		elseif self.moduleSettings.cooldownMode == "Alpha" then
 			self.frame.graphical[rune]:SetAlpha(0.2)
 	 	elseif self.moduleSettings.cooldownMode == "Both" then
-			self.frame.graphical[rune].cd:SetCooldown(GetRuneCooldown(rune))
+			self.frame.graphical[rune].cd:SetCooldown(start, duration)
 			self.frame.graphical[rune].cd:Show()
 			self.frame.graphical[rune]:SetAlpha(0.2)
 		end
