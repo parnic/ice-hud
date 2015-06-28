@@ -374,7 +374,24 @@ IceHUD is not responsible for this countdown text and cannot control it. The 6.0
 						end
 					end,
 					order = 34,
-				}
+				},
+
+				bHideInBarberShop = {
+					type = 'toggle',
+					name = L["Hide in barbershops"],
+					desc = L["This will hide the entire mod when interacting with a barbershop."],
+					width = 'double',
+					get = function()
+						return IceHUD.IceCore.settings.bHideInBarberShop
+					end,
+					set = function(info, value)
+						IceHUD.IceCore.settings.bHideInBarberShop = value
+						if not value then
+							IceHUD.IceCore.IceHUDFrame:Show()
+						end
+					end,
+					order = 35,
+				},
 			}
 		},
 

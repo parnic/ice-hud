@@ -93,6 +93,7 @@ function IceCore.prototype:SetupDefaults()
 			TextDecoration = "Shadow",
 
 			bHideDuringPetBattles = true,
+			bHideInBarberShop = true,
 		},
 		global = {
 			lastRunVersion = 0,
@@ -244,6 +245,8 @@ function IceCore.prototype:Enable(userToggle)
 
 	self.IceHUDFrame:RegisterEvent("PET_BATTLE_OPENING_START")
 	self.IceHUDFrame:RegisterEvent("PET_BATTLE_OVER")
+	self.IceHUDFrame:RegisterEvent("BARBER_SHOP_OPEN")
+	self.IceHUDFrame:RegisterEvent("BARBER_SHOP_CLOSE")
 	self.IceHUDFrame:SetScript("OnEvent", function(self, event, ...)
 		if (event == "PET_BATTLE_OPENING_START") then
 			if IceHUD.IceCore.settings.bHideDuringPetBattles then
@@ -251,6 +254,14 @@ function IceCore.prototype:Enable(userToggle)
 			end
 		elseif (event == "PET_BATTLE_OVER") then
 			if IceHUD.IceCore.settings.bHideDuringPetBattles then
+				self:Show()
+			end
+		elseif (event == "BARBER_SHOP_OPEN") then
+			if IceHUD.IceCore.settings.bHideInBarberShop then
+				self:Hide()
+			end
+		elseif (event == "BARBER_SHOP_CLOSE") then
+			if IceHUD.IceCore.settings.bHideInBarberShop then
 				self:Show()
 			end
 		end
@@ -489,6 +500,8 @@ function IceCore.prototype:Disable(userToggle)
 
 	self.IceHUDFrame:UnregisterEvent("PET_BATTLE_OPENING_START")
 	self.IceHUDFrame:UnregisterEvent("PET_BATTLE_OVER")
+	self.IceHUDFrame:UnregisterEvent("BARBER_SHOP_OPEN")
+	self.IceHUDFrame:UnregisterEvent("BARBER_SHOP_CLOSE")
 	self.IceHUDFrame:SetScript("OnEvent", nil)
 
 	self.enabled = false
