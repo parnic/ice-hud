@@ -247,7 +247,7 @@ function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
 			}
 			UIFrameFade(self.frame.graphical[rune].shine, fadeInfo);
 		end
-	else if start ~= nil and duration ~= nil then
+	elseif start ~= nil and duration ~= nil then
 		if self.moduleSettings.cooldownMode == "Cooldown" then
 			self.frame.graphical[rune].cd:SetCooldown(start, duration)
 			self.frame.graphical[rune].cd:Show()
