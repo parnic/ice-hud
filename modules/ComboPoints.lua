@@ -3,7 +3,6 @@ local ComboPoints = IceCore_CreateClass(IceElement)
 
 local IceHUD = _G.IceHUD
 
-local AnticipationAuraName = "Anticipation"
 local AnticipationSpellId = 114015
 
 ComboPoints.prototype.comboSize = 20
@@ -419,7 +418,7 @@ function ComboPoints.prototype:UpdateComboPoints()
 		else
 			points = GetComboPoints(checkUnit, "target")
 		end
-		_, _, _, anticipate = UnitAura("player", AnticipationAuraName)
+		_, _, _, anticipate = UnitAura("player", GetSpellInfo(AnticipationSpellId))
 	else
 		points = GetComboPoints("target")
 	end
@@ -476,7 +475,7 @@ do
 
 	function ComboPoints.prototype:CheckAnticipation(e, unit) -- UNIT_AURA handler
 		if UnitIsUnit(unit, "player") then
-			local _, _, _, newAntStacks = UnitAura("player", AnticipationAuraName)
+			local _, _, _, newAntStacks = UnitAura("player", GetSpellInfo(AnticipationSpellId))
 			if newAntStacks ~= antStacks then
 				antStacks = newAntStacks
 				self:UpdateComboPoints()
