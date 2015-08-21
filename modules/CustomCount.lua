@@ -6,9 +6,6 @@ local IceHUD = _G.IceHUD
 IceCustomCount.prototype.countSize = 20
 IceCustomCount.prototype.lastPoints = 0
 
-local validUnits = {"player", "target", "focus", "pet", "vehicle", "targettarget", "main hand weapon", "off hand weapon"}
-local buffOrDebuff = {"buff", "debuff", "charges", "spell count"}
-
 -- Constructor --
 function IceCustomCount.prototype:init()
 	IceCustomCount.super.prototype.init(self, "CustomCount")
@@ -21,11 +18,9 @@ end
 function IceCustomCount.prototype:GetOptions()
 	local opts = IceCustomCount.super.prototype.GetOptions(self)
 
-	opts["customHeader"] = {
-		type = 'header',
-		name = L["Aura settings"],
-		order = 30.1,
-	}
+	for k,v in pairs(IceStackCounter_GetOptions(self)) do
+		opts[k] = v
+	end
 
 	opts["deleteme"] = {
 		type = 'execute',
@@ -75,80 +70,6 @@ function IceCustomCount.prototype:GetOptions()
 		order = 30.3,
 	}
 
-	opts["auraTarget"] = {
-		type = 'select',
-		values = validUnits,
-		name = L["Unit to track"],
-		desc = L["Select which unit that this bar should be looking for buffs/debuffs on"],
-		get = function(info)
-			return IceHUD:GetSelectValue(info, self.moduleSettings.auraTarget)
-		end,
-		set = function(info, v)
-			self.moduleSettings.auraTarget = info.option.values[v]
-			self.unit = info.option.values[v]
-			self:Redraw()
-			IceHUD:NotifyOptionsChange()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or self.moduleSettings.auraType == "charges" or self.moduleSettings.auraType == "spell count"
-		end,
-		order = 30.4,
-	}
-
-	opts["auraType"] = {
-		type = 'select',
-		values = buffOrDebuff,
-		name = L["Buff or debuff?"],
-		desc = L["Whether we are tracking a buff or debuff"],
-		get = function(info)
-			return IceHUD:GetSelectValue(info, self.moduleSettings.auraType)
-		end,
-		set = function(info, v)
-			self.moduleSettings.auraType = info.option.values[v]
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
-		end,
-		order = 30.5,
-	}
-
-	opts["auraName"] = {
-		type = 'input',
-		name = L["Aura to track"],
-		desc = L["Which buff/debuff this counter will be tracking. \n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
-		get = function()
-			return self.moduleSettings.auraName
-		end,
-		set = function(info, v)
-			self.moduleSettings.auraName = v
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
-		end,
-		usage = "<which aura to track>",
-		order = 30.6,
-	}
-
-	opts["trackOnlyMine"] = {
-		type = 'toggle',
-		name = L["Only track auras by me"],
-		desc = L["Checking this means that only buffs or debuffs that the player applied will trigger this bar"],
-		get = function()
-			return self.moduleSettings.onlyMine
-		end,
-		set = function(info, v)
-			self.moduleSettings.onlyMine = v
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or self.unit == "main hand weapon" or self.unit == "off hand weapon"
-				or self.moduleSettings.auraType == "charges" or self.moduleSettings.auraType == "spell count"
-		end,
-		order = 30.7,
-	}
-
 	opts["countColor"] = {
 		type = 'color',
 		name = L["Count color"],
@@ -185,28 +106,6 @@ function IceCustomCount.prototype:GetOptions()
 			return not self.moduleSettings.enabled or not self.moduleSettings.gradient
 		end,
 		order = 30.81,
-	}
-
-	opts["maxCount"] = {
-		type = 'input',
-		name = L["Maximum applications"],
-		desc = L["How many total applications of this buff/debuff can be applied. For example, only 5 sunders can ever be on a target, so this would be set to 5 for tracking Sunder.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
-		get = function()
-			return tostring(self.moduleSettings.maxCount)
-		end,
-		set = function(info, v)
-			if not v or not tonumber(v) or tonumber(v) <= 0 then
-				v = 5
-			end
-			self.moduleSettings.maxCount = tonumber(v)
-			self:CreateCustomFrame(true)
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or self.moduleSettings.auraType == "charges"
-		end,
-		usage = "<the maximum number of valid applications>",
-		order = 30.9,
 	}
 
 	opts["normalHeader"] = {
@@ -361,18 +260,13 @@ function IceCustomCount.prototype:GetCustomMinColor()
 	return self.moduleSettings.countMinColor.r, self.moduleSettings.countMinColor.g, self.moduleSettings.countMinColor.b, self.alpha
 end
 
-function IceCustomCount.prototype:GetMaxCount()
-	if self.moduleSettings.auraType == "charges" then
-		local _, max = GetSpellCharges(self.moduleSettings.auraName)
-		return max or 1
-	else
-		return self.moduleSettings.maxCount
-	end
-end
-
--- OVERRIDE
 function IceCustomCount.prototype:GetDefaultSettings()
 	local defaults =  IceCustomCount.super.prototype.GetDefaultSettings(self)
+
+	for k,v in pairs(IceStackCounter_GetDefaultSettings(self)) do
+		defaults[k] = v
+	end
+
 	defaults["vpos"] = 0
 	defaults["hpos"] = 0
 	defaults["countFontSize"] = 20
@@ -382,14 +276,10 @@ function IceCustomCount.prototype:GetDefaultSettings()
 	defaults["alwaysFullAlpha"] = true
 	defaults["graphicalLayout"] = "Horizontal"
 	defaults["countGap"] = 0
-	defaults["maxCount"] = 5
-	defaults["auraTarget"] = "player"
-	defaults["auraName"] = ""
-	defaults["onlyMine"] = true
 	defaults["customBarType"] = "Counter"
 	defaults["countMinColor"] = {r=1, g=1, b=0, a=1}
 	defaults["countColor"] = {r=1, g=0, b=0, a=1}
-	defaults["auraType"] = "buff"
+
 	return defaults
 end
 
@@ -407,23 +297,8 @@ end
 function IceCustomCount.prototype:Enable(core)
 	IceCustomCount.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("UNIT_AURA", "UpdateCustomCount")
-	self:RegisterEvent("UNIT_PET", "UpdateCustomCount")
-	self:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomCount")
-	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomCount")
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateCustomCount")
-	self:RegisterEvent("PLAYER_DEAD", "UpdateCustomCount")
-	self:RegisterEvent("SPELL_UPDATE_CHARGES", "UpdateCustomCount")
-
-	self.unit = self.moduleSettings.auraTarget or "player"
-
-	if not tonumber(self.moduleSettings.maxCount) or tonumber(self.moduleSettings.maxCount) <= 0 then
-		self.moduleSettings.maxCount = 5
-		self:CreateCustomFrame(true)
-		self:Redraw()
-	else
-		self:CreateCustomFrame(true)
-	end
+	self:CreateCustomFrame(true)
+	IceStackCounter_Enable(self)
 	self:UpdateCustomCount()
 end
 
@@ -437,11 +312,11 @@ function IceCustomCount.prototype:CreateFrame()
 
 	self.frame:SetFrameStrata("BACKGROUND")
 	if self.moduleSettings.graphicalLayout == "Horizontal" then
-		self.frame:SetWidth((self.countSize + self.moduleSettings.countGap)*self:GetMaxCount())
+		self.frame:SetWidth((self.countSize + self.moduleSettings.countGap)*IceStackCounter_GetMaxCount(self))
 		self.frame:SetHeight(1)
 	else
 		self.frame:SetWidth(1)
-		self.frame:SetHeight((self.countSize + self.moduleSettings.countGap)*self:GetMaxCount())
+		self.frame:SetHeight((self.countSize + self.moduleSettings.countGap)*IceStackCounter_GetMaxCount(self))
 	end
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
@@ -468,7 +343,7 @@ function IceCustomCount.prototype:CreateCustomFrame(doTextureUpdate)
 		self.frame.graphical = {}
 	end
 
-	local max = self:GetMaxCount()
+	local max = IceStackCounter_GetMaxCount(self)
 
 	-- create backgrounds
 	for i = 1, max do
@@ -536,7 +411,7 @@ end
 
 
 function IceCustomCount.prototype:SetCustomColor()
-	for i=1, self:GetMaxCount() do
+	for i=1, IceStackCounter_GetMaxCount(self) do
 		self.frame.graphicalBG[i].texture:SetVertexColor(self:GetCustomColor())
 
 		local r, g, b = self:GetCustomColor()
@@ -548,7 +423,7 @@ function IceCustomCount.prototype:SetCustomColor()
 end
 
 function IceCustomCount.prototype:GetGradientColor(curr)
-	local max = self:GetMaxCount()
+	local max = IceStackCounter_GetMaxCount(self)
 	local r, g, b = self:GetCustomColor()
 	local mr, mg, mb = self:GetCustomMinColor()
 	local scale = max > 1 and ((curr-1)/(max-1)) or 1
@@ -566,25 +441,7 @@ function IceCustomCount.prototype:UpdateCustomCount()
 		return
 	end
 
-	local points
-	if IceHUD.IceCore:IsInConfigMode() then
-		points = tonumber(self.moduleSettings.maxCount)
-	else
-		if self.moduleSettings.auraType == "charges" then
-			points = GetSpellCharges(self.moduleSettings.auraName) or 0
-		elseif self.moduleSettings.auraType == "spell count" then
-			points = GetSpellCount(self.moduleSettings.auraName) or 0
-		else
-			points = IceHUD:GetAuraCount(self.moduleSettings.auraType == "buff" and "HELPFUL" or "HARMFUL",
-				self.unit, self.moduleSettings.auraName, self.moduleSettings.onlyMine, true)
-		end
-	end
-
-	self.lastPoints = points
-
-	if (points == 0) then
-		points = nil
-	end
+	local points = IceStackCounter_GetCount(self)
 
 	if (self.moduleSettings.countMode == "Numeric") then
 		local r, g, b = self:GetCustomColor()
@@ -616,5 +473,5 @@ function IceCustomCount.prototype:UpdateCustomCount()
 end
 
 function IceCustomCount.prototype:UseTargetAlpha(scale)
-	return self.lastPoints ~= nil and self.lastPoints > 0
+	return IceStackCounter_UseTargetAlpha(self)
 end

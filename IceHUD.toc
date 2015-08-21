@@ -26,6 +26,7 @@ IceElement.lua
 IceBarElement.lua
 IceUnitBar.lua
 IceCastBar.lua
+IceStackCounter.lua
 
 # IceHUD modules
 # - Feel free to comment these out if you like
