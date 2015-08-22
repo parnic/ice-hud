@@ -99,7 +99,6 @@ function IceStackCounter_GetOptions(frame)
 				v = 5
 			end
 			frame.moduleSettings.maxCount = tonumber(v)
-			frame:CreateCustomFrame(true)
 			frame:Redraw()
 		end,
 		disabled = function()

@@ -183,7 +183,6 @@ function IceCustomCount.prototype:GetOptions()
 		end,
 		set = function(info, v)
 			self.moduleSettings.countMode = info.option.values[v]
-			self:CreateCustomFrame(true)
 			self:Redraw()
 			IceHUD:NotifyOptionsChange()
 		end,
@@ -289,6 +288,7 @@ function IceCustomCount.prototype:Redraw()
 	IceCustomCount.super.prototype.Redraw(self)
 
 	self:CreateFrame()
+	self:CreateCustomFrame(true)
 	self:UpdateCustomCount()
 end
 
