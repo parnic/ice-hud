@@ -130,6 +130,8 @@ function IceElement.prototype:GetBarTypeDescription(barType)
 		retval = L["(De)Buff watcher"]
 	elseif barType == "Counter" then
 		retval = L["Counter"]
+	elseif barType == "CounterBar" then
+		retval = L["CounterBar"]
 	elseif barType == "Health" then
 		retval = HEALTH
 	elseif barType == "Mana" then

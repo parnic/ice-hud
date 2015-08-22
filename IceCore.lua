@@ -203,31 +203,25 @@ function IceCore.prototype:Enable(userToggle)
 	end
 
 	for k,v in pairs(self.settings.modules) do
+		local newModule
+
 		if self.settings.modules[k].customBarType == "Bar" and IceCustomBar ~= nil then
-			local newBar
-			newBar = IceCustomBar:new()
-			newBar.elementName = k
-			self:AddNewDynamicModule(newBar, true)
+			newModule = IceCustomBar:new()
 		elseif self.settings.modules[k].customBarType == "Counter" and IceCustomCount ~= nil then
-			local newCounter
-			newCounter = IceCustomCount:new()
-			newCounter.elementName = k
-			self:AddNewDynamicModule(newCounter, true)
+			newModule = IceCustomCount:new()
+		elseif self.settings.modules[k].customBarType == "CounterBar" and IceCustomCounterBar ~= nil then
+			newModule = IceCustomCounterBar:new()
 		elseif self.settings.modules[k].customBarType == "CD" and IceCustomCDBar ~= nil then
-			local newCD
-			newCD = IceCustomCDBar:new()
-			newCD.elementName = k
-			self:AddNewDynamicModule(newCD, true)
+			newModule = IceCustomCDBar:new()
 		elseif self.settings.modules[k].customBarType == "Health" and IceCustomHealth ~= nil then
-			local newHealth
-			newHealth = IceCustomHealth:new()
-			newHealth.elementName = k
-			self:AddNewDynamicModule(newHealth, true)
+			newModule = IceCustomHealth:new()
 		elseif self.settings.modules[k].customBarType == "Mana" and IceCustomMana ~= nil then
-			local newMana
-			newMana = IceCustomMana:new()
-			newMana.elementName = k
-			self:AddNewDynamicModule(newMana, true)
+			newModule = IceCustomMana:new()
+		end
+
+		if newModule ~= nil then
+			newModule.elementName = k
+			self:AddNewDynamicModule(newModule, true)
 		end
 	end
 

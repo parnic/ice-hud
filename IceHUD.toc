@@ -60,6 +60,7 @@ modules\FocusThreat.lua
 modules\RangeCheck.lua
 modules\CustomBar.lua
 modules\CustomCount.lua
+modules\CustomCounterBar.lua
 # - make sure PlayerInfo loads after TargetInfo since it inherits
 modules\PlayerInfo.lua
 modules\PetInfo.lua

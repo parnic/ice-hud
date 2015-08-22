@@ -20,7 +20,7 @@ IceHUD.WowVer = select(4, GetBuildInfo())
 
 IceHUD.validBarList = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc",
 	"BloodGlaives", "ArcHUD", "FangRune", "DHUD", "CleanCurvesOut", "CleanTank", "PillTank", "GemTank" }
-IceHUD.validCustomModules = {Bar="Buff/Debuff watcher", Counter="Buff/Debuff stack counter", CD="Cooldown bar", Health="Health bar", Mana="Mana bar"}
+IceHUD.validCustomModules = {Bar="Buff/Debuff watcher", Counter="Buff/Debuff stack counter", CD="Cooldown bar", Health="Health bar", Mana="Mana bar", CounterBar="Stack count bar"}
 
 --@debug@
 IceHUD.optionsLoaded = true
@@ -66,6 +66,21 @@ StaticPopupDialogs["ICEHUD_CUSTOM_BAR_CREATED"] =
 StaticPopupDialogs["ICEHUD_CUSTOM_COUNTER_CREATED"] =
 {
 	text = L["A custom counter has been created and can be configured through Module Settings => MyCustomCounter. It is highly recommended that you change the bar name of this module so that it's easier to identify."],
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 0,
+	OnShow = function(self)
+		self:SetFrameStrata("TOOLTIP")
+	end,
+	OnHide = function(self)
+		self:SetFrameStrata("DIALOG")
+	end,
+}
+
+StaticPopupDialogs["ICEHUD_CUSTOM_COUNTER_BAR_CREATED"] =
+{
+	text = L["A custom counter bar has been created and can be configured through Module Settings => MyCustomCounterBar. It is highly recommended that you change the bar name of this module so that it's easier to identify."],
 	button1 = OKAY,
 	timeout = 0,
 	whileDead = 1,
@@ -536,6 +551,9 @@ function IceHUD:CreateCustomModuleAndNotify(moduleKey, settings)
 	elseif moduleKey == "Counter" then -- custom counter
 		newMod = IceCustomCount:new()
 		popupMsg = "ICEHUD_CUSTOM_COUNTER_CREATED"
+	elseif moduleKey == "CounterBar" then -- custom counter bar
+		newMod = IceCustomCounterBar:new()
+		popupMsg = "ICEHUD_CUSTOM_COUNTER_BAR_CREATED"
 	elseif moduleKey == "CD" then -- cooldown bar
 		newMod = IceCustomCDBar:new()
 		popupMsg = "ICEHUD_CUSTOM_CD_CREATED"
