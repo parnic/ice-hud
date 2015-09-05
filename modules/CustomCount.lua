@@ -17,10 +17,7 @@ end
 -- OVERRIDE
 function IceCustomCount.prototype:GetOptions()
 	local opts = IceCustomCount.super.prototype.GetOptions(self)
-
-	for k,v in pairs(IceStackCounter_GetOptions(self)) do
-		opts[k] = v
-	end
+	IceStackCounter_GetOptions(self, opts)
 
 	opts["deleteme"] = {
 		type = 'execute',
@@ -261,10 +258,7 @@ end
 
 function IceCustomCount.prototype:GetDefaultSettings()
 	local defaults =  IceCustomCount.super.prototype.GetDefaultSettings(self)
-
-	for k,v in pairs(IceStackCounter_GetDefaultSettings(self)) do
-		defaults[k] = v
-	end
+	IceStackCounter_GetDefaultSettings(defaults)
 
 	defaults["vpos"] = 0
 	defaults["hpos"] = 0

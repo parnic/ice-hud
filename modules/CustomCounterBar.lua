@@ -15,10 +15,7 @@ end
 
 function IceCustomCounterBar.prototype:GetOptions()
 	local opts = IceCustomCounterBar.super.prototype.GetOptions(self)
-
-	for k,v in pairs(IceStackCounter_GetOptions(self)) do
-		opts[k] = v
-	end
+	IceStackCounter_GetOptions(self, opts)
 
 	opts["deleteme"] = {
 		type = 'execute',
@@ -216,11 +213,8 @@ function IceCustomCounterBar.prototype:GetOptions()
 end
 
 function IceCustomCounterBar.prototype:GetDefaultSettings()
-	local defaults =  IceCustomCounterBar.super.prototype.GetDefaultSettings(self)
-
-	for k,v in pairs(IceStackCounter_GetDefaultSettings(self)) do
-		defaults[k] = v
-	end
+	local defaults = IceCustomCounterBar.super.prototype.GetDefaultSettings(self)
+	IceStackCounter_GetDefaultSettings(defaults)
 
 	defaults.textVisible['lower'] = false
 	defaults.offset = 9

@@ -4,9 +4,7 @@ local validUnits = {"player", "target", "focus", "pet", "vehicle", "targettarget
 local buffOrDebuff = {"buff", "debuff", "charges", "spell count"}
 
 -- OVERRIDE
-function IceStackCounter_GetOptions(frame)
-	local opts = {}
-
+function IceStackCounter_GetOptions(frame, opts)
 	opts["customHeader"] = {
 		type = 'header',
 		name = L["Aura settings"],
@@ -107,8 +105,6 @@ function IceStackCounter_GetOptions(frame)
 		usage = "<the maximum number of valid applications>",
 		order = 30.9,
 	}
-
-	return opts
 end
 
 function IceStackCounter_GetMaxCount(frame)
@@ -120,14 +116,12 @@ function IceStackCounter_GetMaxCount(frame)
 	end
 end
 
-function IceStackCounter_GetDefaultSettings()
-	local defaults = {}
+function IceStackCounter_GetDefaultSettings(defaults)
 	defaults["maxCount"] = 5
 	defaults["auraTarget"] = "player"
 	defaults["auraName"] = ""
 	defaults["onlyMine"] = true
 	defaults["auraType"] = "buff"
-	return defaults
 end
 
 
