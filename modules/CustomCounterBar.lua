@@ -3,6 +3,10 @@ IceCustomCounterBar = IceCore_CreateClass(IceBarElement)
 
 IceCustomCounterBar.prototype.currColor = {}
 
+local AuraIconWidth = 20
+local AuraIconHeight = 20
+local DefaultAuraIcon = "Interface\\Icons\\Spell_Frost_Frost"
+
 function IceCustomCounterBar.prototype:init()
 	IceCustomCounterBar.super.prototype.init(self, "CustomCounterBar")
 
@@ -119,6 +123,95 @@ function IceCustomCounterBar.prototype:GetOptions()
 		order = 29.97
 	}
 
+	opts["iconSettings"] = {
+		type = 'group',
+		name = "|c"..self.configColor..L["Icon Settings"].."|r",
+		args = {
+			displayAuraIcon = {
+				type = 'toggle',
+				name = L["Display aura icon"],
+				desc = L["Whether or not to display an icon for the aura that this bar is tracking"],
+				get = function()
+					return self.moduleSettings.displayAuraIcon
+				end,
+				set = function(info, v)
+					self.moduleSettings.displayAuraIcon = v
+					if self.barFrame.icon then
+						if v then
+							self.barFrame.icon:Show()
+						else
+							self.barFrame.icon:Hide()
+						end
+					end
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				order = 40.1,
+			},
+
+			auraIconXOffset = {
+				type = 'range',
+				min = -250,
+				max = 250,
+				step = 1,
+				name = L["Aura icon horizontal offset"],
+				desc = L["Adjust the horizontal position of the aura icon"],
+				get = function()
+					return self.moduleSettings.auraIconXOffset
+				end,
+				set = function(info, v)
+					self.moduleSettings.auraIconXOffset = v
+					self:PositionIcons()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+				end,
+				order = 40.2,
+			},
+
+			auraIconYOffset = {
+				type = 'range',
+				min = -250,
+				max = 250,
+				step = 1,
+				name = L["Aura icon vertical offset"],
+				desc = L["Adjust the vertical position of the aura icon"],
+				get = function()
+					return self.moduleSettings.auraIconYOffset
+				end,
+				set = function(info, v)
+					self.moduleSettings.auraIconYOffset = v
+					self:PositionIcons()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+				end,
+				order = 40.3,
+			},
+
+			auraIconScale = {
+				type = 'range',
+				min = 0.1,
+				max = 3.0,
+				step = 0.05,
+				name = L["Aura icon scale"],
+				desc = L["Adjusts the size of the aura icon for this bar"],
+				get = function()
+					return self.moduleSettings.auraIconScale
+				end,
+				set = function(info, v)
+					self.moduleSettings.auraIconScale = v
+					self:PositionIcons()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled or not self.moduleSettings.displayAuraIcon
+				end,
+				order = 40.4,
+			},
+		},
+	}
+
 	return opts
 end
 
@@ -137,6 +230,10 @@ function IceCustomCounterBar.prototype:GetDefaultSettings()
 	defaults.countColor = {r=1, g=0, b=0, a=1}
 	defaults.gradient = false
 	defaults.usesDogTagStrings = false
+	defaults.displayAuraIcon = false
+	defaults.auraIconXOffset = 40
+	defaults.auraIconYOffset = 0
+	defaults.auraIconScale = 1
 
 	return defaults
 end
@@ -144,19 +241,77 @@ end
 function IceCustomCounterBar.prototype:Enable(core)
 	IceCustomCounterBar.super.prototype.Enable(self, core)
 
+	if self.moduleSettings.auraIconScale == nil then
+		self.moduleSettings.auraIconScale = 1
+	end
+	if self.moduleSettings.auraIconXOffset == nil then
+		self.moduleSettings.auraIconXOffset = 40
+	end
+	if self.moduleSettings.auraIconYOffset == nil then
+		self.moduleSettings.auraIconYOffset = 0
+	end
+
+	self:UpdateAuraIcon()
+
 	IceStackCounter_Enable(self)
 end
 
 function IceCustomCounterBar.prototype:Redraw()
 	IceCustomCounterBar.super.prototype.Redraw(self)
 
+	self:UpdateAuraIcon()
 	self:UpdateCustomCount()
+end
+
+function IceCustomCounterBar.prototype:PositionIcons()
+	if not self.barFrame or not self.barFrame.icon then
+		return
+	end
+
+	self.barFrame.icon:ClearAllPoints()
+	self.barFrame.icon:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self.moduleSettings.auraIconXOffset, self.moduleSettings.auraIconYOffset)
+	self.barFrame.icon:SetWidth(AuraIconWidth * (self.moduleSettings.auraIconScale or 1))
+	self.barFrame.icon:SetHeight(AuraIconHeight * (self.moduleSettings.auraIconScale or 1))
 end
 
 function IceCustomCounterBar.prototype:CreateFrame()
 	IceCustomCounterBar.super.prototype.CreateFrame(self)
 
+	if not self.barFrame.icon then
+		self.barFrame.icon = self.masterFrame:CreateTexture(nil, "LOW")
+		self.barFrame.icon:SetTexture(DefaultAuraIcon)
+		self.barFrame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+		self.barFrame.icon:SetDrawLayer("OVERLAY")
+		self.barFrame.icon:Hide()
+	end
+	self:PositionIcons()
+
 	self:UpdateCustomCount()
+end
+
+function IceCustomCounterBar.prototype:Show(bShouldShow)
+	IceCustomCounterBar.super.prototype.Show(self, bShouldShow)
+
+	if self.moduleSettings.displayAuraIcon then
+		self.barFrame.icon:Show()
+	else
+		self.barFrame.icon:Hide()
+	end
+end
+
+function IceCustomCounterBar.prototype:UpdateAuraIcon()
+	if not self.barFrame or not self.barFrame.icon then
+		return
+	end
+
+	local auraIcon, _
+	_, _, auraIcon = GetSpellInfo(self.moduleSettings.auraName)
+
+	if auraIcon == nil then
+		auraIcon = "Interface\\Icons\\Spell_Frost_Frost"
+	end
+
+	self.barFrame.icon:SetTexture(auraIcon)
 end
 
 function IceCustomCounterBar.prototype:UpdateCustomCount()
@@ -167,6 +322,7 @@ function IceCustomCounterBar.prototype:UpdateCustomCount()
 	if IceHUD.IceCore:IsInConfigMode() then
 		points = IceStackCounter_GetMaxCount(self)
 		percent = 1
+		self.barFrame.icon:Show()
 	end
 
 	if points == nil or points == 0 then
