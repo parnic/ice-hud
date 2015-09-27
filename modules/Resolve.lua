@@ -49,19 +49,7 @@ end
 
 -- scan the tooltip and extract the Resolve value
 do
-	-- making these local as they're not used anywhere else
-	local regions = {}
 	local spellName = GetSpellInfo(RESOLVE_SPELL_ID)
-	local tooltipBuffer = CreateFrame("GameTooltip","tooltipBuffer",nil,"GameTooltipTemplate")
-	tooltipBuffer:SetOwner(WorldFrame, "ANCHOR_NONE")
-
-	-- suggested by Antiarc as a way to repopulate the same table instead of repeatedly creating a new one
-	local function makeTable(t, ...)
-		wipe(t)
-		for i = 1, select("#", ...) do
-			t[i] = select(i, ...)
-		end
-	end
 
 	function Resolve.prototype:UpdateCurrent(event, unit)
 		if (unit and (unit ~= self.unit)) then
