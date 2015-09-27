@@ -1,7 +1,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local Resolve = IceCore_CreateClass(IceUnitBar)
 
-local RESOLVE_SPELL_ID = 158298
+local RESOLVE_SPELL_ID = 158300
 local RESOLVE_MAX = 240
 
 Resolve.prototype.current = nil
@@ -68,26 +68,7 @@ do
 			return
 		end
 
-		local name = UnitAura(self.unit, spellName)
-		if name then
-			-- Buff found, copy it into the buffer for scanning
-			tooltipBuffer:ClearLines()
-			tooltipBuffer:SetUnitBuff(self.unit, name)
-
-			-- Grab all regions, stuff em into our table
-			makeTable(regions, tooltipBuffer:GetRegions())
-
-			-- Convert FontStrings to strings, replace anything else with ""
-			for i=1, #regions do
-				local region = regions[i]
-				regions[i] = region:GetObjectType() == "FontString" and region:GetText() or ""
-			end
-
-			-- Find the number, save it
-			self.current = tonumber(string.match(table.concat(regions),"%d+")) or 0
-		else
-			self.current = 0
-		end
+		self.current = select(15, UnitAura(self.unit, spellName)) or 0
 
 		self:Update()
 	end
