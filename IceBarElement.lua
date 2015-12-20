@@ -1140,7 +1140,7 @@ function IceBarElement.prototype:Flip(side)
 end
 
 -- Rokiyo: bar is the only required argument, scale & top are optional
-function IceBarElement.prototype:SetBarCoord(barFrame, scale, top)
+function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideReverse)
 	if not scale then scale = 0 end
 	scale = IceHUD:Clamp(scale, 0, 1)
 
@@ -1150,7 +1150,12 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top)
 		local min_y, max_y
 		local offset_y = 0
 
-		if IceHUD:xor(self.moduleSettings.reverse, top) then
+		local reverse = self.moduleSettings.reverse
+		if overrideReverse then
+			reverse = false
+		end
+
+		if IceHUD:xor(reverse, top) then
 			if self.moduleSettings.inverse == "INVERSE" then
 				min_y = 1 - scale
 				max_y = 1

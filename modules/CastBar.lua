@@ -3,7 +3,6 @@ local CastBar = IceCore_CreateClass(IceCastBar)
 
 local IceHUD = _G.IceHUD
 
-CastBar.prototype.lagBar = nil
 CastBar.prototype.spellCastSent = nil
 
 
@@ -374,14 +373,13 @@ end
 
 function CastBar.prototype:CreateLagBar()
 	self.lagBar = self:BarFactory(self.lagBar, "LOW","BACKGROUND")
-	self:SetBarCoord(self.lagBar, 0 , true)
 
 	local r, g, b = self:GetColor("CastLag")
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor("CastCasting")
 	end
-	self.lagBar.bar:SetVertexColor(r, g, b, self.moduleSettings.lagAlpha)
 
+	self.lagBar.bar:SetVertexColor(r, g, b, self.moduleSettings.lagAlpha)
 	self.lagBar.bar:Hide()
 end
 
@@ -414,8 +412,7 @@ function CastBar.prototype:SpellCastStart(event, unit, spell, rank)
 		scale = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
 	end
 
-	self.lagBar:SetFrameStrata("BACKGROUND")
-	self:SetBarCoord(self.lagBar, scale, true)
+	self:SetBarCoord(self.lagBar, scale, true, true)
 
 	self.spellCastSent = nil
 end
@@ -443,8 +440,7 @@ function CastBar.prototype:SpellCastChannelStart(event, unit)
 
 	local top = not self.moduleSettings.reverseChannel
 
-	self.lagBar:SetFrameStrata("MEDIUM")
-	self:SetBarCoord(self.lagBar, scale, top)
+	self:SetBarCoord(self.lagBar, scale, top, true)
 
 	self.spellCastSent = nil
 end
