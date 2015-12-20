@@ -28,7 +28,7 @@ function GlobalCoolDown.prototype:Enable(core)
 
 	self:Show(false)
 
-	self.frame:SetFrameStrata("TOOLTIP")
+	self.frame:SetFrameStrata("LOW")
 
 	self.CDSpellId = self:GetSpellId()
 end
