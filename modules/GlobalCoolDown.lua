@@ -20,6 +20,7 @@ function GlobalCoolDown.prototype:Enable(core)
 
 	--self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "CooldownStateChanged")
 	self:RegisterEvent("UNIT_SPELLCAST_START","CooldownStateChanged")
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START","CooldownStateChanged")
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED","CooldownStateChanged")
 
 	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED","CooldownAborted")
@@ -117,7 +118,8 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell, _, _,
 
 	if not self.moduleSettings.showDuringCast then
 		local castTime = self:GetSpellCastTime(spellId)
-		if castTime and castTime > maxSpellCastSkipTimeMs then
+		local channeledSpellName = UnitChannelInfo(unit)
+		if (castTime and castTime > maxSpellCastSkipTimeMs) or channeledSpellName then
 			return
 		end
 	end
