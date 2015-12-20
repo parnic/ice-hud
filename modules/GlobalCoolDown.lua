@@ -18,19 +18,33 @@ end
 function GlobalCoolDown.prototype:Enable(core)
 	GlobalCoolDown.super.prototype.Enable(self, core)
 
+	if self.moduleSettings.inverse == "EXPAND" then
+		self.moduleSettings.inverse = "NORMAL"
+	end
+
 	--self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "CooldownStateChanged")
 	self:RegisterEvent("UNIT_SPELLCAST_START","CooldownStateChanged")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START","CooldownStateChanged")
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED","CooldownStateChanged")
+	self:RegisterEvent("UNIT_SPELLCAST_SENT","SpellCastSent")
 
 	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED","CooldownAborted")
 	self:RegisterEvent("UNIT_SPELLCAST_FAILED","CooldownAborted")
+
+	self:RegisterEvent("CVAR_UPDATE", "CVarUpdate")
+
+	self:CVarUpdate()
 
 	self:Show(false)
 
 	self.frame:SetFrameStrata("LOW")
 
 	self.CDSpellId = self:GetSpellId()
+end
+
+function GlobalCoolDown.prototype:CVarUpdate()
+	self.useFixedLatency = GetCVar("reducedLagTolerance") == "1"
+	self.fixedLatency = tonumber(GetCVar("maxSpellStartRecoveryoffset")) / 1000.0
 end
 
 function GlobalCoolDown.prototype:CooldownAborted(event, unit, spell)
@@ -58,6 +72,8 @@ function GlobalCoolDown.prototype:GetDefaultSettings()
 	settings["bHideMarkerSettings"] = true
 	settings["showDuringCast"] = true
 	settings["barVisible"]["bg"] = false
+	settings["bAllowExpand"] = false
+	settings["lagAlpha"] = 0.7
 
 	return settings
 end
@@ -85,11 +101,40 @@ function GlobalCoolDown.prototype:GetOptions()
 		order = 21,
 	}
 
+	opts["lagAlpha"] =
+	{
+		type = 'range',
+		name = L["Lag Indicator alpha"],
+		desc = L["Lag indicator alpha (0 is disabled)"],
+		min = 0,
+		max = 1,
+		step = 0.1,
+		get = function()
+			return self.moduleSettings.lagAlpha
+		end,
+		set = function(info, value)
+			self.moduleSettings.lagAlpha = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 42
+	}
+
 	return opts
 end
 
 function GlobalCoolDown.prototype:IsFull(scale)
 	return false
+end
+
+function GlobalCoolDown.prototype:SpellCastSent(event, unit, spell)
+	if unit ~= "player" or not spell then
+		return
+	end
+
+	self.spellCastSent = GetTime()
 end
 
 function GlobalCoolDown.prototype:GetSpellCastTime(spell)
@@ -142,6 +187,19 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell, _, _,
 
 			self:UpdateBar(0, "GlobalCoolDown")
 			self:Show(true)
+
+			-- Update latency indicator
+			local scale = 0
+			if self.useFixedLatency then
+				scale = IceHUD:Clamp(self.fixedLatency / self.duration, 0, 1)
+			else
+				local now = GetTime()
+				local lag = now - (self.spellCastSent or now)
+				scale = IceHUD:Clamp(lag / self.duration, 0, 1)
+			end
+
+			self:SetBarCoord(self.lagBar, scale, false, true)
+			self.spellCastSent = nil
 		end
 	end
 
@@ -165,6 +223,20 @@ function GlobalCoolDown.prototype:CreateFrame()
 	self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
 	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
 	self.frame.bg:SetVertexColor(r, g, b, 0.6)
+
+	self:CreateLagBar()
+end
+
+function GlobalCoolDown.prototype:CreateLagBar()
+	self.lagBar = self:BarFactory(self.lagBar, "LOW", "OVERLAY")
+
+	local r, g, b = self:GetColor("CastLag")
+	if (self.settings.backgroundToggle) then
+		r, g, b = self:GetColor("CastCasting")
+	end
+
+	self.lagBar.bar:SetVertexColor(r, g, b, self.moduleSettings.lagAlpha)
+	self.lagBar.bar:Hide()
 end
 
 function GlobalCoolDown.prototype:GetSpellId()
