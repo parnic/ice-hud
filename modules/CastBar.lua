@@ -372,7 +372,7 @@ end
 
 
 function CastBar.prototype:CreateLagBar()
-	self.lagBar = self:BarFactory(self.lagBar, "LOW","BACKGROUND")
+	self.lagBar = self:BarFactory(self.lagBar, "LOW", "OVERLAY")
 
 	local r, g, b = self:GetColor("CastLag")
 	if (self.settings.backgroundToggle) then
