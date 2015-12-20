@@ -110,13 +110,13 @@ function GlobalCoolDown.prototype:GetSpellCastTime(spell)
 	end
 end
 
-function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell)
-	if unit ~= "player" or not spell then
+function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell, _, _, spellId)
+	if unit ~= "player" or not spellId then
 		return
 	end
 
 	if not self.moduleSettings.showDuringCast then
-		local castTime = self:GetSpellCastTime(spell)
+		local castTime = self:GetSpellCastTime(spellId)
 		if castTime and castTime > maxSpellCastSkipTimeMs then
 			return
 		end
