@@ -1,8 +1,6 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local GlobalCoolDown = IceCore_CreateClass(IceBarElement)
 
-local maxSpellCastSkipTimeMs = 1500
-
 -- Constructor --
 function GlobalCoolDown.prototype:init()
 	GlobalCoolDown.super.prototype.init(self, "GlobalCoolDown")
@@ -177,15 +175,15 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell, _, _,
 		self.CurrSpellId = spellId
 	end
 
+	local start, dur = GetSpellCooldown(self.CDSpellId)
+
 	if not self.moduleSettings.showDuringCast then
 		local castTime = self:GetSpellCastTime(spellId)
 		local channeledSpellName = UnitChannelInfo(unit)
-		if (castTime and castTime > maxSpellCastSkipTimeMs) or channeledSpellName then
+		if (castTime and castTime >= dur*1000) or channeledSpellName then
 			return
 		end
 	end
-
-	local start, dur = GetSpellCooldown(self.CDSpellId)
 
 	if start and dur ~= nil and dur > 0 and dur <= 1.5 then
 		local bRestart = not self.startTime or start > self.startTime + 0.5
