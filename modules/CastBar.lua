@@ -34,6 +34,7 @@ function CastBar.prototype:GetDefaultSettings()
 	settings["usesDogTagStrings"] = false
 	settings["rangeColor"] = true
 	settings["bAllowExpand"] = false
+	settings["respectLagTolerance"] = true
 
 	return settings
 end
@@ -116,6 +117,24 @@ function CastBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 43
+	}
+
+	opts["respectLagTolerance"] =
+	{
+		type = 'toggle',
+		name = L["Respect lag tolerance"],
+		desc = L["When checked, if a 'Custom Lag Tolerance' is set in the game's Combat options, the lag indicator will always use that tolerance value. Otherwise, it uses the computed latency."],
+		get = function()
+			return self.moduleSettings.respectLagTolerance
+		end,
+		set = function(info, value)
+			self.moduleSettings.respectLagTolerance = value
+			self:CVarUpdate()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or GetCVar("reducedLagTolerance") == "0"
+		end,
+		order = 42.1,
 	}
 
 	opts["barVisible"] = {
@@ -338,7 +357,7 @@ function CastBar.prototype:CheckVehicle()
 end
 
 function CastBar.prototype:CVarUpdate(...)
-	self.useFixedLatency = GetCVar("reducedLagTolerance") == "1"
+	self.useFixedLatency = self.moduleSettings.respectLagTolerance and GetCVar("reducedLagTolerance") == "1"
 	self.fixedLatency = tonumber(GetCVar("maxSpellStartRecoveryoffset")) / 1000
 end
 

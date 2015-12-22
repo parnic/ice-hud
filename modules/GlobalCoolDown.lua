@@ -44,7 +44,7 @@ function GlobalCoolDown.prototype:Enable(core)
 end
 
 function GlobalCoolDown.prototype:CVarUpdate()
-	self.useFixedLatency = GetCVar("reducedLagTolerance") == "1"
+	self.useFixedLatency = self.moduleSettings.respectLagTolerance and GetCVar("reducedLagTolerance") == "1"
 	self.fixedLatency = tonumber(GetCVar("maxSpellStartRecoveryoffset")) / 1000.0
 end
 
@@ -66,6 +66,7 @@ function GlobalCoolDown.prototype:GetDefaultSettings()
 	settings["barVisible"]["bg"] = false
 	settings["bAllowExpand"] = false
 	settings["lagAlpha"] = 0.7
+	settings["respectLagTolerance"] = true
 
 	return settings
 end
@@ -112,6 +113,24 @@ function GlobalCoolDown.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 42
+	}
+
+	opts["respectLagTolerance"] =
+	{
+		type = 'toggle',
+		name = L["Respect lag tolerance"],
+		desc = L["When checked, if a 'Custom Lag Tolerance' is set in the game's Combat options, the lag indicator will always use that tolerance value. Otherwise, it uses the computed latency."],
+		get = function()
+			return self.moduleSettings.respectLagTolerance
+		end,
+		set = function(info, value)
+			self.moduleSettings.respectLagTolerance = value
+			self:CVarUpdate()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or GetCVar("reducedLagTolerance") == "0"
+		end,
+		order = 42.1,
 	}
 
 	return opts
