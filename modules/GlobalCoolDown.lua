@@ -22,14 +22,17 @@ function GlobalCoolDown.prototype:Enable(core)
 		self.moduleSettings.inverse = "NORMAL"
 	end
 
+	self:RegisterEvent("UNIT_SPELLCAST_SENT","SpellCastSent")
+
 	--self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "CooldownStateChanged")
 	self:RegisterEvent("UNIT_SPELLCAST_START","CooldownStateChanged")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START","CooldownStateChanged")
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED","CooldownStateChanged")
-	self:RegisterEvent("UNIT_SPELLCAST_SENT","SpellCastSent")
 
-	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED","CooldownAborted")
-	self:RegisterEvent("UNIT_SPELLCAST_FAILED","CooldownAborted")
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP","SpellCastStop")
+	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED","SpellCastStop")
+	self:RegisterEvent("UNIT_SPELLCAST_FAILED","SpellCastStop")
+	self:RegisterEvent("UNIT_SPELLCAST_STOP","SpellCastStop")
 
 	self:RegisterEvent("CVAR_UPDATE", "CVarUpdate")
 
@@ -45,15 +48,6 @@ end
 function GlobalCoolDown.prototype:CVarUpdate()
 	self.useFixedLatency = GetCVar("reducedLagTolerance") == "1"
 	self.fixedLatency = tonumber(GetCVar("maxSpellStartRecoveryoffset")) / 1000.0
-end
-
-function GlobalCoolDown.prototype:CooldownAborted(event, unit, spell)
-	if unit ~= "player" or not spell or not self.CurrSpell or self.CurrSpell ~= spell then
-		return
-	end
-
-	self.CurrLerpTime = self.moduleSettings.desiredLerpTime
-	self.CurrSpell = nil
 end
 
 -- OVERRIDE
@@ -137,6 +131,18 @@ function GlobalCoolDown.prototype:SpellCastSent(event, unit, spell)
 	self.spellCastSent = GetTime()
 end
 
+function GlobalCoolDown.prototype:SpellCastStop(event, unit, spell, _, _, spellId)
+	if unit ~= "player" or not spellId or not self.CurrSpellId or self.CurrSpellId ~= spellId then
+		return
+	end
+
+	self.CurrSpellId = nil
+
+	if event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" then
+		self.CurrLerpTime = self.moduleSettings.desiredLerpTime
+	end
+end
+
 function GlobalCoolDown.prototype:GetSpellCastTime(spell)
 	if not spell then
 		return nil, nil
@@ -161,6 +167,16 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell, _, _,
 		return
 	end
 
+	-- Ignore all events unrelated to the spell currently being cast
+	if self.CurrSpellId and self.CurrSpellId ~= spellId then
+		return
+	end
+
+	-- Update the current spell ID for all events indicating a spellcast is starting
+	if event ~= "UNIT_SPELLCAST_SUCCEEDED" then
+		self.CurrSpellId = spellId
+	end
+
 	if not self.moduleSettings.showDuringCast then
 		local castTime = self:GetSpellCastTime(spellId)
 		local channeledSpellName = UnitChannelInfo(unit)
@@ -183,7 +199,6 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell, _, _,
 			self.CurrLerpTime = 0
 			self.lastLerpTime = GetTime()
 			self.moduleSettings.desiredLerpTime = dur or 1
-			self.CurrSpell = spell
 
 			self:UpdateBar(0, "GlobalCoolDown")
 			self:Show(true)
@@ -201,10 +216,6 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell, _, _,
 			self:SetBarCoord(self.lagBar, scale, false, true)
 			self.spellCastSent = nil
 		end
-	end
-
-	if event == "UNIT_SPELLCAST_SUCCEEDED" then
-		self.CurrSpell = nil
 	end
 end
 
