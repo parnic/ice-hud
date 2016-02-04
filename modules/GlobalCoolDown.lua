@@ -268,6 +268,8 @@ function GlobalCoolDown.prototype:CreateLagBar()
 end
 
 function GlobalCoolDown.prototype:GetSpellId()
+	return 61304
+--[[
 	local defaultSpells
 
 	defaultSpells = {
@@ -286,6 +288,7 @@ function GlobalCoolDown.prototype:GetSpellId()
 
 	local _, unitClass = UnitClass("player")
 	return defaultSpells[unitClass]
+]]
 end
 
 -- Load us up
