@@ -4,7 +4,7 @@ local CastBar = IceCore_CreateClass(IceCastBar)
 local IceHUD = _G.IceHUD
 
 CastBar.prototype.spellCastSent = nil
-
+CastBar.prototype.sentSpell = nil
 
 -- Constructor --
 function CastBar.prototype:init()
@@ -409,6 +409,7 @@ function CastBar.prototype:SpellCastSent(event, unit, spell, rank, target)
 	if (unit ~= self.unit) then return end
 
 	self.spellCastSent = GetTime()
+	self.sentSpell = spell
 end
 
 -- OVERRIDE
@@ -418,6 +419,10 @@ function CastBar.prototype:SpellCastStart(event, unit, spell, rank)
 
 	if not self:IsVisible() or not self.actionDuration then
 		return
+	end
+
+	if self.sentSpell ~= spell then
+		self.spellCastSent = nil
 	end
 
 	local scale
