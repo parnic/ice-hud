@@ -272,10 +272,10 @@ function IceHUD:OnEnable(isFirst)
 	IceHUD_Options:OnLoad()
 	--@end-debug@
 
-	if isFirst then
+--	if isFirst then
 		self:SetDebugging(self.IceCore:GetDebug())
-		self.debugFrame = ChatFrame2
-	end
+		self.debugFrame = ChatFrame1
+--	end
 end
 
 -- add settings changes/updates here so that existing users don't lose their settings
@@ -358,8 +358,12 @@ function IceHUD:LoadOptions()
 	return true
 end
 
-function IceHUD:Debug(msg)
+function IceHUD:Debug(...)
 	if self.debugging then
+		local msg = ""
+		for n=1,select('#', ...) do
+			msg = msg .. tostring(select(n, ...)) .. " "
+		end
 		self.debugFrame:AddMessage(msg)
 	end
 end
