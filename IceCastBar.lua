@@ -256,7 +256,7 @@ end
 function IceCastBar.prototype:MyOnUpdate()
 	-- safety catch
 	if (self.action == IceCastBar.Actions.None) then
-		IceHUD:Debug("Stopping action ", self.action)
+		--IceHUD:Debug("Stopping action ", self.action)
 		self:StopBar()
 		return
 	end
@@ -414,7 +414,7 @@ end
 
 function IceCastBar.prototype:SpellCastSent(event, unit, spell, rank, target)
 	if (unit ~= self.unit) then return end
-	--IceHUD:Debug("SpellCastSent", unit, spell, rank, target)
+	IceHUD:Debug("SpellCastSent", unit, spell, rank, target)
 end
 
 
