@@ -50,7 +50,11 @@ function SliceAndDice.prototype:Enable(core)
 	SliceAndDice.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_AURA", "UpdateSliceAndDice")
-	self:RegisterEvent("UNIT_COMBO_POINTS", "ComboPointsChanged")
+	if IceHUD.WowVer < 70000 then
+		self:RegisterEvent("UNIT_COMBO_POINTS", "ComboPointsChanged")
+	else
+		self:RegisterEvent("UNIT_POWER", "ComboPointsChanged")
+	end
 
 	if not self.moduleSettings.alwaysFullAlpha then
 		self:Show(false)
@@ -65,7 +69,11 @@ function SliceAndDice.prototype:Disable(core)
 	SliceAndDice.super.prototype.Disable(self, core)
 end
 
-function SliceAndDice.prototype:ComboPointsChanged()
+function SliceAndDice.prototype:ComboPointsChanged(...)
+	if select('#', ...) >= 3 and select(1, ...) == "UNIT_POWER" and select(3, ...) ~= "COMBO_POINTS" then
+		return
+	end
+
 	self:TargetChanged()
 	self:UpdateDurationBar()
 end

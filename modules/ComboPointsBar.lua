@@ -66,7 +66,11 @@ function ComboPointsBar.prototype:Enable(core)
 
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateComboPoints")
 	if IceHUD.WowVer >= 30000 then
-		self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
+		if IceHUD.WowVer < 70000 then
+			self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
+		else
+			self:RegisterEvent("UNIT_POWER", "UpdateComboPoints")
+		end
 		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateComboPoints")
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateComboPoints")
 	else
@@ -80,7 +84,11 @@ function ComboPointsBar.prototype:CreateFrame()
 	self:UpdateComboPoints()
 end
 
-function ComboPointsBar.prototype:UpdateComboPoints()
+function ComboPointsBar.prototype:UpdateComboPoints(...)
+	if select('#', ...) >= 3 and select(1, ...) == "UNIT_POWER" and select(3, ...) ~= "COMBO_POINTS" then
+		return
+	end
+
 	local points
 	if IceHUD.IceCore:IsInConfigMode() then
 		points = 5
