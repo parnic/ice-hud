@@ -17,6 +17,10 @@ function ComboPoints.prototype:init()
 end
 
 
+function ComboPoints.prototype:GetMaxComboPoints()
+	return UnitPowerMax("player", SPELL_POWER_COMBO_POINTS)
+end
+
 
 -- 'Public' methods -----------------------------------------------------------
 
@@ -149,28 +153,30 @@ function ComboPoints.prototype:GetOptions()
 		order = 33.2
 	}
 
-	opts["anticipation"] = {
-		type = "toggle",
-		name = L["Show Anticipation"],
-		desc = L["Show points stored by the Anticipation talent"],
-		get = function()
-			return self.moduleSettings.showAnticipation
-		end,
-		set = function(info, v)
-			self.moduleSettings.showAnticipation = v
-			self:AddAnticipation() -- This will activate or deactivate as needed
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 33.3
-	}
+	if IceHUD.WowVer < 70000 then
+		opts["anticipation"] = {
+			type = "toggle",
+			name = L["Show Anticipation"],
+			desc = L["Show points stored by the Anticipation talent"],
+			get = function()
+				return self.moduleSettings.showAnticipation
+			end,
+			set = function(info, v)
+				self.moduleSettings.showAnticipation = v
+				self:AddAnticipation() -- This will activate or deactivate as needed
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 33.3
+		}
+	end
 
 	opts["gradient"] = {
 		type = "toggle",
 		name = L["Change color"],
-		desc = L["1 combo point: yellow, 5 combo points: red"],
+		desc = L["1 combo point: yellow, max combo points: red"],
 		get = function()
 			return self.moduleSettings.gradient
 		end,
@@ -242,11 +248,14 @@ function ComboPoints.prototype:Enable(core)
 			self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
 		else
 			self:RegisterEvent("UNIT_POWER", "UpdateComboPoints")
+			self:RegisterEvent("UNIT_MAXPOWER", "UpdateMaxComboPoints")
 		end
 		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateComboPoints")
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateComboPoints")
-		self:RegisterEvent("PLAYER_TALENT_UPDATE", "AddAnticipation")
-		self:AddAnticipation()
+		if IceHUD.WowVer < 70000 then
+			self:RegisterEvent("PLAYER_TALENT_UPDATE", "AddAnticipation")
+			self:AddAnticipation()
+		end
 	else
 		self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateComboPoints")
 	end
@@ -258,7 +267,15 @@ function ComboPoints.prototype:Enable(core)
 	self:CreateComboFrame(true)
 end
 
-
+function ComboPoints.prototype:UpdateMaxComboPoints(event, unit, powerType)
+	if unit == "player" and powerType == "COMBO_POINTS" then
+		for i = 1, #self.frame.graphical do
+			self.frame.graphicalBG[i]:Hide()
+			self.frame.graphical[i]:Hide()
+		end
+		self:Redraw()
+	end
+end
 
 -- 'Protected' methods --------------------------------------------------------
 
@@ -268,11 +285,11 @@ function ComboPoints.prototype:CreateFrame()
 
 	self.frame:SetFrameStrata("BACKGROUND")
 	if self.moduleSettings.graphicalLayout == "Horizontal" then
-		self.frame:SetWidth(self.comboSize*5)
+		self.frame:SetWidth((self.comboSize - 5)*self.GetMaxComboPoints())
 		self.frame:SetHeight(1)
 	else
 		self.frame:SetWidth(1)
-		self.frame:SetHeight(self.comboSize*5)
+		self.frame:SetHeight(self.comboSize*self.GetMaxComboPoints())
 	end
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
@@ -301,9 +318,10 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 	end
 
 	local i
+	local maxComboPoints = self.GetMaxComboPoints()
 
 	-- create backgrounds
-	for i = 1, 5 do
+	for i = 1, maxComboPoints do
 		if (not self.frame.graphicalBG[i]) then
 			local frame = CreateFrame("Frame", nil, self.frame)
 			self.frame.graphicalBG[i] = frame
@@ -327,9 +345,9 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 		self.frame.graphicalBG[i]:SetWidth(self.comboSize)
 		self.frame.graphicalBG[i]:SetHeight(self.comboSize)
 		if self.moduleSettings.graphicalLayout == "Horizontal" then
-			self.frame.graphicalBG[i]:SetPoint("TOPLEFT", ((i-1) * (self.comboSize-5)) + (i-1) + ((i-1) * self.moduleSettings.comboGap), 0)
+			self.frame.graphicalBG[i]:SetPoint("TOPLEFT", ((i-1) * (self.comboSize-5)) - 2.5 + ((i-1) * self.moduleSettings.comboGap), 0)
 		else
-			self.frame.graphicalBG[i]:SetPoint("TOPLEFT", 0, -1 * (((i-1) * (self.comboSize-5)) + (i-1) + ((i-1) * self.moduleSettings.comboGap)))
+			self.frame.graphicalBG[i]:SetPoint("TOPLEFT", 0, -1 * (((i-1) * (self.comboSize-5)) - 2.5 + ((i-1) * self.moduleSettings.comboGap)))
 		end
 		self.frame.graphicalBG[i]:SetAlpha(0.15)
 		self.frame.graphicalBG[i].texture:SetVertexColor(self:GetColor("ComboPoints"))
@@ -338,7 +356,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 	end
 
 	-- create combo points
-	for i = 1, 5 do
+	for i = 1, maxComboPoints do
 		if (not self.frame.graphical[i]) then
 			local frame = CreateFrame("Frame", nil, self.frame)
 			self.frame.graphical[i] = frame
@@ -363,7 +381,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 
 		local r, g, b = self:GetColor("ComboPoints")
 		if (self.moduleSettings.gradient) then
-			g = g - (0.15*i)
+			g = g - ((1 / maxComboPoints)*i)
 		end
 		self.frame.graphical[i].texture:SetVertexColor(r, g, b)
 
@@ -371,42 +389,43 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 	end
 
 	-- create Anticipation points
-	for i = 1, 5 do
-		if (not self.frame.graphicalAnt[i]) then
-			local frame = CreateFrame("Frame", nil, self.frame)
-			self.frame.graphicalAnt[i] = frame
-			frame.texture = frame:CreateTexture()
-			frame.texture:SetAllPoints(frame)
-		end
-
-		if forceTextureUpdate then
-			if self.moduleSettings.comboMode == "Graphical Bar" then
-				self.frame.graphicalAnt[i].texture:SetTexture(IceElement.TexturePath .. "Combo")
-			elseif self.moduleSettings.comboMode == "Graphical Circle" then
-				self.frame.graphicalAnt[i].texture:SetTexture(IceElement.TexturePath .. "ComboRound")
-			elseif self.moduleSettings.comboMode == "Graphical Glow" then
-				self.frame.graphicalAnt[i].texture:SetTexture(IceElement.TexturePath .. "ComboGlow")
-			elseif self.moduleSettings.comboMode == "Graphical Clean Circle" then
-				self.frame.graphicalAnt[i].texture:SetTexture(IceElement.TexturePath .. "ComboCleanCurves")
+	if IceHUD.WowVer < 70000 then
+		for i = 1, 5 do
+			if (not self.frame.graphicalAnt[i]) then
+				local frame = CreateFrame("Frame", nil, self.frame)
+				self.frame.graphicalAnt[i] = frame
+				frame.texture = frame:CreateTexture()
+				frame.texture:SetAllPoints(frame)
 			end
+
+			if forceTextureUpdate then
+				if self.moduleSettings.comboMode == "Graphical Bar" then
+					self.frame.graphicalAnt[i].texture:SetTexture(IceElement.TexturePath .. "Combo")
+				elseif self.moduleSettings.comboMode == "Graphical Circle" then
+					self.frame.graphicalAnt[i].texture:SetTexture(IceElement.TexturePath .. "ComboRound")
+				elseif self.moduleSettings.comboMode == "Graphical Glow" then
+					self.frame.graphicalAnt[i].texture:SetTexture(IceElement.TexturePath .. "ComboGlow")
+				elseif self.moduleSettings.comboMode == "Graphical Clean Circle" then
+					self.frame.graphicalAnt[i].texture:SetTexture(IceElement.TexturePath .. "ComboCleanCurves")
+				end
+			end
+
+			self.frame.graphicalAnt[i]:SetFrameStrata("LOW")
+			self.frame.graphicalAnt[i]:SetFrameLevel(self.frame.graphical[i]:GetFrameLevel() + 1)
+			self.frame.graphicalAnt[i]:SetWidth(math.floor(self.comboSize / 2))
+			self.frame.graphicalAnt[i]:SetHeight(math.floor(self.comboSize / 2))
+
+			self.frame.graphicalAnt[i]:SetPoint("CENTER", self.frame.graphical[i], "CENTER")
+
+			local r, g, b = self:GetColor("AnticipationPoints")
+			if (self.moduleSettings.gradient) then
+				r = r - 0.25 * (i - 1) -- Go to straight blue, which is most visible against the redorange
+			end
+			self.frame.graphicalAnt[i].texture:SetVertexColor(r, g, b)
+
+			self.frame.graphicalAnt[i]:Hide()
 		end
-
-		self.frame.graphicalAnt[i]:SetFrameStrata("LOW")
-		self.frame.graphicalAnt[i]:SetFrameLevel(self.frame.graphical[i]:GetFrameLevel() + 1)
-		self.frame.graphicalAnt[i]:SetWidth(math.floor(self.comboSize / 2))
-		self.frame.graphicalAnt[i]:SetHeight(math.floor(self.comboSize / 2))
-
-		self.frame.graphicalAnt[i]:SetPoint("CENTER", self.frame.graphical[i], "CENTER")
-
-		local r, g, b = self:GetColor("AnticipationPoints")
-		if (self.moduleSettings.gradient) then
-			r = r - 0.25 * (i - 1) -- Go to straight blue, which is most visible against the redorange
-		end
-		self.frame.graphicalAnt[i].texture:SetVertexColor(r, g, b)
-
-		self.frame.graphicalAnt[i]:Hide()
 	end
-
 end
 
 function ComboPoints.prototype:UpdateComboPoints(...)
@@ -416,17 +435,22 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 
 	local points, anticipate, _
 	if IceHUD.IceCore:IsInConfigMode() then
-		points = 5
+		points = self:GetMaxComboPoints()
 	elseif IceHUD.WowVer >= 30000 then
 		-- Parnic: apparently some fights have combo points while the player is in a vehicle?
 		local isInVehicle = UnitHasVehicleUI("player")
 		local checkUnit = isInVehicle and "vehicle" or "player"
 		if IceHUD.WowVer >= 60000 then
-			points = UnitPower(checkUnit, 4)
+			points = UnitPower(checkUnit, SPELL_POWER_COMBO_POINTS)
 		else
 			points = GetComboPoints(checkUnit, "target")
 		end
-		_, _, _, anticipate = UnitAura("player", GetSpellInfo(AnticipationSpellId))
+
+		if IceHUD.WowVer < 70000 then
+			_, _, _, anticipate = UnitAura("player", GetSpellInfo(AnticipationSpellId))
+		else
+			anticipate = 0
+		end
 	else
 		points = GetComboPoints("target")
 	end
@@ -437,7 +461,7 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 	if (self.moduleSettings.comboMode == "Numeric") then
 		local r, g, b = self:GetColor("ComboPoints")
 		if (self.moduleSettings.gradient and points) then
-			g = g - (0.15*points)
+			g = g - ((1 / self:GetMaxComboPoints())*points)
 		end
 		self.frame.numeric:SetTextColor(r, g, b, 0.7)
 
@@ -454,7 +478,7 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 	else
 		self.frame.numeric:SetText()
 
-		for i = 1, table.getn(self.frame.graphical) do
+		for i = 1, self:GetMaxComboPoints() do
 			local hideIfNoTarget = not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget
 
 			if ((points > 0) or (anticipate > 0)) and not hideIfNoTarget then
@@ -469,10 +493,12 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 				self.frame.graphical[i]:Hide()
 			end
 
-			if (i <= anticipate) and not hideIfNoTarget then
-				self.frame.graphicalAnt[i]:Show()
-			else
-				self.frame.graphicalAnt[i]:Hide()
+			if i <= #self.frame.graphicalAnt then
+				if (i <= anticipate) and not hideIfNoTarget then
+					self.frame.graphicalAnt[i]:Show()
+				else
+					self.frame.graphicalAnt[i]:Hide()
+				end
 			end
 		end
 	end
