@@ -18,7 +18,12 @@ end
 
 
 function ComboPoints.prototype:GetMaxComboPoints()
-	return UnitPowerMax("player", SPELL_POWER_COMBO_POINTS)
+	local retval = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS)
+	if retval == 0 then -- accommodate non-rogues who still need combo point displays for some specific encounters/quests
+		retval = 5
+	end
+
+	return retval
 end
 
 
