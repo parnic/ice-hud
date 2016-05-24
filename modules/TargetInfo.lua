@@ -1624,7 +1624,9 @@ end
 
 function IceTargetInfo.prototype:TargetFlags(event, unit)
 	if (unit == self.unit or unit == internal) then
-		self.tapped = UnitIsTapped(self.unit) and (not UnitIsTappedByPlayer(self.unit))
+		if IceHUD.WowVer < 70000 then
+			self.tapped = UnitIsTapped(self.unit) and (not UnitIsTappedByPlayer(self.unit))
+		end
 		self.targetCombat = UnitAffectingCombat(self.unit) and " |cffee4030Combat|r" or ""
 		self:UpdateBuffs()
 		self:Update(unit)

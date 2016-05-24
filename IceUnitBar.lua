@@ -213,7 +213,9 @@ end
 function IceUnitBar.prototype:Update()
 	IceUnitBar.super.prototype.Update(self)
 
-	self.tapped = UnitIsTapped(self.unit) and (not UnitIsTappedByPlayer(self.unit))
+	if IceHUD.WowVer < 70000 then
+		self.tapped = UnitIsTapped(self.unit) and (not UnitIsTappedByPlayer(self.unit))
+	end
 
 	self.health = UnitHealth(self.unit)
 	self.maxHealth = UnitHealthMax(self.unit)
