@@ -62,7 +62,7 @@ function ShadowPriestMana.prototype:Update()
 	self:UpdateBar(self.shadowPriestManaMax ~= 0 and self.shadowPriestMana / self.shadowPriestManaMax or 0, "ShadowPriestMana")
 end
 
--- Load us up (if we are a shadow priest in 7.0+)
+-- Load us up (if we are a priest in 7.0+)
 local _, unitClass = UnitClass("player")
 if (unitClass == "PRIEST" and IceHUD.WowVer >= 70000) then
 	IceHUD.ShadowPriestMana = ShadowPriestMana:new()

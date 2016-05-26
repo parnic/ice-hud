@@ -28,7 +28,7 @@ function HolyPower.prototype:init()
 	self.unitPower = SPELL_POWER_HOLY_POWER
 	self.minLevel = PALADINPOWERBAR_SHOW_LEVEL
 	if IceHUD.WowVer >= 70000 then
-		self.requiredSpec = 3
+		self.requiredSpec = SPEC_PALADIN_RETRIBUTION
 	end
 	self.bTreatEmptyAsFull = true
 	self.unit = "player"
