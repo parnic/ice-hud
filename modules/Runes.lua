@@ -9,6 +9,12 @@ local RUNETYPE_BLOOD = 1;
 local RUNETYPE_DEATH = 2;
 local RUNETYPE_FROST = 3;
 local RUNETYPE_CHROMATIC = 4;
+local RUNETYPE_LEGION = 5; -- not real, but makes for an easy update
+
+local GetRuneType = GetRuneType
+if IceHUD.WowVer >= 70000 then
+	GetRuneType = function() return RUNETYPE_LEGION end
+end
 
 -- setup the names to be more easily readable
 Runes.prototype.runeNames = {
@@ -16,6 +22,7 @@ Runes.prototype.runeNames = {
 	[RUNETYPE_DEATH] = "Unholy",
 	[RUNETYPE_FROST] = "Frost",
 	[RUNETYPE_CHROMATIC] = "Death",
+	[RUNETYPE_LEGION] = "SingleRune",
 }
 
 Runes.prototype.runeSize = 25
@@ -26,11 +33,16 @@ Runes.prototype.numRunes = 6
 function Runes.prototype:init()
 	Runes.super.prototype.init(self, "Runes")
 
-	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_BLOOD], 255, 0, 0)
-	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_DEATH], 0, 207, 0)
-	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_FROST], 0, 255, 255)
-	self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_CHROMATIC], 204, 26, 255)
+	if IceHUD.WowVer < 70000 then
+		self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_BLOOD], 255, 0, 0)
+		self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_DEATH], 0, 207, 0)
+		self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_FROST], 0, 255, 255)
+		self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_CHROMATIC], 204, 26, 255)
+	else
+		self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_LEGION], 204, 204, 255)
+	end
 	self.scalingEnabled = true
+	self.numRunes = UnitPowerMax("player", SPELL_POWER_RUNES)
 end
 
 
@@ -197,6 +209,7 @@ function Runes.prototype:Enable(core)
 	self:RegisterEvent("RUNE_POWER_UPDATE", "UpdateRunePower")
 	self:RegisterEvent("RUNE_TYPE_UPDATE", "UpdateRuneType")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ResetRuneAvailability")
+	self:RegisterEvent("UNIT_MAXPOWER", "CheckMaxNumRunes")
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
@@ -208,6 +221,20 @@ function Runes.prototype:Disable(core)
 
 	if self.moduleSettings.hideBlizz then
 		self:ShowBlizz()
+	end
+end
+
+function Runes.prototype:CheckMaxNumRunes(event, unit, powerType)
+	if unit ~= "player" then
+		return
+	end
+
+	if UnitPowerMax("player", SPELL_POWER_RUNES) ~= self.numRunes then
+		self.numRunes = UnitPowerMax("player", SPELL_POWER_RUNES)
+		for i = 1, #self.frame.graphical do
+			self.frame.graphical[i]:Hide()
+		end
+		self:Redraw()
 	end
 end
 
@@ -355,13 +382,15 @@ function Runes.prototype:CreateRune(i, type, name)
 	self.frame.graphical[i]:SetHeight(self.runeSize)
 
 	-- hax for blizzard's swapping the unholy and frost rune placement on the default ui...
-	local runeSwapI
-	if i == 3 or i == 4 then
-		runeSwapI = i + 2
-	elseif i == 5 or i == 6 then
-		runeSwapI = i - 2
-	else
-		runeSwapI = i
+	local runeSwapI = i
+	if IceHUD.WowVer < 70000 then
+		if i == 3 or i == 4 then
+			runeSwapI = i + 2
+		elseif i == 5 or i == 6 then
+			runeSwapI = i - 2
+		else
+			runeSwapI = i
+		end
 	end
 	if self.moduleSettings.displayMode == "Horizontal" then
 		self.frame.graphical[i]:SetPoint("TOPLEFT", (runeSwapI-1) * (self.runeSize-5) + (runeSwapI-1) + ((runeSwapI-1) * self.moduleSettings.runeGap), 0)
