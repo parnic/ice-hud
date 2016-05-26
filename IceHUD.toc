@@ -89,6 +89,7 @@ modules\TargetAbsorb.lua
 modules\PlayerAbsorb.lua
 modules\FocusAbsorb.lua
 modules\Stagger.lua
+modules\ShadowPriestMana.lua
 
 #@do-not-package@
 IceHUD_Options\Options.lua
