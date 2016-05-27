@@ -1,6 +1,11 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceTargetInfo = IceCore_CreateClass(IceElement)
 
+local CooldownFrame_SetTimer = CooldownFrame_SetTimer
+if IceHUD.WowVer >= 70000 then
+	CooldownFrame_SetTimer = CooldownFrame_Set
+end
+
 local DogTag = nil
 
 local internal = "internal"
@@ -1445,7 +1450,7 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 	if (duration and duration > 0 and expirationTime and expirationTime > 0) then
 		local start = expirationTime - duration
 
-		frame.cd:SetCooldown(start, duration)
+		CooldownFrame_SetTimer(frame.cd, start, duration, true)
 		frame.cd:Show()
 	else
 		frame.cd:Hide()

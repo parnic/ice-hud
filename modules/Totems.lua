@@ -1,6 +1,11 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local Totems = IceCore_CreateClass(IceElement)
 
+local CooldownFrame_SetTimer = CooldownFrame_SetTimer
+if IceHUD.WowVer >= 70000 then
+	CooldownFrame_SetTimer = CooldownFrame_Set
+end
+
 -- the below block is copied from TotemFrame.lua
 local FIRE_TOTEM_SLOT = 1;
 local EARTH_TOTEM_SLOT = 2;
@@ -239,7 +244,7 @@ function Totems.prototype:UpdateTotem(event, totem, ...)
 	local haveTotem, name, startTime, duration, icon = GetTotemInfo(totem);
 	if duration > 0 then
 		self.frame.graphical[totem].totem:SetTexture(icon)
-		self.frame.graphical[totem].cd:SetCooldown(startTime, duration)
+		CooldownFrame_SetTimer(self.frame.graphical[totem].cd, startTime, duration, true)
 		self.frame.graphical[totem].cd:Show()
 		self.frame.graphical[totem]:Show()
 	else
@@ -367,7 +372,7 @@ function Totems.prototype:CreateTotem(i, name)
 	self.frame.graphical[i].cd:ClearAllPoints()
 	self.frame.graphical[i].cd:SetAllPoints(self.frame.graphical[i])
 	if duration > 0 then
-		self.frame.graphical[i].cd:SetCooldown(startTime, duration)
+		CooldownFrame_SetTimer(self.frame.graphical[i].cd, startTime, duration, true)
 		self.frame.graphical[i].cd:Show()
 		self.frame.graphical[i]:Show()
 	end

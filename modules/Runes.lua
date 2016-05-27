@@ -3,6 +3,11 @@ local Runes = IceCore_CreateClass(IceElement)
 
 local IceHUD = _G.IceHUD
 
+local CooldownFrame_SetTimer = CooldownFrame_SetTimer
+if IceHUD.WowVer >= 70000 then
+	CooldownFrame_SetTimer = CooldownFrame_Set
+end
+
 -- blizzard cracks me up. the below block is copied verbatim from RuneFrame.lua ;)
 --Readability == win
 local RUNETYPE_BLOOD = 1;
@@ -277,12 +282,12 @@ function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
 		end
 	elseif start ~= nil and duration ~= nil then
 		if self.moduleSettings.cooldownMode == "Cooldown" then
-			self.frame.graphical[rune].cd:SetCooldown(start, duration)
+			CooldownFrame_SetTimer(self.frame.graphical[rune].cd, start, duration, true)
 			self.frame.graphical[rune].cd:Show()
 		elseif self.moduleSettings.cooldownMode == "Alpha" then
 			self.frame.graphical[rune]:SetAlpha(0.2)
 	 	elseif self.moduleSettings.cooldownMode == "Both" then
-			self.frame.graphical[rune].cd:SetCooldown(start, duration)
+	 		CooldownFrame_SetTimer(self.frame.graphical[rune].cd, start, duration, true)
 			self.frame.graphical[rune].cd:Show()
 			self.frame.graphical[rune]:SetAlpha(0.2)
 		end
