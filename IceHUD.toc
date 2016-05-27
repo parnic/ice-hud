@@ -90,6 +90,7 @@ modules\PlayerAbsorb.lua
 modules\FocusAbsorb.lua
 modules\Stagger.lua
 modules\ShadowPriestMana.lua
+modules\ArcaneCharges.lua
 
 #@do-not-package@
 IceHUD_Options\Options.lua
