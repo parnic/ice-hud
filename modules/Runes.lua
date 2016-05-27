@@ -42,7 +42,6 @@ function Runes.prototype:init()
 		self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_LEGION], 204, 204, 255)
 	end
 	self.scalingEnabled = true
-	self.numRunes = UnitPowerMax("player", SPELL_POWER_RUNES)
 end
 
 
@@ -204,6 +203,8 @@ end
 
 -- OVERRIDE
 function Runes.prototype:Enable(core)
+	self.numRunes = UnitPowerMax("player", SPELL_POWER_RUNES)
+
 	Runes.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("RUNE_POWER_UPDATE", "UpdateRunePower")
