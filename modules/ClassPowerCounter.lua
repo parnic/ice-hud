@@ -624,9 +624,20 @@ function IceClassPowerCounter.prototype:ShineFinished(rune)
 end
 
 function IceClassPowerCounter.prototype:GetRuneTexture(rune)
-	assert(false, "Must override GetRuneTexture in child classes")
+	return nil
 end
 
+function IceClassPowerCounter.prototype:GetRuneAtlas(rune)
+	return nil
+end
+
+function IceClassPowerCounter.prototype:UseAtlasSize(rune)
+	return false
+end
+
+function IceClassPowerCounter.prototype:GetShineAtlas(rune)
+	return nil
+end
 
 function IceClassPowerCounter.prototype:CreateFrame()
 	IceClassPowerCounter.super.prototype.CreateFrame(self)
@@ -703,9 +714,13 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 		self:SetupRuneTexture(i)
 
 		self.frame.graphical[i].shine = self.frame.graphical[i]:CreateTexture(nil, "OVERLAY")
-		self.frame.graphical[i].shine:SetTexture("Interface\\ComboFrame\\ComboPoint")
-		self.frame.graphical[i].shine:SetBlendMode("ADD")
+		if self:GetShineAtlas(i) then
+			self.frame.graphical[i].shine:SetAtlas(self:GetShineAtlas(i))
+		else
+			self.frame.graphical[i].shine:SetTexture("Interface\\ComboFrame\\ComboPoint")
 		self.frame.graphical[i].shine:SetTexCoord(0.5625, 1, 0, 1)
+		end
+		self.frame.graphical[i].shine:SetBlendMode("ADD")
 		self.frame.graphical[i].shine:ClearAllPoints()
 		self.frame.graphical[i].shine:SetPoint("CENTER", self.frame.graphical[i], "CENTER")
 
@@ -756,7 +771,12 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 	end
 
 	if self:GetRuneMode() == "Graphical" then
-		self.frame.graphical[rune].rune:SetTexture(self:GetRuneTexture(rune))
+		local tex = self:GetRuneTexture(rune)
+		if tex then
+			self.frame.graphical[rune].rune:SetTexture(self:GetRuneTexture(rune))
+		else
+			self.frame.graphical[rune].rune:SetAtlas(self:GetRuneAtlas(rune), self:UseAtlasSize(rune))
+		end
 	elseif self:GetRuneMode() == "Graphical Bar" then
 		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "Combo")
 	elseif self:GetRuneMode() == "Graphical Circle" then
@@ -766,7 +786,11 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 	elseif self:GetRuneMode() == "Graphical Clean Circle" then
 		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "ComboCleanCurves")
 	end
-	self.frame.graphical[rune].runebg:SetTexture(self.frame.graphical[rune].rune:GetTexture())
+	if tex then
+		self.frame.graphical[rune].runebg:SetTexture(self.frame.graphical[rune].rune:GetTexture())
+	else
+		self.frame.graphical[rune].runebg:SetAtlas(self.frame.graphical[rune].rune:GetAtlas())
+	end
 end
 
 function IceClassPowerCounter.prototype:GetAlphaAdd()
