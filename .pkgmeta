@@ -43,10 +43,10 @@ externals:
         url: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk
         tag: latest
     libs/LibDogTag-3.0:
-        url: svn://svn.wowace.com/wow/libdogtag-3-0/mainline/trunk
+        url: git://git.wowace.com/wow/libdogtag-3-0/mainline.git
 		tag: latest
     libs/LibDogTag-Unit-3.0:
-        url: svn://svn.wowace.com/wow/libdogtag-unit-3-0/mainline/trunk
+        url: git://git.wowace.com/wow/libdogtag-unit-3-0/mainline.git
     libs/LibDBIcon-1.0:
         url: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
     libs/LibDualSpec-1.0:
