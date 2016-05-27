@@ -190,6 +190,6 @@ function EclipseBar.prototype:MyOnUpdate()
 end
 
 local _, unitClass = UnitClass("player")
-if (unitClass == "DRUID" and IceHUD.WowVer >= 40000) then
+if (unitClass == "DRUID" and IceHUD.WowVer >= 40000 and IceHUD.WowVer < 70000) then
 	IceHUD.EclipseBar = EclipseBar:new()
 end
