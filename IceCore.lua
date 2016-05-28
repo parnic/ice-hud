@@ -167,6 +167,12 @@ function IceCore.prototype:CheckDisplayUpdateMessage()
 				self.settings.modules["LacerateCount"] = {}
 			end
 		end
+		if self.accountSettings.lastRunVersion <= 20160527053225 then
+			if self.settings.modules["DruidMana"] ~= nil then
+				self.settings.modules["PlayerAltMana"] = self.settings.modules["DruidMana"]
+				self.settings.modules["DruidMana"] = nil
+			end
+		end
 		self.accountSettings.lastRunVersion = thisVersion
 	end
 end

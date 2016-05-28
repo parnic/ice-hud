@@ -36,7 +36,6 @@ modules\TargetHealth.lua
 modules\TargetMana.lua
 modules\PetHealth.lua
 modules\PetMana.lua
-modules\DruidMana.lua
 modules\TargetInfo.lua
 modules\TargetOfTarget.lua
 modules\ComboPoints.lua
@@ -83,13 +82,12 @@ modules\Vengeance.lua
 modules\Resolve.lua
 modules\PlayerAlternatePower.lua
 modules\HarmonyPower.lua
-modules\MonkManaBar.lua
 modules\ShadowOrbs.lua
 modules\TargetAbsorb.lua
 modules\PlayerAbsorb.lua
 modules\FocusAbsorb.lua
 modules\Stagger.lua
-modules\ShadowPriestMana.lua
+modules\PlayerAltMana.lua
 modules\ArcaneCharges.lua
 
 #@do-not-package@
