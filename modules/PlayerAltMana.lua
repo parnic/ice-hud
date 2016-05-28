@@ -47,7 +47,7 @@ function PlayerAltMana.prototype:Enable(core)
 	for i = 1, #eventsToRegister do
 		self:RegisterEvent(eventsToRegister[i], "Update")
 	end
-	self:RegisterEvent("UNIT_POWER", "Update")
+	self:RegisterEvent("UNIT_POWER_FREQUENT", "Update")
 	self:RegisterEvent("UNIT_MAXPOWER", "Update")
 end
 
