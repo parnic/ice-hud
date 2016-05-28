@@ -57,6 +57,9 @@ function PlayerAltMana.prototype:Disable(core)
 end
 
 function ShouldShow(unit)
+	if unitClass == "MONK" then
+		return GetSpecialization() == SPEC_MONK_MISTWEAVER
+	end
 	return UnitPowerType(unit) ~= SPELL_POWER_MANA
 --[[	if unitClass == "PRIEST" then
 		return UnitPowerType(unit) == SPELL_POWER_INSANITY
@@ -86,6 +89,7 @@ end
 
 if (unitClass == "PRIEST" and IceHUD.WowVer >= 70000)
 	or (unitClass == "DRUID")
-	or (unitClass == "SHAMAN" and IceHUD.WowVer >= 70000) then
+	or (unitClass == "SHAMAN" and IceHUD.WowVer >= 70000)
+	or (unitClass == "MONK" and IceHUD.WowVer < 70000) then
 	IceHUD.PlayerAltMana = PlayerAltMana:new()
 end
