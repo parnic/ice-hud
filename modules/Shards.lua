@@ -9,6 +9,7 @@ local AfflictionCoords =
 	{0.01562500, 0.28125000, 0.00781250, 0.13281250},
 	{0.01562500, 0.28125000, 0.00781250, 0.13281250},
 	{0.01562500, 0.28125000, 0.00781250, 0.13281250},
+	{0.01562500, 0.28125000, 0.00781250, 0.13281250},
 }
 
 local DestructionCoords =
@@ -31,12 +32,24 @@ function ShardCounter.prototype:init()
 
 	self.numericColor = "ShardCounterNumeric"
 	self.minLevel = SHARDBAR_SHOW_LEVEL
+
+	if IceHUD.WowVer >= 70000 then
+		self.runeHeight = 23
+		self.runeWidth = 26
+		self.runeCoords = AfflictionCoords
+		self.unitPower = SPELL_POWER_SOUL_SHARDS
+	end
 end
 
 function ShardCounter.prototype:Enable(core)
+	if IceHUD.WowVer >= 70000 then
+		self.numRunes = UnitPowerMax("player", self.unitPower)
+		self:CreateFrame()
+	end
+
 	ShardCounter.super.prototype.Enable(self, core)
 
-	if IceHUD.WowVer >= 50000 then
+	if IceHUD.WowVer >= 50000 and IceHUD.WowVer < 70000 then
 		self:RegisterEvent("PLAYER_TALENT_UPDATE", "UpdatePowerType")
 		self:RegisterEvent("UNIT_DISPLAYPOWER", "UpdatePowerType")
 		self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "UpdatePowerType")
@@ -44,11 +57,13 @@ function ShardCounter.prototype:Enable(core)
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "UpdatePowerType")
 		self:RegisterEvent("UNIT_MAXPOWER", "UpdatePowerType")
 	end
-	self:UpdatePowerType()
+	if IceHUD.WowVer < 70000 then
+		self:UpdatePowerType()
+	end
 end
 
 function ShardCounter.prototype:UpdateRunePower(event, arg1, arg2)
-	if IceHUD.WowVer >= 50000 then
+	if IceHUD.WowVer >= 50000 and IceHUD.WowVer < 70000 then
 		if event == "UNIT_POWER_FREQUENT" and arg1 == "player" then
 			if CurrentSpec == SPEC_WARLOCK_DESTRUCTION and arg2 ~= "BURNING_EMBERS" then
 				return
@@ -60,7 +75,7 @@ function ShardCounter.prototype:UpdateRunePower(event, arg1, arg2)
 		end
 	end
 
-	if event == "PLAYER_ENTERING_WORLD" then
+	if event == "PLAYER_ENTERING_WORLD" and IceHUD.WowVer < 70000 then
 		self:UpdatePowerType(event)
 	end
 
@@ -102,7 +117,7 @@ function ShardCounter.prototype:UpdatePowerType(event)
 
 		if IceHUD.WowVer >= 50000 then
 			if not IsPlayerSpell(WARLOCK_SOULBURN) then
-				self.requiredSpec = -1
+				self.requiredSpec = nil
 				self:RegisterEvent("SPELLS_CHANGED", "UpdatePowerType")
 			else
 				self:UnregisterEvent("SPELLS_CHANGED", "UpdatePowerType")
@@ -126,7 +141,7 @@ function ShardCounter.prototype:UpdatePowerType(event)
 		self.currentGrowMode = self.growModes["height"]
 
 		if not IsPlayerSpell(WARLOCK_BURNING_EMBERS) then
-			self.requiredSpec = -1
+			self.requiredSpec = nil
 			self:RegisterEvent("SPELLS_CHANGED", "UpdatePowerType")
 		elseif not IsSpellKnown(WARLOCK_GREEN_FIRE) then
 			self:RegisterEvent("SPELLS_CHANGED", "CheckGreenFire")
@@ -142,7 +157,7 @@ function ShardCounter.prototype:UpdatePowerType(event)
 		self.numConsideredFull = 99
 		self.currentGrowMode = self.growModes["width"]
 	else
-		self.requiredSpec = -1
+		self.requiredSpec = nil
 		self:RegisterEvent("SPELLS_CHANGED", "UpdatePowerType")
 	end
 
