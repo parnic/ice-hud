@@ -29,13 +29,15 @@ function PlayerAltMana.prototype:GetDefaultSettings()
 end
 
 function GetEventsToRegister()
-	if unitClass == "PRIEST" then
-		return {"PLAYER_TALENT_UPDATE"}
+	return {"UNIT_DISPLAYPOWER"}
+--[[	if unitClass == "PRIEST" then
+		return {"PLAYER_SPECIALIZATION_CHANGED"}
 	elseif unitClass == "SHAMAN" then
-		return {"PLAYER_TALENT_UPDATE"}
+		return {"PLAYER_SPECIALIZATION_CHANGED"}
 	elseif unitClass == "DRUID" then
 		return {"UPDATE_SHAPESHIFT_FORM"}
 	end
+]]-- probably not necessary, but could use as a fallback
 end
 
 function PlayerAltMana.prototype:Enable(core)
