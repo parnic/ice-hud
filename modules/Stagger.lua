@@ -19,23 +19,6 @@ local MinLevel = 10
 StaggerBar.prototype.StaggerDuration = 0
 StaggerBar.prototype.StaggerEndTime = 0
 
-local function ReadableNumber(num, places)
-    local ret
-    local placeValue = ("%%.%df"):format(places or 0)
-
-    if not num then
-        ret = 0
-    elseif num >= 1000000 then
-        ret = placeValue:format(num / 1000000) .. "M" -- million
-    elseif num >= 1000 then
-        ret = placeValue:format(num / 1000) .. "k" -- thousand
-    else
-        ret = num -- hundreds
-    end
-
-    return ret
-end
-
 function StaggerBar.prototype:init()
 	StaggerBar.super.prototype.init(self, "Stagger", "player")
 
@@ -65,13 +48,14 @@ function StaggerBar.prototype:GetDefaultSettings()
 	settings["showAsPercentOfMax"] = true
 	settings["maxPercent"] = 20
 	settings["timerAlpha"] = 0.3
-	settings["usesDogTagStrings"] = false
 	settings["lockLowerFontAlpha"] = false
 	settings["lowerTextString"] = ""
 	settings["lowerTextVisible"] = false
 	settings["hideAnimationSettings"] = true
 	settings["bAllowExpand"] = true
 	settings["bShowWithNoTarget"] = true
+	settings["upperText"] = "[PercentStagger]"
+	settings["lowerText"] = "[FractionalStagger:Short]"
 
 	return settings
 end
@@ -180,6 +164,20 @@ function StaggerBar.prototype:ACTIVE_TALENT_GROUP_CHANGED()
 end
 
 function StaggerBar.prototype:GetDebuffInfo()
+	if IceHUD.WowVer >= 70000 then
+		self.amount = UnitStagger(self.unit)
+		self.staggerLevel = 1
+
+		local healthMax = UnitHealthMax(self.unit)
+		local percent = self.amount / healthMax
+		if percent >= STAGGER_YELLOW_TRANSITION then
+			self.staggerLevel = 2
+		elseif percent >= STAGGER_RED_TRANSITION then
+			self.staggerLevel = 3
+		end
+		return
+	end
+
 	local amount = 0
 	local duration = 0
 	local staggerLevel = 1
@@ -216,19 +214,15 @@ function StaggerBar.prototype:UpdateStaggerBar()
 
 	-- local health = UnitHealth(self.unit)
 	local maxHealth = UnitHealthMax(self.unit)
-	local percent = (self.amount / maxHealth) * 100
-	local percentText = percent >= 10 and floor(percent) or strform("%.1f", percent)
 	local scale = IceHUD:Clamp((self.amount / maxHealth) * (100 / self.moduleSettings.maxPercent), 0, 1)
 
-	if self.amount > 0 and self.duration <= 10 then
+	if self.amount > 0 and (IceHUD.WowVer >= 7000 or self.duration <= 10) then
 		-- self.timerFrame.bar:SetVertexColor(self:GetColor("StaggerTime", self.moduleSettings.timerAlpha))
 		self:UpdateBar(scale or 0, "Stagger"..self.staggerLevel)
-		self:SetBottomText1(self.moduleSettings.upperText .. " " .. ReadableNumber(self.amount, 1) .. " (" .. percentText .. "%)")
 		self:UpdateShown()
 		self:UpdateTimerFrame()
 	else
 		self:UpdateBar(0, "Stagger1")
-		self:SetBottomText1("")
 		self:Show(false)
 	end
 end
