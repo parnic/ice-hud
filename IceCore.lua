@@ -142,7 +142,7 @@ function IceCore.prototype:CheckDisplayUpdateMessage()
 	thisVersion = @project-date-integer@
 --@end-non-debug@]===]
 --@debug@
-	thisVersion = 9999
+	thisVersion = 99999999999999
 --@end-debug@
 	if self.accountSettings.lastRunVersion < thisVersion then
 		if self.accountSettings.lastRunVersion < 549 then
