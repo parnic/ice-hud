@@ -33,6 +33,8 @@ function HarmonyPower.prototype:init()
 end
 
 function HarmonyPower.prototype:Enable(core)
+	self.numRunes = UnitPowerMax(self.unit, self.unitPower)
+
 	HarmonyPower.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_POWER_FREQUENT", "UpdateRunePower")
