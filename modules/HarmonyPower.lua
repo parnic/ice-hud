@@ -23,6 +23,9 @@ function HarmonyPower.prototype:init()
 	else
 		self.unitPower = SPELL_POWER_LIGHT_FORCE
 	end
+	if IceHUD.WowVer >= 70000 then
+		self.requiredSpec = SPEC_MONK_WINDWALKER
+	end
 	self.minLevel = 0
 	self.bTreatEmptyAsFull = true
 	self.unit = "player"
