@@ -44,7 +44,6 @@ externals:
         tag: latest
     libs/LibDogTag-3.0:
         url: git://git.wowace.com/wow/libdogtag-3-0/mainline.git
-		tag: latest
     libs/LibDogTag-Unit-3.0:
         url: git://git.wowace.com/wow/libdogtag-unit-3-0/mainline.git
     libs/LibDBIcon-1.0:
