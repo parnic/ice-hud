@@ -419,7 +419,9 @@ end
 function IceClassPowerCounter.prototype:Enable(core)
 	IceClassPowerCounter.super.prototype.Enable(self, core)
 
-	self.numRunes = UnitPowerMax(self.unit, self.unitPower)
+	if IceHUD.WowVer >= 70000 then
+		self.numRunes = UnitPowerMax(self.unit, self.unitPower)
+	end
 	self:CreateFrame()
 
 	self:CheckValidLevel(nil, UnitLevel("player"))
@@ -487,10 +489,12 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 		return
 	end
 
-	local numMax = UnitPowerMax(self.unit, self.unitPower)
-	if numMax ~= self.numRunes then
-		self.numRunes = numMax
-		CreateFrame()
+	if IceHUD.WowVer >= 70000 then
+		local numMax = UnitPowerMax(self.unit, self.unitPower)
+		if numMax ~= self.numRunes then
+			self.numRunes = numMax
+			self:CreateFrame()
+		end
 	end
 
 	local numReady = UnitPower("player", self.unitPower)
