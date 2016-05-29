@@ -215,6 +215,8 @@ function IceUnitBar.prototype:Update()
 
 	if IceHUD.WowVer < 70000 then
 		self.tapped = UnitIsTapped(self.unit) and (not UnitIsTappedByPlayer(self.unit))
+	else
+		self.tapped = UnitIsTapDenied(self.unit)
 	end
 
 	self.health = UnitHealth(self.unit)
