@@ -244,12 +244,26 @@ end
 
 local function SNDGetComboPoints(unit)
 	if IceHUD.WowVer >= 60000 then
-		return UnitPower(unit, 4)
+		return UnitPower(unit, SPELL_POWER_COMBO_POINTS)
 	elseif IceHUD.WowVer >= 30000 then
 		return GetComboPoints(unit, "target")
 	else
 		return GetComboPoints()
 	end
+end
+
+-- use this to figure out if Roll the Bones is available or not. neither IsSpellKnown nor IsPlayerSpell are correct for it
+-- when SnD is known, but this is.
+local function HasSpell(id)
+    local spell = GetSpellInfo(id)
+    return spell == GetSpellInfo(spell)
+end
+
+local function ShouldHide()
+	return --[[(IceHUD.WowVer < 70000 or not IsSpellKnown(193316)) and]] not IsPlayerSpell(5171) -- IsSpellKnown returns incorrect info for SnD in 7.0
+	-- commented code is here in case we decide we'd like to use this module for Roll the Bones.
+	-- if we do, though, the "active" check gets way more complicated since it can activate any number of 6 different abilities
+	-- with different durations
 end
 
 function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
@@ -284,12 +298,12 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
 	else
 		self:UpdateBar(0, "SliceAndDice")
 
-		if SNDGetComboPoints(self.unit) == 0 or (not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget) then
+		if SNDGetComboPoints(self.unit) == 0 or (not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget) or ShouldHide() then
 			if self.bIsVisible then
 				self.bUpdateSnd = nil
 			end
 
-			if not self.moduleSettings.alwaysFullAlpha then
+			if not self.moduleSettings.alwaysFullAlpha or ShouldHide() then
 				self:Show(false)
 			end
 		end
@@ -329,7 +343,8 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 	end
 
 	-- player doesn't want to show the percent of max or the alpha is zeroed out, so don't bother with the duration bar
-	if not self.moduleSettings.showAsPercentOfMax or self.moduleSettings.durationAlpha == 0 or (points == 0 and not self:IsVisible()) then
+	if not self.moduleSettings.showAsPercentOfMax or self.moduleSettings.durationAlpha == 0 or (points == 0 and not self:IsVisible())
+		or ShouldHide() then
 		self.durationFrame:Hide()
 		return
 	end
