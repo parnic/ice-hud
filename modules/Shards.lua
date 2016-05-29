@@ -38,13 +38,13 @@ function ShardCounter.prototype:init()
 		self.runeWidth = 26
 		self.runeCoords = AfflictionCoords
 		self.unitPower = SPELL_POWER_SOUL_SHARDS
+		self.unit = "player"
 	end
 end
 
 function ShardCounter.prototype:Enable(core)
 	if IceHUD.WowVer >= 70000 then
-		self.numRunes = UnitPowerMax("player", self.unitPower)
-		self:CreateFrame()
+		self.numRunes = UnitPowerMax(self.unit, self.unitPower)
 	end
 
 	ShardCounter.super.prototype.Enable(self, core)
@@ -64,7 +64,7 @@ end
 
 function ShardCounter.prototype:UpdateRunePower(event, arg1, arg2)
 	if IceHUD.WowVer >= 50000 and IceHUD.WowVer < 70000 then
-		if event == "UNIT_POWER_FREQUENT" and arg1 == "player" then
+		if event == "UNIT_POWER_FREQUENT" and arg1 == self.unit then
 			if CurrentSpec == SPEC_WARLOCK_DESTRUCTION and arg2 ~= "BURNING_EMBERS" then
 				return
 			elseif CurrentSpec == SPEC_WARLOCK_DEMONOLOGY and arg2 ~= "DEMONIC_FURY" then
@@ -105,7 +105,7 @@ function ShardCounter.prototype:UpdatePowerType(event)
 		self.runeCoords = AfflictionCoords
 		self.unitPower = SPELL_POWER_SOUL_SHARDS
 
-		local powerMax = UnitPowerMax("player", self.unitPower)
+		local powerMax = UnitPowerMax(self.unit, self.unitPower)
 		if powerMax == 0 then -- abort abort! this is bad.
 			return
 		end
@@ -127,7 +127,7 @@ function ShardCounter.prototype:UpdatePowerType(event)
 		self.runeCoords = DestructionCoords
 		self.unitPower = SPELL_POWER_BURNING_EMBERS
 
-		local powerMax = UnitPowerMax("player", self.unitPower)
+		local powerMax = UnitPowerMax(self.unit, self.unitPower)
 		if powerMax == 0 then -- abort abort! this is bad.
 			return
 		end

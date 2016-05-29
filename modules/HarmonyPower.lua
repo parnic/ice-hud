@@ -33,9 +33,6 @@ function HarmonyPower.prototype:init()
 end
 
 function HarmonyPower.prototype:Enable(core)
-	self.numRunes = UnitPowerMax(self.unit, self.unitPower)
-	self:CreateFrame()
-
 	HarmonyPower.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_POWER_FREQUENT", "UpdateRunePower")
@@ -50,10 +47,6 @@ function HarmonyPower.prototype:UpdateRunePower(event, arg1, arg2)
 	-- totally invalid....right?
 	if numRunes == 0 then
 		return
-	end
-
-	if self.fakeNumRunes ~= nil and self.fakeNumRunes > 0 then
-		numRunes = self.fakeNumRunes
 	end
 
 	if numRunes ~= self.numRunes then

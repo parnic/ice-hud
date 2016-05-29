@@ -17,6 +17,7 @@ IceClassPowerCounter.prototype.DesiredAnimPause = 0.5
 IceClassPowerCounter.prototype.requiredSpec = nil
 IceClassPowerCounter.prototype.shouldShowUnmodified = false
 IceClassPowerCounter.prototype.unmodifiedMaxPerRune = 10
+IceClassPowerCounter.prototype.unit = "player"
 
 IceClassPowerCounter.prototype.growModes = { width = 1, height = 2 }
 IceClassPowerCounter.prototype.currentGrowMode = nil
@@ -418,6 +419,9 @@ end
 function IceClassPowerCounter.prototype:Enable(core)
 	IceClassPowerCounter.super.prototype.Enable(self, core)
 
+	self.numRunes = UnitPowerMax(self.unit, self.unitPower)
+	self:CreateFrame()
+
 	self:CheckValidLevel(nil, UnitLevel("player"))
 end
 
@@ -481,6 +485,12 @@ end
 function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 	if event and (event == "UNIT_POWER" or event == "UNIT_POWER_FREQUENT") and arg1 ~= "player" and arg1 ~= "vehicle" then
 		return
+	end
+
+	local numMax = UnitPowerMax(self.unit, self.unitPower)
+	if numMax ~= self.numRunes then
+		self.numRunes = numMax
+		CreateFrame()
 	end
 
 	local numReady = UnitPower("player", self.unitPower)
