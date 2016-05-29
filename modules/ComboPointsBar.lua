@@ -84,6 +84,8 @@ function ComboPointsBar.prototype:CreateFrame()
 	self:UpdateComboPoints()
 end
 
+local color = {}
+
 function ComboPointsBar.prototype:UpdateComboPoints(...)
 	if select('#', ...) >= 3 and select(1, ...) == "UNIT_POWER" and select(3, ...) ~= "COMBO_POINTS" then
 		return
@@ -91,13 +93,13 @@ function ComboPointsBar.prototype:UpdateComboPoints(...)
 
 	local points
 	if IceHUD.IceCore:IsInConfigMode() then
-		points = 5
+		points = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS)
 	elseif IceHUD.WowVer >= 30000 then
 		-- Parnic: apparently some fights have combo points while the player is in a vehicle?
 		local isInVehicle = UnitHasVehicleUI("player")
 		local checkUnit = isInVehicle and "vehicle" or "player"
 		if IceHUD.WowVer >= 60000 then
-			points = UnitPower(checkUnit, 4)
+			points = UnitPower(checkUnit, SPELL_POWER_COMBO_POINTS)
 		else
 			points = GetComboPoints(checkUnit, "target")
 		end
@@ -114,9 +116,8 @@ function ComboPointsBar.prototype:UpdateComboPoints(...)
 		self:UpdateBar(0, "undef")
 	else
 		self:Show(true)
-		local color = {}
 		self:SetScaledColor(color, (points - 1) / 4.0, self.settings.colors["ComboPointsBarMax"], self.settings.colors["ComboPointsBarMin"])
-		self:UpdateBar(points / 5.0, "undef")
+		self:UpdateBar(points / UnitPowerMax("player", SPELL_POWER_COMBO_POINTS), "undef")
 		self.barFrame.bar:SetVertexColor(color.r, color.g, color.b, self.alpha)
 	end
 
