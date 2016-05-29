@@ -408,8 +408,18 @@ function CastBar.prototype:SpellCastSent(event, unit, spell, rank, target)
 	CastBar.super.prototype.SpellCastSent(self, event, unit, spell, rank, target)
 	if (unit ~= self.unit) then return end
 
-	self.spellCastSent = GetTime()
+	if IceHUD.WowVer < 70000 then
+		self.spellCastSent = GetTime()
+	end
 	self.sentSpell = spell
+end
+
+-- OVERRIDE
+function CastBar.prototype:SpellCastChanged(event, arg1)
+	CastBar.super.prototype.SpellCastChanged(self, event, arg1)
+	if IceHUD.WowVer >= 70000 then
+		self.spellCastSent = GetTime()
+	end
 end
 
 -- OVERRIDE

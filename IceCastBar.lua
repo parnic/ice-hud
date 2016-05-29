@@ -36,6 +36,7 @@ function IceCastBar.prototype:Enable(core)
 	IceCastBar.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_SPELLCAST_SENT", "SpellCastSent") -- "player", spell, rank, target
+	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", "SpellCastChanged")
 	self:RegisterEvent("UNIT_SPELLCAST_START", "SpellCastStart") -- unit, spell, rank
 	self:RegisterEvent("UNIT_SPELLCAST_STOP", "SpellCastStop") -- unit, spell, rank
 
@@ -417,6 +418,9 @@ function IceCastBar.prototype:SpellCastSent(event, unit, spell, rank, target)
 	IceHUD:Debug("SpellCastSent", unit, spell, rank, target)
 end
 
+function IceCastBar.prototype:SpellCastChanged(event, arg1)
+	IceHUD:Debug("SpellCastChanged", arg1)
+end
 
 function IceCastBar.prototype:SpellCastStart(event, unit, spell, rank)
 	if (unit ~= self.unit) then return end
