@@ -290,11 +290,11 @@ function ComboPoints.prototype:CreateFrame()
 
 	self.frame:SetFrameStrata("BACKGROUND")
 	if self.moduleSettings.graphicalLayout == "Horizontal" then
-		self.frame:SetWidth((self.comboSize - 5)*self.GetMaxComboPoints())
+		self.frame:SetWidth((self.comboSize - 5)*self:GetMaxComboPoints())
 		self.frame:SetHeight(1)
 	else
 		self.frame:SetWidth(1)
-		self.frame:SetHeight(self.comboSize*self.GetMaxComboPoints())
+		self.frame:SetHeight(self.comboSize*self:GetMaxComboPoints())
 	end
 	self.frame:ClearAllPoints()
 	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
@@ -323,7 +323,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 	end
 
 	local i
-	local maxComboPoints = self.GetMaxComboPoints()
+	local maxComboPoints = self:GetMaxComboPoints()
 
 	-- create backgrounds
 	for i = 1, maxComboPoints do
@@ -462,6 +462,10 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 
 	points = points or 0
 	anticipate = self.moduleSettings.showAnticipation and anticipate or 0
+
+	if self:GetMaxComboPoints() > #self.frame.graphical then
+		self:CreateFrame()
+	end
 
 	if (self.moduleSettings.comboMode == "Numeric") then
 		local r, g, b = self:GetColor("ComboPoints")
