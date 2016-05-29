@@ -7,11 +7,6 @@ function ArcaneCharges.prototype:init()
 	self:SetDefaultColor("ArcaneChargesNumeric", 150, 150, 255)
 
 	self.unit = "player"
-	self.numRunes = UnitPowerMax(self.unit, SPELL_POWER_ARCANE_CHARGES)
-	self.runeCoords = { }
-	for i = 1, self.numRunes do
-		self.runeCoords[#self.runeCoords + 1] = {0, 1, 0, 1}
-	end
 	self.numericColor = "ArcaneChargesNumeric"
 	self.unitPower = SPELL_POWER_ARCANE_CHARGES
 	self.minLevel = 0
@@ -21,9 +16,14 @@ function ArcaneCharges.prototype:init()
 end
 
 function ArcaneCharges.prototype:Enable(core)
+	self.numRunes = UnitPowerMax(self.unit, SPELL_POWER_ARCANE_CHARGES)
+	self.runeCoords = { }
+	for i = 1, self.numRunes do
+		self.runeCoords[#self.runeCoords + 1] = {0, 1, 0, 1}
+	end
+
 	ArcaneCharges.super.prototype.Enable(self, core)
 
-	self:Redraw()
 end
 
 function ArcaneCharges.prototype:GetOptions()
