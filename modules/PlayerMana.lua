@@ -355,13 +355,13 @@ function PlayerMana.prototype:UpdateEnergy(event, unit)
 		return
 	end
 
-	self.previousEnergy = UnitPower(self.unit)
+	self.previousEnergy = UnitPower(self.unit, UnitPowerType(self.unit))
 	if IceHUD.WowVer < 40000 then
 		self:Update(unit)
 	end
 
 	if self:ShouldUseTicker() and
-		((not (self.previousEnergy) or (self.previousEnergy <= UnitPower(self.unit))) and
+		((not (self.previousEnergy) or (self.previousEnergy <= UnitPower(self.unit, UnitPowerType(self.unit)))) and
 		(self.moduleSettings.tickerEnabled) and self.manaType == SPELL_POWER_ENERGY) then
 			self.tickStart = GetTime()
 			self.tickerFrame:Show()

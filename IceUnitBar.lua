@@ -223,8 +223,8 @@ function IceUnitBar.prototype:Update()
 	self.maxHealth = UnitHealthMax(self.unit)
 	self.healthPercentage = self.maxHealth ~= 0 and (self.health/self.maxHealth) or 0
 
-	self.mana = UnitPower(self.unit)
-	self.maxMana = UnitPowerMax(self.unit)
+	self.mana = UnitPower(self.unit, UnitPowerType(self.unit))
+	self.maxMana = UnitPowerMax(self.unit, UnitPowerType(self.unit))
 	self.manaPercentage = self.maxMana ~= 0 and (self.mana/self.maxMana) or 0
 
 	local locClass
