@@ -301,7 +301,7 @@ function Runes.prototype:ShineFinished(rune)
 end
 
 function Runes.prototype:UpdateRuneType(event, rune)
---	DEFAULT_CHAT_FRAME:AddMessage("Runes.prototype:UpdateRuneType: rune="..rune.." GetRuneType(rune)="..GetRuneType(rune));
+	IceHUD:Debug("Runes.prototype:UpdateRuneType: rune="..rune.." GetRuneType(rune)="..GetRuneType(rune));
 
 	if not rune or tonumber(rune) ~= rune or rune < 1 or rune > self.numRunes then
 		return
