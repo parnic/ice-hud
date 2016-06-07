@@ -208,7 +208,9 @@ end
 
 -- OVERRIDE
 function Runes.prototype:Enable(core)
-	self.numRunes = UnitPowerMax("player", SPELL_POWER_RUNES)
+	if IceHUD.WowVer >= 70000 then
+		self.numRunes = UnitPowerMax("player", SPELL_POWER_RUNES)
+	end
 
 	Runes.super.prototype.Enable(self, core)
 
