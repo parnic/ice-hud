@@ -332,7 +332,7 @@ threatValue = 100
 		scaledPercentZeroToOne = 0
 		scaledPercent = 0
 
-		IceHUD:Debug( "Threat: nil threat on valid target" )
+		--IceHUD:Debug( "Threat: nil threat on valid target" )
 	else
 		if self.moduleSettings.showScaledThreat then
 			scaledPercentZeroToOne = scaledPercent / 100
