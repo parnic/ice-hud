@@ -8,7 +8,7 @@
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDogTag-3.0, LibDogTag-Unit-3.0, LibRangeCheck-2.0, LibDualSpec-1.0, LibDBIcon-1.0, AceGUI-3.0-SharedMediaWidgets
 ## X-Compatible-With: 60200
 ## X-Category: HUDs
-## X-Website: http://www.wowace.com/projects/ice-hud/
+## X-Website: http://www.wowace.com/addons/ice-hud/
 ## X-WoWI-ID: 8149
 
 #@no-lib-strip@
