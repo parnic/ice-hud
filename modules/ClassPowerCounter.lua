@@ -784,10 +784,10 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 		self.frame.graphical[rune]:SetPoint("CENTER", 0, -1 * (runeAdjust * (self.runeHeight-5) + runeAdjust + (runeAdjust * self.moduleSettings.runeGap)))
 	end
 
+	local tex = self:GetRuneTexture(rune)
 	if self:GetRuneMode() == "Graphical" then
-		local tex = self:GetRuneTexture(rune)
 		if tex then
-			self.frame.graphical[rune].rune:SetTexture(self:GetRuneTexture(rune))
+			self.frame.graphical[rune].rune:SetTexture(tex)
 		else
 			self.frame.graphical[rune].rune:SetAtlas(self:GetRuneAtlas(rune), self:UseAtlasSize(rune))
 		end
@@ -801,7 +801,7 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "ComboCleanCurves")
 	end
 	if tex then
-		self.frame.graphical[rune].runebg:SetTexture(self.frame.graphical[rune].rune:GetTexture())
+		self.frame.graphical[rune].runebg:SetTexture(tex)
 	else
 		self.frame.graphical[rune].runebg:SetAtlas(self.frame.graphical[rune].rune:GetAtlas())
 	end
