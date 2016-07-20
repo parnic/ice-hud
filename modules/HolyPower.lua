@@ -78,15 +78,23 @@ function HolyPower.prototype:GetRuneTexture(rune)
 end
 
 function HolyPower.prototype:ShowBlizz()
-	PaladinPowerBar:Show()
+	local frame = PaladinPowerBarFrame
+	if frame == nil then
+		frame = PaladinPowerBar
+	end
 
-	PaladinPowerBar:GetScript("OnLoad")(PaladinPowerBar)
+	frame:Show()
+	frame:GetScript("OnLoad")(frame)
 end
 
 function HolyPower.prototype:HideBlizz()
-	PaladinPowerBar:Hide()
+	local frame = PaladinPowerBarFrame
+	if frame == nil then
+		frame = PaladinPowerBar
+	end
 
-	PaladinPowerBar:UnregisterAllEvents()
+	frame:Hide()
+	frame:UnregisterAllEvents()
 end
 
 function HolyPower.prototype:UpdateRunePower(event)
