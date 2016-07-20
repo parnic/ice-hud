@@ -237,15 +237,16 @@ function PlayerMana.prototype:ManaType(event, unit)
 		end
 	end
 
-	if self.manaType == SPELL_POWER_RAGE or self.manaType == SPELL_POWER_RUNIC_POWER then
-		self.bTreatEmptyAsFull = true
-	else
-		self.bTreatEmptyAsFull = false
-	end
+	self.bTreatEmptyAsFull = self:TreatEmptyAsFull()
 
 	self:Update(self.unit)
 end
 
+function PlayerMana.prototype:TreatEmptyAsFull()
+	return self.manaType == SPELL_POWER_RAGE or self.manaType == SPELL_POWER_RUNIC_POWER
+		or (IceHUD.WowVer >= 70000 and (self.manaType == SPELL_POWER_LUNAR_POWER or self.manaType == SPELL_POWER_INSANITY
+		or self.manaType == SPELL_POWER_FURY))
+end
 
 function PlayerMana.prototype:UpdateEvent(event, unit, powertype)
 	self:Update(unit, powertype)
@@ -304,8 +305,8 @@ function PlayerMana.prototype:Update(unit, powertype)
 
 	self:ConditionalUpdateFlash()
 
-	if (self.manaPercentage == 1 and self.manaType ~= SPELL_POWER_RAGE and self.manaType ~= SPELL_POWER_RUNIC_POWER)
-		or (self.manaPercentage == 0 and (self.manaType == SPELL_POWER_RAGE or self.manaType == SPELL_POWER_RUNIC_POWER)) then
+	if (self.manaPercentage == 1 and not self:TreatEmptyAsFull())
+		or (self.manaPercentage == 0 and self:TreatEmptyAsFull()) then
 		self:SetupOnUpdate(false)
 	else
 		self:SetupOnUpdate(true)
