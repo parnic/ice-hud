@@ -18,6 +18,10 @@ function IceTargetMana.prototype:init(moduleName, unit)
 	self:SetDefaultColor("TargetEnergy", 228, 242, 31)
 	self:SetDefaultColor("TargetFocus", 242, 149, 98)
 	self:SetDefaultColor("TargetRunicPower", 52, 64, 221)
+	if IceHUD.WowVer >= 70000 then
+		self:SetDefaultColor("TargetInsanity", 150, 50, 255)
+		self:SetDefaultColor("TargetFury", 255, 50, 255)
+	end
 end
 
 
@@ -105,6 +109,10 @@ function IceTargetMana.prototype:Update(unit)
 			self.color = "TargetEnergy"
 		elseif (manaType == SPELL_POWER_RUNIC_POWER) then
 			self.color = "TargetRunicPower"
+		elseif (IceHUD.WowVer >= 70000 and self.manaType == SPELL_POWER_INSANITY) then
+			self.color = "TargetInsanity"
+		elseif (IceHUD.WowVer >= 70000 and self.manaType == SPELL_POWER_FURY) then
+			self.color = "TargetFury"
 		end
 
 		if (self.tapped) then
@@ -112,11 +120,7 @@ function IceTargetMana.prototype:Update(unit)
 		end
 	end
 
-	if manaType == SPELL_POWER_RAGE or manaType == SPELL_POWER_RUNIC_POWER then
-		self.bTreatEmptyAsFull = true
-	else
-		self.bTreatEmptyAsFull = false
-	end
+	self.bTreatEmptyAsFull = self:TreatEmptyAsFull(manaType)
 
 	self:UpdateBar(self.manaPercentage, self.color)
 
@@ -126,6 +130,11 @@ function IceTargetMana.prototype:Update(unit)
 	end
 end
 
+function IceTargetMana.prototype:TreatEmptyAsFull(manaType)
+	return manaType == SPELL_POWER_RAGE or manaType == SPELL_POWER_RUNIC_POWER
+		or (IceHUD.WowVer >= 70000 and (manaType == SPELL_POWER_LUNAR_POWER or manaType == SPELL_POWER_INSANITY
+		or manaType == SPELL_POWER_FURY))
+end
 
 -- OVERRIDE
 function IceTargetMana.prototype:GetOptions()
