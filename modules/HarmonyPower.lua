@@ -91,15 +91,23 @@ function HarmonyPower.prototype:GetRuneTexture(rune)
 end
 
 function HarmonyPower.prototype:ShowBlizz()
-	MonkHarmonyBar:Show()
+	local frame = MonkHarmonyBarFrame
+	if frame == nil then
+		frame = MonkHarmonyBar
+	end
 
-	MonkHarmonyBar:GetScript("OnLoad")(MonkHarmonyBar)
+	frame:Show()
+	frame:GetScript("OnLoad")(frame)
 end
 
 function HarmonyPower.prototype:HideBlizz()
-	MonkHarmonyBar:Hide()
+	local frame = MonkHarmonyBarFrame
+	if frame == nil then
+		frame = MonkHarmonyBar
+	end
 
-	MonkHarmonyBar:UnregisterAllEvents()
+	frame:Hide()
+	frame:UnregisterAllEvents()
 end
 
 -- Load us up
