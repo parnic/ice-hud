@@ -77,7 +77,13 @@ This module is called HarmonyPower. Harmony was the original name for Chi back w
 If you have DogTags enabled, you can open the Text Settings for the module in question and add SeparateDigits() around the tag you're trying to split up. To display Health/MaxHealth with commas, use: [(SeparateDigits(HP):HPColor "/" SeparateDigits(MaxHP):HPColor):Bracket]. To use periods instead of commas, use: [(SeparateDigits(HP, "."):HPColor "/" SeparateDigits(MaxHP, "."):HPColor):Bracket]. Use the /dog help menu to build your own similar tags for Mana, etc.
 
 |cff9999ff16. The countdown timers on buffs and debuffs completely obscure the icon. How do I disable the timer text?|r
-IceHUD is not responsible for this countdown text and cannot control it. The 6.0 patch added an option in the game client to display counts on top of cooldowns. Look at the Action Bars menu under the game's Interface options. You can turn the text on or off there. Mods like OmniCC or CooldownCount will generally give you the same feature but allow you to control when, where, and how the text shows up.]]
+IceHUD is not responsible for this countdown text and cannot control it. The 6.0 patch added an option in the game client to display counts on top of cooldowns. Look at the Action Bars menu under the game's Interface options. You can turn the text on or off there. Mods like OmniCC or CooldownCount will generally give you the same feature but allow you to control when, where, and how the text shows up.
+
+|cff9999ff17. When I rotate some modules 90 degrees, such as the castbar, the bar appears to wiggle up and down as it fills or empties. How do I fix this?|r
+This is a side effect of the animation API that I'm co-opting to force a rotation without having to provide duplicates of every bar texture in the mod. Any bar moving sufficiently quickly and updating rapidly will cause this. IceHUD is intended to be a vertically-oriented mod, so the rotation feature is there for people who are willing to accept the side effects that come with it. My suggestion is to use one of the many horizontally-oriented bar mods out there if you're wanting horizontal bars. Quartz is a good castbar replacement that you can use and disable IceHUD's built-in castbar, for example.
+
+|cff9999ff18. How do I get rid of the bars that showed up beneath the player in the 7.0 patch?|r
+Blizzard added a "Personal Resource Display" feature in the 7.0 game client. You can disable it in the Game options -> Interface -> Names -> Personal Resource Display.]]
 				}
 			}
 		},
