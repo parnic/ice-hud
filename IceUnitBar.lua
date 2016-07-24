@@ -203,7 +203,7 @@ end
 function IceUnitBar.prototype:ResetRotation()
 	IceUnitBar.super.prototype.ResetRotation(self)
 
-	if self.flashFrame.anim then
+	if self.flashFrame and self.flashFrame.anim then
 		self.flashFrame.anim:Stop()
 	end
 end

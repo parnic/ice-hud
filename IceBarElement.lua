@@ -946,6 +946,8 @@ function IceBarElement.prototype:CreateFrame()
 
 	if self.moduleSettings.rotateBar then
 		self:RotateHorizontal()
+	else
+		self:ResetRotation()
 	end
 end
 
