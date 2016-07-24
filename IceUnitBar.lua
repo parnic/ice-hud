@@ -197,13 +197,15 @@ end
 function IceUnitBar.prototype:RotateHorizontal()
 	IceUnitBar.super.prototype.RotateHorizontal(self)
 
-	self:RotateFrame(self.flashFrame)
+	if IceHUD.WowVer < 70000 then
+		self:RotateFrame(self.flashFrame)
+	end
 end
 
 function IceUnitBar.prototype:ResetRotation()
 	IceUnitBar.super.prototype.ResetRotation(self)
 
-	if self.flashFrame and self.flashFrame.anim then
+	if IceHUD.WowVer < 70000 and self.flashFrame and self.flashFrame.anim then
 		self.flashFrame.anim:Stop()
 	end
 end
