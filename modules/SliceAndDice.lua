@@ -196,7 +196,7 @@ end
 function SliceAndDice.prototype:ResetRotation()
 	SliceAndDice.super.prototype.ResetRotation(self)
 
-	if self.durationFrame.anim then
+	if self.durationFrame and self.durationFrame.anim then
 		self.durationFrame.anim:Stop()
 	end
 end
