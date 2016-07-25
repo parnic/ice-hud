@@ -80,6 +80,6 @@ end
 -- Load for tanks only
 local _, unitClass = UnitClass("player")
 if ((unitClass == "DEATHKNIGHT" or unitClass == "DRUID" or unitClass == "PALADIN" or unitClass == "WARRIOR" or unitClass == "MONK")
-	and IceHUD.WowVer >= 60000) then
+	and IceHUD.WowVer >= 60000 and IceHUD.WowVer < 70000) then
   IceHUD.Resolve = Resolve:new()
 end
