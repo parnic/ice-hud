@@ -413,30 +413,30 @@ end
 -- NORMAL SPELLS                                                             --
 -------------------------------------------------------------------------------
 
-function IceCastBar.prototype:SpellCastSent(event, unit, spell, rank, target)
+function IceCastBar.prototype:SpellCastSent(event, unit, spell, rank, target, lineId)
 	if (unit ~= self.unit) then return end
-	IceHUD:Debug("SpellCastSent", unit, spell, rank, target)
+	IceHUD:Debug("SpellCastSent", unit, spell, rank, target, lineId)
 end
 
 function IceCastBar.prototype:SpellCastChanged(event, arg1)
 	IceHUD:Debug("SpellCastChanged", arg1)
 end
 
-function IceCastBar.prototype:SpellCastStart(event, unit, spell, rank)
+function IceCastBar.prototype:SpellCastStart(event, unit, spell, rank, lineId, spellId)
 	if (unit ~= self.unit) then return end
-	IceHUD:Debug("SpellCastStart", unit, spell, rank)
+	IceHUD:Debug("SpellCastStart", unit, spell, rank, lineId, spellId)
 	--UnitCastingInfo(unit)
 
 	self:StartBar(IceCastBar.Actions.Cast)
-	self.current = spell
+	self.current = lineId
 end
 
-function IceCastBar.prototype:SpellCastStop(event, unit, spell, rank)
+function IceCastBar.prototype:SpellCastStop(event, unit, spell, rank, lineId, spellId)
 	if (unit ~= self.unit) then return end
-	IceHUD:Debug("SpellCastStop", unit, spell, self.current)
+	IceHUD:Debug("SpellCastStop", unit, spell, self.current, rank, lineId, spellId)
 
 	-- ignore if not coming from current spell
-	if (self.current and spell and self.current ~= spell) then
+	if (self.current and lineId and self.current ~= lineId) then
 		return
 	end
 
@@ -450,12 +450,12 @@ function IceCastBar.prototype:SpellCastStop(event, unit, spell, rank)
 end
 
 
-function IceCastBar.prototype:SpellCastFailed(event, unit, spell, rank)
+function IceCastBar.prototype:SpellCastFailed(event, unit, spell, rank, lineId, spellId)
 	if (unit ~= self.unit) then return end
-	IceHUD:Debug("SpellCastFailed", unit, self.current)
+	IceHUD:Debug("SpellCastFailed", unit, self.current, lineId, spellId)
 
 	-- ignore if not coming from current spell
-	if (self.current and spell and self.current ~= spell) then
+	if (self.current and lineId and self.current ~= lineId) then
 		return
 	end
 
@@ -478,12 +478,12 @@ function IceCastBar.prototype:SpellCastFailed(event, unit, spell, rank)
 	self:StartBar(IceCastBar.Actions.Failure, "Failed")
 end
 
-function IceCastBar.prototype:SpellCastInterrupted(event, unit, spell, rank)
+function IceCastBar.prototype:SpellCastInterrupted(event, unit, spell, rank, lineId, spellId)
 	if (unit ~= self.unit) then return end
-	IceHUD:Debug("SpellCastInterrupted", unit, self.current)
+	IceHUD:Debug("SpellCastInterrupted", unit, self.current, lineId, spellId)
 
 	-- ignore if not coming from current spell
-	if (self.current and spell and self.current ~= spell) then
+	if (self.current and lineId and self.current ~= lineId) then
 		return
 	end
 
@@ -505,7 +505,7 @@ function IceCastBar.prototype:SpellCastDelayed(event, unit, delay)
 end
 
 
-function IceCastBar.prototype:SpellCastSucceeded(event, unit, spell, rank)
+function IceCastBar.prototype:SpellCastSucceeded(event, unit, spell, rank, lineId, spellId)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastSucceeded", unit, spell, rank)
 
@@ -515,7 +515,7 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, spell, rank)
 	end
 
 	-- ignore if not coming from current spell
-	if (self.current and self.current ~= spell) then
+	if (self.current and self.current ~= lineId) then
 		return
 	end
 

@@ -404,14 +404,14 @@ end
 
 
 -- OVERRIDE
-function CastBar.prototype:SpellCastSent(event, unit, spell, rank, target)
-	CastBar.super.prototype.SpellCastSent(self, event, unit, spell, rank, target)
+function CastBar.prototype:SpellCastSent(event, unit, spell, rank, target, lineId)
+	CastBar.super.prototype.SpellCastSent(self, event, unit, spell, rank, target, lineId)
 	if (unit ~= self.unit) then return end
 
 	if IceHUD.WowVer < 70000 then
 		self.spellCastSent = GetTime()
 	end
-	self.sentSpell = spell
+	self.sentSpell = lineId
 end
 
 -- OVERRIDE
@@ -423,15 +423,15 @@ function CastBar.prototype:SpellCastChanged(event, arg1)
 end
 
 -- OVERRIDE
-function CastBar.prototype:SpellCastStart(event, unit, spell, rank)
-	CastBar.super.prototype.SpellCastStart(self, event, unit, spell, rank)
+function CastBar.prototype:SpellCastStart(event, unit, spell, rank, lineId, spellId)
+	CastBar.super.prototype.SpellCastStart(self, event, unit, spell, rank, lineId, spellId)
 	if (unit ~= self.unit) then return end
 
 	if not self:IsVisible() or not self.actionDuration then
 		return
 	end
 
-	if self.sentSpell ~= spell then
+	if self.sentSpell ~= lineId then
 		self.spellCastSent = nil
 	end
 
