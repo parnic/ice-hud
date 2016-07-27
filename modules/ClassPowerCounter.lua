@@ -684,11 +684,6 @@ function IceClassPowerCounter.prototype:SetDisplayMode()
 		for i=1, self.numRunes do
 			self:SetupRuneTexture(i)
 			self.frame.graphical[i]:Show()
-			if self.moduleSettings.inactiveDisplayMode == "Darkened" then
-				self.frame.graphical[i].runebg:Show()
-			else
-				self.frame.graphical[i].runebg:Hide()
-			end
 		end
 	end
 end
@@ -723,8 +718,6 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 
 		self.frame.graphical[i].rune = self.frame.graphical[i]:CreateTexture(nil, "ARTWORK")
 		self.frame.graphical[i].rune:SetVertexColor(0, 0, 0)
-		self.frame.graphical[i].runebg = self.frame.graphical[i]:CreateTexture(nil, "BACKGROUND")
-		self.frame.graphical[i].runebg:SetVertexColor(0, 0, 0)
 		self:SetupRuneTexture(i)
 
 		self.frame.graphical[i].shine = self.frame.graphical[i]:CreateTexture(nil, "OVERLAY")
@@ -749,14 +742,10 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 	self.frame.graphical[i]:SetHeight(self.runeHeight)
 	self.frame.graphical[i].rune:SetWidth(self.runeWidth)
 	self.frame.graphical[i].rune:SetHeight(self.runeHeight)
-	self.frame.graphical[i].runebg:SetWidth(self.runeWidth)
-	self.frame.graphical[i].runebg:SetHeight(self.runeHeight)
 	if self.currentGrowMode == self.growModes["width"] then
 		self.frame.graphical[i].rune:SetPoint("LEFT", self.frame.graphical[i], "LEFT")
-		self.frame.graphical[i].runebg:SetPoint("LEFT", self.frame.graphical[i], "LEFT")
 	else
 		self.frame.graphical[i].rune:SetPoint("BOTTOM", self.frame.graphical[i], "BOTTOM")
-		self.frame.graphical[i].runebg:SetPoint("BOTTOM", self.frame.graphical[i], "BOTTOM")
 	end
 end
 
@@ -774,7 +763,6 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 
 	-- make sure any texture aside from the special one is square and has the proper coordinates
 	self.frame.graphical[rune].rune:SetTexCoord(a, b, c, d)
-	self.frame.graphical[rune].runebg:SetTexCoord(a, b, c, d)
 	self.frame.graphical[rune]:SetWidth(width)
 	self.frame:SetWidth(width*self.numRunes)
 	local runeAdjust = rune - (self.numRunes / 2) - 0.5
@@ -784,8 +772,8 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 		self.frame.graphical[rune]:SetPoint("CENTER", 0, -1 * (runeAdjust * (self.runeHeight-5) + runeAdjust + (runeAdjust * self.moduleSettings.runeGap)))
 	end
 
-	local tex = self:GetRuneTexture(rune)
 	if self:GetRuneMode() == "Graphical" then
+		local tex = self:GetRuneTexture(rune)
 		if tex then
 			self.frame.graphical[rune].rune:SetTexture(tex)
 		else
@@ -799,11 +787,6 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "ComboGlow")
 	elseif self:GetRuneMode() == "Graphical Clean Circle" then
 		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "ComboCleanCurves")
-	end
-	if tex then
-		self.frame.graphical[rune].runebg:SetTexture(tex)
-	else
-		self.frame.graphical[rune].runebg:SetAtlas(self.frame.graphical[rune].rune:GetAtlas())
 	end
 end
 
