@@ -245,7 +245,7 @@ end
 function PlayerMana.prototype:TreatEmptyAsFull()
 	return self.manaType == SPELL_POWER_RAGE or self.manaType == SPELL_POWER_RUNIC_POWER
 		or (IceHUD.WowVer >= 70000 and (self.manaType == SPELL_POWER_LUNAR_POWER or self.manaType == SPELL_POWER_INSANITY
-		or self.manaType == SPELL_POWER_FURY))
+		or self.manaType == SPELL_POWER_FURY or self.manaType == SPELL_POWER_MAELSTROM))
 end
 
 function PlayerMana.prototype:UpdateEvent(event, unit, powertype)

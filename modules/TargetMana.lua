@@ -133,7 +133,7 @@ end
 function IceTargetMana.prototype:TreatEmptyAsFull(manaType)
 	return manaType == SPELL_POWER_RAGE or manaType == SPELL_POWER_RUNIC_POWER
 		or (IceHUD.WowVer >= 70000 and (manaType == SPELL_POWER_LUNAR_POWER or manaType == SPELL_POWER_INSANITY
-		or manaType == SPELL_POWER_FURY))
+		or manaType == SPELL_POWER_FURY or self.manaType == SPELL_POWER_MAELSTROM))
 end
 
 -- OVERRIDE
