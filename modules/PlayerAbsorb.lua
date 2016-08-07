@@ -17,11 +17,5 @@ function PlayerAbsorb.prototype:GetDefaultSettings()
 	return settings
 end
 
-function PlayerAbsorb.prototype:MyRegisterCustomEvents()
-end
-
-function PlayerAbsorb.prototype:MyUnregisterCustomEvents()
-end
-
 -- Load us up
 IceHUD.PlayerAbsorb = PlayerAbsorb:new()
