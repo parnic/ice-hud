@@ -21,6 +21,7 @@ function IceTargetMana.prototype:init(moduleName, unit)
 	if IceHUD.WowVer >= 70000 then
 		self:SetDefaultColor("TargetInsanity", 150, 50, 255)
 		self:SetDefaultColor("TargetFury", 255, 50, 255)
+		self:SetDefaultColor("TargetMaelstrom", 52, 64, 221)
 	end
 end
 
@@ -109,10 +110,12 @@ function IceTargetMana.prototype:Update(unit)
 			self.color = "TargetEnergy"
 		elseif (manaType == SPELL_POWER_RUNIC_POWER) then
 			self.color = "TargetRunicPower"
-		elseif (IceHUD.WowVer >= 70000 and self.manaType == SPELL_POWER_INSANITY) then
+		elseif (IceHUD.WowVer >= 70000 and manaType == SPELL_POWER_INSANITY) then
 			self.color = "TargetInsanity"
-		elseif (IceHUD.WowVer >= 70000 and self.manaType == SPELL_POWER_FURY) then
+		elseif (IceHUD.WowVer >= 70000 and manaType == SPELL_POWER_FURY) then
 			self.color = "TargetFury"
+		elseif (IceHUD.WowVer >= 70000 and manaType == SPELL_POWER_MAELSTROM) then
+			self.color = "TargetMaelstrom"
 		end
 
 		if (self.tapped) then

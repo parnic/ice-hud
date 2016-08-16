@@ -19,6 +19,7 @@ function PlayerMana.prototype:init()
 	if IceHUD.WowVer >= 70000 then
 		self:SetDefaultColor("PlayerInsanity", 150, 50, 255)
 		self:SetDefaultColor("PlayerFury", 255, 50, 255)
+		self:SetDefaultColor("PlayerMaelstrom", 62, 54, 152)
 	end
 end
 
@@ -298,6 +299,8 @@ function PlayerMana.prototype:Update(unit, powertype)
 			color = "PlayerInsanity"
 		elseif (IceHUD.WowVer >= 70000 and self.manaType == SPELL_POWER_FURY) then
 			color = "PlayerFury"
+		elseif (IceHUD.WowVer >= 70000 and self.manaType == SPELL_POWER_MAELSTROM) then
+			color = "PlayerMaelstrom"
 		end
 	end
 
