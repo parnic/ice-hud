@@ -272,7 +272,7 @@ end
 
 function IceCore.prototype:RedirectRemovedModules()
 	local _, class = UnitClass("player")
-	if class == "WARRIOR" and self.settings.modules["SunderCount"] and IceHUD.WowVer < 60000 then
+	if class == "WARRIOR" and self.settings.modules["SunderCount"] and GetSpellInfo(SUNDER_SPELL_ID) and IceHUD.WowVer < 60000 then
 		if self.settings.modules["SunderCount"].enabled or self.settings.modules["SunderCount"].enabled == nil then
 			local bFound = false
 
@@ -309,7 +309,7 @@ function IceCore.prototype:RedirectRemovedModules()
 		self.settings.modules["SunderCount"] = nil
 	end
 
-	if class == "DRUID" and self.settings.modules["LacerateCount"] then
+	if class == "DRUID" and self.settings.modules["LacerateCount"] and GetSpellInfo(LACERATE_SPELL_ID) then
 		if self.settings.modules["LacerateCount"].enabled or self.settings.modules["LacerateCount"].enabled == nil then
 			local bFound = false
 			for k,v in pairs(self.elements) do
@@ -346,7 +346,7 @@ function IceCore.prototype:RedirectRemovedModules()
 		self.settings.modules["LacerateCount"] = nil
 	end
 
-	if class == "SHAMAN" and self.settings.modules["MaelstromCount"] then
+	if class == "SHAMAN" and self.settings.modules["MaelstromCount"] and GetSpellInfo(MAELSTROM_SPELL_ID) then
 		if self.settings.modules["MaelstromCount"].enabled or self.settings.modules["MaelstromCount"].enabled == nil then
 			local bFound = false
 			for k,v in pairs(self.elements) do
