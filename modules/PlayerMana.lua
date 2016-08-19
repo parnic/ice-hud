@@ -20,6 +20,7 @@ function PlayerMana.prototype:init()
 		self:SetDefaultColor("PlayerInsanity", 150, 50, 255)
 		self:SetDefaultColor("PlayerFury", 255, 50, 255)
 		self:SetDefaultColor("PlayerMaelstrom", 62, 54, 152)
+		self:SetDefaultColor("PlayerPain", 255, 50, 255)
 	end
 end
 
@@ -246,7 +247,7 @@ end
 function PlayerMana.prototype:TreatEmptyAsFull()
 	return self.manaType == SPELL_POWER_RAGE or self.manaType == SPELL_POWER_RUNIC_POWER
 		or (IceHUD.WowVer >= 70000 and (self.manaType == SPELL_POWER_LUNAR_POWER or self.manaType == SPELL_POWER_INSANITY
-		or self.manaType == SPELL_POWER_FURY or self.manaType == SPELL_POWER_MAELSTROM))
+		or self.manaType == SPELL_POWER_FURY or self.manaType == SPELL_POWER_PAIN or self.manaType == SPELL_POWER_MAELSTROM))
 end
 
 function PlayerMana.prototype:UpdateEvent(event, unit, powertype)
@@ -301,6 +302,8 @@ function PlayerMana.prototype:Update(unit, powertype)
 			color = "PlayerFury"
 		elseif (IceHUD.WowVer >= 70000 and self.manaType == SPELL_POWER_MAELSTROM) then
 			color = "PlayerMaelstrom"
+		elseif (IceHUD.WowVer >= 70000 and self.manaType == SPELL_POWER_PAIN) then
+			color = "PlayerPain"
 		end
 	end
 
