@@ -1325,6 +1325,7 @@ do
 					icon:SetHeight(size-2)
 				end
 			else
+				frame.texture:SetTexture(0, 0, 0, 0.5)
 				icon:SetWidth(size-2)
 				icon:SetHeight(size-2)
 			end
