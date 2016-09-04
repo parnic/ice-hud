@@ -89,6 +89,7 @@ modules\FocusAbsorb.lua
 modules\Stagger.lua
 modules\PlayerAltMana.lua
 modules\ArcaneCharges.lua
+modules\RollTheBones.lua
 
 #@do-not-package@
 IceHUD_Options\Options.lua
