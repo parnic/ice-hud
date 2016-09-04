@@ -282,11 +282,10 @@ function PlayerMana.prototype:Update(unit, powertype)
 	end
 
 	local color = "PlayerMana"
-	if (self.moduleSettings.scaleManaColor) then
-		color = "ScaledManaColor"
-	end
 	if not (self.alive) then
 		color = "Dead"
+	elseif (self.moduleSettings.scaleManaColor) then
+		color = "ScaledManaColor"
 	else
 		if (self.manaType == SPELL_POWER_RAGE) then
 			color = "PlayerRage"
