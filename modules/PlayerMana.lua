@@ -100,6 +100,27 @@ end
 		order = 53
 	}
 
+	opts["scaleManaColorForAll"] = {
+		type = "toggle",
+		name = L["Scale for non-mana users"],
+		desc = L["Uses the 'color bar by mana %' setting/colors even for classes that don't use Mana"],
+		width = 'double',
+		get = function()
+			return self.moduleSettings.scaleManaColorForAll
+		end,
+		set = function(info, value)
+			self.moduleSettings.scaleManaColorForAll = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return not self.moduleSettings.scaleManaColor
+		end,
+		order = 53.1
+	}
+
 	return opts
 end
 
@@ -284,7 +305,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 	local color = "PlayerMana"
 	if not (self.alive) then
 		color = "Dead"
-	elseif (self.moduleSettings.scaleManaColor) then
+	elseif (self.moduleSettings.scaleManaColor and (UnitPowerType(self.unit) == SPELL_POWER_MANA or self.moduleSettings.scaleManaColorForAll)) then
 		color = "ScaledManaColor"
 	else
 		if (self.manaType == SPELL_POWER_RAGE) then
