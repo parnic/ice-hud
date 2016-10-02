@@ -332,6 +332,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 			self.frame.graphicalBG[i] = frame
 			frame.texture = frame:CreateTexture()
 			frame.texture:SetAllPoints(frame)
+			forceTextureUpdate = true
 		end
 
 		if forceTextureUpdate then
@@ -367,6 +368,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 			self.frame.graphical[i] = frame
 			frame.texture = frame:CreateTexture()
 			frame.texture:SetAllPoints(frame)
+			forceTextureUpdate = true
 		end
 
 		if forceTextureUpdate then
@@ -464,7 +466,7 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 	anticipate = self.moduleSettings.showAnticipation and anticipate or 0
 
 	if self:GetMaxComboPoints() > #self.frame.graphical then
-		self:CreateFrame()
+		self:CreateComboFrame(true)
 	end
 
 	if (self.moduleSettings.comboMode == "Numeric") then
