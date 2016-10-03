@@ -8,6 +8,7 @@ local gapPerComboPoint = 6
 local maxComboPoints = 5
 local rtbEndTime = 0
 local rtbDuration = 0
+local rtbCount = 0
 
 local CurrMaxRtBDuration = 0
 local PotentialRtBDuration = 0
@@ -26,7 +27,10 @@ function RollTheBones.prototype:init()
   self.moduleSettings.desiredLerpTime = 0
   self.moduleSettings.shouldAnimate = false
 
-  self:SetDefaultColor("RollTheBones", 0.75, 1, 0.2)
+  self:SetDefaultColor("RollTheBones", 1, 0.6, 0.2)
+  self:SetDefaultColor("RollTheBones2", 0.75, 1, 0.2)
+  self:SetDefaultColor("RollTheBones3", 0.4, 1, 0.2)
+  self:SetDefaultColor("RollTheBones6", 0.1, 1, 0.7)
   self:SetDefaultColor("RollTheBonesPotential", 1, 1, 1)
 
   self.bTreatEmptyAsFull = true
@@ -83,6 +87,7 @@ function RollTheBones.prototype:GetDefaultSettings()
   settings["hideAnimationSettings"] = true
   settings["bAllowExpand"] = true
   settings["bShowWithNoTarget"] = true
+  settings["bUseMultipleBuffColors"] = true
 
   return settings
 end
@@ -147,6 +152,23 @@ function RollTheBones.prototype:GetOptions()
     end,
   }
 
+  opts["bUseMultipleBuffColors"] =
+  {
+    type = 'toggle',
+    name = L["Use multiple buff colors"],
+    desc = L["If this is checked, then the bar uses different colors depending on how many RtB buffs you have"],
+    get = function()
+      return self.moduleSettings.bUseMultipleBuffColors
+    end,
+    set = function(info, v)
+      self.moduleSettings.bUseMultipleBuffColors = v
+      self:Redraw()
+    end,
+    disabled = function()
+      return not self.moduleSettings.enabled
+    end,
+  }
+
   return opts
 end
 
@@ -190,24 +212,33 @@ end
 
 function RollTheBones.prototype:GetBuffDuration(unitName, ids)
   local i = 1
-  local buff, rank, texture, count, type, duration, endTime, remaining, spellId
-  buff, _, _, count, type, duration, endTime, _, _, _, spellId = UnitBuff(unitName, i)
+  local buff, rank, texture, type, duration, endTime, remaining, spellId
+  buff, _, _, _, type, duration, endTime, _, _, _, spellId = UnitBuff(unitName, i)
 
+  local realDuration, remaining, count
+  local now = GetTime()
+
+  count = 0
   while buff do
     if (spellId and ids[spellId]) then
-      if endTime and not remaining then
-        remaining = endTime - GetTime()
+      if endTime then
+        realDuration = duration
+        remaining = endTime - now
+        count = count + 1
       end
-      return duration, remaining
     end
 
     i = i + 1;
 
-    buff, _, _, count, type, duration, endTime, _, _, _, spellId = UnitBuff(unitName, i)
+    buff, _, _, _, type, duration, endTime, _, _, _, spellId = UnitBuff(unitName, i)
 
   end
 
-  return nil, nil
+  if count > 0 then
+    return realDuration, remaining, count
+  else
+    return nil, nil, 0
+  end
 end
 
 function RollTheBones.prototype:MyOnUpdate()
@@ -244,7 +275,7 @@ function RollTheBones.prototype:UpdateRollTheBones(event, unit, fromUpdate)
   local remaining = nil
 
   if not fromUpdate then
-    rtbDuration, remaining = self:GetBuffDuration(self.unit, RtBSet)
+    rtbDuration, remaining, rtbCount = self:GetBuffDuration(self.unit, RtBSet)
 
     if not remaining then
       rtbEndTime = 0
@@ -263,7 +294,7 @@ function RollTheBones.prototype:UpdateRollTheBones(event, unit, fromUpdate)
       remaining = rtbEndTime - now
     end
     local denominator = (self.moduleSettings.showAsPercentOfMax and CurrMaxRtBDuration or rtbDuration)
-    self:UpdateBar(denominator ~= 0 and remaining / denominator or 0, "RollTheBones")
+    self:UpdateBar(denominator ~= 0 and remaining / denominator or 0, self:GetColorName(rtbCount))
   else
     self:UpdateBar(0, "RollTheBones")
 
@@ -282,6 +313,14 @@ function RollTheBones.prototype:UpdateRollTheBones(event, unit, fromUpdate)
   if (remaining ~= nil) or PotentialRtBDuration > 0 then
     local potText = " (" .. PotentialRtBDuration .. ")"
     self:SetBottomText1(self.moduleSettings.upperText .. tostring(floor(remaining or 0)) .. (self.moduleSettings.durationAlpha ~= 0 and potText or ""))
+  end
+end
+
+function RollTheBones.prototype:GetColorName(count)
+  if self.moduleSettings.bUseMultipleBuffColors and count >= 2 then
+    return "RollTheBones"..count
+  else
+    return "RollTheBones"
   end
 end
 
