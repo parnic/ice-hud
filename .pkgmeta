@@ -61,3 +61,8 @@ move-folders:
 
 tools-used:
     - libdatabroker-1-1
+
+ignore:
+    - readme.md
+
+manual-changelog: changelog.txt
