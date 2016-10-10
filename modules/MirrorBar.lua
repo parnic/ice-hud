@@ -165,6 +165,8 @@ function MirrorBarHandler.prototype:init()
 	self:SetDefaultColor("BREATH", 0, 0.5, 1)
 	self:SetDefaultColor("DEATH", 1, 0.7, 0)
 	self:SetDefaultColor("FEIGNDEATH", 1, 0.9, 0)
+
+	self.scalingEnabled = true
 end
 
 
@@ -540,6 +542,7 @@ function MirrorBarHandler.prototype:SetSettings(bar)
 	bar.moduleSettings.barVerticalOffset = self.moduleSettings.barVerticalOffset
 	bar.moduleSettings.alwaysFullAlpha = self.moduleSettings.alwaysFullAlpha
 	bar.moduleSettings.rotateBar = self.moduleSettings.rotateBar
+	bar.moduleSettings.scale = self.moduleSettings.scale
 end
 
 
