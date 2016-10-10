@@ -152,8 +152,8 @@ Blizzard added a "Personal Resource Display" feature in the 7.0 game client. You
 					set = function(info, v)
 						IceHUD.IceCore:SetScale(v)
 					end,
-					min = 0.5,
-					max = 1.5,
+					min = 0.2,
+					max = 2.0,
 					step = 0.05,
 					isPercent = true,
 					order = 14,
