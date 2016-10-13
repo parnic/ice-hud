@@ -1,3 +1,11 @@
+v1.10.9:
+- Added support for the Scale setting on mirror bars and extended the mod-wide scale setting to a range of 20%-200% (ticket #228).
+- Fixed Runes module causing a memory leak.
+- Added a toggle to cause Runes to display the same way as combo points: show a series of icons that empty and fill back up based on the number of runes available.
+- Added a toggle to cause Runes to display as just a number of available runes.
+- Added an option to keep Runes displayed on the screen whether you have a target or not if not all runes are recharged.
+- Added display of the player's current absorb amount to the top of the health bar. Incoming heals display on top of both.
+
 v1.10.8:
 - Fixed combo points sometimes showing a max of 5 when it should show a max of 6.
 - Added coloration to the Roll The Bones module for how many RtB buffs the player has active (ticket #227, thanks Zahariel!).
