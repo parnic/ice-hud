@@ -5,6 +5,7 @@ local IceHUD = _G.IceHUD
 
 PlayerHealth.prototype.resting = nil
 PlayerHealth.prototype.pendingBlizzardPartyHide = false
+PlayerHealth.prototype.absorbAmount = 0
 
 local configMode = false
 local HealComm
@@ -16,6 +17,7 @@ function PlayerHealth.prototype:init()
 
 	self:SetDefaultColor("PlayerHealth", 37, 164, 30)
 	self:SetDefaultColor("PlayerHealthHealAmount", 37, 164, 30)
+	self:SetDefaultColor("PlayerHealthAbsorbAmount", 220, 220, 220)
 end
 
 
@@ -31,8 +33,10 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["allowMouseInteraction"] = false
 	settings["allowMouseInteractionCombat"] = false
 	settings["healAlpha"] = 0.6
+	settings["absorbAlpha"] = 0.6
 	settings["lockIconAlpha"] = false
 	settings["showIncomingHeals"] = true
+	settings["showAbsorbs"] = true
 
 	settings["showStatusIcon"] = true
 	settings["statusIconOffset"] = {x=110, y=0}
@@ -107,6 +111,8 @@ function PlayerHealth.prototype:Enable(core)
 		self:RegisterEvent("UNIT_HEAL_PREDICTION", "IncomingHealPrediction")
 	end
 
+	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UpdateAbsorbAmount")
+
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
 	end
@@ -162,6 +168,11 @@ function PlayerHealth.prototype:IncomingHealPrediction(event, unit)
 		incomingHealAmt = UnitGetIncomingHeals(self.unit)
 		self:Update()
 	end
+end
+
+function PlayerHealth.prototype:UpdateAbsorbAmount()
+	self.absorbAmount = UnitGetTotalAbsorbs(self.unit) or 0
+	self:Update()
 end
 
 
@@ -325,6 +336,52 @@ function PlayerHealth.prototype:GetOptions()
 			return not self.moduleSettings.enabled or not self.moduleSettings.showIncomingHeals
 		end,
 		order = 43.7
+	}
+
+	opts["showAbsorbs"] =
+	{
+		type = 'toggle',
+		name = L["Show absorbs"],
+		desc = L["Whether or not to show absorb amounts as a lighter-colored bar on top of your current health."],
+		get = function()
+			return self.moduleSettings.showAbsorbs
+		end,
+		set = function(info, v)
+			if not v then
+				self.absorbFrame.bar:Hide()
+			else
+				self.absorbFrame.bar:Show()
+			end
+
+			self.moduleSettings.showAbsorbs = v
+
+			self:Update()
+		end,
+		disabled = function()
+			return not (self.moduleSettings.enabled and IceHUD.WowVer >= 70000)
+		end,
+		order = 43.8
+	}
+
+	opts["absorbAlpha"] =
+	{
+		type = "range",
+		name = L["Absorb bar alpha"],
+		desc = L["What alpha value to use for the bar that displays how much effective health you have including absorbs (This gets multiplied by the bar's current alpha to stay in line with the bar on top of it)"],
+		min = 0,
+		max = 100,
+		step = 5,
+		get = function()
+			return self.moduleSettings.absorbAlpha * 100
+		end,
+		set = function(info, v)
+			self.moduleSettings.absorbAlpha = v / 100.0
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not self.moduleSettings.showAbsorbs
+		end,
+		order = 43.9
 	}
 
 	opts["iconSettings"] =
@@ -824,6 +881,7 @@ function PlayerHealth.prototype:CreateFrame()
 	PlayerHealth.super.prototype.CreateFrame(self)
 
 	self:CreateHealBar()
+	self:CreateAbsorbBar()
 end
 
 
@@ -877,6 +935,18 @@ function PlayerHealth.prototype:CreateHealBar()
 
 	if not self.moduleSettings.showIncomingHeals or (IceHUD.WowVer < 40000 and not HealComm) then
 		self.healFrame.bar:Hide()
+	end
+end
+
+function PlayerHealth.prototype:CreateAbsorbBar()
+	self.absorbFrame = self:BarFactory(self.absorbFrame, "LOW","BACKGROUND")
+
+	self.absorbFrame.bar:SetVertexColor(self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
+
+	self:UpdateBar(1, "undef")
+
+	if not self.moduleSettings.showAbsorbs or UnitGetTotalAbsorbs == nil then
+		self.absorbFrame.bar:Hide()
 	end
 end
 
@@ -1151,7 +1221,7 @@ function PlayerHealth.prototype:CheckPvP()
 		minx, maxx, miny, maxy = 0.05, 0.605, 0.015, 0.57
 	elseif UnitIsPVP(self.unit) then
 		pvpMode = UnitFactionGroup(self.unit)
-		
+
 		if pvpMode == "Neutral" then
 			pvpMode = "FFA"
 		end
@@ -1216,7 +1286,7 @@ function PlayerHealth.prototype:Update(unit)
 		local percent
 
 		if incomingHealAmt > 0 then
-			percent = self.maxHealth ~= 0 and ((self.health + incomingHealAmt) / self.maxHealth) or 0
+			percent = self.maxHealth ~= 0 and ((self.health + (self.absorbAmount or 0) + incomingHealAmt) / self.maxHealth) or 0
 			if self.moduleSettings.reverse then
 				percent = 1 - percent
 				-- Rokiyo: I'm thinking the frama strata should also to be set to medium if we're in reverse.
@@ -1228,6 +1298,23 @@ function PlayerHealth.prototype:Update(unit)
 		percent = IceHUD:Clamp(percent, 0, 1)
 
 		self:SetBarCoord(self.healFrame, percent)
+	end
+
+	if self.moduleSettings.showAbsorbs and self.absorbFrame and self.absorbFrame.bar and self.absorbAmount then
+		local percent
+
+		if self.absorbAmount > 0 then
+			percent = self.maxHealth ~= 0 and ((self.health + self.absorbAmount) / self.maxHealth) or 0
+			if self.moduleSettings.reverse then
+				percent = 1 - percent
+			end
+		else
+			percent = 0
+		end
+
+		percent = IceHUD:Clamp(percent, 0, 1)
+
+		self:SetBarCoord(self.absorbFrame, percent)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
@@ -1398,6 +1485,9 @@ function PlayerHealth.prototype:UpdateBar(scale, color, alpha)
 
 	if self.healFrame and self.healFrame.bar then
 		self.healFrame.bar:SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
+	end
+	if self.absorbFrame and self.absorbFrame.bar then
+		self.absorbFrame.bar:SetVertexColor(self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
 	end
 --[[ seems to be causing taint. oh well
 	if self.frame.button then
