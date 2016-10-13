@@ -344,7 +344,9 @@ end
 
 function Runes.prototype:CreateRuneFrame()
 	-- create numeric runes
-	self.frame.numeric = self:FontFactory(self.moduleSettings.runeFontSize, nil, self.frame.numeric)
+	if not self.frame.numeric then
+		self.frame.numeric = self:FontFactory(self.moduleSettings.runeFontSize, self.frame)
+	end
 
 	self.frame.numeric:SetWidth(50)
 	self.frame.numeric:SetJustifyH("CENTER")
