@@ -21,6 +21,13 @@ if IceHUD.WowVer >= 70000 then
 	GetRuneType = function() return RUNETYPE_LEGION end
 end
 
+local RUNEMODE_DEFAULT = "Blizzard"
+local RUNEMODE_NUMERIC = "Numeric"
+local RUNEMODE_BAR = "Graphical Bar"
+local RUNEMODE_CIRCLE = "Graphical Circle"
+local RUNEMODE_GLOW = "Graphical Glow"
+local RUNEMODE_CLEANCIRCLE = "Graphical Clean Circle"
+
 -- setup the names to be more easily readable
 Runes.prototype.runeNames = {
 	[RUNETYPE_BLOOD] = "Blood",
@@ -33,6 +40,8 @@ Runes.prototype.runeNames = {
 Runes.prototype.runeSize = 25
 -- blizzard has hardcoded 6 runes right now, so i'll do the same...see RuneFrame.xml
 Runes.prototype.numRunes = 6
+
+Runes.prototype.lastRuneState = {}
 
 -- Constructor --
 function Runes.prototype:init()
@@ -152,6 +161,9 @@ function Runes.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
+		hidden = function()
+			return self.moduleSettings.runeMode ~= RUNEMODE_DEFAULT
+		end,
 		order = 36
 	}
 
@@ -175,6 +187,42 @@ function Runes.prototype:GetOptions()
 		order = 34.1
 	}
 
+	opts["runeMode"] = {
+		type = 'select',
+		name = L["Rune display mode"],
+		desc = L["What graphical representation each rune should have. When setting to anything other than 'graphical', the module will behave more like combo points and simply show how many are active."],
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.runeMode)
+		end,
+		set = function(info, v)
+			self.moduleSettings.runeMode = info.option.values[v]
+			self:ResetRuneAvailability()
+			self:Redraw()
+		end,
+		values = { RUNEMODE_DEFAULT, RUNEMODE_NUMERIC, RUNEMODE_BAR, RUNEMODE_CIRCLE, RUNEMODE_GLOW, RUNEMODE_CLEANCIRCLE },
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 35.5,
+	}
+
+	opts["showWhenNotFull"] = {
+		type = 'toggle',
+		name = L["Show when not full"],
+		desc = L["Whether to show the Runes module any time the player has fewer than max runes available (regardless of combat/target status)."],
+		get = function()
+			return self.moduleSettings.showWhenNotFull
+		end,
+		set = function(info, v)
+			self.moduleSettings.showWhenNotFull = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 38,
+	}
+
 	return opts
 end
 
@@ -192,7 +240,9 @@ function Runes.prototype:GetDefaultSettings()
 	defaults["alwaysFullAlpha"] = false
 	defaults["displayMode"] = "Horizontal"
 	defaults["cooldownMode"] = "Cooldown"
+	defaults["runeMode"] = RUNEMODE_DEFAULT
 	defaults["runeGap"] = 0
+	defaults["showWhenNotFull"] = false
 
 	return defaults
 end
@@ -210,6 +260,10 @@ end
 function Runes.prototype:Enable(core)
 	if IceHUD.WowVer >= 70000 then
 		self.numRunes = UnitPowerMax("player", SPELL_POWER_RUNES)
+	end
+
+	for i=1,self.numRunes do
+		self.lastRuneState[i] = select(3, GetRuneCooldown(i))
 	end
 
 	Runes.super.prototype.Enable(self, core)
@@ -259,15 +313,45 @@ function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
 		return
 	end
 
+	if self.moduleSettings.runeMode == RUNEMODE_NUMERIC then
+		self.frame.numeric:SetText(tostring(self:GetNumRunesAvailable()))
+		return
+	end
+
 	local start, duration, usable = GetRuneCooldown(rune)
+
+	local lastState = self.lastRuneState[rune]
+	self.lastRuneState[rune] = usable
+
+	if self.moduleSettings.runeMode ~= RUNEMODE_DEFAULT then
+		if lastState == usable then
+			return
+		end
+
+		if usable then
+			for i=1,self.numRunes do
+				if self.frame.graphical[i]:GetAlpha() == 0 then
+					rune = i
+					break
+				end
+			end
+		else
+			for i=1,self.numRunes do
+				if self.frame.graphical[i]:GetAlpha() == 0 then
+					break
+				end
+				rune = i
+			end
+		end
+	end
 
 --	print("Runes.prototype:UpdateRunePower: rune="..rune.." usable="..(usable and "yes" or "no").." GetRuneType(rune)="..GetRuneType(rune));
 
 	if usable then
-		if self.moduleSettings.cooldownMode == "Cooldown" then
-			self.frame.graphical[rune].cd:Hide()
-		elseif self.moduleSettings.cooldownMode == "Alpha" then
+		if self.moduleSettings.cooldownMode == "Alpha" or self.moduleSettings.runeMode ~= RUNEMODE_DEFAULT then
 			self.frame.graphical[rune]:SetAlpha(1)
+		elseif self.moduleSettings.cooldownMode == "Cooldown" then
+			self.frame.graphical[rune].cd:Hide()
 		elseif self.moduleSettings.cooldownMode == "Both" then
 			self.frame.graphical[rune].cd:Hide()
 			self.frame.graphical[rune]:SetAlpha(1)
@@ -283,7 +367,9 @@ function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
 			UIFrameFade(self.frame.graphical[rune].shine, fadeInfo);
 		end
 	elseif start ~= nil and duration ~= nil then
-		if self.moduleSettings.cooldownMode == "Cooldown" then
+		if self.moduleSettings.runeMode ~= RUNEMODE_DEFAULT then
+			self.frame.graphical[rune]:SetAlpha(0)
+		elseif self.moduleSettings.cooldownMode == "Cooldown" then
 			CooldownFrame_SetTimer(self.frame.graphical[rune].cd, start, duration, true)
 			self.frame.graphical[rune].cd:Show()
 		elseif self.moduleSettings.cooldownMode == "Alpha" then
@@ -294,6 +380,20 @@ function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
 			self.frame.graphical[rune]:SetAlpha(0.2)
 		end
 	end
+
+	self:Redraw()
+end
+
+function Runes.prototype:GetNumRunesAvailable()
+	local available = 0
+
+	for i=1,self.numRunes do
+		if select(3, GetRuneCooldown(i)) then
+			available = available + 1
+		end
+	end
+
+	return available
 end
 
 function Runes.prototype:ShineFinished(rune)
@@ -319,10 +419,19 @@ function Runes.prototype:UpdateRuneType(event, rune)
 end
 
 function Runes.prototype:GetRuneTexture(runeName)
-	if not runeName then
-		return ""
+	if self.moduleSettings.runeMode == RUNEMODE_DEFAULT and runeName then
+		return "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-"..runeName
+	elseif self.moduleSettings.runeMode == RUNEMODE_BAR then
+		return IceElement.TexturePath .. "Combo"
+	elseif self.moduleSettings.runeMode == RUNEMODE_CIRCLE then
+		return IceElement.TexturePath .. "ComboRound"
+	elseif self.moduleSettings.runeMode == RUNEMODE_GLOW then
+		return IceElement.TexturePath .. "ComboGlow"
+	elseif self.moduleSettings.runeMode == RUNEMODE_CLEANCIRCLE then
+		return IceElement.TexturePath .. "ComboCleanCurves"
 	end
-	return "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-"..runeName
+
+	return ""
 end
 
 -- 'Protected' methods --------------------------------------------------------
@@ -352,7 +461,11 @@ function Runes.prototype:CreateRuneFrame()
 	self.frame.numeric:SetJustifyH("CENTER")
 
 	self.frame.numeric:SetPoint("TOP", self.frame, "TOP", 0, 0)
-	self.frame.numeric:Hide()
+	if self.moduleSettings.runeMode == RUNEMODE_NUMERIC then
+		self.frame.numeric:Show()
+	else
+		self.frame.numeric:Hide()
+	end
 
 	if (not self.frame.graphical) then
 		self.frame.graphical = {}
@@ -411,7 +524,11 @@ function Runes.prototype:CreateRune(i, type, name)
 	local runeTex = self:GetRuneTexture(name)
 	self.frame.graphical[i].rune:SetTexture(runeTex)
 	self.frame.graphical[i].rune:SetVertexColor(self:GetColor("Runes"..name))
-	self.frame.graphical[i]:Show()
+	if self.moduleSettings.runeMode ~= RUNEMODE_NUMERIC then
+		self.frame.graphical[i]:Show()
+	else
+		self.frame.graphical[i]:Hide()
+	end
 
 	self.frame.graphical[i].cd:SetFrameStrata("BACKGROUND")
 	self.frame.graphical[i].cd:SetFrameLevel(self.frame.graphical[i]:GetFrameLevel()+1)
@@ -485,6 +602,14 @@ end
 function Runes.prototype:CheckCombat()
 	Runes.super.prototype.CheckCombat(self)
 	self:Redraw()
+end
+
+function Runes.prototype:UseTargetAlpha(scale)
+	if not self.moduleSettings.showWhenNotFull then
+		return Runes.super.prototype.UseTargetAlpha(scale)
+	else
+		return self:GetNumRunesAvailable() ~= self.numRunes
+	end
 end
 
 -- Load us up
