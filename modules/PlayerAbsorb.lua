@@ -13,7 +13,7 @@ function PlayerAbsorb.prototype:GetDefaultSettings()
 
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 3
-	settings["enabled"] = false
+	settings["enabled"] = true
 
 	return settings
 end
