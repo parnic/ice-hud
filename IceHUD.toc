@@ -1,4 +1,4 @@
-## Interface: 70000
+## Interface: 70100
 ## Author: Parnic, originally created by Iceroth
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f-Ace3-|r
