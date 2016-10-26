@@ -174,7 +174,7 @@ function PlayerMana.prototype:CheckVehicle()
 end
 
 function PlayerMana.prototype:ShouldUseTicker()
-	return IceHUD.WowVer < 30000 or not GetCVarBool("predictedPower")
+	return IceHUD.WowVer < 30000 or (IceHUD.WowVer < 70100 and not GetCVarBool("predictedPower"))
 end
 
 function PlayerMana.prototype:SetupOnUpdate(enable)
