@@ -1,3 +1,6 @@
+v1.10.10.1:
+- Fixed the old energy ticker showing up in 7.1.
+
 v1.10.10:
 - Updated TOC for 7.1
 - Re-enabled PlayerAbsorb by default by popular demand.
