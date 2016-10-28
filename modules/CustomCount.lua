@@ -436,6 +436,12 @@ function IceCustomCount.prototype:UpdateCustomCount()
 	end
 
 	local points = IceStackCounter_GetCount(self)
+	local max = IceStackCounter_GetMaxCount(self)
+
+	if max ~= #self.frame.graphical then
+		self:Redraw()
+		return
+	end
 
 	if (self.moduleSettings.countMode == "Numeric") then
 		local r, g, b = self:GetCustomColor()
