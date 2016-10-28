@@ -1,3 +1,7 @@
+v1.10.11:
+- Updated TOC for IceHUD_Options module
+- Fixed custom stack counters in graphical mode tracking spell charges failing to update when the maximum number of charges changes (such as with a talented 2-charge Demon Hunter Throw Glaive)
+
 v1.10.10.1:
 - Fixed the old energy ticker showing up in 7.1.
 
