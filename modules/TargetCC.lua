@@ -35,9 +35,9 @@ local StunCCList = {
 	-- bash
 	5211,
 	-- Maim
-	22570,
-	-- pounce
-	9005,
+	203123,
+	-- Rake
+	163505,
 	-- war stomp
 	20549,
 	-- deep freeze
