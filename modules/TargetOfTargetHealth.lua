@@ -24,7 +24,7 @@ function TargetTargetHealth.prototype:GetDefaultSettings()
 	settings["selfColor"] = { r = 0, g = 0, b = 1 }
 	settings["selfDisplayMode"] = "Color as SelfColor"
 	settings["upperText"] = "[PercentHP:Round]"
-	settings["lowerText"] = "[(HP:Round \"/\" MaxHP:Round):HPColor:Bracket]"
+	settings["lowerText"] = "[FractionalHP:Short:HPColor:Bracket]"
 	settings["barVerticalOffset"] = 35
 	settings["scale"] = 0.7
 	settings["enabled"] = false

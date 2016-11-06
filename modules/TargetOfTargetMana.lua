@@ -21,7 +21,7 @@ function TargetTargetMana.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 11
 	settings["upperText"] = "[PercentMP:Round]"
-	settings["lowerText"] = "[FractionalMP:PowerColor]"
+	settings["lowerText"] = "[FractionalMP:Short:PowerColor]"
 	settings["barVerticalOffset"] = 35
 	settings["scale"] = 0.7
 	settings["enabled"] = false
