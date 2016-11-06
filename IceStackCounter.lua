@@ -112,7 +112,7 @@ function IceStackCounter_GetMaxCount(frame)
 		local _, max = GetSpellCharges(frame.moduleSettings.auraName)
 		return max or 1
 	else
-		return frame.moduleSettings.maxCount
+		return tonumber(frame.moduleSettings.maxCount)
 	end
 end
 
