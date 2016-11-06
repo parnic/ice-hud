@@ -438,7 +438,7 @@ function IceCustomCount.prototype:UpdateCustomCount()
 	local points = IceStackCounter_GetCount(self)
 	local max = IceStackCounter_GetMaxCount(self)
 
-	if max ~= #self.frame.graphical then
+	if max > #self.frame.graphical then
 		self:Redraw()
 		return
 	end
