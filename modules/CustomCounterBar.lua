@@ -250,6 +250,11 @@ function IceCustomCounterBar.prototype:Enable(core)
 	IceStackCounter_Enable(self)
 end
 
+function IceCustomCounterBar.prototype:TargetChanged()
+	IceCustomCount.super.prototype.TargetChanged(self)
+	self:UpdateCustomCount()
+end
+
 function IceCustomCounterBar.prototype:Redraw()
 	IceCustomCounterBar.super.prototype.Redraw(self)
 
@@ -319,7 +324,7 @@ function IceCustomCounterBar.prototype:UpdateCustomCount()
 		self.barFrame.icon:Show()
 	end
 
-	if points == nil or points == 0 then
+	if (points == nil or points == 0) and self.moduleSettings.auraType ~= "charges" then
 		self:Show(false)
 		self:UpdateBar(0, "undef")
 	else
@@ -342,4 +347,8 @@ end
 
 function IceCustomCounterBar.prototype:Update()
 	self:UpdateCustomCount()
+end
+
+function IceCustomCounterBar.prototype:UseTargetAlpha(scale)
+	return IceStackCounter_UseTargetAlpha(self)
 end

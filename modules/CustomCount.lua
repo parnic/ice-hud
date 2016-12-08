@@ -296,6 +296,11 @@ function IceCustomCount.prototype:Enable(core)
 	self:UpdateCustomCount()
 end
 
+function IceCustomCount.prototype:TargetChanged()
+	IceCustomCount.super.prototype.TargetChanged(self)
+	self:UpdateCustomCount()
+end
+
 
 
 -- 'Protected' methods --------------------------------------------------------
@@ -421,6 +426,9 @@ function IceCustomCount.prototype:GetGradientColor(curr)
 	local r, g, b = self:GetCustomColor()
 	local mr, mg, mb = self:GetCustomMinColor()
 	local scale = max > 1 and ((curr-1)/(max-1)) or 1
+	if self.moduleSettings.countMode == "Numeric" then
+		scale = max > 1 and (curr/max) or 1
+	end
 
 	r = r * scale + mr * (1-scale)
 	g = g * scale + mg * (1-scale)
@@ -435,7 +443,7 @@ function IceCustomCount.prototype:UpdateCustomCount()
 		return
 	end
 
-	local points = IceStackCounter_GetCount(self)
+	local points = IceStackCounter_GetCount(self) or 0
 	local max = IceStackCounter_GetMaxCount(self)
 
 	if max > #self.frame.graphical then

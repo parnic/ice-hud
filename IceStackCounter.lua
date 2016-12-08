@@ -130,7 +130,6 @@ function IceStackCounter_Enable(frame)
 	frame:RegisterEvent("UNIT_PET", "UpdateCustomCount")
 	frame:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomCount")
 	frame:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomCount")
-	frame:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateCustomCount")
 	frame:RegisterEvent("PLAYER_DEAD", "UpdateCustomCount")
 	frame:RegisterEvent("SPELL_UPDATE_CHARGES", "UpdateCustomCount")
 
@@ -171,5 +170,9 @@ function IceStackCounter_GetCount(frame)
 end
 
 function IceStackCounter_UseTargetAlpha(frame)
-	return frame.lastPoints ~= nil and frame.lastPoints > 0
+	if frame.moduleSettings.auraType == "charges" then
+		return IceStackCounter_GetCount(frame) ~= IceStackCounter_GetMaxCount(frame) or frame.target or frame.combat
+	else
+		return frame.lastPoints ~= nil and frame.lastPoints > 0
+	end
 end
