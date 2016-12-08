@@ -324,7 +324,7 @@ end
 
 function IceCustomCount.prototype:CreateCustomFrame(doTextureUpdate)
 	-- create numeric counts
-	self.frame.numeric = self:FontFactory(self.moduleSettings.countFontSize, nil, self.frame.numeric)
+	self.frame.numeric = self:FontFactory(self.moduleSettings.countFontSize, self.frame, self.frame.numeric)
 
 	self.frame.numeric:SetWidth(50)
 	self.frame.numeric:SetJustifyH("CENTER")
