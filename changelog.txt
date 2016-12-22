@@ -1,5 +1,6 @@
 v1.10.13:
 - Fixed alpha settings for spell charges on custom counter bars and stack counters to treat "full" the same way a Mana or Health bar would. Previously these treated "full" as "empty" for charges because that's how buff/debuff stacking should work (ticket #231).
+- Fixed custom counters in numeric mode not hiding the count properly.
 
 v1.10.12:
 - Tweaked a few Druid CCs in the CC modules. If you've got a more up-to-date list of any of the CCs, please send them along to icehud@parnic.com
