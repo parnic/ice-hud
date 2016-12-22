@@ -245,6 +245,23 @@ function IceCustomCount.prototype:GetOptions()
 		order = 34
 	}
 
+	opts["showWhenZero"] = {
+		type = 'toggle',
+		name = L["Show when zero"],
+		desc = L["Whether or not to show the counter when the value is zero. This will cause a 0 to be displayed at all times for Numeric mode and faded markers for graphical mode."],
+		get = function()
+			return self.moduleSettings.showWhenZero
+		end,
+		set = function(info, v)
+			self.moduleSettings.showWhenZero = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 35,
+	}
+
 	return opts
 end
 
@@ -426,7 +443,7 @@ function IceCustomCount.prototype:GetGradientColor(curr)
 	local r, g, b = self:GetCustomColor()
 	local mr, mg, mb = self:GetCustomMinColor()
 	local scale = max > 1 and ((curr-1)/(max-1)) or 1
-	if self.moduleSettings.countMode == "Numeric" then
+	if self.moduleSettings.countMode == "Numeric" and self.moduleSettings.showWhenZero then
 		scale = max > 1 and (curr/max) or 1
 	end
 
@@ -443,7 +460,10 @@ function IceCustomCount.prototype:UpdateCustomCount()
 		return
 	end
 
-	local points = IceStackCounter_GetCount(self) or 0
+	local points = IceStackCounter_GetCount(self)
+	if not points and self.moduleSettings.showWhenZero then
+		points = 0
+	end
 	local max = IceStackCounter_GetMaxCount(self)
 
 	if max > #self.frame.graphical then
