@@ -1,3 +1,6 @@
+v1.10.13.1:
+- Fixed "0" showing up for some users after 1.10.13 by adding a "show when zero" checkbox to custom counters (disabled by default). Anyone who has used IceHUD for a very long time has automatically-converted custom counter modules that replaced the old "maelstrom", "lacerate", and "sunder" modules that used to exist, each of which exhibited the behavior after the last update.
+
 v1.10.13:
 - Fixed alpha settings for spell charges on custom counter bars and stack counters to treat "full" the same way a Mana or Health bar would. Previously these treated "full" as "empty" for charges because that's how buff/debuff stacking should work (ticket #231).
 - Fixed custom counters in numeric mode not hiding the count properly.
