@@ -21,11 +21,6 @@ IceCustomCDBar.prototype.cooldownDuration = 0
 IceCustomCDBar.prototype.cooldownEndTime = 0
 IceCustomCDBar.prototype.coolingDown = false
 
--- super temp...remove this when blizzard fixes these spells to work by name with GetSpellCooldown()
-local brokenSpellsNameToId = {}
-table.insert(brokenSpellsNameToId, {"Holy Word: Serenity",88684})
-table.insert(brokenSpellsNameToId, {"Holy Word: Sanctuary",88685})
-
 -- Constructor --
 function IceCustomCDBar.prototype:init()
 	IceCustomCDBar.super.prototype.init(self, "MyCustomCDBar")
@@ -821,14 +816,6 @@ function IceCustomCDBar.prototype:IsReady()
 end
 
 function IceCustomCDBar.prototype:GetSpellNameOrId(spellName)
-	-- super temp hax. certain spells (the new 'morphing' spells) do not work by name with GetSpellCooldown(), only id.
-	for i=1,#brokenSpellsNameToId do
-		if spellName == brokenSpellsNameToId[i][1] then
-			spellName = brokenSpellsNameToId[i][2]
-			break
-		end
-	end
-
 	return spellName
 end
 
