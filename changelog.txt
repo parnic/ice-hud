@@ -1,5 +1,6 @@
 v1.10.14:
 - Fixed Holy Word: Serenity not being trackable in the Custom Cooldown module (ticket #232).
+- Updated Stagger bar to allow the user to set the max to 100% if desired.
 
 v1.10.13.1:
 - Fixed "0" showing up for some users after 1.10.13 by adding a "show when zero" checkbox to custom counters (disabled by default). Anyone who has used IceHUD for a very long time has automatically-converted custom counter modules that replaced the old "maelstrom", "lacerate", and "sunder" modules that used to exist, each of which exhibited the behavior after the last update.

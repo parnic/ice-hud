@@ -71,7 +71,7 @@ function StaggerBar.prototype:GetOptions()
 		name = "Max Percent",
 		desc = "Maximum percentage of your maximum health for the Stagger bar to represent. I.e, if set to 20%, the bar will be full when the Stagger damage over time effect is dealing 20% of your maximum health per second.",
 		min = 0,
-		max = 50,
+		max = 100,
 		step = 1,
 		get = function()
 			return self.moduleSettings.maxPercent
