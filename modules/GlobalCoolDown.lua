@@ -45,7 +45,10 @@ end
 
 function GlobalCoolDown.prototype:CVarUpdate()
 	self.useFixedLatency = self.moduleSettings.respectLagTolerance and GetCVar("reducedLagTolerance") == "1"
-	self.fixedLatency = tonumber(GetCVar("maxSpellStartRecoveryoffset")) / 1000.0
+	local recoveryOffset = GetCVar("maxSpellStartRecoveryoffset")
+	if recoveryOffset ~= nil then
+		self.fixedLatency = tonumber(recoveryOffset) / 1000.0
+	end
 end
 
 -- OVERRIDE

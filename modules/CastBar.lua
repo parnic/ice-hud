@@ -358,7 +358,10 @@ end
 
 function CastBar.prototype:CVarUpdate(...)
 	self.useFixedLatency = self.moduleSettings.respectLagTolerance and GetCVar("reducedLagTolerance") == "1"
-	self.fixedLatency = tonumber(GetCVar("maxSpellStartRecoveryoffset")) / 1000
+	local recoveryOffset = GetCVar("maxSpellStartRecoveryoffset")
+	if recoveryOffset ~= nil then
+		self.fixedLatency = tonumber(recoveryOffset) / 1000
+	end
 end
 
 function CastBar.prototype:Disable(core)
