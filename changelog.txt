@@ -1,3 +1,7 @@
+v1.10.15:
+- Fixed error on 7.2 due to a CVar being removed
+- Updated TOC for 7.2
+
 v1.10.14:
 - Fixed Holy Word: Serenity not being trackable in the Custom Cooldown module (ticket #232).
 - Updated Stagger bar to allow the user to set the max to 100% if desired.
