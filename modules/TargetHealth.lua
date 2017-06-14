@@ -1074,9 +1074,9 @@ function IceTargetHealth.prototype:CheckPartyRole()
 	if self.configMode or IceHUD:GetIsInLFGGroup() then
 		if self.configMode or self.moduleSettings.showPartyRoleIcon then
 			local isTank, isHeal, isDPS
-			local proposalExists, typeID, id, name
+			local proposalExists, typeID, id, subtypeID, name
 			local texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader
-			proposalExists, typeID, id, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader = GetLFGProposal()
+			proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader = GetLFGProposal()
 
 			local p = self.unit
 			if IceHUD.WowVer < 40000 then

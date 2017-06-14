@@ -1078,9 +1078,9 @@ function PlayerHealth.prototype:CheckPartyRole()
 	if configMode or IceHUD:GetIsInLFGGroup() then
 		if (configMode or self.moduleSettings.showPartyRoleIcon) and not self.frame.PartyRoleIcon then
 			local isTank, isHeal, isDPS
-			local proposalExists, typeID, id, name
+			local proposalExists, typeID, id, subtypeID, name
 			local texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader
-			proposalExists, typeID, id, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader = GetLFGProposal()
+			proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader = GetLFGProposal()
 
 			local p = self.unit
 			if IceHUD.WowVer < 40000 then
@@ -1096,7 +1096,7 @@ function PlayerHealth.prototype:CheckPartyRole()
 			IceHUD:Debug( tostring(proposalExists) .."**".. tostring(typeID) .."**".. tostring(id) .."**".. tostring(name) .."**".. tostring(texture) .."**".. tostring(role) .."**".. tostring(hasResponded) .."**".. tostring(totalEncounters) .."**".. tostring(completedEncounters) .."**".. tostring(numMembers) .."**".. tostring(isleader) )
 
 			if proposalExists == true then
-				IceHUD:Debug(tostring(typeID).." "..role)
+				IceHUD:Debug(tostring(typeID).." "..(role or ""))
 				isTank = (role == "TANK")
 				isHeal = (role == "HEALER")
 				isDPS = (role == "DAMAGER")
