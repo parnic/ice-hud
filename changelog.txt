@@ -1,3 +1,6 @@
+v1.10.15.1:
+- Fixed an error in IceHUD's usage of GetLFGProposal()'s return values exposed by the 7.2.5 Chromie quests
+
 v1.10.15:
 - Fixed error on 7.2 due to a CVar being removed
 - Updated TOC for 7.2
