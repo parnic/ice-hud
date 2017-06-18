@@ -18,7 +18,7 @@ IceClassPowerCounter.prototype.requiredSpec = nil
 IceClassPowerCounter.prototype.shouldShowUnmodified = false
 IceClassPowerCounter.prototype.unmodifiedMaxPerRune = 10
 IceClassPowerCounter.prototype.unit = "player"
-
+IceClassPowerCounter.prototype.round = ceil
 IceClassPowerCounter.prototype.growModes = { width = 1, height = 2 }
 IceClassPowerCounter.prototype.currentGrowMode = nil
 
@@ -501,13 +501,17 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 	local percentReady = self.shouldShowUnmodified and (UnitPower("player", self.unitPower, true) / self.unmodifiedMaxPerRune) or numReady
 
 	if self:GetRuneMode() == "Numeric" or self.moduleSettings.alsoShowNumeric then
-		self.frame.numeric:SetText(tostring(percentReady))
+		if self.numericFormat then
+			self.frame.numeric:SetText(format(self.numericFormat, percentReady))
+		else
+			self.frame.numeric:SetText(tostring(percentReady))
+		end
 		self.frame.numeric:SetTextColor(self:GetColor(self.numericColor))
 	end
 
 	if self:GetRuneMode() ~= "Numeric" then
 		for i=1, self.numRunes do
-			if i <= ceil(percentReady) then
+			if i <= self.round(percentReady) then
 				if self:GetRuneMode() == "Graphical" then
 					self.frame.graphical[i].rune:SetVertexColor(1, 1, 1)
 				else

@@ -45,6 +45,16 @@ end
 function ShardCounter.prototype:Enable(core)
 	if IceHUD.WowVer >= 70000 then
 		self.numRunes = UnitPowerMax(self.unit, self.unitPower)
+
+		if GetSpecialization() == SPEC_WARLOCK_DESTRUCTION then
+			self.shouldShowUnmodified = true
+			self.numericFormat = "%.1f"
+			self.round = floor
+		else
+			self.shouldShowUnmodified = nil
+			self.numericFormat = nil
+			self.round = nil
+		end
 	end
 
 	ShardCounter.super.prototype.Enable(self, core)
