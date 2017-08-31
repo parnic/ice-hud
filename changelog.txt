@@ -1,5 +1,6 @@
 v1.10.16.1:
 - Added option to hide the raid icon for Info frames.
+- Updated TOC for 7.3
 
 v1.10.16:
 - Updated shard texture for Warlocks.
