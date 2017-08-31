@@ -1,14 +1,17 @@
+v1.10.16.1:
+- Added option to hide the raid icon for Info frames.
+
 v1.10.16:
-- Updated shard texture for Warlocks
+- Updated shard texture for Warlocks.
 
 v1.10.15.2:
-- Updated shard display for Destro Warlocks (ticket #234, thanks stencil!)
+- Updated shard display for Destro Warlocks (ticket #234, thanks stencil!).
 
 v1.10.15.1:
-- Fixed an error in IceHUD's usage of GetLFGProposal()'s return values exposed by the 7.2.5 Chromie quests
+- Fixed an error in IceHUD's usage of GetLFGProposal()'s return values exposed by the 7.2.5 Chromie quests.
 
 v1.10.15:
-- Fixed error on 7.2 due to a CVar being removed
+- Fixed error on 7.2 due to a CVar being removed.
 - Updated TOC for 7.2
 
 v1.10.14:
