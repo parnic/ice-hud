@@ -958,6 +958,23 @@ function IceTargetInfo.prototype:GetOptions()
 		order = 39.3,
 	}
 
+	opts["showRaidIcon"] = {
+		type = 'toggle',
+		name = L['Show raid icon'],
+		desc = L['Whether or not to show the raid icon for this unit.'],
+		get = function()
+			return self.moduleSettings.showRaidIcon
+		end,
+		set = function(info, v)
+			self.moduleSettings.showRaidIcon = v
+			self:UpdateRaidTargetIcon()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 37.02,
+	}
+
 	return opts
 end
 
@@ -1011,6 +1028,7 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 			["sortByExpiration"] = true,
 		}
 	}
+	defaults["showRaidIcon"] = true
 
 	return defaults
 end
@@ -1480,7 +1498,7 @@ function IceTargetInfo.prototype:AuraChanged(event, unit)
 end
 
 function IceTargetInfo.prototype:UpdateRaidTargetIcon()
-	if not (UnitExists(self.unit)) then
+	if not (UnitExists(self.unit)) or not self.moduleSettings.showRaidIcon then
 		self.frame.raidIcon:Hide()
 		return
 	end
