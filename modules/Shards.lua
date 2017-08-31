@@ -3,14 +3,26 @@ local ShardCounter = IceCore_CreateClass(IceClassPowerCounter)
 
 local CurrentSpec = nil
 
-local AfflictionCoords =
-{
-	{0.01562500, 0.28125000, 0.00781250, 0.13281250},
-	{0.01562500, 0.28125000, 0.00781250, 0.13281250},
-	{0.01562500, 0.28125000, 0.00781250, 0.13281250},
-	{0.01562500, 0.28125000, 0.00781250, 0.13281250},
-	{0.01562500, 0.28125000, 0.00781250, 0.13281250},
-}
+local AfflictionCoords
+if IceHUD.WowVer < 70200 then
+	AfflictionCoords =
+	{
+		{0.01562500, 0.28125000, 0.00781250, 0.13281250},
+		{0.01562500, 0.28125000, 0.00781250, 0.13281250},
+		{0.01562500, 0.28125000, 0.00781250, 0.13281250},
+		{0.01562500, 0.28125000, 0.00781250, 0.13281250},
+		{0.01562500, 0.28125000, 0.00781250, 0.13281250},
+	}
+else
+	AfflictionCoords =
+	{
+		{0, 1, 0, 1},
+		{0, 1, 0, 1},
+		{0, 1, 0, 1},
+		{0, 1, 0, 1},
+		{0, 1, 0, 1},
+	}
+end
 
 local DestructionCoords =
 {
@@ -36,6 +48,10 @@ function ShardCounter.prototype:init()
 	if IceHUD.WowVer >= 70000 then
 		self.runeHeight = 23
 		self.runeWidth = 26
+		if IceHUD.WowVer >= 70200 then
+			self.runeHeight = 27
+			self.runeWidth = 22
+		end
 		self.runeCoords = AfflictionCoords
 		self.unitPower = SPELL_POWER_SOUL_SHARDS
 		self.unit = "player"
@@ -215,6 +231,10 @@ function ShardCounter.prototype:GetDefaultSettings()
 end
 
 function ShardCounter.prototype:GetRuneTexture(rune)
+	if IceHUD.WowVer >= 70200 then
+		return nil
+	end
+
 	if not rune or rune ~= tonumber(rune) then
 		return
 	end
@@ -230,6 +250,10 @@ function ShardCounter.prototype:GetRuneTexture(rune)
 	end
 
 	return "Interface\\PlayerFrame\\UI-WarlockShard"
+end
+
+function ShardCounter.prototype:GetRuneAtlas(rune)
+	return "Warlock-ReadyShard"
 end
 
 function ShardCounter.prototype:ShowBlizz()
