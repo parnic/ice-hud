@@ -171,6 +171,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["rotateBar"] = false
 	settings["markers"] = {}
 	settings["bAllowExpand"] = true
+	settings["textVerticalGap"] = 0
 
 	return settings
 end
@@ -724,6 +725,26 @@ do
 					order = 11.3,
 				},
 
+				textVerticalGap = {
+					type = 'range',
+					name = L["Text Vertical Gap"],
+					desc = L["Gap between Upper and Lower text vertically"],
+					min = 0,
+					max = 10,
+					step = 1,
+					get = function()
+						return self.moduleSettings.textVerticalGap
+					end,
+					set = function(info, v)
+						self.moduleSettings.textVerticalGap = v
+						self:Redraw()
+					end,
+					disabled = function()
+						return not self.moduleSettings.enabled
+					end,
+					order = 11.4,
+				},
+
 				textHeader = {
 					type = 'header',
 					name = L["Upper Text"],
@@ -1116,8 +1137,13 @@ function IceBarElement.prototype:CreateTexts()
 		offy = self.moduleSettings.textVerticalOffset
 	end
 
+	local offgap = 0
+	if self.moduleSettings.textVerticalGap ~= nil then
+		offgap = self.moduleSettings.textVerticalGap
+	end
+
 	self.frame.bottomUpperText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, offy)
-	self.frame.bottomLowerText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, offy - 14)
+	self.frame.bottomLowerText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, offy - (14 + offgap))
 
 	if (self.moduleSettings.textVisible["upper"]) then
 		self.frame.bottomUpperText:Show()
