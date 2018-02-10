@@ -1433,6 +1433,16 @@ function IceBarElement.prototype:SetScaledColor(colorVar, percent, maxColor, min
 	colorVar.b = ((maxColor.b - minColor.b) * percent) + minColor.b
 end
 
+function IceBarElement.prototype:Round(num)
+	if (num > 1000000) then
+		return IceHUD:MathRound(num/1000000, 1) .. "M"
+	end
+	if (num > 1000) then
+		return IceHUD:MathRound(num/1000, 1) .. "k"
+	end
+	return num
+end
+
 -- To be overridden
 function IceBarElement.prototype:Update()
 end
