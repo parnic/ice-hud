@@ -972,17 +972,6 @@ function IceTargetHealth.prototype:UpdateRaidTargetIcon()
 end
 
 
-function IceTargetHealth.prototype:Round(health)
-	if (health > 1000000) then
-		return IceHUD:MathRound(health/1000000, 1) .. "M"
-	end
-	if (health > 1000) then
-		return IceHUD:MathRound(health/1000, 1) .. "k"
-	end
-	return health
-end
-
-
 function IceTargetHealth.prototype:CheckPvP()
 	local pvpMode = nil
 	local minx, maxx, miny, maxy
