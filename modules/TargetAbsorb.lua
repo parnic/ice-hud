@@ -63,11 +63,21 @@ function IceTargetAbsorb.prototype:UpdateAbsorbAmount(event, unit)
 		self.highestAbsorbSinceLastZero = absorbAmount
 	end
 
+	self.absorbPercent = self.highestAbsorbSinceLastZero ~= 0 and absorbAmount / self.highestAbsorbSinceLastZero or 0
+
 	if absorbAmount <= 0 or self.highestAbsorbSinceLastZero <= 0 then
 		self:Show(false)
 	else
 		self:Show(true)
 		self:UpdateBar(absorbAmount / self.highestAbsorbSinceLastZero, self.ColorName)
+	end
+
+	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
+		if (self.PlayerAltManaMax ~= 100) then
+			self:SetBottomText1(self:GetFormattedText(self:Round(absorbAmount)), self.ColorName)
+		else
+			self:SetBottomText1()
+		end
 	end
 end
 
