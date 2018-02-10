@@ -227,6 +227,10 @@ function IceUnitBar.prototype:Update()
 
 	self.mana = UnitPower(self.unit, UnitPowerType(self.unit))
 	self.maxMana = UnitPowerMax(self.unit, UnitPowerType(self.unit))
+	if IceHUD.WowVer >= 70300 and UnitPowerType(self.unit) == SPELL_POWER_INSANITY then
+		self.mana = IceHUD:MathRound(self.mana / 100)
+		self.maxMana = IceHUD:MathRound(self.maxMana / 100)
+	end
 	self.manaPercentage = self.maxMana ~= 0 and (self.mana/self.maxMana) or 0
 
 	local locClass
