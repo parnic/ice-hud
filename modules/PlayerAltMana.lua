@@ -76,12 +76,23 @@ function PlayerAltMana.prototype:Update()
 
 	self.PlayerAltMana = UnitPower(self.unit, SPELL_POWER_MANA)
 	self.PlayerAltManaMax = UnitPowerMax(self.unit, SPELL_POWER_MANA)
+	self.PlayerAltManaPercentage = self.PlayerAltManaMax ~= 0 and (self.PlayerAltMana/self.PlayerAltManaMax) or 0
 
 	if (not self.alive or not ShouldShow(self.unit) or not self.PlayerAltMana or not self.PlayerAltManaMax or self.PlayerAltManaMax == 0) then
 		self:Show(false)
 		return
 	else
 		self:Show(true)
+	end
+
+	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
+		self:SetBottomText1(math.floor(self.PlayerAltManaPercentage * 100))
+
+		if (self.PlayerAltManaMax ~= 100) then
+			self:SetBottomText2(self:GetFormattedText(self:Round(self.PlayerAltMana), self:Round(self.PlayerAltManaMax)), "PlayerMana")
+		else
+			self:SetBottomText2()
+		end
 	end
 
 	self:UpdateBar(self.PlayerAltManaMax ~= 0 and self.PlayerAltMana / self.PlayerAltManaMax or 0, "PlayerAltMana")
