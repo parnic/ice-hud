@@ -485,7 +485,12 @@ function TargetOfTarget.prototype:UpdateBuffs()
 
 	if (self.moduleSettings.showDebuffs) then
 		for i = 1, IceCore.BuffLimit do
-			local buffName, buffRank, buffTexture, buffApplications = UnitDebuff(self.unit, i)
+			local buffName, buffRank, buffTexture, buffApplications
+			if IceHUD.WowVer < 80000 then
+				buffName, buffRank, buffTexture, buffApplications = UnitDebuff(self.unit, i)
+			else
+				buffName, buffTexture, buffApplications = UnitDebuff(self.unit, i)
+			end
 
 			if (buffApplications and (buffApplications > 1)) then
 				debuffs = debuffs + 1

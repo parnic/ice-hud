@@ -7,6 +7,11 @@ local AnticipationSpellId = 114015
 
 ComboPoints.prototype.comboSize = 20
 
+local SPELL_POWER_COMBO_POINTS = SPELL_POWER_COMBO_POINTS
+if IceHUD.WowVer >= 80000 then
+	SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
+end
+
 -- Constructor --
 function ComboPoints.prototype:init()
 	ComboPoints.super.prototype.init(self, "ComboPoints")
@@ -252,8 +257,10 @@ function ComboPoints.prototype:Enable(core)
 		if IceHUD.WowVer < 70000 then
 			self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
 		else
-			self:RegisterEvent("UNIT_POWER", "UpdateComboPoints")
-			self:RegisterEvent("UNIT_MAXPOWER", "UpdateMaxComboPoints")
+			self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateComboPoints")
+			if IceHUD.WowVer < 80000 then
+				self:RegisterEvent("UNIT_MAXPOWER", "UpdateMaxComboPoints")
+			end
 		end
 		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateComboPoints")
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateComboPoints")
@@ -436,7 +443,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 end
 
 function ComboPoints.prototype:UpdateComboPoints(...)
-	if select('#', ...) >= 3 and select(1, ...) == "UNIT_POWER" and select(3, ...) ~= "COMBO_POINTS" then
+	if select('#', ...) >= 3 and select(1, ...) == IceHUD.UnitPowerEvent and select(3, ...) ~= "COMBO_POINTS" then
 		return
 	end
 
@@ -454,7 +461,11 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 		end
 
 		if IceHUD.WowVer < 70000 then
-			_, _, _, anticipate = UnitAura("player", GetSpellInfo(AnticipationSpellId))
+			if IceHUD.WowVer < 80000 then
+				_, _, _, anticipate = UnitAura("player", GetSpellInfo(AnticipationSpellId))
+			else
+				_, _, anticipate = UnitAura("player", GetSpellInfo(AnticipationSpellId))
+			end
 		else
 			anticipate = 0
 		end
@@ -520,7 +531,12 @@ do
 
 	function ComboPoints.prototype:CheckAnticipation(e, unit) -- UNIT_AURA handler
 		if UnitIsUnit(unit, "player") then
-			local _, _, _, newAntStacks = UnitAura("player", GetSpellInfo(AnticipationSpellId))
+			local _, _, _, newAntStacks
+			if IceHUD.WowVer < 80000 then
+				_, _, _, newAntStacks = UnitAura("player", GetSpellInfo(AnticipationSpellId))
+			else
+				_, _, newAntStacks = UnitAura("player", GetSpellInfo(AnticipationSpellId))
+			end
 			if newAntStacks ~= antStacks then
 				antStacks = newAntStacks
 				self:UpdateComboPoints()

@@ -1,6 +1,11 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local HarmonyPower = IceCore_CreateClass(IceClassPowerCounter)
 
+local SPELL_POWER_CHI = SPELL_POWER_CHI
+if IceHUD.WowVer >= 80000 then
+	SPELL_POWER_CHI = Enum.PowerType.Chi
+end
+
 function HarmonyPower.prototype:init()
 	HarmonyPower.super.prototype.init(self, "HarmonyPower")
 

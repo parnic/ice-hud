@@ -465,7 +465,7 @@ end
 function IceClassPowerCounter.prototype:DisplayCounter()
 	self:UnregisterEvent("PLAYER_LEVEL_UP")
 
-	self:RegisterEvent("UNIT_POWER", "UpdateRunePower")
+	self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateRunePower")
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "UpdateRunePower")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateRunePower")
 
@@ -485,7 +485,7 @@ function IceClassPowerCounter.prototype:Disable(core)
 end
 
 function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
-	if event and (event == "UNIT_POWER" or event == "UNIT_POWER_FREQUENT") and arg1 ~= "player" and arg1 ~= "vehicle" then
+	if event and (event == IceHUD.UnitPowerEvent or event == "UNIT_POWER_FREQUENT") and arg1 ~= "player" and arg1 ~= "vehicle" then
 		return
 	end
 

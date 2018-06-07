@@ -4,6 +4,28 @@ IceTargetMana.prototype.registerEvents = true
 IceTargetMana.prototype.color = nil
 IceTargetMana.prototype.determineColor = true
 
+local SPELL_POWER_MANA = SPELL_POWER_MANA
+local SPELL_POWER_RAGE = SPELL_POWER_RAGE
+local SPELL_POWER_FOCUS = SPELL_POWER_FOCUS
+local SPELL_POWER_ENERGY = SPELL_POWER_ENERGY
+local SPELL_POWER_RUNIC_POWER = SPELL_POWER_RUNIC_POWER
+local SPELL_POWER_INSANITY = SPELL_POWER_INSANITY
+local SPELL_POWER_FURY = SPELL_POWER_FURY
+local SPELL_POWER_MAELSTROM = SPELL_POWER_MAELSTROM
+local SPELL_POWER_PAIN = SPELL_POWER_PAIN
+local SPELL_POWER_LUNAR_POWER = SPELL_POWER_LUNAR_POWER
+if IceHUD.WowVer >= 80000 then
+	SPELL_POWER_MANA = Enum.PowerType.Mana
+	SPELL_POWER_RAGE = Enum.PowerType.Rage
+	SPELL_POWER_FOCUS = Enum.PowerType.Focus
+	SPELL_POWER_ENERGY = Enum.PowerType.Energy
+	SPELL_POWER_RUNIC_POWER = Enum.PowerType.RunicPower
+	SPELL_POWER_INSANITY = Enum.PowerType.Insanity
+	SPELL_POWER_FURY = Enum.PowerType.Fury
+	SPELL_POWER_MAELSTROM = Enum.PowerType.Maelstrom
+	SPELL_POWER_PAIN = Enum.PowerType.Pain
+	SPELL_POWER_LUNAR_POWER = Enum.PowerType.LunarPower
+end
 
 -- Constructor --
 function IceTargetMana.prototype:init(moduleName, unit)
@@ -45,8 +67,10 @@ function IceTargetMana.prototype:Enable(core)
 
 	if self.registerEvents then
 		if IceHUD.WowVer >= 40000 then
-			self:RegisterEvent("UNIT_POWER", "UpdateEvent")
-			self:RegisterEvent("UNIT_MAXPOWER", "UpdateEvent")
+			self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateEvent")
+			if IceHUD.WowVer < 80000 then
+				self:RegisterEvent("UNIT_MAXPOWER", "UpdateEvent")
+			end
 		else
 			self:RegisterEvent("UNIT_MAXMANA", "UpdateEvent")
 			self:RegisterEvent("UNIT_MAXRAGE", "UpdateEvent")

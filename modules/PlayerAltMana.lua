@@ -6,6 +6,13 @@ PlayerAltMana.prototype.PlayerAltManaMax = nil
 
 local _, unitClass = UnitClass("player")
 
+local SPELL_POWER_MANA = SPELL_POWER_MANA
+local SPELL_POWER_INSANITY = SPELL_POWER_INSANITY
+if IceHUD.WowVer >= 80000 then
+	SPELL_POWER_MANA = Enum.PowerType.Mana
+	SPELL_POWER_INSANITY = Enum.PowerType.Insanity
+end
+
 -- Constructor --
 function PlayerAltMana.prototype:init()
 	PlayerAltMana.super.prototype.init(self, "PlayerAltMana", "player")

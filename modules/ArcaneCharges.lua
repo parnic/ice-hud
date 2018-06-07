@@ -1,6 +1,11 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local ArcaneCharges = IceCore_CreateClass(IceClassPowerCounter)
 
+local SPELL_POWER_ARCANE_CHARGES = SPELL_POWER_ARCANE_CHARGES
+if IceHUD.WowVer >= 80000 then
+	SPELL_POWER_ARCANE_CHARGES = Enum.PowerType.ArcaneCharges
+end
+
 function ArcaneCharges.prototype:init()
 	ArcaneCharges.super.prototype.init(self, "ArcaneCharges")
 

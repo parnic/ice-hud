@@ -8,17 +8,17 @@ if IceHUD.WowVer >= 70000 then
 	CooldownFrame_SetTimer = CooldownFrame_Set
 end
 
--- blizzard cracks me up. the below block is copied verbatim from RuneFrame.lua ;)
---Readability == win
 local RUNETYPE_BLOOD = 1;
-local RUNETYPE_DEATH = 2;
-local RUNETYPE_FROST = 3;
+local RUNETYPE_DEATH = IceHUD.WowVer < 80000 and 2 or 3;
+local RUNETYPE_FROST = IceHUD.WowVer < 80000 and 3 or 2;
 local RUNETYPE_CHROMATIC = 4;
 local RUNETYPE_LEGION = 5; -- not real, but makes for an easy update
 
 local GetRuneType = GetRuneType
-if IceHUD.WowVer >= 70000 then
+if IceHUD.WowVer >= 70000 and IceHUD.WowVer < 80000 then
 	GetRuneType = function() return RUNETYPE_LEGION end
+elseif IceHUD.WowVer >= 80000 then
+	GetRuneType = function() return GetSpecialization() end
 end
 
 local RUNEMODE_DEFAULT = "Blizzard"
@@ -43,15 +43,22 @@ Runes.prototype.numRunes = 6
 
 Runes.prototype.lastRuneState = {}
 
+local SPELL_POWER_RUNES = SPELL_POWER_RUNES
+if IceHUD.WowVer >= 80000 then
+	SPELL_POWER_RUNES = Enum.PowerType.Runes
+end
+
 -- Constructor --
 function Runes.prototype:init()
 	Runes.super.prototype.init(self, "Runes")
 
-	if IceHUD.WowVer < 70000 then
+	if IceHUD.WowVer < 70000 or IceHUD.WowVer >= 80000 then
 		self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_BLOOD], 255, 0, 0)
 		self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_DEATH], 0, 207, 0)
 		self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_FROST], 0, 255, 255)
-		self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_CHROMATIC], 204, 26, 255)
+		if IceHUD.WowVer < 80000 then
+			self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_CHROMATIC], 204, 26, 255)
+		end
 	else
 		self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_LEGION], 204, 204, 255)
 	end
@@ -269,7 +276,11 @@ function Runes.prototype:Enable(core)
 	Runes.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("RUNE_POWER_UPDATE", "UpdateRunePower")
-	self:RegisterEvent("RUNE_TYPE_UPDATE", "UpdateRuneType")
+	if IceHUD.WowVer < 80000 then
+		self:RegisterEvent("RUNE_TYPE_UPDATE", "UpdateRuneType")
+	else
+		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "UpdateRuneColors")
+	end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ResetRuneAvailability")
 	self:RegisterEvent("UNIT_MAXPOWER", "CheckMaxNumRunes")
 
@@ -418,7 +429,17 @@ function Runes.prototype:UpdateRuneType(event, rune)
 	self.frame.graphical[rune].rune:SetVertexColor(self:GetColor("Runes"..thisRuneName))
 end
 
+function Runes.prototype:UpdateRuneColors()
+	for i=1,self.numRunes do
+		self:UpdateRuneType(nil, i)
+	end
+end
+
 function Runes.prototype:GetRuneTexture(runeName)
+	if IceHUD.WowVer >= 80000 then
+		runeName = self.runeNames[RUNETYPE_LEGION]
+	end
+
 	if self.moduleSettings.runeMode == RUNEMODE_DEFAULT and runeName then
 		return "Interface\\PlayerFrame\\UI-PlayerFrame-DeathKnight-"..runeName
 	elseif self.moduleSettings.runeMode == RUNEMODE_BAR then

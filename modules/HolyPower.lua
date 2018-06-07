@@ -1,6 +1,11 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local HolyPower = IceCore_CreateClass(IceClassPowerCounter)
 
+local SPELL_POWER_HOLY_POWER = SPELL_POWER_HOLY_POWER
+if IceHUD.WowVer >= 80000 then
+	SPELL_POWER_HOLY_POWER = Enum.PowerType.HolyPower
+end
+
 function HolyPower.prototype:init()
 	HolyPower.super.prototype.init(self, "HolyPower")
 

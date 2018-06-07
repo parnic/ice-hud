@@ -129,7 +129,9 @@ function IceTargetInfo.prototype:Enable(core)
 	self:RegisterEvent("UNIT_LEVEL", "TargetLevel")
 
 	self:RegisterEvent("UNIT_FLAGS", "TargetFlags")
-	self:RegisterEvent("UNIT_DYNAMIC_FLAGS", "TargetFlags")
+	if IceHUD.WowVer < 80000 then
+		self:RegisterEvent("UNIT_DYNAMIC_FLAGS", "TargetFlags")
+	end
 
 	self:RegisterEvent("RAID_TARGET_UPDATE", "UpdateRaidTargetIcon")
 
@@ -1407,7 +1409,12 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 
 	if self.moduleSettings.auras[aura].show then
 		for i = 1, IceCore.BuffLimit do
-			local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
+			local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable
+			if IceHUD.WowVer < 80000 then
+				name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
+			else
+				name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
+			end
 			local isFromMe = (unitCaster == "player")
 
 			if not icon and IceHUD.IceCore:IsInConfigMode() and UnitExists(self.unit) then

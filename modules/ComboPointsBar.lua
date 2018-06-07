@@ -1,6 +1,11 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local ComboPointsBar = IceCore_CreateClass(IceBarElement)
 
+local SPELL_POWER_COMBO_POINTS = SPELL_POWER_COMBO_POINTS
+if IceHUD.WowVer >= 80000 then
+	SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
+end
+
 function ComboPointsBar.prototype:init()
 	ComboPointsBar.super.prototype.init(self, "ComboPointsBar")
 
@@ -69,7 +74,7 @@ function ComboPointsBar.prototype:Enable(core)
 		if IceHUD.WowVer < 70000 then
 			self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
 		else
-			self:RegisterEvent("UNIT_POWER", "UpdateComboPoints")
+			self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateComboPoints")
 		end
 		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateComboPoints")
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateComboPoints")
@@ -87,7 +92,7 @@ end
 local color = {}
 
 function ComboPointsBar.prototype:UpdateComboPoints(...)
-	if select('#', ...) >= 3 and select(1, ...) == "UNIT_POWER" and select(3, ...) ~= "COMBO_POINTS" then
+	if select('#', ...) >= 3 and select(1, ...) == IceHUD.UnitPowerEvent and select(3, ...) ~= "COMBO_POINTS" then
 		return
 	end
 

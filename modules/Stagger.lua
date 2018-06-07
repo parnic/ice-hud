@@ -183,13 +183,13 @@ function StaggerBar.prototype:GetDebuffInfo()
 	local staggerLevel = 1
 
 	for i = 1, IceCore.BuffLimit do
-		local debuffID = select(11, UnitDebuff(self.unit, i))
+		local debuffID = select(IceHUD.WowVer < 80000 and 11 or 10, UnitDebuff(self.unit, i))
 
 		if debuffID == LightID or debuffID == ModerateID or debuffID == HeavyID then
-			local spellName = select(1, UnitDebuff(self.unit, i))
+			local spellName = UnitDebuff(self.unit, i)
 
-			duration = select(6, UnitAura(self.unit, spellName, "", "HARMFUL"))
-			amount = select(15, UnitAura(self.unit, spellName, "", "HARMFUL"))
+			duration = select(IceHUD.WowVer < 80000 and 6 or 5, UnitAura(self.unit, spellName, "", "HARMFUL"))
+			amount = select(IceHUD.WowVer < 80000 and 15 or 14, UnitAura(self.unit, spellName, "", "HARMFUL"))
 			staggerLevel = (debuffID == LightID) and 1 or (debuffID == ModerateID) and 2 or 3
 
 			break
@@ -228,7 +228,12 @@ function StaggerBar.prototype:UpdateStaggerBar()
 end
 
 function StaggerBar.prototype:GetDebuffDuration(unitName, buffName)
-	local name, _, _, _, _, duration, endTime = UnitDebuff(unitName, buffName)
+	local name, _, duration, endTime
+	if IceHUD.WowVer < 80000 then
+		name, _, _, _, _, duration, endTime = UnitDebuff(unitName, buffName)
+	else
+		name, _, _, _, duration, endTime = UnitDebuff(unitName, buffName)
+	end
 
 	if name then
 		return duration, endTime - GetTime()
