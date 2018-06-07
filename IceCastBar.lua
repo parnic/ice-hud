@@ -91,7 +91,7 @@ function IceCastBar.prototype:GetOptions()
 		end,
 		order = 39.998
 	}
-
+if IceHUD.WowVer < 80000 then
 	opts["showSpellRank"] =
 	{
 		type = 'toggle',
@@ -108,7 +108,7 @@ function IceCastBar.prototype:GetOptions()
 		end,
 		order = 39.999
 	}
-
+end
 	opts["iconSettings"] = {
 		type = 'group',
 		name = "|c"..self.configColor..L["Icon Settings"].."|r",
