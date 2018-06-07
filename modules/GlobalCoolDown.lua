@@ -143,7 +143,11 @@ function GlobalCoolDown.prototype:IsFull(scale)
 	return false
 end
 
-function GlobalCoolDown.prototype:SpellCastSent(event, unit, spell)
+function GlobalCoolDown.prototype:SpellCastSent(event, unit, spell, bfaCastGUID, bfaSpellId)
+	if IceHUD.WowVer >= 80000 then
+		spell = bfaSpellId
+	end
+
 	if unit ~= "player" or not spell then
 		return
 	end
@@ -151,7 +155,11 @@ function GlobalCoolDown.prototype:SpellCastSent(event, unit, spell)
 	self.spellCastSent = GetTime()
 end
 
-function GlobalCoolDown.prototype:SpellCastStop(event, unit, spell, _, _, spellId)
+function GlobalCoolDown.prototype:SpellCastStop(event, unit, spell, one, two, spellId)
+	if IceHUD.WowVer >= 80000 then
+		spellId = one
+	end
+
 	if unit ~= "player" or not spellId or not self.CurrSpellId or self.CurrSpellId ~= spellId then
 		return
 	end
@@ -182,7 +190,11 @@ function GlobalCoolDown.prototype:GetSpellCastTime(spell)
 	end
 end
 
-function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell, _, _, spellId)
+function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell, one, two, spellId)
+	if IceHUD.WowVer >= 80000 then
+		spellId = one
+	end
+
 	if unit ~= "player" or not spellId then
 		return
 	end
