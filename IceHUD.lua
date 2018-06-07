@@ -18,6 +18,8 @@ IceHUD.debugging = false
 
 IceHUD.WowVer = select(4, GetBuildInfo())
 
+IceHUD.UnitPowerEvent = IceHUD.WowVer < 80000 and "UNIT_POWER" or "UNIT_POWER_UPDATE"
+
 IceHUD.validBarList = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc",
 	"BloodGlaives", "ArcHUD", "FangRune", "DHUD", "CleanCurvesOut", "CleanTank", "PillTank", "GemTank" }
 IceHUD.validCustomModules = {Bar="Buff/Debuff watcher", Counter="Buff/Debuff stack counter", CD="Cooldown bar", Health="Health bar", Mana="Mana bar", CounterBar="Stack count bar"}
@@ -409,7 +411,12 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 	end
 
 	local i = 1
-	local name, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+	local name, _, texture, applications
+	if IceHUD.WowVer < 80000 then
+		name, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+	else
+		name, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+	end
 	while name do
 		if (not matchByName and string.match(texture:upper(), ability:upper()))
 			or (matchByName and string.match(name:upper(), ability:upper())) then
@@ -417,7 +424,11 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 		end
 
 		i = i + 1
-		name, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+		if IceHUD.WowVer < 80000 then
+			name, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+		else
+			name, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+		end
 	end
 
 	return 0
@@ -432,7 +443,12 @@ do
 		end
 
 		local i = 1
-		local name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i)
+		local name, _, texture, applications, _, _, _, _, _, _, auraID
+		if IceHUD.WowVer < 80000 then
+			name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i)
+		else
+			name, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i)
+		end
 		while name do
 			for i=1, #spellIDs do
 				if spellIDs[i] == auraID then
@@ -442,7 +458,11 @@ do
 			end
 
 			i = i + 1
-			name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i)
+			if IceHUD.WowVer < 80000 then
+				name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i)
+			else
+				name, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i)
+			end
 		end
 
 		return retval
@@ -724,7 +744,9 @@ local function figure_unit_menu(unit)
 end
 
 IceHUD_UnitFrame_DropDown = CreateFrame("Frame", "IceHUD_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
-UnitPopupFrames[#UnitPopupFrames+1] = "IceHUD_UnitFrame_DropDown"
+if UnitPopupFrames then
+	UnitPopupFrames[#UnitPopupFrames+1] = "IceHUD_UnitFrame_DropDown"
+end
 
 IceHUD.DropdownUnit = nil
 UIDropDownMenu_Initialize(IceHUD_UnitFrame_DropDown, function()

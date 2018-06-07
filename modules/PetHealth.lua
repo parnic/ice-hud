@@ -42,8 +42,10 @@ function PetHealth.prototype:Enable(core)
 	PetHealth.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("PET_UI_UPDATE",	 "CheckPet");
-	self:RegisterEvent("PLAYER_PET_CHANGED", "CheckPet");
-	self:RegisterEvent("PET_BAR_CHANGED", "CheckPet");
+	if IceHUD.WowVer < 80000 then
+		self:RegisterEvent("PLAYER_PET_CHANGED", "CheckPet");
+	end
+	self:RegisterEvent(IceHUD.WowVer < 80000 and "PET_BAR_CHANGED" or "PET_BAR_UPDATE_USABLE", "CheckPet");
 	self:RegisterEvent("UNIT_PET", "CheckPet");
 
 	self:RegisterEvent("UNIT_HEALTH", "UpdateEvent")

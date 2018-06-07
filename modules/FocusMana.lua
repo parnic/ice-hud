@@ -1,6 +1,14 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local FocusMana = IceCore_CreateClass(IceUnitBar)
 
+local SPELL_POWER_RAGE = SPELL_POWER_RAGE
+local SPELL_POWER_FOCUS = SPELL_POWER_FOCUS
+local SPELL_POWER_ENERGY = SPELL_POWER_ENERGY
+if IceHUD.WowVer >= 80000 then
+	SPELL_POWER_RAGE = Enum.PowerType.Rage
+	SPELL_POWER_FOCUS = Enum.PowerType.Focus
+	SPELL_POWER_ENERGY = Enum.PowerType.Energy
+end
 
 -- Constructor --
 function FocusMana.prototype:init()
@@ -32,8 +40,10 @@ function FocusMana.prototype:Enable(core)
 	FocusMana.super.prototype.Enable(self, core)
 
 	if IceHUD.WowVer >= 40000 then
-		self:RegisterEvent("UNIT_POWER", "UpdateEvent")
-		self:RegisterEvent("UNIT_MAXPOWER", "UpdateEvent")
+		self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateEvent")
+		if IceHUD.WowVer < 80000 then
+			self:RegisterEvent("UNIT_MAXPOWER", "UpdateEvent")
+		end
 	else
 		self:RegisterEvent("UNIT_MANA", "UpdateEvent")
 		self:RegisterEvent("UNIT_MAXMANA", "UpdateEvent")

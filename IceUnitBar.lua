@@ -19,6 +19,11 @@ IceUnitBar.prototype.hasPet = nil
 
 IceUnitBar.prototype.noFlash = nil
 
+local SPELL_POWER_INSANITY = SPELL_POWER_INSANITY
+if IceHUD.WowVer >= 80000 then
+	SPELL_POWER_INSANITY = Enum.PowerType.Insanity
+end
+
 -- Constructor --
 function IceUnitBar.prototype:init(name, unit)
 	IceUnitBar.super.prototype.init(self, name)

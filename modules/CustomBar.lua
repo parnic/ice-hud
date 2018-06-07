@@ -36,7 +36,9 @@ function IceCustomBar.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_AURA", "UpdateCustomBarEvent")
 	self:RegisterEvent("UNIT_PET", "UpdateCustomBarEvent")
-	self:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomBarEvent")
+	if IceHUD.WowVer < 80000 then
+		self:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomBarEvent")
+	end
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomBarEvent")
 	if self.unitClass == "SHAMAN" then
 		self:RegisterEvent("PLAYER_TOTEM_UPDATE", "UpdateTotems")
@@ -664,7 +666,12 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 	local remaining
 	local isBuff = self.moduleSettings.buffOrDebuff == "buff" and true or false
 	local buffFilter = (isBuff and "HELPFUL" or "HARMFUL") .. (self.moduleSettings.trackOnlyMine and "|PLAYER" or "")
-	local buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
+	local buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId
+	if IceHUD.WowVer < 80000 then
+		buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
+	else
+		buff, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
+	end
 	local isMine = unitCaster == "player"
 	local mySpellId = tonumber(self.moduleSettings.buffToTrack)
 	local checkId = mySpellId ~= nil
@@ -690,7 +697,11 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 
 		i = i + 1;
 
-		buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
+		if IceHUD.WowVer < 80000 then
+			buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
+		else
+			buff, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
+		end
 		isMine = unitCaster == "player"
 	end
 

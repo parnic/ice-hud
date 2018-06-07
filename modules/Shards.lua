@@ -37,6 +37,11 @@ local DemonologyCoords =
 	{0.03906250, 0.55468750, 0.10546875, 0.19921875},
 }
 
+local SPELL_POWER_SOUL_SHARDS = SPELL_POWER_SOUL_SHARDS
+if IceHUD.WowVer >= 80000 then
+	SPELL_POWER_SOUL_SHARDS = Enum.PowerType.SoulShards
+end
+
 function ShardCounter.prototype:init()
 	ShardCounter.super.prototype.init(self, "Warlock Power")
 
@@ -116,10 +121,10 @@ function ShardCounter.prototype:CheckGreenFire()
 end
 
 function ShardCounter.prototype:UpdatePowerType(event)
-	if IceHUD.WowVer >= 50000 then
+	if IceHUD.WowVer >= 50000 and IceHUD.WowVer < 80000 then
 		CurrentSpec = GetSpecialization()
 	else
-		-- all warlocks use shards in pre-5.0, so just act like our spec is affliction
+		-- all warlocks use shards in pre-5.0/post-8.0, so just act like our spec is affliction
 		CurrentSpec = SPEC_WARLOCK_AFFLICTION
 	end
 

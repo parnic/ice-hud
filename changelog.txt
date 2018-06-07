@@ -1,3 +1,10 @@
+v1.11:
+- BfA compatibility
+
+v1.10.17:
+- Fixed Insanity display with DogTags disabled
+- Show text on Absorb and AltMana with DogTags disabled
+
 v1.10.16.1:
 - Added option to hide the raid icon for Info frames.
 - Updated TOC for 7.3

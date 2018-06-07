@@ -29,6 +29,11 @@ if IceHUD.WowVer >= 50000 then
 	gapPerComboPoint = 6
 end
 
+local SPELL_POWER_COMBO_POINTS = SPELL_POWER_COMBO_POINTS
+if IceHUD.WowVer >= 80000 then
+	SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
+end
+
 -- Constructor --
 function SliceAndDice.prototype:init()
 	SliceAndDice.super.prototype.init(self, "SliceAndDice", "player")
@@ -53,7 +58,7 @@ function SliceAndDice.prototype:Enable(core)
 	if IceHUD.WowVer < 70000 then
 		self:RegisterEvent("UNIT_COMBO_POINTS", "ComboPointsChanged")
 	else
-		self:RegisterEvent("UNIT_POWER", "ComboPointsChanged")
+		self:RegisterEvent(IceHUD.UnitPowerEvent, "ComboPointsChanged")
 	end
 
 	if not self.moduleSettings.alwaysFullAlpha then
@@ -70,7 +75,7 @@ function SliceAndDice.prototype:Disable(core)
 end
 
 function SliceAndDice.prototype:ComboPointsChanged(...)
-	if select('#', ...) >= 3 and select(1, ...) == "UNIT_POWER" and select(3, ...) ~= "COMBO_POINTS" then
+	if select('#', ...) >= 3 and select(1, ...) == IceHUD.UnitPowerEvent and select(3, ...) ~= "COMBO_POINTS" then
 		return
 	end
 
@@ -205,15 +210,15 @@ end
 
 function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
 	local i = 1
-	local buff, rank, texture, count, type, duration, endTime, remaining
-	if IceHUD.WowVer >= 30000 then
-		buff, rank, texture, count, type, duration, endTime = UnitBuff(unitName, i)
+	local buff, _, texture, duration, endTime, remaining
+	if IceHUD.WowVer < 80000 then
+		buff, _, texture, _, _, duration, endTime = UnitBuff(unitName, i)
 	else
-		buff, rank, texture, count, duration, remaining = UnitBuff(unitName, i)
+		buff, texture, _, _, duration, endTime = UnitBuff(unitName, i)
 	end
 
 	while buff do
-		if (texture and string.match(texture, buffName)) then
+		if (texture and (type(buffName) == 'string' and string.match(texture, buffName) or texture == buffName)) then
 			if endTime and not remaining then
 				remaining = endTime - GetTime()
 			end
@@ -222,10 +227,10 @@ function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
 
 		i = i + 1;
 
-		if IceHUD.WowVer >= 30000 then
-			buff, rank, texture, count, type, duration, endTime = UnitBuff(unitName, i)
+		if IceHUD.WowVer < 80000 then
+			buff, _, texture, _, _, duration, endTime = UnitBuff(unitName, i)
 		else
-			buff, rank, texture, count, duration, remaining = UnitBuff(unitName, i)
+			buff, texture, _, _, duration, endTime = UnitBuff(unitName, i)
 		end
 	end
 
@@ -275,7 +280,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
 	local remaining = nil
 
 	if not fromUpdate or IceHUD.WowVer < 30000 then
-		sndDuration, remaining = self:GetBuffDuration(self.unit, "Ability_Rogue_SliceDice")
+		sndDuration, remaining = self:GetBuffDuration(self.unit, IceHUD.WowVer < 80000 and "Ability_Rogue_SliceDice" or 132306)
 
 		if not remaining then
 			sndEndTime = 0

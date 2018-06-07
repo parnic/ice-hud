@@ -315,7 +315,12 @@ end
 
 function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 	local i = 1
-	local debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
+	local debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId
+	if IceHUD.WowVer < 80000 then
+		debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
+	else
+		debuff, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
+	end
 	local isMine = unitCaster == "player"
 	local result = {nil, nil, nil}
 	local remaining
@@ -335,7 +340,11 @@ function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 
 		i = i + 1;
 
-		debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
+		if IceHUD.WowVer < 80000 then
+			debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
+		else
+			debuff, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
+		end
 		isMine = unitCaster == "player"
 	end
 

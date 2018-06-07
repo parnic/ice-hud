@@ -56,7 +56,7 @@ do
 			return
 		end
 
-		self.current = select(15, UnitAura(self.unit, spellName)) or 0
+		self.current = select(IceHUD.WowVer < 80000 and 15 or 14, UnitAura(self.unit, spellName)) or 0
 
 		self:Update()
 	end
