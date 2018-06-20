@@ -35,6 +35,8 @@ function RollTheBones.prototype:init()
   self:SetDefaultColor("RollTheBones", 1, 0.6, 0.2)
   self:SetDefaultColor("RollTheBones2", 0.75, 1, 0.2)
   self:SetDefaultColor("RollTheBones3", 0.4, 1, 0.2)
+  self:SetDefaultColor("RollTheBones4", 0.4, 1, 0.2)
+  self:SetDefaultColor("RollTheBones5", 0.1, 1, 0.7)
   self:SetDefaultColor("RollTheBones6", 0.1, 1, 0.7)
   self:SetDefaultColor("RollTheBonesPotential", 1, 1, 1)
 
