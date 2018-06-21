@@ -1,6 +1,7 @@
-v1.11:
+v1.10.18:
 - BfA compatibility
 - Added gap setting between upper and lower text (github pull request #1, thanks lrds!)
+- Fixed Roll the Bones coloring when gaining 5 buffs.
 
 v1.10.17:
 - Fixed Insanity display with DogTags disabled
