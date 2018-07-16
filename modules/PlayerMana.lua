@@ -41,9 +41,9 @@ function PlayerMana.prototype:init()
 	self:SetDefaultColor("PlayerRunicPower", 62, 54, 152)
 	if IceHUD.WowVer >= 70000 then
 		self:SetDefaultColor("PlayerInsanity", 150, 50, 255)
-		self:SetDefaultColor("PlayerFury", 255, 50, 255)
+		self:SetDefaultColor("PlayerFury", 201, 66, 253)
 		self:SetDefaultColor("PlayerMaelstrom", 62, 54, 152)
-		self:SetDefaultColor("PlayerPain", 255, 50, 255)
+		self:SetDefaultColor("PlayerPain", 255, 156, 0)
 	end
 end
 
