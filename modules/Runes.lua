@@ -9,15 +9,15 @@ if IceHUD.WowVer >= 70000 then
 end
 
 local RUNETYPE_BLOOD = 1;
-local RUNETYPE_DEATH = IceHUD.WowVer < 80000 and 2 or 3;
-local RUNETYPE_FROST = IceHUD.WowVer < 80000 and 3 or 2;
+local RUNETYPE_DEATH = IceHUD.WowVer < 70300 and 2 or 3;
+local RUNETYPE_FROST = IceHUD.WowVer < 70300 and 3 or 2;
 local RUNETYPE_CHROMATIC = 4;
 local RUNETYPE_LEGION = 5; -- not real, but makes for an easy update
 
 local GetRuneType = GetRuneType
-if IceHUD.WowVer >= 70000 and IceHUD.WowVer < 80000 then
+if IceHUD.WowVer >= 70000 and IceHUD.WowVer < 70300 then
 	GetRuneType = function() return RUNETYPE_LEGION end
-elseif IceHUD.WowVer >= 80000 then
+elseif IceHUD.WowVer >= 70300 then
 	GetRuneType = function() return GetSpecialization() end
 end
 
@@ -52,11 +52,11 @@ end
 function Runes.prototype:init()
 	Runes.super.prototype.init(self, "Runes")
 
-	if IceHUD.WowVer < 70000 or IceHUD.WowVer >= 80000 then
+	if IceHUD.WowVer < 70000 or IceHUD.WowVer >= 70300 then
 		self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_BLOOD], 255, 0, 0)
 		self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_DEATH], 0, 207, 0)
 		self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_FROST], 0, 255, 255)
-		if IceHUD.WowVer < 80000 then
+		if IceHUD.WowVer < 70300 then
 			self:SetDefaultColor("Runes"..self.runeNames[RUNETYPE_CHROMATIC], 204, 26, 255)
 		end
 	else
@@ -275,10 +275,11 @@ function Runes.prototype:Enable(core)
 
 	Runes.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("RUNE_POWER_UPDATE", "UpdateRunePower")
+	self:RegisterEvent("RUNE_POWER_UPDATE", "ResetRuneAvailability")
 	if IceHUD.WowVer < 80000 then
 		self:RegisterEvent("RUNE_TYPE_UPDATE", "UpdateRuneType")
-	else
+	end
+	if IceHUD.WowVer >= 70300 then
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "UpdateRuneColors")
 	end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ResetRuneAvailability")
@@ -311,16 +312,19 @@ function Runes.prototype:CheckMaxNumRunes(event, unit, powerType)
 	end
 end
 
-function Runes.prototype:ResetRuneAvailability()
+function Runes.prototype:ResetRuneAvailability(event)
 	for i=1, self.numRunes do
-		self:UpdateRunePower(nil, i, true)
+		self:UpdateRunePower(event, i, not event)
 	end
-	self:Redraw()
+
+	if not event then
+		self:Redraw()
+	end
 end
 
 -- simply shows/hides the foreground rune when it becomes usable/unusable. this allows the background transparent rune to show only
 function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
-	if not rune or not self.frame.graphical or #self.frame.graphical < rune then
+	if rune and (not self.frame.graphical or #self.frame.graphical < rune) then
 		return
 	end
 
@@ -334,26 +338,8 @@ function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
 	local lastState = self.lastRuneState[rune]
 	self.lastRuneState[rune] = usable
 
-	if self.moduleSettings.runeMode ~= RUNEMODE_DEFAULT then
-		if lastState == usable then
-			return
-		end
-
-		if usable then
-			for i=1,self.numRunes do
-				if self.frame.graphical[i]:GetAlpha() == 0 then
-					rune = i
-					break
-				end
-			end
-		else
-			for i=1,self.numRunes do
-				if self.frame.graphical[i]:GetAlpha() == 0 then
-					break
-				end
-				rune = i
-			end
-		end
+	if lastState == usable then
+		return
 	end
 
 --	print("Runes.prototype:UpdateRunePower: rune="..rune.." usable="..(usable and "yes" or "no").." GetRuneType(rune)="..GetRuneType(rune));
@@ -371,9 +357,10 @@ function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
 		if not dontFlash then
 			local fadeInfo={
 				mode = "IN",
-				timeToFade = 0.5,
-				finishedFunc = function(rune) self:ShineFinished(rune) end,
-				finishedArg1 = rune
+				timeToFade = 0.25,
+				finishedFunc = Runes.prototype.ShineFinished,
+				finishedArg1 = self,
+				finishedArg2 = rune
 			}
 			UIFrameFade(self.frame.graphical[rune].shine, fadeInfo);
 		end
@@ -436,7 +423,7 @@ function Runes.prototype:UpdateRuneColors()
 end
 
 function Runes.prototype:GetRuneTexture(runeName)
-	if IceHUD.WowVer >= 80000 then
+	if IceHUD.WowVer >= 70300 then
 		runeName = self.runeNames[RUNETYPE_LEGION]
 	end
 
