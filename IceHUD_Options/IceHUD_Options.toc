@@ -1,4 +1,4 @@
-## Interface: 70300
+## Interface: 80000
 ## Title: IceHUD |cff7fff7f-Options-|r
 ## Author: Parnic
 ## Version: @project-version@
