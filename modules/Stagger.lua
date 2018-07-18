@@ -13,6 +13,7 @@ local ModerateID = 124274
 local HeavyID = 124273
 local StaggerID = 124255
 local staggerNames = {"", "", ""}
+local staggerIds = {LightID, ModerateID, HeavyID}
 
 local MinLevel = 10
 
@@ -227,12 +228,19 @@ function StaggerBar.prototype:UpdateStaggerBar()
 	end
 end
 
-function StaggerBar.prototype:GetDebuffDuration(unitName, buffName)
+function StaggerBar.prototype:GetDebuffDuration(unitName, buffId)
 	local name, _, duration, endTime
 	if IceHUD.WowVer < 80000 then
 		name, _, _, _, _, duration, endTime = UnitDebuff(unitName, buffName)
 	else
-		name, _, _, _, duration, endTime = UnitDebuff(unitName, buffName)
+		for i = 1, IceCore.BuffLimit do
+			local id
+			name, _, _, _, duration, endTime, _, _, _, id = UnitDebuff(unitName, i)
+
+			if id == buffId then
+				break
+			end
+		end
 	end
 
 	if name then
@@ -260,7 +268,7 @@ function StaggerBar.prototype:UpdateTimerFrame(event, unit, fromUpdate)
 
 	if not fromUpdate then
 		for i = 1, 3 do
-			self.StaggerDuration, remaining = self:GetDebuffDuration(self.unit, staggerNames[i])
+			self.StaggerDuration, remaining = self:GetDebuffDuration(self.unit, staggerIds[i])
 
 			if remaining then
 				break
