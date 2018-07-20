@@ -202,9 +202,14 @@ function StaggerBar.prototype:GetDebuffInfo()
 	self.staggerLevel = staggerLevel or 1
 end
 
-function StaggerBar.prototype:COMBAT_LOG_EVENT_UNFILTERED(_, timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceFlags2, destGUID, destName, destFlags, destFlags2, spellID)
-	if destName == playerName then
-		if spellID == StaggerID or event == "SWING_DAMAGE" or event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REMOVED" then
+function StaggerBar.prototype:COMBAT_LOG_EVENT_UNFILTERED(...)
+	local eventArgs = {...}
+    if (CombatLogGetCurrentEventInfo) then
+        eventArgs = {CombatLogGetCurrentEventInfo()}
+    end
+
+	if eventArgs[9] == playerName then
+		if eventArgs[12] == StaggerID or eventArgs[2] == "SWING_DAMAGE" or eventArgs[2] == "SPELL_AURA_APPLIED" or eventArgs[2] == "SPELL_AURA_REMOVED" then
 			self:UpdateStaggerBar()
 		end
 	end
@@ -217,7 +222,7 @@ function StaggerBar.prototype:UpdateStaggerBar()
 	local maxHealth = UnitHealthMax(self.unit)
 	local scale = IceHUD:Clamp((self.amount / maxHealth) * (100 / self.moduleSettings.maxPercent), 0, 1)
 
-	if self.amount > 0 and (IceHUD.WowVer >= 7000 or self.duration <= 10) then
+	if self.amount > 0 and (IceHUD.WowVer >= 70000 or self.duration <= 10) then
 		-- self.timerFrame.bar:SetVertexColor(self:GetColor("StaggerTime", self.moduleSettings.timerAlpha))
 		self:UpdateBar(scale or 0, "Stagger"..self.staggerLevel)
 		self:UpdateShown()
