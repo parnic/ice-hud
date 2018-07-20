@@ -1,5 +1,6 @@
 v1.11.2:
 - Fixed Stagger bar to work in 8.0
+- Fixed DK Runes in graphical mode not always correctly showing runes on cooldown (curse ticket 238, thanks ithorazei!)
 
 v1.11.1:
 - Fixed error when playing as a Monk

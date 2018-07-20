@@ -317,9 +317,7 @@ function Runes.prototype:ResetRuneAvailability(event)
 		self:UpdateRunePower(event, i, not event)
 	end
 
-	if not event then
-		self:Redraw()
-	end
+	self:Redraw()
 end
 
 -- simply shows/hides the foreground rune when it becomes usable/unusable. this allows the background transparent rune to show only
@@ -338,9 +336,9 @@ function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
 	local lastState = self.lastRuneState[rune]
 	self.lastRuneState[rune] = usable
 
-	if lastState == usable then
-		return
-	end
+--	if lastState == usable then
+--		return
+--	end
 
 --	print("Runes.prototype:UpdateRunePower: rune="..rune.." usable="..(usable and "yes" or "no").." GetRuneType(rune)="..GetRuneType(rune));
 
@@ -354,7 +352,7 @@ function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
 			self.frame.graphical[rune]:SetAlpha(1)
 		end
 
-		if not dontFlash then
+		if not dontFlash and lastState ~= usable then
 			local fadeInfo={
 				mode = "IN",
 				timeToFade = 0.25,
@@ -378,8 +376,6 @@ function Runes.prototype:UpdateRunePower(event, rune, dontFlash)
 			self.frame.graphical[rune]:SetAlpha(0.2)
 		end
 	end
-
-	self:Redraw()
 end
 
 function Runes.prototype:GetNumRunesAvailable()
