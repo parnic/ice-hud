@@ -1,3 +1,6 @@
+v1.11.2:
+- Fixed Stagger bar to work in 8.0
+
 v1.11.1:
 - Fixed error when playing as a Monk
 - Fixed castbar sometimes showing gibberish text and sometimes disappearing when the cast wasn't complete yet
