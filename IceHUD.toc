@@ -28,7 +28,6 @@ IceCastBar.lua
 IceStackCounter.lua
 
 # IceHUD modules
-# - Feel free to comment these out if you like
 modules\PlayerHealth.lua
 modules\PlayerMana.lua
 modules\TargetHealth.lua
