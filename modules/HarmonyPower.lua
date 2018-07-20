@@ -7,9 +7,9 @@ if IceHUD.WowVer >= 80000 then
 end
 
 function HarmonyPower.prototype:init()
-	HarmonyPower.super.prototype.init(self, "HarmonyPower")
+	HarmonyPower.super.prototype.init(self, "Chi")
 
-	self:SetDefaultColor("HarmonyPowerNumeric", 218, 231, 31)
+	self:SetDefaultColor("ChiNumeric", 218, 231, 31)
 
 	-- pulled from MonkHarmonyBar.xml in Blizzard's UI source
 	self.runeCoords =
@@ -22,7 +22,7 @@ function HarmonyPower.prototype:init()
 		{0.00390625, 0.08593750, 0.71093750, 0.87500000},
 	}
 	self.numRunes = 4
-	self.numericColor = "HarmonyPowerNumeric"
+	self.numericColor = "ChiNumeric"
 	if IceHUD.WowVer >= 50100 then
 		self.unitPower = SPELL_POWER_CHI
 	else

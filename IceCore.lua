@@ -173,6 +173,13 @@ function IceCore.prototype:CheckDisplayUpdateMessage()
 				self.settings.modules["DruidMana"] = nil
 			end
 		end
+		if self.accountSettings.lastRunVersion <= 20180720033008 then
+			if self.settings.modules["HarmonyPower"] ~= nil then
+				self.settings.modules["Chi"] = self.settings.modules["HarmonyPower"]
+				self.settings.modules["HarmonyPower"] = nil
+				self.settings.colors["ChiNumeric"] = self.settings.colors["HarmonyPowerNumeric"]
+			end
+		end
 		self.accountSettings.lastRunVersion = thisVersion
 	end
 end

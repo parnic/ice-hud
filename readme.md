@@ -63,7 +63,7 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
    Type /icehud, expand Module Settings, expand whatever module you want to move (e.g. PlayerHealth, PlayerMana), and adjust the "Side" and "Offset" settings. "Side" controls whether it's on the left or the right and "Offset" controls how far from center it is.
 
 1. **Which module displays Monk Chi power?**
-   This module is called HarmonyPower. Harmony was the original name for Chi back when 5.0 was in beta, so I used Blizzard's name for it while I was developing for Cataclysm. I feel like it's too late to change now that many people are familiar with the Harmony name.
+   Prior to v1.11.2, this module was called HarmonyPower. Harmony was the original name for Chi back when 5.0 was in beta, so I used Blizzard's name for it while I was developing for Cataclysm. IceHUD v1.11.2 changed this module to be called Chi.
 
 1. **How do I add commas/periods into big numbers like health?**
    If you have DogTags enabled, you can open the Text Settings for the module in question and add SeparateDigits() around the tag you're trying to split up. To display Health/MaxHealth with commas, use: [(SeparateDigits(HP):HPColor "/" SeparateDigits(MaxHP):HPColor):Bracket]. To use periods instead of commas, use: [(SeparateDigits(HP, "."):HPColor "/" SeparateDigits(MaxHP, "."):HPColor):Bracket]. Use the /dog help menu to build your own similar tags for Mana, etc.
@@ -78,4 +78,4 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
    Blizzard added a "Personal Resource Display" feature in the 7.0 game client. You can disable it in the Game options -> Interface -> Names -> Personal Resource Display.
 
 
-See [here](http://www.wowace.com/addons/ice-hud/tickets/113-basic-guide-to-texture-creation/) for a user-created guide to creating new IceHUD textures.
+See [here](https://www.wowace.com/projects/ice-hud/issues/113) for a user-created guide to creating new IceHUD textures.
