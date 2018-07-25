@@ -14,7 +14,6 @@
 # Libraries
 embeds.xml
 #@end-no-lib-strip@
-
 # Localization
 loc\loc.xml
 
