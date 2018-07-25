@@ -296,6 +296,14 @@ function PlayerMana.prototype:TreatEmptyAsFull()
 		or self.manaType == SPELL_POWER_FURY or self.manaType == SPELL_POWER_PAIN or self.manaType == SPELL_POWER_MAELSTROM))
 end
 
+function PlayerMana.prototype:IsFull(scale)
+	if IceHUD.WowVer >= 80000 and self.manaType == SPELL_POWER_LUNAR_POWER and IsPlayerSpell(202430) then
+		return scale - 0.5 >= 0
+	end
+
+	return PlayerMana.super.prototype.IsFull(self, scale)
+end
+
 function PlayerMana.prototype:UpdateEvent(event, unit, powertype)
 	self:Update(unit, powertype)
 end
