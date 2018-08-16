@@ -20,7 +20,7 @@ function GlobalCoolDown.prototype:Enable(core)
 		self.moduleSettings.inverse = "NORMAL"
 	end
 
-	self:RegisterEvent("UNIT_SPELLCAST_SENT","SpellCastSent")
+	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", "SpellCastChanged")
 
 	--self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "CooldownStateChanged")
 	self:RegisterEvent("UNIT_SPELLCAST_START","CooldownStateChanged")
@@ -143,28 +143,16 @@ function GlobalCoolDown.prototype:IsFull(scale)
 	return false
 end
 
-function GlobalCoolDown.prototype:SpellCastSent(event, unit, spell, bfaCastGUID, bfaSpellId)
-	if IceHUD.WowVer >= 80000 then
-		spell = bfaSpellId
-	end
-
-	if unit ~= "player" or not spell then
-		return
-	end
-
+function GlobalCoolDown.prototype:SpellCastChanged(event, cancelled)
 	self.spellCastSent = GetTime()
 end
 
-function GlobalCoolDown.prototype:SpellCastStop(event, unit, spell, one, two, spellId)
-	if IceHUD.WowVer >= 80000 then
-		spellId = one
-	end
-
-	if unit ~= "player" or not spellId or not self.CurrSpellId or self.CurrSpellId ~= spellId then
+function GlobalCoolDown.prototype:SpellCastStop(event, unit, castGuid, spellId)
+	if unit ~= "player" or not spellId or not self.CurrSpellGuid or self.CurrSpellGuid ~= castGuid then
 		return
 	end
 
-	self.CurrSpellId = nil
+	self.CurrSpellGuid = nil
 
 	if event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" then
 		self.CurrLerpTime = self.moduleSettings.desiredLerpTime
@@ -190,23 +178,19 @@ function GlobalCoolDown.prototype:GetSpellCastTime(spell)
 	end
 end
 
-function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, spell, one, two, spellId)
-	if IceHUD.WowVer >= 80000 then
-		spellId = one
-	end
-
+function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, castGuid, spellId)
 	if unit ~= "player" or not spellId then
 		return
 	end
 
 	-- Ignore all events unrelated to the spell currently being cast
-	if self.CurrSpellId and self.CurrSpellId ~= spellId then
+	if self.CurrSpellGuid and self.CurrSpellGuid ~= castGuid then
 		return
 	end
 
 	-- Update the current spell ID for all events indicating a spellcast is starting
 	if event ~= "UNIT_SPELLCAST_SUCCEEDED" then
-		self.CurrSpellId = spellId
+		self.CurrSpellGuid = castGuid
 	end
 
 	local start, dur = GetSpellCooldown(self.CDSpellId)
