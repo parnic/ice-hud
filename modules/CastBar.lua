@@ -407,8 +407,8 @@ end
 
 
 -- OVERRIDE
-function CastBar.prototype:SpellCastSent(event, unit, castGuid, spellId)
-	CastBar.super.prototype.SpellCastSent(self, event, unit, castGuid, spellId)
+function CastBar.prototype:SpellCastSent(event, unit, target, castGuid, spellId)
+	CastBar.super.prototype.SpellCastSent(self, event, unit, target, castGuid, spellId)
 	if (unit ~= self.unit) then return end
 
 	if IceHUD.WowVer < 70000 then
