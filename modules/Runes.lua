@@ -559,13 +559,7 @@ function Runes.prototype:ShowBlizz()
 	RuneFrame:Show()
 
 	RuneFrame:GetScript("OnLoad")(RuneFrame)
-	RuneFrame:GetScript("OnEvent")(frame, "PLAYER_ENTERING_WORLD")
-	for i=1, self.numRunes do
-		local frame = _G["RuneButtonIndividual"..i]
-		if frame then
-			frame:GetScript("OnLoad")(frame)
-		end
-	end
+	RuneFrame:GetScript("OnEvent")(RuneFrame, "PLAYER_ENTERING_WORLD")
 end
 
 local function hook_playerframe()
