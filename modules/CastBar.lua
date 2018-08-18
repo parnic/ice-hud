@@ -446,7 +446,11 @@ function CastBar.prototype:SpellCastStart(event, unit, castGuid, spellId)
 	else
 		local now = GetTime()
 		local lag = now - (self.spellCastSent or now)
-		scale = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
+		if lag >= self.actionDuration then
+			scale = 0
+		else
+			scale = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
+		end
 	end
 
 	self:SetBarCoord(self.lagBar, scale, true, true)
@@ -472,11 +476,14 @@ function CastBar.prototype:SpellCastChannelStart(event, unit)
 	else
 		local now = GetTime()
 		local lag = now - (self.spellCastSent or now)
-		scale = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
+		if lag >= self.actionDuration then
+			scale = 0
+		else
+			scale = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
+		end
 	end
 
 	local top = not self.moduleSettings.reverseChannel
-
 	self:SetBarCoord(self.lagBar, scale, top, true)
 
 	self.spellCastSent = nil
