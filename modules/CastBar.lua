@@ -455,7 +455,7 @@ end
 function CastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 	CastBar.super.prototype.SpellCastSucceeded(self, event, unit, castGuid, spellId)
 
-	if not self.actionDuration then
+	if not self.actionDuration or unit ~= self.unit then
 		return
 	end
 
