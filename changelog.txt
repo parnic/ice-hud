@@ -1,3 +1,10 @@
+v1.11.3:
+- Balance druids with Nature's Wrath now treat 50-100 astral power as full for alpha purposes (so the bar will fade to "out of combat" levels when resting around 50%).
+- Fixed the GCD and player castbar lag indicator to show up again.
+- Fixed a longstanding bug where the castbar lag indicator would sometimes be the size of the full bar if the mod never received the client-side "started casting" notification.
+- Improved reliability of castbar lag indicator. Blizzard doesn't offer the necessary events to display this with 100% certainty.
+- Fixed an error caused by the Runes module when toggling "Hide Blizzard Frame" off.
+
 v1.11.2:
 - Fixed Stagger bar to work in 8.0
 - Fixed DK Runes in graphical mode not always correctly showing runes on cooldown (curse ticket 238, thanks ithorazei!)
