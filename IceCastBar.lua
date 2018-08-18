@@ -519,9 +519,9 @@ function IceCastBar.prototype:SpellCastDelayed(event, unit, castGuid, spellId)
 end
 
 
-function IceCastBar.prototype:SpellCastSucceeded(event, castGuid, spellId)
+function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 	if (unit ~= self.unit) then return end
-	--IceHUD:Debug("SpellCastSucceeded", unit, spell, rank)
+	--IceHUD:Debug("SpellCastSucceeded", unit, castGuid, spellId)
 
 	-- never show on channeled (why on earth does this event even fire when channeling starts?)
 	if (self.action == IceCastBar.Actions.Channel) then
@@ -532,6 +532,8 @@ function IceCastBar.prototype:SpellCastSucceeded(event, castGuid, spellId)
 	if (self.current and self.current ~= castGuid) then
 		return
 	end
+
+	local spell = GetSpellInfo(spellId)
 
 	-- show after normal successfull cast
 	if (self.action == IceCastBar.Actions.Cast) then
