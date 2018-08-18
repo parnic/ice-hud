@@ -1,3 +1,6 @@
+v1.11.4:
+- Fixed cast lag indicator updating randomly mid-cast.
+
 v1.11.3:
 - Balance druids with Nature's Wrath now treat 50-100 astral power as full for alpha purposes (so the bar will fade to "out of combat" levels when resting around 50%).
 - Fixed the GCD and player castbar lag indicator to show up again.
