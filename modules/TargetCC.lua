@@ -53,6 +53,8 @@ local StunCCList = {
     105593,
     -- Remorseless Winter
     115001,
+    -- Between the Eyes
+    199804,
 }
 
 local IncapacitateCCList = {
