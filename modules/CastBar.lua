@@ -477,7 +477,7 @@ function CastBar.prototype:UpdateLagBar(isChannel)
 		scale = IceHUD:Clamp(self.fixedLatency / self.actionDuration, 0, 1)
 	else
 		local lag = now - (self.spellCastSent or now)
-		if lag >= self.actionDuration then
+		if lag >= (self.actionDuration / 2) then
 			scale = 0
 		else
 			scale = IceHUD:Clamp(lag / self.actionDuration, 0, 1)
