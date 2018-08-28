@@ -1,3 +1,7 @@
+v1.11.5:
+- Added Rogue's Between the Eyes stun to the CC stun bar list.
+- Added option (enabled by default) to hide mod during shell games.
+
 v1.11.4:
 - Fixed cast lag indicator updating randomly mid-cast.
 
