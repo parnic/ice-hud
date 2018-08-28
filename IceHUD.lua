@@ -437,7 +437,7 @@ end
 do
 	local retval = {}
 
-	function IceHUD:HasBuffs(unit, spellIDs)
+	function IceHUD:HasBuffs(unit, spellIDs, filter)
 		for i=1, #spellIDs do
 			retval[i] = false
 		end
@@ -445,9 +445,9 @@ do
 		local i = 1
 		local name, _, texture, applications, _, _, _, _, _, _, auraID
 		if IceHUD.WowVer < 80000 then
-			name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i)
+			name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
 		else
-			name, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i)
+			name, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
 		end
 		while name do
 			for i=1, #spellIDs do
@@ -459,13 +459,17 @@ do
 
 			i = i + 1
 			if IceHUD.WowVer < 80000 then
-				name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i)
+				name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
 			else
-				name, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i)
+				name, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
 			end
 		end
 
 		return retval
+	end
+
+	function IceHUD:HasDebuffs(unit, spellIDs, filter)
+		return IceHUD:HasBuffs(unit, spellIDs, filter and filter.."|HARMFUL" or "HARMFUL")
 	end
 end
 
