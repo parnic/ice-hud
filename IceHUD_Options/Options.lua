@@ -398,6 +398,23 @@ Blizzard added a "Personal Resource Display" feature in the 7.0 game client. You
 					end,
 					order = 35,
 				},
+
+				bHideDuringShellGame = {
+					type = 'toggle',
+					name = L["Hide during shell game"],
+					desc = L["This will hide the entire mod when playing the BfA Tortollan shell game world quest."],
+					width = 'double',
+					get = function()
+						return IceHUD.IceCore.settings.bHideDuringShellGame
+					end,
+					set = function(info, value)
+						IceHUD.IceCore.settings.bHideDuringShellGame = value
+						if not value then
+							IceHUD.IceCore.IceHUDFrame:Show()
+						end
+					end,
+					order = 36,
+				},
 			}
 		},
 

@@ -94,6 +94,7 @@ function IceCore.prototype:SetupDefaults()
 
 			bHideDuringPetBattles = true,
 			bHideInBarberShop = true,
+			bHideDuringShellGame = true,
 		},
 		global = {
 			lastRunVersion = 0,
@@ -254,6 +255,7 @@ function IceCore.prototype:Enable(userToggle)
 	self.IceHUDFrame:RegisterEvent("PET_BATTLE_OVER")
 	self.IceHUDFrame:RegisterEvent("BARBER_SHOP_OPEN")
 	self.IceHUDFrame:RegisterEvent("BARBER_SHOP_CLOSE")
+	self.IceHUDFrame:RegisterEvent("UNIT_AURA")
 	self.IceHUDFrame:SetScript("OnEvent", function(self, event, ...)
 		if (event == "PET_BATTLE_OPENING_START") then
 			if IceHUD.IceCore.settings.bHideDuringPetBattles then
@@ -271,6 +273,15 @@ function IceCore.prototype:Enable(userToggle)
 			if IceHUD.IceCore.settings.bHideInBarberShop then
 				self:Show()
 			end
+		elseif (event == "UNIT_AURA") then
+			local unit = ...
+			if IceHUD.IceCore.settings.bHideDuringShellGame and unit == "player" and IceHUD:HasDebuffs("player", {271571})[1] and UnitInVehicle("player") then
+				self:RegisterEvent("UNIT_EXITED_VEHICLE")
+				self:Hide()
+			end
+		elseif (event == "UNIT_EXITED_VEHICLE") then
+			self:UnregisterEvent("UNIT_EXITED_VEHICLE")
+			self:Show()
 		end
 	end)
 
