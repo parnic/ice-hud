@@ -132,8 +132,6 @@ function IceCustomCDBar.prototype:CreateBar()
 
 	if not self.barFrame.icon then
 		self.barFrame.icon = self.masterFrame:CreateTexture(nil, "LOW")
-		-- default texture so that 'config mode' can work without activating the bar first
-		self.barFrame.icon:SetTexture("Interface\\Icons\\Spell_Frost_Frost")
 		-- this cuts off the border around the buff icon
 		self.barFrame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 		self.barFrame.icon:SetDrawLayer("OVERLAY")
@@ -675,6 +673,9 @@ function IceCustomCDBar.prototype:UpdateIcon()
 		end
 
 		if IceHUD.IceCore:IsInConfigMode() or self.moduleSettings.displayAuraIcon then
+			if not self.barFrame.icon:GetTexture() and IceHUD.IceCore:IsInConfigMode() then
+				self.barFrame.icon:SetTexture("Interface\\Icons\\Spell_Frost_Frost")
+			end
 			self.barFrame.icon:Show()
 		else
 			self.barFrame.icon:Hide()
@@ -694,7 +695,10 @@ function IceCustomCDBar.prototype:UpdateItemUnitInventoryChanged(event, unit)
 	end
 end
 
-function IceCustomCDBar.prototype:UpdateCustomBarEvent()
+function IceCustomCDBar.prototype:UpdateCustomBarEvent(event, unit)
+	if unit ~= self.unit then
+		return
+	end
 	if not self.moduleSettings.cooldownType or self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL then
 		self:UpdateCustomBar()
 	end
@@ -722,6 +726,8 @@ function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
 		else
 			self.cooldownEndTime = remaining + now
 		end
+
+		self:UpdateIcon()
 	end
 
 	if self.cooldownEndTime and self.cooldownEndTime >= now then
