@@ -169,8 +169,6 @@ function IceCustomBar.prototype:CreateBar()
 
 	if not self.barFrame.icon then
 		self.barFrame.icon = self.masterFrame:CreateTexture(nil, "LOW")
-		-- default texture so that 'config mode' can work without activating the bar first
-		self.barFrame.icon:SetTexture("Interface\\Icons\\Spell_Frost_Frost")
 		-- this cuts off the border around the buff icon
 		self.barFrame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 		self.barFrame.icon:SetDrawLayer("OVERLAY")
@@ -635,7 +633,7 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
-	if not unitName or not buffName then
+	if not unitName or not buffName or buffName == "" then
 		return nil
 	end
 
@@ -776,6 +774,10 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 		end
 
 		if IceHUD.IceCore:IsInConfigMode() or self.moduleSettings.displayAuraIcon then
+			if IceHUD.IceCore:IsInConfigMode() and not self.barFrame.icon:GetTexture() then
+				self.barFrame.icon:SetTexture("Interface\\Icons\\Spell_Frost_Frost")
+			end
+
 			self.barFrame.icon:Show()
 		else
 			self.barFrame.icon:Hide()

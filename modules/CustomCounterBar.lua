@@ -278,7 +278,6 @@ function IceCustomCounterBar.prototype:CreateFrame()
 
 	if not self.barFrame.icon then
 		self.barFrame.icon = self.masterFrame:CreateTexture(nil, "LOW")
-		self.barFrame.icon:SetTexture(DefaultAuraIcon)
 		self.barFrame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 		self.barFrame.icon:SetDrawLayer("OVERLAY")
 		self.barFrame.icon:Hide()
@@ -306,10 +305,6 @@ function IceCustomCounterBar.prototype:UpdateAuraIcon()
 	local auraIcon, _
 	_, _, auraIcon = GetSpellInfo(self.moduleSettings.auraName)
 
-	if auraIcon == nil then
-		auraIcon = "Interface\\Icons\\Spell_Frost_Frost"
-	end
-
 	self.barFrame.icon:SetTexture(auraIcon)
 end
 
@@ -319,6 +314,10 @@ function IceCustomCounterBar.prototype:UpdateCustomCount()
 	local percent = IceHUD:Clamp(1.0 * points / (max > 0 and max or 1), 0, 1)
 
 	if IceHUD.IceCore:IsInConfigMode() then
+		if not self.barFrame.icon:GetTexture() then
+			self.barFrame.icon:SetTexture(DefaultAuraIcon)
+		end
+
 		points = IceStackCounter_GetMaxCount(self)
 		percent = 1
 		self.barFrame.icon:Show()
