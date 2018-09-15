@@ -1,3 +1,7 @@
+v1.11.6:
+- Only show placeholder icon on custom bars when in configuration mode (fixes placeholder icon showing up for abilities the player hasn't enabled yet, like Survival Hunter's Bombs).
+- Fixed Custom Cooldown bars not displaying properly when both "ignore range" and "only show with target" were checked.
+
 v1.11.5:
 - Added Rogue's Between the Eyes stun to the CC stun bar list.
 - Added option (enabled by default) to hide mod during shell games.
