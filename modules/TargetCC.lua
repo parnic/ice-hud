@@ -80,6 +80,14 @@ local IncapacitateCCList = {
 	28271,
 	-- Polymorph: Penguin
 	59634,
+	-- Polymorph: Monkey
+	161354,
+	-- Polymorph: Polar Bear Cub
+	120137,
+	-- Polymorph: Porcupine
+	120140,
+	-- Polymorph: Direhorn
+	162625,
 	-- Hibernate
 	2637,
 	-- Freezing Trap Effect
@@ -115,6 +123,16 @@ local FearCCList = {
 	5246,
 	-- Hex
 	51514,
+	-- Hex: Compy
+	210873,
+	-- Hex: Wicker Mongrel
+	277784,
+	-- Hex: Zandalari Tendonripper
+	277778,
+	-- Hex: Spider
+	211004,
+	-- Hex: Skeletal Hatchling
+	269352,
 	-- Scare Beast
 	1513,
 }
