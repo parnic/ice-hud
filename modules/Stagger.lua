@@ -166,7 +166,7 @@ end
 
 function StaggerBar.prototype:GetDebuffInfo()
 	if IceHUD.WowVer >= 70000 then
-		self.amount = UnitStagger(self.unit)
+		self.amount = UnitStagger(self.unit) or 0
 		self.staggerLevel = 1
 
 		local healthMax = UnitHealthMax(self.unit)
