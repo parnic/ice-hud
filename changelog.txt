@@ -1,3 +1,8 @@
+v1.11.7:
+- Fixed Warlock shard numeric formatting incorrectly in non-Destruction specs.
+- Possibly fixed reported bug with Brewmaster Monks' Stagger bars.
+- Added several spells to be tracked in the CC modules.
+
 v1.11.6:
 - Only show placeholder icon on custom bars when in configuration mode (fixes placeholder icon showing up for abilities the player hasn't enabled yet, like Survival Hunter's Bombs).
 - Fixed Custom Cooldown bars not displaying properly when both "ignore range" and "only show with target" were checked.
