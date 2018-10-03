@@ -67,7 +67,7 @@ function ShardCounter.prototype:Enable(core)
 	if IceHUD.WowVer >= 70000 then
 		self.numRunes = UnitPowerMax(self.unit, self.unitPower)
 
-		if GetSpecialization() == SPEC_WARLOCK_DESTRUCTION then
+		if IceHUD.WowVer >= 80000 or GetSpecialization() == SPEC_WARLOCK_DESTRUCTION then
 			self.shouldShowUnmodified = true
 			self.numericFormat = "%.1f"
 			self.round = floor
