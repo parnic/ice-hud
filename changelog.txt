@@ -1,3 +1,6 @@
+v1.11.8:
+- Updated TOC to 8.1
+
 v1.11.7:
 - Fixed Warlock shard numeric formatting incorrectly in non-Destruction specs.
 - Possibly fixed reported bug with Brewmaster Monks' Stagger bars.
