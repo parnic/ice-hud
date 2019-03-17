@@ -68,6 +68,7 @@ function PlayerHealth.prototype:Enable(core)
 	PlayerHealth.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_HEALTH", "UpdateEvent")
+	self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateEvent")
 	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateEvent")
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
