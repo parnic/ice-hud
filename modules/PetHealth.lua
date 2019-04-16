@@ -49,6 +49,7 @@ function PetHealth.prototype:Enable(core)
 	self:RegisterEvent("UNIT_PET", "CheckPet");
 
 	self:RegisterEvent("UNIT_HEALTH", "UpdateEvent")
+	self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateEvent")
 	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateEvent")
 
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
