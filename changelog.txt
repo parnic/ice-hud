@@ -1,3 +1,6 @@
+v1.11.10:
+- Fixed pet health/power not updating every time it was supposed to.
+
 v1.11.9:
 - Fixed player health never quite reaching full (and therefore never adhering to "full" alpha settings). It seems like a WoW client patch caused UNIT_MAXHEALTH to stop firing.
 
