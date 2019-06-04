@@ -88,7 +88,7 @@ function PetMana.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
 	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckVehicle")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
 
 	self:CheckPet()
 	self:ManaType(nil, self.unit)
@@ -239,7 +239,9 @@ function PetMana.prototype:ExitingVehicle(event, unit)
 	end
 end
 
-function PetMana.prototype:CheckVehicle()
+function PetMana.prototype:EnteringWorld()
+	self:Update(self.unit)
+
 	if UnitHasVehicleUI("player") then
 		self:EnteringVehicle(nil, "player", true)
 	else
