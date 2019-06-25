@@ -1,3 +1,6 @@
+v1.11.11:
+- Updated TOC to 8.2
+
 v1.11.10:
 - Fixed pet health/power not updating every time it was supposed to.
 
