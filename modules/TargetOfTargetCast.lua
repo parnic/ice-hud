@@ -4,6 +4,12 @@ TargetTargetCast.prototype.scheduledEvent = nil
 
 local SelfDisplayModeOptions = {"Hide", "Normal"}
 
+local UnitCastingInfo, UnitChannelInfo = UnitCastingInfo, UnitChannelInfo
+if IceHUD.WowClassic then
+	UnitCastingInfo = CastingInfo
+	UnitChannelInfo = ChannelInfo
+end
+
 -- Constructor --
 function TargetTargetCast.prototype:init()
 	TargetTargetCast.super.prototype.init(self, "TargetTargetCast")

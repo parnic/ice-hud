@@ -2,7 +2,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local HarmonyPower = IceCore_CreateClass(IceClassPowerCounter)
 
 local SPELL_POWER_CHI = SPELL_POWER_CHI
-if IceHUD.WowVer >= 80000 then
+if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
 	SPELL_POWER_CHI = Enum.PowerType.Chi
 end
 

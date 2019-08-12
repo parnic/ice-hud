@@ -19,4 +19,6 @@ function PlayerAbsorb.prototype:GetDefaultSettings()
 end
 
 -- Load us up
-IceHUD.PlayerAbsorb = PlayerAbsorb:new()
+if UnitGetTotalAbsorbs ~= nil then
+	IceHUD.PlayerAbsorb = PlayerAbsorb:new()
+end

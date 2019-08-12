@@ -313,8 +313,10 @@ end
 function CastBar.prototype:Enable(core)
 	CastBar.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
-	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+	if UnitHasVehicleUI then
+		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
+		self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+	end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckVehicle")
 
 	self:RegisterEvent("CVAR_UPDATE", "CVarUpdate")
@@ -348,10 +350,12 @@ end
 
 
 function CastBar.prototype:CheckVehicle()
-	if UnitHasVehicleUI("player") then
-		self:EnteringVehicle(nil, "player", true)
-	else
-		self:ExitingVehicle(nil, "player")
+	if UnitHasVehicleUI then
+		if UnitHasVehicleUI("player") then
+			self:EnteringVehicle(nil, "player", true)
+		else
+			self:ExitingVehicle(nil, "player")
+		end
 	end
 end
 

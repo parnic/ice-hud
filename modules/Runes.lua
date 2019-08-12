@@ -4,7 +4,7 @@ local Runes = IceCore_CreateClass(IceElement)
 local IceHUD = _G.IceHUD
 
 local CooldownFrame_SetTimer = CooldownFrame_SetTimer
-if IceHUD.WowVer >= 70000 then
+if CooldownFrame_Set then
 	CooldownFrame_SetTimer = CooldownFrame_Set
 end
 
@@ -44,7 +44,7 @@ Runes.prototype.numRunes = 6
 Runes.prototype.lastRuneState = {}
 
 local SPELL_POWER_RUNES = SPELL_POWER_RUNES
-if IceHUD.WowVer >= 80000 then
+if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
 	SPELL_POWER_RUNES = Enum.PowerType.Runes
 end
 

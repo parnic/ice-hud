@@ -2,7 +2,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local Totems = IceCore_CreateClass(IceElement)
 
 local CooldownFrame_SetTimer = CooldownFrame_SetTimer
-if IceHUD.WowVer >= 70000 then
+if CooldownFrame_Set then
 	CooldownFrame_SetTimer = CooldownFrame_Set
 end
 
@@ -247,6 +247,7 @@ function Totems.prototype:UpdateTotem(event, totem, ...)
 		CooldownFrame_SetTimer(self.frame.graphical[totem].cd, startTime, duration, true)
 		self.frame.graphical[totem].cd:Show()
 		self.frame.graphical[totem]:Show()
+		self.frame.graphical[totem].name = name
 	else
 		self.frame.graphical[totem].cd:Hide()
 		self.frame.graphical[totem]:Hide()
@@ -293,14 +294,18 @@ function Totems.prototype:GetAlphaAdd()
 end
 
 function Totems.prototype:ShowBlizz()
-	TotemFrame:Show()
-	TotemFrame:GetScript("OnLoad")(TotemFrame)
+	if TotemFrame then
+		TotemFrame:Show()
+		TotemFrame:GetScript("OnLoad")(TotemFrame)
+	end
 end
 
 
 function Totems.prototype:HideBlizz()
-	TotemFrame:Hide()
-	TotemFrame:UnregisterAllEvents()
+	if TotemFrame then
+		TotemFrame:Hide()
+		TotemFrame:UnregisterAllEvents()
+	end
 end
 
 function Totems.prototype:TargetChanged()
@@ -354,7 +359,14 @@ function Totems.prototype:CreateTotem(i, name)
 	end
 
 	if not self.graphicalOnEnter then
-		self.graphicalOnEnter = function(button) GameTooltip:SetOwner(button); GameTooltip:SetTotem(button.slot) end
+		self.graphicalOnEnter = function(button)
+			GameTooltip:SetOwner(button)
+			if IceHUD.WowClassic then
+				GameTooltip:SetText(button.name)
+			else
+				GameTooltip:SetTotem(button.slot)
+			end
+		end
 	end
 	if not self.graphicalOnLeave then
 		self.graphicalOnLeave = function() GameTooltip:Hide() end
@@ -396,6 +408,7 @@ function Totems.prototype:CreateTotem(i, name)
 		self.frame.graphical[i]:SetScript("OnLeave", nil)
 	end
 	self.frame.graphical[i].slot = i
+	self.frame.graphical[i].name = name
 
 	-- it looks like HookScript will continue to add handlers every time instead of replacing them like SetScript
 	if (bWasNewFrame) then

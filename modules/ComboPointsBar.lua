@@ -2,7 +2,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local ComboPointsBar = IceCore_CreateClass(IceBarElement)
 
 local SPELL_POWER_COMBO_POINTS = SPELL_POWER_COMBO_POINTS
-if IceHUD.WowVer >= 80000 then
+if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
 	SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
 end
 
@@ -70,14 +70,16 @@ function ComboPointsBar.prototype:Enable(core)
 	ComboPointsBar.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateComboPoints")
-	if IceHUD.WowVer >= 30000 then
-		if IceHUD.WowVer < 70000 then
+	if IceHUD.WowVer >= 30000 or IceHUD.WowClassic then
+		if IceHUD.WowVer < 70000 and not IceHUD.WowClassic then
 			self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
 		else
 			self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateComboPoints")
 		end
-		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateComboPoints")
-		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateComboPoints")
+		if UnitHasVehicleUI then
+			self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateComboPoints")
+			self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateComboPoints")
+		end
 	else
 		self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateComboPoints")
 	end
@@ -99,11 +101,11 @@ function ComboPointsBar.prototype:UpdateComboPoints(...)
 	local points
 	if IceHUD.IceCore:IsInConfigMode() then
 		points = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS)
-	elseif IceHUD.WowVer >= 30000 then
+	elseif IceHUD.WowVer >= 30000 or IceHUD.WowClassic then
 		-- Parnic: apparently some fights have combo points while the player is in a vehicle?
-		local isInVehicle = UnitHasVehicleUI("player")
+		local isInVehicle = UnitHasVehicleUI and UnitHasVehicleUI("player")
 		local checkUnit = isInVehicle and "vehicle" or "player"
-		if IceHUD.WowVer >= 60000 then
+		if IceHUD.WowVer >= 60000 or IceHUD.WowClassic then
 			points = UnitPower(checkUnit, SPELL_POWER_COMBO_POINTS)
 		else
 			points = GetComboPoints(checkUnit, "target")

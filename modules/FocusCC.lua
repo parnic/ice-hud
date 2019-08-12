@@ -23,4 +23,6 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 -- Load us up
-IceHUD.FocusCC = FocusCC:new()
+if FocusUnit then
+	IceHUD.FocusCC = FocusCC:new()
+end

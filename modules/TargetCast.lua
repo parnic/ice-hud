@@ -3,6 +3,12 @@ local TargetCast = IceCore_CreateClass(IceCastBar)
 
 TargetCast.prototype.notInterruptible = false
 
+local UnitCastingInfo, UnitChannelInfo = UnitCastingInfo, UnitChannelInfo
+if IceHUD.WowClassic then
+	UnitCastingInfo = CastingInfo
+	UnitChannelInfo = ChannelInfo
+end
+
 -- Constructor --
 function TargetCast.prototype:init()
 	TargetCast.super.prototype.init(self, "TargetCast")
@@ -15,8 +21,10 @@ end
 function TargetCast.prototype:Enable(core)
 	TargetCast.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE", "SpellCastInterruptible")
-	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "SpellCastNotInterruptible")
+	if IceHUD.WowVer >= 30200 then
+		self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE", "SpellCastInterruptible")
+		self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "SpellCastNotInterruptible")
+	end
 end
 
 
@@ -83,7 +91,7 @@ function TargetCast.prototype:TargetChanged(unit)
 	end
 
 	local spell = UnitCastingInfo(self.unit)
-	local notInterruptible = select(IceHUD.WowVer < 80000 and 9 or 8, UnitCastingInfo(self.unit))
+	local notInterruptible = select((IceHUD.WowVer < 80000 and not IceHUD.WowClassic) and 9 or 8, UnitCastingInfo(self.unit))
 	if spell then
 		self.notInterruptible = notInterruptibleCast
 		self:StartBar(IceCastBar.Actions.Cast)
@@ -91,7 +99,7 @@ function TargetCast.prototype:TargetChanged(unit)
 	end
 
 	local channel = UnitChannelInfo(self.unit)
-	notInterruptible = select(IceHUD.WowVer < 80000 and 8 or 7, UnitChannelInfo(self.unit))
+	notInterruptible = select((IceHUD.WowVer < 80000 and not IceHUD.WowClassic) and 8 or 7, UnitChannelInfo(self.unit))
 	if channel then
 		self.notInterruptible = notInterruptibleChannel
 		self:StartBar(IceCastBar.Actions.Channel)

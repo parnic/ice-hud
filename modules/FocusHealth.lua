@@ -471,4 +471,6 @@ function FocusHealth.prototype:HideBlizz()
 end
 
 -- Load us up
-IceHUD.FocusHealth = FocusHealth:new()
+if FocusUnit then
+	IceHUD.FocusHealth = FocusHealth:new()
+end

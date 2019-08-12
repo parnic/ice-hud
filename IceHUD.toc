@@ -9,6 +9,7 @@
 ## X-Category: HUDs
 ## X-Website: https://www.wowace.com/projects/ice-hud
 ## X-WoWI-ID: 8149
+## X-Compatible-With: 11302
 
 #@no-lib-strip@
 # Libraries

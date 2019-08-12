@@ -637,9 +637,11 @@ function IceTargetHealth.prototype:Enable(core)
 		self:RegisterEvent("UPDATE_FACTION", "CheckPvP")
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", "CheckPvP")
 		self:RegisterEvent("UNIT_FACTION", "CheckPvP")
-		self:RegisterEvent("LFG_PROPOSAL_UPDATE", "CheckPartyRole")
-		self:RegisterEvent("LFG_PROPOSAL_FAILED", "CheckPartyRole")
-		self:RegisterEvent("LFG_ROLE_UPDATE", "CheckPartyRole")
+		if GetLFGRoles then
+			self:RegisterEvent("LFG_PROPOSAL_UPDATE", "CheckPartyRole")
+			self:RegisterEvent("LFG_PROPOSAL_FAILED", "CheckPartyRole")
+			self:RegisterEvent("LFG_ROLE_UPDATE", "CheckPartyRole")
+		end
 	end
 
 	if (self.moduleSettings.hideBlizz) then

@@ -1,6 +1,6 @@
 local LibDualSpec = LibStub('LibDualSpec-1.0', true)
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
-local icon = LibStub("LibDBIcon-1.0")
+local icon = LibStub("LibDBIcon-1.0", true)
 local lastCustomModule = "Bar"
 
 IceHUD_Options = {}
@@ -379,6 +379,7 @@ Blizzard added a "Personal Resource Display" feature in the 7.0 game client. You
 							IceHUD.IceCore.IceHUDFrame:Show()
 						end
 					end,
+					hidden = not UnitCanPetBattle,
 					order = 34,
 				},
 
@@ -396,6 +397,7 @@ Blizzard added a "Personal Resource Display" feature in the 7.0 game client. You
 							IceHUD.IceCore.IceHUDFrame:Show()
 						end
 					end,
+					hidden = not GetBarberShopStyleInfo,
 					order = 35,
 				},
 
@@ -413,6 +415,7 @@ Blizzard added a "Personal Resource Display" feature in the 7.0 game client. You
 							IceHUD.IceCore.IceHUDFrame:Show()
 						end
 					end,
+					hidden = IceHUD.WowVer < 80000,
 					order = 36,
 				},
 			}

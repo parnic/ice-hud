@@ -20,7 +20,7 @@ IceUnitBar.prototype.hasPet = nil
 IceUnitBar.prototype.noFlash = nil
 
 local SPELL_POWER_INSANITY = SPELL_POWER_INSANITY
-if IceHUD.WowVer >= 80000 then
+if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
 	SPELL_POWER_INSANITY = Enum.PowerType.Insanity
 end
 
@@ -220,7 +220,7 @@ end
 function IceUnitBar.prototype:Update()
 	IceUnitBar.super.prototype.Update(self)
 
-	if IceHUD.WowVer < 70000 then
+	if UnitIsTapped then
 		self.tapped = UnitIsTapped(self.unit) and (not UnitIsTappedByPlayer(self.unit))
 	else
 		self.tapped = UnitIsTapDenied(self.unit)

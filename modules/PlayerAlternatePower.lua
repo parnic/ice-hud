@@ -132,4 +132,6 @@ function IceHUDPlayerAlternatePower.prototype:HideBlizz()
 end
 
 -- Load us up
-IceHUD.PlayerAlternatePower = IceHUDPlayerAlternatePower:new()
+if ALTERNATE_POWER_INDEX then
+	IceHUD.PlayerAlternatePower = IceHUDPlayerAlternatePower:new()
+end

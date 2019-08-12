@@ -147,7 +147,7 @@ end
 function TargetInvuln.prototype:GetMaxbuffDuration(unitName, buffNames)
 	local i = 1
 	local buff, rank, texture, count, buffType, duration, endTime, unitCaster
-	if IceHUD.WowVer < 80000 then
+	if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 		buff, rank, texture, count, buffType, duration, endTime, unitCaster = UnitAura(unitName, i, "HELPFUL")
 	else
 		buff, texture, count, buffType, duration, endTime, unitCaster = UnitAura(unitName, i, "HELPFUL")
@@ -178,7 +178,7 @@ function TargetInvuln.prototype:GetMaxbuffDuration(unitName, buffNames)
 
 		i = i + 1;
 
-		if IceHUD.WowVer < 80000 then
+		if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 			buff, rank, texture, count, buffType, duration, endTime, unitCaster = UnitAura(unitName, i, "HELPFUL")
 		else
 			buff, texture, count, buffType, duration, endTime, unitCaster = UnitAura(unitName, i, "HELPFUL")

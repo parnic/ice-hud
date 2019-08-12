@@ -16,4 +16,6 @@ function IceFocusThreat.prototype:GetDefaultSettings()
 end
 
 -- Load us up
-IceHUD.IceFocusThreat = IceFocusThreat:new()
+if FocusUnit then
+	IceHUD.IceFocusThreat = IceFocusThreat:new()
+end

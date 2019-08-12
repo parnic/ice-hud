@@ -131,7 +131,9 @@ function IceStackCounter_Enable(frame)
 	if IceHUD.WowVer < 80000 then
 		frame:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomCount")
 	end
-	frame:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomCount")
+	if FocusUnit then
+		frame:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomCount")
+	end
 	frame:RegisterEvent("PLAYER_DEAD", "UpdateCustomCount")
 	frame:RegisterEvent("SPELL_UPDATE_CHARGES", "UpdateCustomCount")
 

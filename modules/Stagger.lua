@@ -189,8 +189,8 @@ function StaggerBar.prototype:GetDebuffInfo()
 		if debuffID == LightID or debuffID == ModerateID or debuffID == HeavyID then
 			local spellName = UnitDebuff(self.unit, i)
 
-			duration = select(IceHUD.WowVer < 80000 and 6 or 5, UnitAura(self.unit, spellName, "", "HARMFUL"))
-			amount = select(IceHUD.WowVer < 80000 and 15 or 14, UnitAura(self.unit, spellName, "", "HARMFUL"))
+			duration = select((IceHUD.WowVer < 80000 and not IceHUD.WowClassic) and 6 or 5, UnitAura(self.unit, spellName, "", "HARMFUL"))
+			amount = select((IceHUD.WowVer < 80000 and not IceHUD.WowClassic) and 15 or 14, UnitAura(self.unit, spellName, "", "HARMFUL"))
 			staggerLevel = (debuffID == LightID) and 1 or (debuffID == ModerateID) and 2 or 3
 
 			break

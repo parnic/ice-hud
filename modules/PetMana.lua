@@ -5,7 +5,7 @@ local SPELL_POWER_RAGE = SPELL_POWER_RAGE
 local SPELL_POWER_FOCUS = SPELL_POWER_FOCUS
 local SPELL_POWER_ENERGY = SPELL_POWER_ENERGY
 local SPELL_POWER_RUNIC_POWER = SPELL_POWER_RUNIC_POWER
-if IceHUD.WowVer >= 80000 then
+if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
 	SPELL_POWER_RAGE = Enum.PowerType.Rage
 	SPELL_POWER_FOCUS = Enum.PowerType.Focus
 	SPELL_POWER_ENERGY = Enum.PowerType.Energy
@@ -62,15 +62,15 @@ function PetMana.prototype:Enable(core)
 	PetMana.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("PET_UI_UPDATE",	 "CheckPet")
-	if IceHUD.WowVer < 80000 then
+	if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 		self:RegisterEvent("PLAYER_PET_CHANGED", "CheckPet")
 	end
-	self:RegisterEvent(IceHUD.WowVer < 80000 and "PET_BAR_CHANGED" or "PET_BAR_UPDATE_USABLE", "CheckPet")
+	self:RegisterEvent(IceHUD.WowVer < 80000 and not IceHUD.WowClassic and "PET_BAR_CHANGED" or "PET_BAR_UPDATE_USABLE", "CheckPet")
 	self:RegisterEvent("UNIT_PET", "CheckPet")
 
-	if IceHUD.WowVer >= 40000 then
+	if IceHUD.WowVer >= 40000 or IceHUD.WowClassic then
 		self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateEvent")
-		if IceHUD.WowVer < 80000 then
+		if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 			self:RegisterEvent("UNIT_MAXPOWER", "UpdateEvent")
 		end
 	else
@@ -86,8 +86,10 @@ function PetMana.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
-	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+	if UnitHasVehicleUI then
+		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
+		self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+	end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
 
 	self:CheckPet()
@@ -242,10 +244,12 @@ end
 function PetMana.prototype:EnteringWorld()
 	self:Update(self.unit)
 
-	if UnitHasVehicleUI("player") then
-		self:EnteringVehicle(nil, "player", true)
-	else
-		self:ExitingVehicle(nil, "player")
+	if UnitHasVehicleUI then
+		if UnitHasVehicleUI("player") then
+			self:EnteringVehicle(nil, "player", true)
+		else
+			self:ExitingVehicle(nil, "player")
+		end
 	end
 end
 

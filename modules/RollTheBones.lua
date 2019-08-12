@@ -20,7 +20,7 @@ for _, v in ipairs(RtBBuffs) do
 end
 
 local SPELL_POWER_COMBO_POINTS = SPELL_POWER_COMBO_POINTS
-if IceHUD.WowVer >= 80000 then
+if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
   SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
 end
 

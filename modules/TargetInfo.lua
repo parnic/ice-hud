@@ -2,7 +2,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceTargetInfo = IceCore_CreateClass(IceElement)
 
 local CooldownFrame_SetTimer = CooldownFrame_SetTimer
-if IceHUD.WowVer >= 70000 then
+if CooldownFrame_Set then
 	CooldownFrame_SetTimer = CooldownFrame_Set
 end
 
@@ -129,7 +129,7 @@ function IceTargetInfo.prototype:Enable(core)
 	self:RegisterEvent("UNIT_LEVEL", "TargetLevel")
 
 	self:RegisterEvent("UNIT_FLAGS", "TargetFlags")
-	if IceHUD.WowVer < 80000 then
+	if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 		self:RegisterEvent("UNIT_DYNAMIC_FLAGS", "TargetFlags")
 	end
 
@@ -1410,7 +1410,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 	if self.moduleSettings.auras[aura].show then
 		for i = 1, IceCore.BuffLimit do
 			local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable
-			if IceHUD.WowVer < 80000 then
+			if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 				name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
 			else
 				name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
@@ -1584,7 +1584,7 @@ function IceTargetInfo.prototype:TargetName(event, unit)
 		end
 
 
-		if IceHUD.WowVer < 50000 then
+		if UnitIsPartyLeader then
 			self.leader = UnitIsPartyLeader(self.unit) and " |cffcccc11Leader|r" or ""
 		else
 			self.leader = UnitIsGroupLeader(self.unit) and " |cffcccc11Leader|r" or ""
@@ -1655,7 +1655,7 @@ end
 
 function IceTargetInfo.prototype:TargetFlags(event, unit)
 	if (unit == self.unit or unit == internal) then
-		if IceHUD.WowVer < 70000 then
+		if UnitIsTapped then
 			self.tapped = UnitIsTapped(self.unit) and (not UnitIsTappedByPlayer(self.unit))
 		else
 			self.tapped = UnitIsTapDenied(self.unit)

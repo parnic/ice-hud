@@ -8,7 +8,7 @@ local AnticipationSpellId = 114015
 ComboPoints.prototype.comboSize = 20
 
 local SPELL_POWER_COMBO_POINTS = SPELL_POWER_COMBO_POINTS
-if IceHUD.WowVer >= 80000 then
+if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
 	SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
 end
 
@@ -163,7 +163,7 @@ function ComboPoints.prototype:GetOptions()
 		order = 33.2
 	}
 
-	if IceHUD.WowVer < 70000 then
+	if IceHUD.WowVer < 70000 and not IceHUD.WowClassic then
 		opts["anticipation"] = {
 			type = "toggle",
 			name = L["Show Anticipation"],
@@ -253,8 +253,8 @@ function ComboPoints.prototype:Enable(core)
 	ComboPoints.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateComboPoints")
-	if IceHUD.WowVer >= 30000 then
-		if IceHUD.WowVer < 70000 then
+	if IceHUD.WowVer >= 30000 or IceHUD.WowClassic then
+		if IceHUD.WowVer < 70000 and not IceHUD.WowClassic then
 			self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
 		else
 			self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateComboPoints")
@@ -262,9 +262,11 @@ function ComboPoints.prototype:Enable(core)
 				self:RegisterEvent("UNIT_MAXPOWER", "UpdateMaxComboPoints")
 			end
 		end
-		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateComboPoints")
-		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateComboPoints")
-		if IceHUD.WowVer < 70000 then
+		if UnitHasVehicleUI then
+			self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateComboPoints")
+			self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateComboPoints")
+		end
+		if IceHUD.WowVer < 70000 and not IceHUD.WowClassic then
 			self:RegisterEvent("PLAYER_TALENT_UPDATE", "AddAnticipation")
 			self:AddAnticipation()
 		end
@@ -450,22 +452,18 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 	local points, anticipate, _
 	if IceHUD.IceCore:IsInConfigMode() then
 		points = self:GetMaxComboPoints()
-	elseif IceHUD.WowVer >= 30000 then
+	elseif IceHUD.WowVer >= 30000 or IceHUD.WowClassic then
 		-- Parnic: apparently some fights have combo points while the player is in a vehicle?
-		local isInVehicle = UnitHasVehicleUI("player")
+		local isInVehicle = UnitHasVehicleUI and UnitHasVehicleUI("player")
 		local checkUnit = isInVehicle and "vehicle" or "player"
-		if IceHUD.WowVer >= 60000 then
+		if IceHUD.WowVer >= 60000 or IceHUD.WowClassic then
 			points = UnitPower(checkUnit, SPELL_POWER_COMBO_POINTS)
 		else
 			points = GetComboPoints(checkUnit, "target")
 		end
 
-		if IceHUD.WowVer < 70000 then
-			if IceHUD.WowVer < 80000 then
-				_, _, _, anticipate = UnitAura("player", GetSpellInfo(AnticipationSpellId))
-			else
-				_, _, anticipate = UnitAura("player", GetSpellInfo(AnticipationSpellId))
-			end
+		if IceHUD.WowVer < 70000 and IceHUD.WowVer >= 50000 then
+			_, _, _, anticipate = UnitAura("player", GetSpellInfo(AnticipationSpellId))
 		else
 			anticipate = 0
 		end

@@ -6,7 +6,7 @@ local IceHUD = IceHUD
 local SML = LibStub("LibSharedMedia-3.0")
 local ACR = LibStub("AceConfigRegistry-3.0")
 local ConfigDialog = LibStub("AceConfigDialog-3.0")
-local icon = LibStub("LibDBIcon-1.0")
+local icon = LibStub("LibDBIcon-1.0", true)
 local AceGUI = LibStub("AceGUI-3.0")
 local AceSerializer = LibStub("AceSerializer-3.0", 1)
 
@@ -17,8 +17,9 @@ IceHUD.CurrTagVersion = 3
 IceHUD.debugging = false
 
 IceHUD.WowVer = select(4, GetBuildInfo())
+IceHUD.WowClassic = WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 
-IceHUD.UnitPowerEvent = IceHUD.WowVer < 80000 and "UNIT_POWER" or "UNIT_POWER_UPDATE"
+IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 
 IceHUD.validBarList = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc",
 	"BloodGlaives", "ArcHUD", "FangRune", "DHUD", "CleanCurvesOut", "CleanTank", "PillTank", "GemTank" }
@@ -324,7 +325,7 @@ end
 -- blizzard interface options
 local blizOptionsPanel = CreateFrame("FRAME", "IceHUDConfigPanel", UIParent)
 blizOptionsPanel.name = "IceHUD"
-blizOptionsPanel.button = CreateFrame("BUTTON", "IceHUDOpenConfigButton", blizOptionsPanel, IceHUD.WowVer >= 50000 and "UIPanelButtonTemplate" or "UIPanelButtonTemplate2")
+blizOptionsPanel.button = CreateFrame("BUTTON", "IceHUDOpenConfigButton", blizOptionsPanel, (IceHUD.WowVer >= 50000 or IceHUD.WowClassic) and "UIPanelButtonTemplate" or "UIPanelButtonTemplate2")
 blizOptionsPanel.button:SetText("Open IceHUD configuration")
 blizOptionsPanel.button:SetWidth(240)
 blizOptionsPanel.button:SetHeight(30)
@@ -412,7 +413,7 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 
 	local i = 1
 	local name, _, texture, applications
-	if IceHUD.WowVer < 80000 then
+	if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 		name, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
 	else
 		name, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
@@ -424,7 +425,7 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 		end
 
 		i = i + 1
-		if IceHUD.WowVer < 80000 then
+		if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 			name, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
 		else
 			name, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
@@ -444,7 +445,7 @@ do
 
 		local i = 1
 		local name, _, texture, applications, _, _, _, _, _, _, auraID
-		if IceHUD.WowVer < 80000 then
+		if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 			name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
 		else
 			name, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
@@ -458,7 +459,7 @@ do
 			end
 
 			i = i + 1
-			if IceHUD.WowVer < 80000 then
+			if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 				name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
 			else
 				name, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
@@ -605,6 +606,10 @@ local function CheckLFGMode(mode)
 end
 
 function IceHUD:GetIsInLFGGroup()
+	if not GetLFGMode then
+		return false
+	end
+
 	local mode, submode
 	if IceHUD.WowVer >= 50000 then
 		mode, submode = GetLFGMode(LE_LFG_CATEGORY_LFD)

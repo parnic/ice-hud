@@ -251,10 +251,14 @@ function IceCore.prototype:Enable(userToggle)
 		IceHUD_Options:GenerateModuleOptions()
 	end
 
-	self.IceHUDFrame:RegisterEvent("PET_BATTLE_OPENING_START")
-	self.IceHUDFrame:RegisterEvent("PET_BATTLE_OVER")
-	self.IceHUDFrame:RegisterEvent("BARBER_SHOP_OPEN")
-	self.IceHUDFrame:RegisterEvent("BARBER_SHOP_CLOSE")
+	if UnitCanPetBattle then
+		self.IceHUDFrame:RegisterEvent("PET_BATTLE_OPENING_START")
+		self.IceHUDFrame:RegisterEvent("PET_BATTLE_OVER")
+	end
+	if GetBarberShopStyleInfo then
+		self.IceHUDFrame:RegisterEvent("BARBER_SHOP_OPEN")
+		self.IceHUDFrame:RegisterEvent("BARBER_SHOP_CLOSE")
+	end
 	self.IceHUDFrame:RegisterEvent("UNIT_AURA")
 	self.IceHUDFrame:SetScript("OnEvent", function(self, event, ...)
 		if (event == "PET_BATTLE_OPENING_START") then

@@ -79,14 +79,16 @@ function PlayerHealth.prototype:Enable(core)
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckCombat")
 
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "CheckLeader")
-	if IceHUD.WowVer >= 50000 then
+	if IceHUD.WowVer >= 50000 or IceHUD.WowClassic then
 		self:RegisterEvent("GROUP_ROSTER_UPDATE", "CheckLeader")
 	else
 		self:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckLeader")
 	end
-	self:RegisterEvent("LFG_PROPOSAL_UPDATE", "CheckPartyRole")
-	self:RegisterEvent("LFG_PROPOSAL_FAILED", "CheckPartyRole")
-	self:RegisterEvent("LFG_ROLE_UPDATE", "CheckPartyRole")
+	if GetLFGProposal then
+		self:RegisterEvent("LFG_PROPOSAL_UPDATE", "CheckPartyRole")
+		self:RegisterEvent("LFG_PROPOSAL_FAILED", "CheckPartyRole")
+		self:RegisterEvent("LFG_ROLE_UPDATE", "CheckPartyRole")
+	end
 
 	--self:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckPartyFrameStatus")
 
@@ -96,8 +98,10 @@ function PlayerHealth.prototype:Enable(core)
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "CheckPvP")
 	self:RegisterEvent("UNIT_FACTION", "CheckPvP")
 
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
-	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+	if UnitHasVehicleUI then
+		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
+		self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+	end
 
 	if IceHUD.WowVer < 40000 then
 		HealComm = LibStub("LibHealComm-4.0", true)
@@ -112,7 +116,9 @@ function PlayerHealth.prototype:Enable(core)
 		self:RegisterEvent("UNIT_HEAL_PREDICTION", "IncomingHealPrediction")
 	end
 
-	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UpdateAbsorbAmount")
+	if UnitGetTotalAbsorbs then
+		self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UpdateAbsorbAmount")
+	end
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
@@ -995,10 +1001,12 @@ function PlayerHealth.prototype:EnteringWorld()
 end
 
 function PlayerHealth.prototype:CheckVehicle()
-	if UnitHasVehicleUI("player") then
-		self:EnteringVehicle(nil, "player", true)
-	else
-		self:ExitingVehicle(nil, "player")
+	if UnitHasVehicleUI then
+		if UnitHasVehicleUI("player") then
+			self:EnteringVehicle(nil, "player", true)
+		else
+			self:ExitingVehicle(nil, "player")
+		end
 	end
 end
 
@@ -1161,7 +1169,7 @@ end
 
 function PlayerHealth.prototype:CheckLeader()
 	local isLeader
-	if IceHUD.WowVer >= 50000 then
+	if UnitIsGroupLeader then
 		isLeader = UnitIsGroupLeader("player")
 	else
 		isLeader = IsPartyLeader()

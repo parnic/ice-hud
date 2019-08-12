@@ -36,10 +36,12 @@ function IceCustomBar.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_AURA", "UpdateCustomBarEvent")
 	self:RegisterEvent("UNIT_PET", "UpdateCustomBarEvent")
-	if IceHUD.WowVer < 80000 then
+	if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 		self:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomBarEvent")
 	end
-	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomBarEvent")
+	if FocusUnit then
+		self:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateCustomBarEvent")
+	end
 	if self.unitClass == "SHAMAN" then
 		self:RegisterEvent("PLAYER_TOTEM_UPDATE", "UpdateTotems")
 	end
@@ -665,7 +667,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 	local isBuff = self.moduleSettings.buffOrDebuff == "buff" and true or false
 	local buffFilter = (isBuff and "HELPFUL" or "HARMFUL") .. (self.moduleSettings.trackOnlyMine and "|PLAYER" or "")
 	local buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId
-	if IceHUD.WowVer < 80000 then
+	if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 		buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
 	else
 		buff, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
@@ -695,7 +697,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 
 		i = i + 1;
 
-		if IceHUD.WowVer < 80000 then
+		if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 			buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
 		else
 			buff, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)

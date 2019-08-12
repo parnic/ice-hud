@@ -13,7 +13,7 @@ local SPELL_POWER_FURY = SPELL_POWER_FURY
 local SPELL_POWER_MAELSTROM = SPELL_POWER_MAELSTROM
 local SPELL_POWER_PAIN = SPELL_POWER_PAIN
 local SPELL_POWER_LUNAR_POWER = SPELL_POWER_LUNAR_POWER
-if IceHUD.WowVer >= 80000 then
+if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
 	SPELL_POWER_MANA = Enum.PowerType.Mana
 	SPELL_POWER_RAGE = Enum.PowerType.Rage
 	SPELL_POWER_FOCUS = Enum.PowerType.Focus
@@ -153,9 +153,9 @@ function PlayerMana.prototype:Enable(core)
 
 	self:CreateTickerFrame()
 
-	if IceHUD.WowVer >= 40000 then
+	if IceHUD.WowVer >= 40000 or IceHUD.WowClassic then
 		self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateEvent")
-		if IceHUD.WowVer < 80000 then
+		if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 			self:RegisterEvent("UNIT_MAXPOWER", "UpdateEvent")
 		end
 	else
@@ -170,8 +170,10 @@ function PlayerMana.prototype:Enable(core)
 		self:RegisterEvent("UNIT_RUNIC_POWER", "UpdateEvent")
 	end
 
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
-	self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+	if UnitHasVehicleUI then
+		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
+		self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
+	end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
 
 	if not self.CustomOnUpdate then
@@ -191,10 +193,12 @@ function PlayerMana.prototype:EnteringWorld()
 end
 
 function PlayerMana.prototype:CheckVehicle()
-	if UnitHasVehicleUI("player") then
-		self:EnteringVehicle(nil, "player", true)
-	else
-		self:ExitingVehicle(nil, "player")
+	if UnitHasVehicleUI then
+		if UnitHasVehicleUI("player") then
+			self:EnteringVehicle(nil, "player", true)
+		else
+			self:ExitingVehicle(nil, "player")
+		end
 	end
 end
 
