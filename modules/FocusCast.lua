@@ -1,12 +1,6 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local FocusCast = IceCore_CreateClass(IceCastBar)
 
-local UnitCastingInfo, UnitChannelInfo = UnitCastingInfo, UnitChannelInfo
-if IceHUD.WowClassic then
-	UnitCastingInfo = CastingInfo
-	UnitChannelInfo = ChannelInfo
-end
-
 -- Constructor --
 function FocusCast.prototype:init()
 	FocusCast.super.prototype.init(self, "FocusCast")

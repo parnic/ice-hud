@@ -1,6 +1,7 @@
 v1.12.1:
 - (Classic) Fixed energy ticker resetting when spending energy.
 - (Classic) Fixed stack counters throwing errors and generally not functioning.
+- (Classic) Disabled target and target-of-target castbars. Added a note to the FAQ as to why.
 
 v1.12.0:
 - Initial WoW Classic compatibility

@@ -77,5 +77,8 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
 1. **How do I get rid of the bars that showed up beneath the player in the 7.0 patch?**
    Blizzard added a "Personal Resource Display" feature in the 7.0 game client. You can disable it in the Game options -> Interface -> Names -> Personal Resource Display.
 
+1. **Why is there no target castbar for Classic?**
+   The Classic game client doesn't offer a reliable way to show castbars for anyone except the player. IceHUD doesn't support the type of inaccurate guessing at combat log details that would be required to get a semi-useful target castbar.
+
 
 See [here](https://www.wowace.com/projects/ice-hud/issues/113) for a user-created guide to creating new IceHUD textures.
