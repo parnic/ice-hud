@@ -1,3 +1,6 @@
+v1.12.2:
+- (Classic) Fixed error when changing profiles
+
 v1.12.1:
 - (Classic) Fixed energy ticker resetting when spending energy.
 - (Classic) Fixed stack counters throwing errors and generally not functioning.

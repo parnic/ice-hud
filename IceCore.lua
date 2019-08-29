@@ -520,10 +520,14 @@ function IceCore.prototype:Disable(userToggle)
 		end
 	end
 
-	self.IceHUDFrame:UnregisterEvent("PET_BATTLE_OPENING_START")
-	self.IceHUDFrame:UnregisterEvent("PET_BATTLE_OVER")
-	self.IceHUDFrame:UnregisterEvent("BARBER_SHOP_OPEN")
-	self.IceHUDFrame:UnregisterEvent("BARBER_SHOP_CLOSE")
+	if UnitCanPetBattle then
+		self.IceHUDFrame:UnregisterEvent("PET_BATTLE_OPENING_START")
+		self.IceHUDFrame:UnregisterEvent("PET_BATTLE_OVER")
+	end
+	if GetBarberShopStyleInfo then
+		self.IceHUDFrame:UnregisterEvent("BARBER_SHOP_OPEN")
+		self.IceHUDFrame:UnregisterEvent("BARBER_SHOP_CLOSE")
+	end
 	self.IceHUDFrame:SetScript("OnEvent", nil)
 
 	self.enabled = false
