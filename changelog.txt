@@ -1,5 +1,9 @@
-v1.12.0-alpha:
-- WoW Classic compatibility
+v1.12.1:
+- (Classic) Fixed energy ticker resetting when spending energy.
+- (Classic) Fixed stack counters throwing errors and generally not functioning.
+
+v1.12.0:
+- Initial WoW Classic compatibility
 
 v1.11.11:
 - Updated TOC to 8.2
