@@ -1,5 +1,5 @@
 v1.12.2:
-- (Classic) Fixed error when changing profiles
+- (Classic) Fixed error when changing profiles or disabling IceHUD
 
 v1.12.1:
 - (Classic) Fixed energy ticker resetting when spending energy.
