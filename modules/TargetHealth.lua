@@ -842,21 +842,46 @@ function IceTargetHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.healthPercentage, self.color)
 
-	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
-		self:SetBottomText1(math.floor(self.healthPercentage * 100))
+	if IsAddOnLoaded("RealMobHealth") then
+		if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
+			self:SetBottomText1(math.floor(self.healthPercentage * 100))
 
-		if self.moduleSettings.abbreviateHealth then
-			self.health = self:Round(self.health)
-			self.maxHealth = self:Round(self.maxHealth)
-		end
+			if self.moduleSettings.abbreviateHealth then
+				if RealMobHealth.UnitHasHealthData(unit) then
+					self.health, self.maxHealth = RealMobHealth.GetUnitHealth(unit)
+				end
+				self.health = self:Round(self.health)
+				self.maxHealth = self:Round(self.maxHealth)
+			end
 
-		if (self.maxHealth ~= 100) then
-			self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
-		else
-			self:SetBottomText2()
+			if RealMobHealth.UnitHasHealthData(unit) or (self.maxHealth ~= 100) then
+				if RealMobHealth.UnitHasHealthData(unit) then
+					self.health, self.maxHealth = RealMobHealth.GetUnitHealth(unit)
+					self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
+				else
+					self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
+				end				
+			else
+				self:SetBottomText2()
+			end
 		end
+	else
+		if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
+			self:SetBottomText1(math.floor(self.healthPercentage * 100))
+
+			if self.moduleSettings.abbreviateHealth then
+				self.health = self:Round(self.health)
+				self.maxHealth = self:Round(self.maxHealth)
+			end
+
+			if (self.maxHealth ~= 100) then
+				self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
+			else
+				self:SetBottomText2()
+			end
+		end	
 	end
-
+	
 	self:CheckPvP()
 	self:CheckPartyRole()
 	self:SetIconAlpha()
