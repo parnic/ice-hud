@@ -81,6 +81,10 @@ function IceCustomBar.prototype:Disable(core)
 end
 
 function IceCustomBar.prototype:GetUnitToTrack()
+	if IceHUD.WowClassic then
+		return "player"
+	end
+
 	if self.moduleSettings.myUnit == "other" then
 		if self.moduleSettings.customUnit ~= nil and self.moduleSettings.customUnit ~= "" then
 			return self.moduleSettings.customUnit
@@ -258,51 +262,53 @@ function IceCustomBar.prototype:GetOptions()
 		order = 30.3,
 	}
 
-	opts["unitToTrack"] = {
-		type = 'select',
-		values = validUnits,
-		name = L["Unit to track"],
-		desc = L["Select which unit that this bar should be looking for buffs/debuffs on"],
-		get = function(info)
-			return IceHUD:GetSelectValue(info, self.moduleSettings.myUnit)
-		end,
-		set = function(info, v)
-			self.moduleSettings.myUnit = info.option.values[v]
-			self.unit = self:GetUnitToTrack()
-			self:RegisterFontStrings()
-			self:ConditionalSubscribe()
-			self:Redraw()
-			self:UpdateCustomBar(self.unit)
-			IceHUD:NotifyOptionsChange()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 30.4,
-	}
+	if not IceHUD.WowClassic then
+		opts["unitToTrack"] = {
+			type = 'select',
+			values = validUnits,
+			name = L["Unit to track"],
+			desc = L["Select which unit that this bar should be looking for buffs/debuffs on"],
+			get = function(info)
+				return IceHUD:GetSelectValue(info, self.moduleSettings.myUnit)
+			end,
+			set = function(info, v)
+				self.moduleSettings.myUnit = info.option.values[v]
+				self.unit = self:GetUnitToTrack()
+				self:RegisterFontStrings()
+				self:ConditionalSubscribe()
+				self:Redraw()
+				self:UpdateCustomBar(self.unit)
+				IceHUD:NotifyOptionsChange()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 30.4,
+		}
 
-	opts["customUnitToTrack"] = {
-		type = 'input',
-		name = L["Custom unit"],
-		desc = L["Any valid unit id such as: party1, raid14, targettarget, etc. Not guaranteed to work with all unit ids.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
-		get = function()
-			return self.moduleSettings.customUnit
-		end,
-		set = function(info, v)
-			self.moduleSettings.customUnit = v
-			self.unit = self:GetUnitToTrack()
-			self:RegisterFontStrings()
-			self:ConditionalSubscribe()
-			self:Redraw()
-			self:UpdateCustomBar(self.unit)
-			IceHUD:NotifyOptionsChange()
-		end,
-		hidden = function()
-			return self.moduleSettings.myUnit ~= "other"
-		end,
-		usage = "<what custom unit to track when unitToTrack is set to 'other'>",
-		order = 30.45,
-	}
+		opts["customUnitToTrack"] = {
+			type = 'input',
+			name = L["Custom unit"],
+			desc = L["Any valid unit id such as: party1, raid14, targettarget, etc. Not guaranteed to work with all unit ids.\n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
+			get = function()
+				return self.moduleSettings.customUnit
+			end,
+			set = function(info, v)
+				self.moduleSettings.customUnit = v
+				self.unit = self:GetUnitToTrack()
+				self:RegisterFontStrings()
+				self:ConditionalSubscribe()
+				self:Redraw()
+				self:UpdateCustomBar(self.unit)
+				IceHUD:NotifyOptionsChange()
+			end,
+			hidden = function()
+				return self.moduleSettings.myUnit ~= "other"
+			end,
+			usage = "<what custom unit to track when unitToTrack is set to 'other'>",
+			order = 30.45,
+		}
+	end
 
 	opts["buffOrDebuff"] = {
 		type = 'select',
