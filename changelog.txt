@@ -1,3 +1,7 @@
+Unreleased:
+- (Classic) Added support for RealMobHealth on the TargetHealth module when DogTags are disabled. (thanks, TwentyOneZ!)
+- (Classic) Added support for LibClassicDurations on the TargetInfo module to show (de)buff durations when the lib is installed. (thanks, Fulzamoth!)
+
 v1.12.2:
 - (Classic) Fixed error when changing profiles or disabling IceHUD
 
