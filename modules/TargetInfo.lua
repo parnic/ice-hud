@@ -13,7 +13,7 @@ local internal = "internal"
 local ValidAnchors = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", "CENTER" }
 
 ---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
-local LibClassicDurations = LibStub("LibClassicDurations")
+local LibClassicDurations = LibStub("LibClassicDurations", 1)
 ---- end change by Fulzamoth
 
 IceTargetInfo.prototype.unit = "target"
