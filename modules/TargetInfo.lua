@@ -12,6 +12,10 @@ local internal = "internal"
 
 local ValidAnchors = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", "CENTER" }
 
+---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
+local LibClassicDurations = LibStub("LibClassicDurations", 1)
+---- end change by Fulzamoth
+
 IceTargetInfo.prototype.unit = "target"
 
 IceTargetInfo.prototype.buffSize = nil
@@ -1410,11 +1414,31 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 	if self.moduleSettings.auras[aura].show then
 		for i = 1, IceCore.BuffLimit do
 			local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable
-			if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+
+      ---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
+      local spellID
+      ---- end change by Fulzamoth
+
+      if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 				name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
 			else
-				name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
-			end
+
+        ---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
+        -- 1. in addition to other info, get the spellID for for the (de)buff
+				name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, _, spellID = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
+				-- name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
+        if duration == 0 and LibClassicDurations then
+          -- 2. if no duration defined for the (de)buff, look up the spell in LibClassicDurations
+          local classicDuration, classicExpirationTime = LibClassicDurations:GetAuraDurationByUnit(self.unit, spellID, caster)
+          -- 3. set the duration if we found one.
+          if classicDuration then
+            duration = classicDuration
+            expirationTime = classicExpirationTime
+          end
+        end
+        ---- end change by Fulzamoth
+
+      end
 			local isFromMe = (unitCaster == "player")
 
 			if not icon and IceHUD.IceCore:IsInConfigMode() and UnitExists(self.unit) then
