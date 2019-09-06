@@ -470,7 +470,7 @@ function IceCastBar.prototype:SpellCastStop(event, unit, castGuid, spellId)
 end
 
 
-function IceCastBar.prototype:SpellCastFailed(event, castGuid, spellId)
+function IceCastBar.prototype:SpellCastFailed(event, unit, castGuid, spellId)
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastFailed", unit, castGuid, spellId)
 
