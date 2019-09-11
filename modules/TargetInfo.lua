@@ -1415,30 +1415,27 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 		for i = 1, IceCore.BuffLimit do
 			local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable
 
-      ---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
-      local spellID
-      ---- end change by Fulzamoth
+			---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
+			local spellID
+			---- end change by Fulzamoth
 
-      if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+			if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
 				name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
 			else
-
-        ---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
-        -- 1. in addition to other info, get the spellID for for the (de)buff
+				---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
+				-- 1. in addition to other info, get the spellID for for the (de)buff
 				name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, _, spellID = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
-				-- name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
-        if duration == 0 and LibClassicDurations then
-          -- 2. if no duration defined for the (de)buff, look up the spell in LibClassicDurations
-          local classicDuration, classicExpirationTime = LibClassicDurations:GetAuraDurationByUnit(self.unit, spellID, caster)
-          -- 3. set the duration if we found one.
-          if classicDuration then
-            duration = classicDuration
-            expirationTime = classicExpirationTime
-          end
-        end
-        ---- end change by Fulzamoth
-
-      end
+				if duration == 0 and LibClassicDurations then
+					-- 2. if no duration defined for the (de)buff, look up the spell in LibClassicDurations
+					local classicDuration, classicExpirationTime = LibClassicDurations:GetAuraDurationByUnit(self.unit, spellID, caster)
+					-- 3. set the duration if we found one.
+					if classicDuration then
+						duration = classicDuration
+						expirationTime = classicExpirationTime
+					end
+				end
+				---- end change by Fulzamoth
+			end
 			local isFromMe = (unitCaster == "player")
 
 			if not icon and IceHUD.IceCore:IsInConfigMode() and UnitExists(self.unit) then
