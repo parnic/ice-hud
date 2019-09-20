@@ -291,4 +291,6 @@ function GlobalCoolDown.prototype:GetSpellId()
 end
 
 -- Load us up
-IceHUD.GlobalCoolDown = GlobalCoolDown:new()
+if not IceHUD.WowClassic then
+	IceHUD.GlobalCoolDown = GlobalCoolDown:new()
+end

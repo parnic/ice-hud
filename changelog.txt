@@ -1,3 +1,7 @@
+v1.12.5:
+- (Classic) Disabled GCD module as the Classic client doesn't support tracking GCD.
+- (Classic) Packaged new LibDogTag-Unit to pick up Happiness tag fixes.
+
 v1.12.4:
 - Fixed spellcast failure events on the castbar not being handled properly. (thanks, Fulzamoth!)
 
