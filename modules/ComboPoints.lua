@@ -553,4 +553,7 @@ end
 
 
 -- Load us up
-IceHUD.ComboPoints = ComboPoints:new()
+local _, class = UnitClass("player")
+if not IceHUD.WowClassic or class == "ROGUE" or class == "DRUID" then
+	IceHUD.ComboPoints = ComboPoints:new()
+end

@@ -135,4 +135,7 @@ function ComboPointsBar.prototype:Update()
 	self:UpdateComboPoints()
 end
 
-IceHUD.ComboPointsBar = ComboPointsBar:new()
+local _, class = UnitClass("player")
+if not IceHUD.WowClassic or class == "ROGUE" or class == "DRUID" then
+	IceHUD.ComboPointsBar = ComboPointsBar:new()
+end
