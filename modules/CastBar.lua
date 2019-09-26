@@ -439,7 +439,9 @@ function CastBar.prototype:SpellCastStart(event, unit, castGuid, spellId)
 	end
 
 	self:UpdateLagBar()
-	self.nextLagUpdate = GetTime() + (select(2, GetSpellCooldown(IceHUD.GlobalCoolDown:GetSpellId())) / 2)
+	if IceHUD.GlobalCoolDown then
+		self.nextLagUpdate = GetTime() + (select(2, GetSpellCooldown(IceHUD.GlobalCoolDown:GetSpellId())) / 2)
+	end
 end
 
 
@@ -464,7 +466,9 @@ function CastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 	end
 
 	self:UpdateLagBar()
-	self.nextLagUpdate = GetTime() + (select(2, GetSpellCooldown(IceHUD.GlobalCoolDown:GetSpellId())) / 2)
+	if IceHUD.GlobalCoolDown then
+		self.nextLagUpdate = GetTime() + (select(2, GetSpellCooldown(IceHUD.GlobalCoolDown:GetSpellId())) / 2)
+	end
 end
 
 
