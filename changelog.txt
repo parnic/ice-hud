@@ -1,3 +1,6 @@
+v1.12.6:
+- (Classic) Disabled Combo modules for non-Rogues/-Druids. They were sometimes showing for other class abilities for some reason.
+
 v1.12.5:
 - (Classic) Disabled GCD module as the Classic client doesn't support tracking GCD.
 - (Classic) Packaged new LibDogTag-Unit to pick up Happiness tag fixes.
