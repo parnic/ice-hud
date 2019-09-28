@@ -23,6 +23,19 @@ if IceHUD.WowClassic then
 	UnitChannelInfo = ChannelInfo
 end
 
+-- Fulzamoth 2019-09-27 : Use LibClassicCasterino if it's there so we can use TargetCast 
+--                        module in Classic WoW
+if IceHUD.WowClassic then
+	LibClassicCasterino = LibStub("LibClassicCasterino", true)
+	UnitCastingInfo = function(unit)
+		return LibClassicCasterino:UnitCastingInfo(unit)
+	end
+	UnitChannelInfo = function(unit)
+		return LibClassicCasterino:UnitChannelInfo(unit)
+	end
+end
+-- end Fulzamoth change
+
 local AuraIconWidth = 20
 local AuraIconHeight = 20
 
@@ -46,21 +59,55 @@ end
 function IceCastBar.prototype:Enable(core)
 	IceCastBar.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("UNIT_SPELLCAST_SENT", "SpellCastSent") -- "player", spell, rank, target
-	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", "SpellCastChanged")
-	self:RegisterEvent("UNIT_SPELLCAST_START", "SpellCastStart") -- unit, spell, rank
-	self:RegisterEvent("UNIT_SPELLCAST_STOP", "SpellCastStop") -- unit, spell, rank
+	-- Fulzamoth 2019-09-27 : LibClassicCasterino support
+	--                        Setup callback to the library, and route events to
+	--                        IceHUD's handler functions.
+	if LibClassicCasterino then
+			local CastbarEventHandler = function(event, ...) -- unitTarget, castGUID, spellID
+				if (event == "UNIT_SPELLCAST_START") then
+					return IceCastBar.prototype.SpellCastStart(self, event, ...)
+				elseif (event == "UNIT_SPELLCAST_DELAYED") then
+					return IceCastBar.prototype.SpellCastDelayed(self, event, ...)
+				elseif (event == "UNIT_SPELLCAST_STOP") then
+					return IceCastBar.prototype.SpellCastStop(self, event, ...)
+				elseif (event == "UNIT_SPELLCAST_FAILED") then
+					return IceCastBar.prototype.SpellCastFailed(self, event, ...)
+				elseif (event == "UNIT_SPELLCAST_INTERRUPTED") then
+					return IceCastBar.prototype.SpellCastInterrupted(self, event, ...)
+				elseif (event == "UNIT_SPELLCAST_CHANNEL_START") then
+					return IceCastBar.prototype.SpellCastChannelStart(self, event, ...)
+				elseif (event == "UNIT_SPELLCAST_CHANNEL_UPDATE") then
+					return IceCastBar.prototype.SpellCastChannelUpdate(self, event, ...)
+				elseif (event == "UNIT_SPELLCAST_CHANNEL_STOP") then
+					return IceCastBar.prototype.SpellCastChannelStop(self, event, ...)
+				end
+			end
+			LibClassicCasterino.RegisterCallback(self,"UNIT_SPELLCAST_START", CastbarEventHandler) 
+			LibClassicCasterino.RegisterCallback(self,"UNIT_SPELLCAST_DELAYED", CastbarEventHandler) -- only for player
+			LibClassicCasterino.RegisterCallback(self,"UNIT_SPELLCAST_STOP", CastbarEventHandler)
+			LibClassicCasterino.RegisterCallback(self,"UNIT_SPELLCAST_FAILED", CastbarEventHandler)
+			LibClassicCasterino.RegisterCallback(self,"UNIT_SPELLCAST_INTERRUPTED", CastbarEventHandler)
+			LibClassicCasterino.RegisterCallback(self,"UNIT_SPELLCAST_CHANNEL_START", CastbarEventHandler)
+			LibClassicCasterino.RegisterCallback(self,"UNIT_SPELLCAST_CHANNEL_UPDATE", CastbarEventHandler) -- only for player
+			LibClassicCasterino.RegisterCallback(self,"UNIT_SPELLCAST_CHANNEL_STOP", CastbarEventHandler)
+	else -- No LibClassicCasterino, or we're not on Classic, so use IceHUD's normal event handlers.
 
-	self:RegisterEvent("UNIT_SPELLCAST_FAILED", "SpellCastFailed") -- unit, spell, rank
-	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "SpellCastInterrupted") -- unit, spell, rank
+		self:RegisterEvent("UNIT_SPELLCAST_SENT", "SpellCastSent") -- "player", spell, rank, target
+		self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", "SpellCastChanged")
+		self:RegisterEvent("UNIT_SPELLCAST_START", "SpellCastStart") -- unit, spell, rank
+		self:RegisterEvent("UNIT_SPELLCAST_STOP", "SpellCastStop") -- unit, spell, rank
 
-	self:RegisterEvent("UNIT_SPELLCAST_DELAYED", "SpellCastDelayed") -- unit, spell, rank
-	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "SpellCastSucceeded") -- "player", spell, rank
+		self:RegisterEvent("UNIT_SPELLCAST_FAILED", "SpellCastFailed") -- unit, spell, rank
+		self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "SpellCastInterrupted") -- unit, spell, rank
 
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "SpellCastChannelStart") -- unit, spell, rank
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "SpellCastChannelUpdate") -- unit, spell, rank
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "SpellCastChannelStop") -- unit, spell, rank
+		self:RegisterEvent("UNIT_SPELLCAST_DELAYED", "SpellCastDelayed") -- unit, spell, rank
+		self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "SpellCastSucceeded") -- "player", spell, rank
 
+		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "SpellCastChannelStart") -- unit, spell, rank
+		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "SpellCastChannelUpdate") -- unit, spell, rank
+		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "SpellCastChannelStop") -- unit, spell, rank
+
+	end
 	self:Show(false)
 end
 
@@ -371,8 +418,11 @@ function IceCastBar.prototype:StartBar(action, message)
 		end
 	end
 
-	if not spell then
-		return
+	-- Fulzamoth 2019-09-27 : LibClassicCasterino won't return spell info on target's failed or interrupted cast
+	if LibClassicCasterino and not spell then
+		self:StopBar()
+	elseif not spell then
+	  return
 	end
 
 	if icon ~= nil then
