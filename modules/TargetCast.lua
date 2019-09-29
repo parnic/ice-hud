@@ -65,7 +65,12 @@ function TargetCast.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 3
 	settings["flashInstants"] = "Never"
-	settings["flashFailures"] = "Never"
+	-- Fulzamoth 2019-09-27 : let the flash handler work if in Classic and LibClassicCasterino exists
+	if LibClassicCasterino then
+		settings["flashFailures"] = ""
+	else
+		settings["flashFailures"] = "Never"
+	end 
 	settings["shouldAnimate"] = false
 	settings["hideAnimationSettings"] = true
 	settings["usesDogTagStrings"] = false
@@ -197,7 +202,8 @@ end
 -------------------------------------------------------------------------------
 
 
+-- Fulzamoth 2019-09-27 : load in Classic if LibClassicCasterino exists
 -- Load us up
-if not IceHUD.WowClassic then
+if not IceHUD.WowClassic or LibClassicCasterino then
 	IceHUD.TargetCast = TargetCast:new()
 end
