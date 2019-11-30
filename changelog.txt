@@ -1,3 +1,6 @@
+v1.12.8:
+- (Classic) Fixed TargetCast bar to work for users with the LibCasterCasterino library installed. (thanks, Fulzamoth!)
+
 v1.12.7:
 - (Classic) Fixed fallout from disabling GCD module (errors in castbar).
 
