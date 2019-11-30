@@ -27,11 +27,13 @@ end
 --                        module in Classic WoW
 if IceHUD.WowClassic then
 	LibClassicCasterino = LibStub("LibClassicCasterino", true)
-	UnitCastingInfo = function(unit)
-		return LibClassicCasterino:UnitCastingInfo(unit)
-	end
-	UnitChannelInfo = function(unit)
-		return LibClassicCasterino:UnitChannelInfo(unit)
+	if LibClassicCasterino then
+		UnitCastingInfo = function(unit)
+			return LibClassicCasterino:UnitCastingInfo(unit)
+		end
+		UnitChannelInfo = function(unit)
+			return LibClassicCasterino:UnitChannelInfo(unit)
+		end
 	end
 end
 -- end Fulzamoth change

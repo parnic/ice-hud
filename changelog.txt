@@ -1,3 +1,6 @@
+v1.12.9:
+- (Classic) Fixed error in player cast bar if the user didn't have LibCasterCasterino installed.
+
 v1.12.8:
 - (Classic) Fixed TargetCast bar to work for users with the LibCasterCasterino library installed. (thanks, Fulzamoth!)
 
