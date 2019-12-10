@@ -237,7 +237,7 @@ function Totems.prototype:ResetTotemAvailability()
 end
 
 function Totems.prototype:UpdateTotem(event, totem, ...)
-	if not totem or tonumber(totem) ~= totem or totem < 1 or totem > self.numTotems then
+	if not totem or tonumber(totem) ~= totem or totem < 1 or totem > self.numTotems or not GetTotemInfo then
 		return
 	end
 	local thisTotemName = self.totemNames[TOTEM_PRIORITIES[totem]]
@@ -331,8 +331,7 @@ function Totems.prototype:CheckCombat()
 end
 
 function Totems.prototype:CreateTotem(i, name)
-	-- whiskey tango foxtrot?! apparently arenas can cause this? I can't test out the real cause myself, so putting in a stopgap for now
-	if not name then
+	if not name or not GetTotemInfo then
 		return
 	end
 	local haveTotem, name, startTime, duration, icon = GetTotemInfo(i)
