@@ -1,3 +1,6 @@
+v1.12.10:
+- (Classic) Temporarily(?) disabled the Totems module as the GetTotemInfo() API was removed.
+
 v1.12.9:
 - (Classic) Fixed error in player cast bar if the user didn't have LibCasterCasterino installed.
 
