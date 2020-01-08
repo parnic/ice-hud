@@ -86,7 +86,10 @@ This is a side effect of the animation API that I'm co-opting to force a rotatio
 Blizzard added a "Personal Resource Display" feature in the 7.0 game client. You can disable it in the Game options -> Interface -> Names -> Personal Resource Display.
 
 |cff9999ff19. Why is there no target castbar for Classic?|r
-The Classic game client doesn't offer a reliable way to show castbars for anyone except the player. IceHUD doesn't support the type of inaccurate guessing at combat log details that would be required to get a semi-useful target castbar.]]
+The Classic game client doesn't offer a reliable way to show castbars for anyone except the player. You can install the LibCasterCasterino addon to enable support, but it's a best guess and not at all accurate.
+
+|cff9999ff20. Why do buff/debuff timers not work in Classic?|r
+The Classic game client doesn't provide this information to addons because it wasn't a feature when the game first released. You can install the LibClassicDurations addon to enable support, but it's a best guess and not at all accurate.]]
 				}
 			}
 		},
