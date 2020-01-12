@@ -19,9 +19,10 @@ IceUnitBar.prototype.hasPet = nil
 
 IceUnitBar.prototype.noFlash = nil
 
-local SPELL_POWER_INSANITY = SPELL_POWER_INSANITY
+local SPELL_POWER_INSANITY, SPELL_POWER_RAGE = SPELL_POWER_INSANITY, SPELL_POWER_RAGE
 if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
 	SPELL_POWER_INSANITY = Enum.PowerType.Insanity
+	SPELL_POWER_RAGE = Enum.PowerType.Rage
 end
 
 -- Constructor --
@@ -230,8 +231,14 @@ function IceUnitBar.prototype:Update()
 	self.maxHealth = UnitHealthMax(self.unit)
 	self.healthPercentage = self.maxHealth ~= 0 and (self.health/self.maxHealth) or 0
 
+	-- note that UnitPowerType returns 2 arguments and UnitPower[Max] accepts a third argument to get the values on a different scale
+	-- so this technically doesn't get us the answer we want most of the time. too risky to change at this point, though.
 	self.mana = UnitPower(self.unit, UnitPowerType(self.unit))
 	self.maxMana = UnitPowerMax(self.unit, UnitPowerType(self.unit))
+	if UnitPowerType(self.unit) == SPELL_POWER_RAGE and self.maxMana == 1000 then
+		self.mana = IceHUD:MathRound(self.mana / 10)
+		self.maxMana = IceHUD:MathRound(self.maxMana / 10)
+	end
 	if IceHUD.WowVer >= 70300 and UnitPowerType(self.unit) == SPELL_POWER_INSANITY then
 		self.mana = IceHUD:MathRound(self.mana / 100)
 		self.maxMana = IceHUD:MathRound(self.maxMana / 100)
