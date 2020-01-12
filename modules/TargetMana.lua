@@ -156,7 +156,7 @@ function IceTargetMana.prototype:Update(unit)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		self:SetBottomText1(math.floor(self.manaPercentage * 100))
-		self:SetBottomText2(self:GetFormattedText(self.mana, self.maxMana), color)
+		self:SetBottomText2(self:GetFormattedText(self.mana, self.maxMana), self.color)
 	end
 end
 
