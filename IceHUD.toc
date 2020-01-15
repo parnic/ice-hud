@@ -1,4 +1,4 @@
-## Interface: 80200
+## Interface: 80300
 ## Author: Parnic, originally created by Iceroth
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f-Ace3-|r
