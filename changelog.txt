@@ -1,4 +1,6 @@
 v1.12.11:
+- Fixed TargetMana value not showing in the proper color with DogTags off
+- Fixed Rage showing on a scale of 0-1000 instead of 0-100 with DogTags off
 - Updated TOC for 8.3
 
 v1.12.10:
