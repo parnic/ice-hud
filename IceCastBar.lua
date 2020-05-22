@@ -450,7 +450,7 @@ function IceCastBar.prototype:StartBar(action, message)
 		self.actionDuration = 1 -- instants/failures
 	end
 
-	if not (message) then
+	if not (message) and spell then
 		self.actionMessage = spell .. (self.moduleSettings.showSpellRank and self:GetShortRank(rank) or "")
 	end
 
