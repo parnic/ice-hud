@@ -282,12 +282,17 @@ function Runes.prototype:Enable(core)
 	if IceHUD.WowVer >= 70300 then
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "UpdateRuneColors")
 	end
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ResetRuneAvailability")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
 	self:RegisterEvent("UNIT_MAXPOWER", "CheckMaxNumRunes")
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
 	end
+end
+
+function Runes.prototype:EnteringWorld()
+	self:TargetChanged()
+	self:ResetRuneAvailability()
 end
 
 function Runes.prototype:Disable(core)
