@@ -1,3 +1,7 @@
+v1.12.12:
+- (Classic) Fixed an error when certain spell events fire (like turning in Arathi Basin tokens) with LibClassicCasterino installed.
+- Fixed Death Knight Runes using the wrong alpha visibility if the player teleported (like with a Hearthstone) when they had a target selected.
+
 v1.12.11:
 - Fixed TargetMana value not showing in the proper color with DogTags off
 - Fixed Rage showing on a scale of 0-1000 instead of 0-100 with DogTags off
@@ -7,10 +11,10 @@ v1.12.10:
 - (Classic) Temporarily(?) disabled the Totems module as the GetTotemInfo() API was removed.
 
 v1.12.9:
-- (Classic) Fixed error in player cast bar if the user didn't have LibCasterCasterino installed.
+- (Classic) Fixed error in player cast bar if the user didn't have LibClassicCasterino installed.
 
 v1.12.8:
-- (Classic) Fixed TargetCast bar to work for users with the LibCasterCasterino library installed. (thanks, Fulzamoth!)
+- (Classic) Fixed TargetCast bar to work for users with the LibClassicCasterino library installed. (thanks, Fulzamoth!)
 
 v1.12.7:
 - (Classic) Fixed fallout from disabling GCD module (errors in castbar).
