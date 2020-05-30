@@ -107,6 +107,7 @@ function ShardCounter.prototype:UpdateRunePower(event, arg1, arg2)
 	end
 
 	if event == "PLAYER_ENTERING_WORLD" and IceHUD.WowVer < 70000 then
+		self:TargetChanged()
 		self:UpdatePowerType(event)
 	end
 

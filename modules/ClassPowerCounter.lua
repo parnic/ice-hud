@@ -467,7 +467,7 @@ function IceClassPowerCounter.prototype:DisplayCounter()
 
 	self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateRunePower")
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "UpdateRunePower")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateRunePower")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
@@ -482,6 +482,11 @@ function IceClassPowerCounter.prototype:Disable(core)
 	if self.moduleSettings.hideBlizz then
 		self:ShowBlizz()
 	end
+end
+
+function IceClassPowerCounter.prototype:EnteringWorld()
+	self:TargetChanged()
+	self:UpdateRunePower()
 end
 
 function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)

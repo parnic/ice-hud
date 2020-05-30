@@ -215,7 +215,7 @@ function Totems.prototype:Enable(core)
 	Totems.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE", "UpdateTotem");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ResetTotemAvailability");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld");
 
 	if self.moduleSettings.hideBlizz then
 		self:HideBlizz()
@@ -228,6 +228,11 @@ function Totems.prototype:Disable(core)
 	if self.moduleSettings.hideBlizz then
 		self:ShowBlizz()
 	end
+end
+
+function Totems.prototype:EnteringWorld()
+	self:TargetChanged()
+	self:ResetTotemAvailability()
 end
 
 function Totems.prototype:ResetTotemAvailability()

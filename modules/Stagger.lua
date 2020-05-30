@@ -157,6 +157,7 @@ function StaggerBar.prototype:UpdateShown()
 end
 
 function StaggerBar.prototype:PLAYER_ENTERING_WORLD()
+	self:TargetChanged()
 	self:UpdateStaggerBar()
 end
 
