@@ -1,5 +1,6 @@
 v1.12.13:
 - Fixed various class power indicators using the wrong alpha visibility if the player teleported (like with a Hearthstone) when they had a target selected.
+- Show Hunter Focus top text as the raw Focus amount instead of a 0-100 scale with DogTags off.
 
 v1.12.12:
 - (Classic) Fixed an error when certain spell events fire (like turning in Arathi Basin tokens) with LibClassicCasterino installed.
