@@ -223,6 +223,7 @@ function PetHealth.prototype:ExitingVehicle(event, unit)
 end
 
 function PetHealth.prototype:EnteringWorld()
+	self:TargetChanged()
 	self:Update(self.unit)
 
 	if UnitHasVehicleUI then
