@@ -1,3 +1,6 @@
+v1.12.14:
+- Fixed pet health/mana sometimes using the wrong alpha if the player teleported.
+
 v1.12.13:
 - Fixed various class power indicators using the wrong alpha visibility if the player teleported (like with a Hearthstone) when they had a target selected.
 - Show Hunter Focus top text as the raw Focus amount instead of a 0-100 scale with DogTags off.
