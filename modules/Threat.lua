@@ -23,6 +23,13 @@ if IceHUD.WowVer >= 50000 or IceHUD.WowClassic then
 	MAX_NUM_RAID_MEMBERS = MAX_RAID_MEMBERS
 end
 
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned
+if not UnitGroupRolesAssigned then
+	UnitGroupRolesAssigned = function()
+		return "NONE"
+	end
+end
+
 local MAX_NUM_RAID_MEMBERS = 40
 local MAX_NUM_PARTY_MEMBERS = 5
 
