@@ -1,3 +1,6 @@
+v1.12.15:
+- (Classic) Fixed reported issue with the Threat bar throwing errors sometimes.
+
 v1.12.14:
 - Fixed pet health/mana sometimes using the wrong alpha if the player teleported.
 
