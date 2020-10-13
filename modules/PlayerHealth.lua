@@ -68,7 +68,9 @@ function PlayerHealth.prototype:Enable(core)
 	PlayerHealth.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_HEALTH", "UpdateEvent")
-	self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateEvent")
+	if IceHUD.WowVer < 90000 then
+		self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateEvent")
+	end
 	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateEvent")
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
@@ -934,7 +936,7 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 end
 
 function PlayerHealth.prototype:CreateHealBar()
-	self.healFrame = self:BarFactory(self.healFrame, "LOW","BACKGROUND")
+	self.healFrame = self:BarFactory(self.healFrame, "LOW","BACKGROUND", "Heal")
 
 	self.healFrame.bar:SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
 
@@ -946,7 +948,7 @@ function PlayerHealth.prototype:CreateHealBar()
 end
 
 function PlayerHealth.prototype:CreateAbsorbBar()
-	self.absorbFrame = self:BarFactory(self.absorbFrame, "LOW","BACKGROUND")
+	self.absorbFrame = self:BarFactory(self.absorbFrame, "LOW","BACKGROUND", "Absorb")
 
 	self.absorbFrame.bar:SetVertexColor(self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
 

@@ -49,7 +49,9 @@ function PetHealth.prototype:Enable(core)
 	self:RegisterEvent("UNIT_PET", "CheckPet");
 
 	self:RegisterEvent("UNIT_HEALTH", "UpdateEvent")
-	self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateEvent")
+	if IceHUD.WowVer < 90000 then
+		self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateEvent")
+	end
 	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateEvent")
 
 	if UnitHasVehicleUI then

@@ -1,4 +1,4 @@
-## Interface: 80300
+## Interface: 90001
 ## Author: Parnic, originally created by Iceroth
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f-Ace3-|r
@@ -9,7 +9,7 @@
 ## X-Category: HUDs
 ## X-Website: https://www.wowace.com/projects/ice-hud
 ## X-WoWI-ID: 8149
-## X-Compatible-With: 11302
+## X-Compatible-With: 11305
 
 #@no-lib-strip@
 # Libraries

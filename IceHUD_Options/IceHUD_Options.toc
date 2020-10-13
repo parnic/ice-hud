@@ -1,4 +1,4 @@
-## Interface: 80300
+## Interface: 90001
 ## Title: IceHUD |cff7fff7f-Options-|r
 ## Author: Parnic
 ## Version: @project-version@

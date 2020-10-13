@@ -186,7 +186,7 @@ function RollTheBones.prototype:CreateFrame()
 end
 
 function RollTheBones.prototype:CreateDurationBar()
-  self.durationFrame = self:BarFactory(self.durationFrame, "BACKGROUND","ARTWORK")
+  self.durationFrame = self:BarFactory(self.durationFrame, "BACKGROUND","ARTWORK", "Duration")
 
   -- Rokiyo: Do we need to call this here?
   self.CurrScale = 0

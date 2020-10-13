@@ -171,7 +171,7 @@ end
 -- Creates the low amount warning frame
 function IceUnitBar.prototype:CreateFlashFrame()
 	if not (self.flashFrame) then
-		self.flashFrame = CreateFrame("Frame", nil, self.frame)
+		self.flashFrame = CreateFrame("Frame", "IceHUD_"..self.elementName.."_Flash", self.frame)
 	end
 
 	self.flashFrame:SetFrameStrata("BACKGROUND")
