@@ -20,6 +20,7 @@ local impSndBonusPerRank = 0.25
 local maxComboPoints = 5
 local sndEndTime = 0
 local sndDuration = 0
+local sixComboPointsTalentID = 19240
 
 local CurrMaxSnDDuration = 0
 local PotentialSnDDuration = 0
@@ -66,6 +67,11 @@ function SliceAndDice.prototype:Enable(core)
 		self:RegisterEvent(IceHUD.UnitPowerEvent, "ComboPointsChanged")
 	end
 
+	if IceHUD.WowVer >= 70000 then
+		self:RegisterEvent("PLAYER_TALENT_UPDATE", "CheckMaxComboPoints")
+		self:CheckMaxComboPoints()
+	end
+
 	if not self.moduleSettings.alwaysFullAlpha then
 		self:Show(false)
 	else
@@ -73,6 +79,11 @@ function SliceAndDice.prototype:Enable(core)
 	end
 
 	self:SetBottomText1("")
+end
+
+function SliceAndDice.prototype:CheckMaxComboPoints()
+	local talentID, name, texture, selected, available, spellID, unknown, row, column, known, grantedByAura = GetTalentInfoByID(sixComboPointsTalentID, GetActiveSpecGroup())
+	maxComboPoints = selected and 6 or 5
 end
 
 function SliceAndDice.prototype:Disable(core)
@@ -270,6 +281,10 @@ local function HasSpell(id)
 end
 
 local function ShouldHide()
+	if IceHUD.WowVer >= 90000 then
+		return false
+	end
+
 	return --[[(IceHUD.WowVer < 70000 or not IsSpellKnown(193316)) and]] not IsPlayerSpell(5171) -- IsSpellKnown returns incorrect info for SnD in 7.0
 	-- commented code is here in case we decide we'd like to use this module for Roll the Bones.
 	-- if we do, though, the "active" check gets way more complicated since it can activate any number of 6 different abilities
