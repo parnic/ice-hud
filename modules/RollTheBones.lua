@@ -9,6 +9,8 @@ local maxComboPoints = 5
 local rtbEndTime = 0
 local rtbDuration = 0
 local rtbCount = 0
+local sixComboPointsTalentID = 19240
+local behaviorDependsOnComboPoints = IceHUD.WowVer < 90000
 
 local CurrMaxRtBDuration = 0
 local PotentialRtBDuration = 0
@@ -33,12 +35,14 @@ function RollTheBones.prototype:init()
   self.moduleSettings.shouldAnimate = false
 
   self:SetDefaultColor("RollTheBones", 1, 0.6, 0.2)
-  self:SetDefaultColor("RollTheBones2", 0.75, 1, 0.2)
-  self:SetDefaultColor("RollTheBones3", 0.4, 1, 0.2)
-  self:SetDefaultColor("RollTheBones4", 0.4, 1, 0.2)
-  self:SetDefaultColor("RollTheBones5", 0.1, 1, 0.7)
-  self:SetDefaultColor("RollTheBones6", 0.1, 1, 0.7)
-  self:SetDefaultColor("RollTheBonesPotential", 1, 1, 1)
+  if behaviorDependsOnComboPoints then
+    self:SetDefaultColor("RollTheBones2", 0.75, 1, 0.2)
+    self:SetDefaultColor("RollTheBones3", 0.4, 1, 0.2)
+    self:SetDefaultColor("RollTheBones4", 0.4, 1, 0.2)
+    self:SetDefaultColor("RollTheBones5", 0.1, 1, 0.7)
+    self:SetDefaultColor("RollTheBones6", 0.1, 1, 0.7)
+    self:SetDefaultColor("RollTheBonesPotential", 1, 1, 1)
+  end
 
   self.bTreatEmptyAsFull = true
 end
@@ -50,7 +54,10 @@ function RollTheBones.prototype:Enable(core)
   RollTheBones.super.prototype.Enable(self, core)
 
   self:RegisterEvent("UNIT_AURA", "UpdateRollTheBones")
-  self:RegisterEvent(IceHUD.UnitPowerEvent, "ComboPointsChanged")
+
+  if behaviorDependsOnComboPoints then
+    self:RegisterEvent(IceHUD.UnitPowerEvent, "ComboPointsChanged")
+  end
 
   if not self.moduleSettings.alwaysFullAlpha then
     self:Show(false)
@@ -106,41 +113,60 @@ function RollTheBones.prototype:GetOptions()
   opts["textSettings"].args["upperTextString"]["desc"] = "The text to display under this bar. # will be replaced with the number of Roll the Bones seconds remaining."
   opts["textSettings"].args["upperTextString"].hidden = false
 
-  opts["showAsPercentOfMax"] =
-  {
-    type = 'toggle',
-    name = L["Show bar as % of maximum"],
-    desc = L["If this is checked, then the RtB buff time shows as a percent of the maximum attainable (taking set bonuses and talents into account). Otherwise, the bar always goes from full to empty when applying RtB no matter the duration."],
-    get = function()
-      return self.moduleSettings.showAsPercentOfMax
-    end,
-    set = function(info, v)
-      self.moduleSettings.showAsPercentOfMax = v
-    end,
-    disabled = function()
-      return not self.moduleSettings.enabled
-    end
-  }
+  if behaviorDependsOnComboPoints then
+    opts["showAsPercentOfMax"] =
+    {
+      type = 'toggle',
+      name = L["Show bar as % of maximum"],
+      desc = L["If this is checked, then the RtB buff time shows as a percent of the maximum attainable (taking set bonuses and talents into account). Otherwise, the bar always goes from full to empty when applying RtB no matter the duration."],
+      get = function()
+        return self.moduleSettings.showAsPercentOfMax
+      end,
+      set = function(info, v)
+        self.moduleSettings.showAsPercentOfMax = v
+      end,
+      disabled = function()
+        return not self.moduleSettings.enabled
+      end
+    }
 
-  opts["durationAlpha"] =
-  {
-    type = "range",
-    name = L["Potential RtB time bar alpha"],
-    desc = L["What alpha value to use for the bar that displays how long your RtB will last if you activate it. (This gets multiplied by the bar's current alpha to stay in line with the bar on top of it)"],
-    min = 0,
-    max = 100,
-    step = 5,
-    get = function()
-      return self.moduleSettings.durationAlpha * 100
-    end,
-    set = function(info, v)
-      self.moduleSettings.durationAlpha = v / 100.0
-      self:Redraw()
-    end,
-    disabled = function()
-      return not self.moduleSettings.enabled
-    end
-  }
+    opts["durationAlpha"] =
+    {
+      type = "range",
+      name = L["Potential RtB time bar alpha"],
+      desc = L["What alpha value to use for the bar that displays how long your RtB will last if you activate it. (This gets multiplied by the bar's current alpha to stay in line with the bar on top of it)"],
+      min = 0,
+      max = 100,
+      step = 5,
+      get = function()
+        return self.moduleSettings.durationAlpha * 100
+      end,
+      set = function(info, v)
+        self.moduleSettings.durationAlpha = v / 100.0
+        self:Redraw()
+      end,
+      disabled = function()
+        return not self.moduleSettings.enabled
+      end
+    }
+
+    opts["bUseMultipleBuffColors"] =
+    {
+      type = 'toggle',
+      name = L["Use multiple buff colors"],
+      desc = L["If this is checked, then the bar uses different colors depending on how many RtB buffs you have"],
+      get = function()
+        return self.moduleSettings.bUseMultipleBuffColors
+      end,
+      set = function(info, v)
+        self.moduleSettings.bUseMultipleBuffColors = v
+        self:Redraw()
+      end,
+      disabled = function()
+        return not self.moduleSettings.enabled
+      end,
+    }
+  end
 
   opts["bShowWithNoTarget"] =
   {
@@ -159,23 +185,6 @@ function RollTheBones.prototype:GetOptions()
     end,
   }
 
-  opts["bUseMultipleBuffColors"] =
-  {
-    type = 'toggle',
-    name = L["Use multiple buff colors"],
-    desc = L["If this is checked, then the bar uses different colors depending on how many RtB buffs you have"],
-    get = function()
-      return self.moduleSettings.bUseMultipleBuffColors
-    end,
-    set = function(info, v)
-      self.moduleSettings.bUseMultipleBuffColors = v
-      self:Redraw()
-    end,
-    disabled = function()
-      return not self.moduleSettings.enabled
-    end,
-  }
-
   return opts
 end
 
@@ -186,6 +195,10 @@ function RollTheBones.prototype:CreateFrame()
 end
 
 function RollTheBones.prototype:CreateDurationBar()
+  if not behaviorDependsOnComboPoints then
+    return
+  end
+
   self.durationFrame = self:BarFactory(self.durationFrame, "BACKGROUND","ARTWORK", "Duration")
 
   -- Rokiyo: Do we need to call this here?
@@ -204,7 +217,9 @@ end
 function RollTheBones.prototype:RotateHorizontal()
   RollTheBones.super.prototype.RotateHorizontal(self)
 
-  self:RotateFrame(self.durationFrame)
+  if self.durationFrame then
+    self:RotateFrame(self.durationFrame)
+  end
 end
 
 function RollTheBones.prototype:ResetRotation()
@@ -308,7 +323,7 @@ function RollTheBones.prototype:UpdateRollTheBones(event, unit, fromUpdate)
     if not remaining then
       remaining = rtbEndTime - now
     end
-    local denominator = (self.moduleSettings.showAsPercentOfMax and CurrMaxRtBDuration or rtbDuration)
+    local denominator = ((self.moduleSettings.showAsPercentOfMax and behaviorDependsOnComboPoints) and CurrMaxRtBDuration or rtbDuration)
     self:UpdateBar(denominator ~= 0 and remaining / denominator or 0, self:GetColorName(rtbCount))
   else
     self:UpdateBar(0, "RollTheBones")
@@ -326,13 +341,13 @@ function RollTheBones.prototype:UpdateRollTheBones(event, unit, fromUpdate)
 
   -- somewhat redundant, but we also need to check potential remaining time
   if (remaining ~= nil) or PotentialRtBDuration > 0 then
-    local potText = " (" .. PotentialRtBDuration .. ")"
+    local potText = behaviorDependsOnComboPoints and " (" .. PotentialRtBDuration .. ")" or ""
     self:SetBottomText1(self.moduleSettings.upperText .. tostring(floor(remaining or 0)) .. (self.moduleSettings.durationAlpha ~= 0 and potText or ""))
   end
 end
 
 function RollTheBones.prototype:GetColorName(count)
-  if self.moduleSettings.bUseMultipleBuffColors and count >= 2 then
+  if behaviorDependsOnComboPoints and self.moduleSettings.bUseMultipleBuffColors and count >= 2 then
     return "RollTheBones"..count
   else
     return "RollTheBones"
@@ -352,13 +367,17 @@ function RollTheBones.prototype:TargetChanged()
 end
 
 function RollTheBones.prototype:UpdateDurationBar(event, unit)
+  if not self.durationFrame then
+    return
+  end
+
   if unit and unit ~= self.unit then
     return
   end
 
   local points = RTBGetComboPoints(self.unit)
   -- check for Deeper Stratagem
-  local _, _, _, DeeperStratagem = GetTalentInfo(3, 1, 1)
+  local _, _, _, DeeperStratagem = GetTalentInfoByID(sixComboPointsTalentID, GetActiveSpecGroup())
 
   if DeeperStratagem then
     -- first, set the cached upper limit of RtB duration
