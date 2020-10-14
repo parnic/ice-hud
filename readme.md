@@ -1,11 +1,23 @@
+# IceHUD
+
+## Shadowlands/9.0 note
+
+Anyone wanting to try out my first attempt at 9.0 compatibility is welcome to download the latest alpha build. I'm going to give this some time to percolate and wait for reports to come in before tagging it as a final build. I don't have a whole lot of time right now to work on the mod, so feedback is helpful.
+
+Additionally, if you find this mod integral to your WoW experience, [a donation is very helpful](https://www.paypal.com/cgi-bin/webscr?return=https://www.github.com/parnic/ice-hud&cn=Add+special+instructions+to+the+addon+author()&business=icehud%40parnic.com&bn=PP-DonationsBF:btn_donateCC_LG.gif:NonHosted&cancel_return=https://www.github.com/parnic/ice-hud&lc=US&item_name=IceHUD+(from+github.com)&cmd=_donations&rm=1&no_shipping=1&currency_code=USD) to allow me to gauge how much time I need to put into this as well as maintain a WoW subscription to be able to develop the mod.
+
+Thanks!
+
+----
+
 IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD, MetaHUD, and others designed to keep your focus in the center of the screen where your character is.
 
+## **What it is**
 
-### **What it is**
-* Player and target health and mana bars, casting and mirror bars, pet health and mana bars, druid mana bar in forms, extensive target info, ToT display, and much more
+* Player and target health and mana bars, casting and mirror bars, pet health and mana bars, druid mana bar in forms, extensive target info, ToT display, and much more, in a vertically-oriented heads-up display.
 
+## **Short feature list**
 
-### **Short feature list**
 * Lots of different bar shapes and patterns to make the HUD look like you want
 * Class-specific modules such as combo point counters, Slice'n'dice timers, druid mana trackers, Eclipse bar, Holy Power monitoring, Warlock shard tracking, and more
 * Target-of-target bars, Crowd Control timers, Range Finders, Threat meters, and plenty of other helpful modules
@@ -15,13 +27,12 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
 * Fully customizable bars and counters capable of tracking buff/debuff applications on any unit, spell/ability cooldowns, and the health/mana of any unit you specify. The custom health/mana bars will even work with crazy unit specifications like "focustargettargetfocustarget" if you want!
 * Highly configurable (can totally re-arrange all bars, change text display, etc.)
 
+## **Slash commands**
 
-### **Slash commands**
 * /icehud - opens the configuration UI to tweak any setting
 * /icehudCL - command-line access to tweak IceHUD settings (for use with macros, etc.)
 
-
-# **Frequently Asked Questions**
+## **Frequently Asked Questions**
 
 1. **How do I hide the default Blizzard player, target unit frames and party unit frames?**
    Type /icehud, expand the "Module Settings" section, click "Player Health" or "Target Health," and check "Hide Blizzard Frame" and/or "Hide Blizzard Party Frame". (NOTE: before version 1.3.7, the player/target unitframes were hidden by default. Follow the same steps to enable them if desired)
@@ -80,5 +91,7 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
 1. **Why is there no target castbar for Classic?**
    The Classic game client doesn't offer a reliable way to show castbars for anyone except the player. IceHUD doesn't support the type of inaccurate guessing at combat log details that would be required to get a semi-useful target castbar.
 
+1. **Why do buff/debuff timers not work in Classic?**
+   The Classic game client doesn't provide this information to addons because it wasn't a feature when the game first released. You can install the LibClassicDurations addon to enable support, but it's a best guess and not completely accurate.
 
 See [here](https://www.wowace.com/projects/ice-hud/issues/113) for a user-created guide to creating new IceHUD textures.
