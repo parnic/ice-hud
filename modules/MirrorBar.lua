@@ -280,8 +280,8 @@ function MirrorBarHandler.prototype:GetOptions()
 		type='range',
 		name = L["Bar vertical offset"],
 		desc = L["Adjust the vertical placement of this bar"],
-		min = -400,
-		max = 400,
+		min = -600,
+		max = 600,
 		step = 1,
 		get = function()
 			return self.moduleSettings.barVerticalOffset

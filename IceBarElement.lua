@@ -415,7 +415,7 @@ do
 			type='range',
 			name = L["Bar vertical offset"],
 			desc = L["Adjust the vertical placement of this bar"],
-			min = -400,
+			min = -600,
 			max = 600,
 			step = 1,
 			get = function()
@@ -436,7 +436,7 @@ do
 			type='range',
 			name = L["Bar horizontal adjust"],
 			desc = L["This is a per-pixel horizontal adjustment. You should probably use the 'offset' setting above as it is designed to snap bars together. This may be used in the case of a horizontal bar needing to be positioned outside the normal bar locations."],
-			min = -400,
+			min = -600,
 			max = 600,
 			step = 1,
 			get = function()
