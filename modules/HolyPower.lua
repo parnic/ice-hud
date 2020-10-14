@@ -32,7 +32,7 @@ function HolyPower.prototype:init()
 	self.numericColor = "HolyPowerNumeric"
 	self.unitPower = SPELL_POWER_HOLY_POWER
 	self.minLevel = PALADINPOWERBAR_SHOW_LEVEL
-	if IceHUD.WowVer >= 70000 then
+	if IceHUD.WowVer >= 70000 and IceHUD.WowVer < 90000 then
 		self.requiredSpec = SPEC_PALADIN_RETRIBUTION
 	end
 	self.bTreatEmptyAsFull = true
