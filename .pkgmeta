@@ -65,6 +65,6 @@ tools-used:
 ignore:
     - readme.md
 
-manual-changelog: changelog.txt
+manual-changelog: this_version.md
 
 enable-nolib-creation: yes
