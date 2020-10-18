@@ -1,15 +1,5 @@
 # IceHUD
 
-## Shadowlands/9.0 note
-
-Anyone wanting to try out my first attempt at 9.0 compatibility is welcome to download the latest alpha build. I'm going to give this some time to percolate and wait for reports to come in before tagging it as a final build. I don't have a whole lot of time right now to work on the mod, so feedback is helpful.
-
-Additionally, if you find this mod integral to your WoW experience, [a donation is very helpful](https://www.paypal.com/cgi-bin/webscr?return=https://www.github.com/parnic/ice-hud&cn=Add+special+instructions+to+the+addon+author()&business=icehud%40parnic.com&bn=PP-DonationsBF:btn_donateCC_LG.gif:NonHosted&cancel_return=https://www.github.com/parnic/ice-hud&lc=US&item_name=IceHUD+(from+github.com)&cmd=_donations&rm=1&no_shipping=1&currency_code=USD) to allow me to gauge how much time I need to put into this as well as maintain a WoW subscription to be able to develop the mod.
-
-Thanks!
-
-----
-
 IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD, MetaHUD, and others designed to keep your focus in the center of the screen where your character is.
 
 ## **What it is**
