@@ -1,7 +1,5 @@
 # Changelog
 
-v1.13.0:
+vNext:
 
-- Made compatible with 9.0
-- Improved frame naming/debuggability
-- Updated TOC for 9.0
+- Added support for Anima-charged combo points for Kyrian covenant (ticket #291).
