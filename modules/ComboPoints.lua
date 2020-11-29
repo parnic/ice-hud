@@ -12,12 +12,20 @@ if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
 	SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
 end
 
+local GetUnitChargedPowerPoints = GetUnitChargedPowerPoints
+if not GetUnitChargedPowerPoints then
+	GetUnitChargedPowerPoints = function()
+		return nil
+	end
+end
+
 -- Constructor --
 function ComboPoints.prototype:init()
 	ComboPoints.super.prototype.init(self, "ComboPoints")
 
 	self:SetDefaultColor("ComboPoints", 1, 1, 0)
 	self:SetDefaultColor("AnticipationPoints", 1, 0, 1)
+	self:SetDefaultColor("KyrianAnimaComboPoint", 0.3137254901960784, 0.3725490196078432, 1)
 	self.scalingEnabled = true
 end
 
@@ -274,11 +282,16 @@ function ComboPoints.prototype:Enable(core)
 		self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateComboPoints")
 	end
 
+	if IceHUD.WowVer >= 90000 then
+		self:RegisterEvent("UNIT_POWER_POINT_CHARGE", "UpdateChargedComboPoints")
+	end
+
 	if self.moduleSettings.comboMode == "Graphical" then
 		self.moduleSettings.comboMode = "Graphical Bar"
 	end
 
 	self:CreateComboFrame(true)
+	self:UpdateChargedComboPoints()
 end
 
 function ComboPoints.prototype:UpdateMaxComboPoints(event, unit, powerType)
@@ -289,6 +302,13 @@ function ComboPoints.prototype:UpdateMaxComboPoints(event, unit, powerType)
 		end
 		self:Redraw()
 	end
+end
+
+function ComboPoints.prototype:UpdateChargedComboPoints()
+	local chargedPowerPoints = GetUnitChargedPowerPoints("player")
+	self.chargedPowerPointIndex = chargedPowerPoints and chargedPowerPoints[1]
+	self:CreateComboFrame()
+	self:UpdateComboPoints()
 end
 
 -- 'Protected' methods --------------------------------------------------------
@@ -399,7 +419,12 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 		if (self.moduleSettings.gradient) then
 			g = g - ((1 / maxComboPoints)*i)
 		end
-		self.frame.graphical[i].texture:SetVertexColor(r, g, b)
+
+		if i == self.chargedPowerPointIndex then
+			self.frame.graphical[i].texture:SetVertexColor(self:GetColor("KyrianAnimaComboPoint"))
+		else
+			self.frame.graphical[i].texture:SetVertexColor(r, g, b)
+		end
 
 		self.frame.graphical[i]:Hide()
 	end

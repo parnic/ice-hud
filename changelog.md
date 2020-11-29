@@ -1,5 +1,9 @@
 # Changelog
 
+vNext:
+
+- Added support for Anima-charged combo points for Kyrian covenant (ticket #291).
+
 v1.13.0:
 
 - Made compatible with 9.0

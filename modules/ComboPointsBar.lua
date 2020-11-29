@@ -6,6 +6,13 @@ if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
 	SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
 end
 
+local GetUnitChargedPowerPoints = GetUnitChargedPowerPoints
+if not GetUnitChargedPowerPoints then
+	GetUnitChargedPowerPoints = function()
+		return nil
+	end
+end
+
 function ComboPointsBar.prototype:init()
 	ComboPointsBar.super.prototype.init(self, "ComboPointsBar")
 
@@ -57,7 +64,6 @@ end
 
 function ComboPointsBar.prototype:GetDefaultSettings()
 	local defaults =  ComboPointsBar.super.prototype.GetDefaultSettings(self)
-	defaults.textVisible['lower'] = false
 	defaults.offset = 8
 	defaults.enabled = false
 	defaults.alwaysDisplay = false
@@ -83,6 +89,18 @@ function ComboPointsBar.prototype:Enable(core)
 	else
 		self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateComboPoints")
 	end
+
+	if IceHUD.WowVer >= 90000 then
+		self:RegisterEvent("UNIT_POWER_POINT_CHARGE", "UpdateChargedComboPoints")
+	end
+
+	self:UpdateChargedComboPoints()
+end
+
+function ComboPointsBar.prototype:UpdateChargedComboPoints()
+	local chargedPowerPoints = GetUnitChargedPowerPoints("player")
+	self.chargedPowerPointIndex = chargedPowerPoints and chargedPowerPoints[1]
+	self:UpdateComboPoints()
 end
 
 function ComboPointsBar.prototype:CreateFrame()
@@ -129,6 +147,7 @@ function ComboPointsBar.prototype:UpdateComboPoints(...)
 	end
 
 	self:SetBottomText1(points or "0")
+	self:SetBottomText2(self.chargedPowerPointIndex)
 end
 
 function ComboPointsBar.prototype:Update()
