@@ -223,7 +223,28 @@ function ComboPoints.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
+		order = 35
 	}
+
+	if IceHUD.WowVer >= 90000 then
+		opts["bShowAnimaCharged"] = {
+			type = 'toggle',
+			width = 'double',
+			name = L["Show Anima-charged points"],
+			desc = L["Whether or not to color an anima-charged combo point a separate color. Set the KyrianAnimaComboPoint color to the color you would like it to be."],
+			get = function()
+				return self.moduleSettings.bShowAnimaCharged
+			end,
+			set = function(info, v)
+				self.moduleSettings.bShowAnimaCharged = v
+				self:UpdateChargedComboPoints()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 36
+		}
+	end
 
 	return opts
 end
@@ -243,6 +264,7 @@ function ComboPoints.prototype:GetDefaultSettings()
 	defaults["comboGap"] = 0
 	defaults["showAnticipation"] = true
 	defaults["bShowWithNoTarget"] = true
+	defaults["bShowAnimaCharged"] = true
 	return defaults
 end
 
@@ -420,7 +442,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 			g = g - ((1 / maxComboPoints)*i)
 		end
 
-		if i == self.chargedPowerPointIndex then
+		if i == self.chargedPowerPointIndex and self.moduleSettings.bShowAnimaCharged then
 			self.frame.graphical[i].texture:SetVertexColor(self:GetColor("KyrianAnimaComboPoint"))
 		else
 			self.frame.graphical[i].texture:SetVertexColor(r, g, b)
