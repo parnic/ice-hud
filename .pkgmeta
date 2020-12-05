@@ -2,58 +2,54 @@ package-as: IceHUD
 
 externals:
     libs/LibStub:
-        url: https://repos.wowace.com/wow/libstub/trunk
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/LibStub
         tag: latest
     libs/CallbackHandler-1.0:
-        url: https://repos.wowace.com/wow/callbackhandler/trunk
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/CallbackHandler-1.0
         tag: latest
     libs/AceEvent-3.0:
-        url: https://repos.wowace.com/wow/ace3/trunk/AceEvent-3.0
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
         tag: latest
     libs/AceTimer-3.0:
-        url: https://repos.wowace.com/wow/ace3/trunk/AceTimer-3.0
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
         tag: latest
     libs/AceDB-3.0:
-        url: https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
         tag: latest
     libs/AceDBOptions-3.0:
-        url: https://repos.wowace.com/wow/ace3/trunk/AceDBOptions-3.0
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDBOptions-3.0
         tag: latest
     libs/AceConfig-3.0:
-        url: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
         tag: latest
     libs/AceGUI-3.0:
-        url: https://repos.wowace.com/wow/ace3/trunk/AceGUI-3.0
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
         tag: latest
     libs/AceGUI-3.0-SharedMediaWidgets:
-        url: https://repos.wowace.com/wow/ace-gui-3-0-shared-media-widgets/trunk
+        url: svn://svn.wowace.com/wow/ace-gui-3-0-shared-media-widgets/mainline/trunk/AceGUI-3.0-SharedMediaWidgets
         tag: latest
     libs/AceAddon-3.0:
-        url: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
         tag: latest
     libs/AceConsole-3.0:
-        url: https://repos.wowace.com/wow/ace3/trunk/AceConsole-3.0
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
         tag: latest
     libs/AceLocale-3.0:
-        url: https://repos.wowace.com/wow/ace3/trunk/AceLocale-3.0
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
         tag: latest
     libs/LibRangeCheck-2.0:
-        url: https://repos.wowace.com/wow/librangecheck-2-0/trunk
+        url: svn://svn.wowace.com/wow/librangecheck-2-0/mainline/trunk/LibRangeCheck-2.0
     libs/LibSharedMedia-3.0:
-        url: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk
+        url: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk
         tag: latest
     libs/LibDogTag-3.0:
-        url: https://repos.wowace.com/wow/libdogtag-3-0
-        tag: latest
-        type: git
+        url: git://git.wowace.com/wow/libdogtag-3-0/mainline.git
     libs/LibDogTag-Unit-3.0:
-        url: https://repos.wowace.com/wow/libdogtag-unit-3-0
-        tag: latest
-        type: git
+        url: git://git.wowace.com/wow/libdogtag-unit-3-0/mainline.git
     libs/LibDBIcon-1.0:
-        url: https://repos.wowace.com/wow/libdbicon-1-0/trunk
+        url: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
     libs/LibDualSpec-1.0:
-        url: https://repos.wowace.com/wow/libdualspec-1-0
+        url: git://git.wowace.com/wow/libdualspec-1-0/mainline.git
 
 optional-dependencies:
     - libdogtag-3-0
