@@ -1,5 +1,9 @@
 # Changelog
 
+vNext:
+
+- Activated Totems module for all classes in Shadowlands. Some class abilities spawn units that live for a specific amount of time, and the game handles these as Totems.
+
 v1.13.2:
 
 - Fixed which version of LibDogTag was being packaged. The previous version did not have 9.0 compatibility and was generating errors (ticket #293).

@@ -245,7 +245,7 @@ function Totems.prototype:UpdateTotem(event, totem, ...)
 	if not totem or tonumber(totem) ~= totem or totem < 1 or totem > self.numTotems or not GetTotemInfo then
 		return
 	end
-	local thisTotemName = self.totemNames[TOTEM_PRIORITIES[totem]]
+
 	local haveTotem, name, startTime, duration, icon = GetTotemInfo(totem);
 	if duration > 0 then
 		self.frame.graphical[totem].totem:SetTexture(icon)
@@ -422,6 +422,6 @@ end
 
 -- Load us up
 local _, unitClass = UnitClass("player")
-if (unitClass == "SHAMAN") or (unitClass == "DRUID") then
+if IceHUD.WowVer >= 90000 or (unitClass == "SHAMAN") or (unitClass == "DRUID") then
 	IceHUD.Totems = Totems:new()
 end
