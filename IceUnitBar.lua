@@ -243,7 +243,14 @@ function IceUnitBar.prototype:Update()
 		self.mana = IceHUD:MathRound(self.mana / 100)
 		self.maxMana = IceHUD:MathRound(self.maxMana / 100)
 	end
-	self.manaPercentage = self.maxMana ~= 0 and (self.mana/self.maxMana) or 0
+
+	-- account for cases where maxMana is 0, perhaps briefly (during certain spells, for example)
+	-- and properly handle it as full. this allows for proper alpha handling during these times.
+	if self.maxMana == self.mana then
+		self.manaPercentage = 1
+	else
+		self.manaPercentage = self.maxMana ~= 0 and (self.mana/self.maxMana) or 0
+	end
 
 	local locClass
 	locClass, self.unitClass = UnitClass(self.unit)
