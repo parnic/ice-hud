@@ -42,4 +42,4 @@ jobs:
       - name: Package and release for Classic
         uses: BigWigsMods/packager@master
         with:
-          args: -g 1.13.5 -w 0
+          args: -g 1.13.6 -w 0
