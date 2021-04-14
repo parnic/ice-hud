@@ -1,7 +1,5 @@
 # Changelog
 
-v1.13.3:
+vNext:
 
-- Activated Totems module for all classes in Shadowlands. Some class abilities spawn units that live for a specific amount of time, and the game handles these as Totems.
-- Fixed an issue where mana bars could use the wrong alpha settings if the player's maximum mana was 0 (such as during the use of Soulshape).
-- Update TOC for 9.0.5
+- Show Demon Hunter Fury top text as the raw Fury amount instead of a 0-100 scale with DogTags off. (ticket #301)
