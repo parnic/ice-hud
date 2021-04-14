@@ -387,7 +387,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		-- extra hack for whiny rogues (are there other kind?)
 		local displayPercentage = self.manaPercentage
-		if self.manaType == SPELL_POWER_ENERGY or self.manaType == SPELL_POWER_FOCUS then
+		if self.manaType == SPELL_POWER_ENERGY or self.manaType == SPELL_POWER_FOCUS or self.manaType == SPELL_POWER_FURY then
 			displayPercentage = self.mana
 		else
 			displayPercentage = math.floor(displayPercentage * 100)
