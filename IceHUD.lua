@@ -18,6 +18,7 @@ IceHUD.debugging = false
 
 IceHUD.WowVer = select(4, GetBuildInfo())
 IceHUD.WowClassic = WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+IceHUD.WowClassicBC = WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 
 IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 

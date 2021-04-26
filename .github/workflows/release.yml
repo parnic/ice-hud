@@ -42,4 +42,9 @@ jobs:
       - name: Package and release for Classic
         uses: BigWigsMods/packager@master
         with:
-          args: -g 1.13.6 -w 0
+          args: -g classic -w 0
+
+      - name: Package and release for TBC
+        uses: BigWigsMods/packager@master
+        with:
+          args: -g bc -w 0
