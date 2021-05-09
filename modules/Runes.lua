@@ -44,7 +44,7 @@ Runes.prototype.numRunes = 6
 Runes.prototype.lastRuneState = {}
 
 local SPELL_POWER_RUNES = SPELL_POWER_RUNES
-if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
+if Enum and Enum.PowerType then
 	SPELL_POWER_RUNES = Enum.PowerType.Runes
 end
 

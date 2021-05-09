@@ -81,7 +81,7 @@ function PlayerHealth.prototype:Enable(core)
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckCombat")
 
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "CheckLeader")
-	if IceHUD.WowVer >= 50000 or IceHUD.WowClassic then
+	if IceHUD.EventExistsGroupRosterUpdate then
 		self:RegisterEvent("GROUP_ROSTER_UPDATE", "CheckLeader")
 	else
 		self:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckLeader")

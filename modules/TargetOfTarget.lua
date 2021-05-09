@@ -486,7 +486,7 @@ function TargetOfTarget.prototype:UpdateBuffs()
 	if (self.moduleSettings.showDebuffs) then
 		for i = 1, IceCore.BuffLimit do
 			local buffName, buffRank, buffTexture, buffApplications
-			if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+			if IceHUD.SpellFunctionsReturnRank then
 				buffName, buffRank, buffTexture, buffApplications = UnitDebuff(self.unit, i)
 			else
 				buffName, buffTexture, buffApplications = UnitDebuff(self.unit, i)

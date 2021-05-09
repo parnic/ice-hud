@@ -16,7 +16,7 @@ IceThreat.prototype.scheduledEvent = nil
 
 local GetNumPartyMembers, GetNumRaidMembers = GetNumPartyMembers, GetNumRaidMembers
 local MAX_NUM_RAID_MEMBERS, MAX_NUM_PARTY_MEMBERS = MAX_NUM_RAID_MEMBERS, MAX_NUM_PARTY_MEMBERS
-if IceHUD.WowVer >= 50000 or IceHUD.WowClassic then
+if not GetNumPartyMembers then
 	GetNumPartyMembers = GetNumGroupMembers
 	GetNumRaidMembers = GetNumGroupMembers
 	MAX_NUM_PARTY_MEMBERS = MAX_PARTY_MEMBERS

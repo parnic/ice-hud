@@ -133,7 +133,7 @@ function IceTargetInfo.prototype:Enable(core)
 	self:RegisterEvent("UNIT_LEVEL", "TargetLevel")
 
 	self:RegisterEvent("UNIT_FLAGS", "TargetFlags")
-	if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+	if IceHUD.EventExistsUnitDynamicFlags then
 		self:RegisterEvent("UNIT_DYNAMIC_FLAGS", "TargetFlags")
 	end
 
@@ -1419,7 +1419,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 			local spellID
 			---- end change by Fulzamoth
 
-			if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+			if IceHUD.SpellFunctionsReturnRank then
 				name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
 			else
 				---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)

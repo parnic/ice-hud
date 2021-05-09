@@ -38,7 +38,7 @@ local DemonologyCoords =
 }
 
 local SPELL_POWER_SOUL_SHARDS = SPELL_POWER_SOUL_SHARDS
-if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
+if Enum and Enum.PowerType then
 	SPELL_POWER_SOUL_SHARDS = Enum.PowerType.SoulShards
 end
 

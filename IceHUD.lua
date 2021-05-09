@@ -17,8 +17,24 @@ IceHUD.CurrTagVersion = 3
 IceHUD.debugging = false
 
 IceHUD.WowVer = select(4, GetBuildInfo())
+IceHUD.WowMain = not WOW_PROJECT_ID or WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 IceHUD.WowClassic = WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 IceHUD.WowClassicBC = WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
+
+-- compatibility/feature flags
+IceHUD.SpellFunctionsReturnRank = IceHUD.WowMain and IceHUD.WowVer < 80000
+IceHUD.EventExistsPlayerPetChanged = IceHUD.WowVer < 80000 and not IceHUD.WowClassic and not IceHUD.WowClassicBC
+IceHUD.EventExistsPetBarChanged = IceHUD.WowVer < 80000 and not IceHUD.WowClassic and not IceHUD.WowClassicBC
+IceHUD.EventExistsPlayerComboPoints = IceHUD.WowMain and IceHUD.WowVer < 30000
+IceHUD.EventExistsUnitComboPoints = IceHUD.WowMain and IceHUD.WowVer < 70000
+IceHUD.EventExistsUnitMaxPower = IceHUD.WowMain and IceHUD.WowVer < 80000
+IceHUD.EventExistsGroupRosterUpdate = IceHUD.WowVer >= 50000 or IceHUD.WowClassic or IceHUD.WowClassicBC
+IceHUD.EventExistsUnitDynamicFlags = IceHUD.WowMain and IceHUD.WowVer < 80000
+IceHUD.PerPowerEventsExist = IceHUD.WowMain and IceHUD.WowVer < 40000
+IceHUD.PerTargetComboPoints = IceHUD.WowVer < 60000
+IceHUD.CanTrackOtherUnitBuffs = not IceHUD.WowClassicBC
+IceHUD.CanTrackGCD = not IceHUD.WowClassic
+IceHUD.GetSpellInfoReturnsFunnel = IceHUD.WowMain and IceHUD.WowVer < 60000
 
 IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 
@@ -325,7 +341,7 @@ end
 -- blizzard interface options
 local blizOptionsPanel = CreateFrame("FRAME", "IceHUDConfigPanel", UIParent)
 blizOptionsPanel.name = "IceHUD"
-blizOptionsPanel.button = CreateFrame("BUTTON", "IceHUDOpenConfigButton", blizOptionsPanel, (IceHUD.WowVer >= 50000 or IceHUD.WowClassic) and "UIPanelButtonTemplate" or "UIPanelButtonTemplate2")
+blizOptionsPanel.button = CreateFrame("BUTTON", "IceHUDOpenConfigButton", blizOptionsPanel, (IceHUD.WowVer >= 50000 or IceHUD.WowClassic or IceHUD.WowClassicBC) and "UIPanelButtonTemplate" or "UIPanelButtonTemplate2")
 blizOptionsPanel.button:SetText("Open IceHUD configuration")
 blizOptionsPanel.button:SetWidth(240)
 blizOptionsPanel.button:SetHeight(30)
@@ -417,7 +433,7 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 
 	local i = 1
 	local name, _, texture, applications
-	if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+	if IceHUD.SpellFunctionsReturnRank then
 		name, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
 	else
 		name, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
@@ -429,7 +445,7 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 		end
 
 		i = i + 1
-		if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+		if IceHUD.SpellFunctionsReturnRank then
 			name, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
 		else
 			name, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
@@ -449,7 +465,7 @@ do
 
 		local i = 1
 		local name, _, texture, applications, _, _, _, _, _, _, auraID
-		if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+		if IceHUD.SpellFunctionsReturnRank then
 			name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
 		else
 			name, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
@@ -463,7 +479,7 @@ do
 			end
 
 			i = i + 1
-			if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+			if IceHUD.SpellFunctionsReturnRank then
 				name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
 			else
 				name, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)

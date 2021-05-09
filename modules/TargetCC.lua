@@ -336,7 +336,7 @@ end
 function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 	local i = 1
 	local debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId
-	if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+	if IceHUD.SpellFunctionsReturnRank then
 		debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
 	else
 		debuff, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
@@ -360,7 +360,7 @@ function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 
 		i = i + 1;
 
-		if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+		if IceHUD.SpellFunctionsReturnRank then
 			debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
 		else
 			debuff, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")

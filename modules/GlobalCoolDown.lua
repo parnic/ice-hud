@@ -165,7 +165,7 @@ function GlobalCoolDown.prototype:GetSpellCastTime(spell)
 	end
 
 	local spellname, castTime, _
-	if IceHUD.WowVer < 60000 then
+	if IceHUD.GetSpellInfoReturnsFunnel then
 		spellName, _, _, _, _, _, castTime = GetSpellInfo(spell)
 	else
 		spellName, _, _, castTime = GetSpellInfo(spell)
@@ -267,30 +267,31 @@ function GlobalCoolDown.prototype:CreateLagBar()
 end
 
 function GlobalCoolDown.prototype:GetSpellId()
-	return 61304
---[[
-	local defaultSpells
+	if GetSpellInfo(61304) then
+		return 61304
+	else
+		local defaultSpells
 
-	defaultSpells = {
-		ROGUE=1752, -- sinister strike
-		PRIEST=585, -- smite
-		DRUID=5176, -- wrath
-		WARRIOR=34428, -- victory rush (not available until 5, sadly)
-		MAGE=44614, -- frostfire bolt
-		WARLOCK=686, -- shadow bolt
-		PALADIN=105361, -- seal of command (level 3)
-		SHAMAN=403, -- lightning bolt
-		HUNTER=3044, -- arcane shot
-		DEATHKNIGHT=47541, -- death coil
-		MONK=100780, -- jab
-	}
+		defaultSpells = {
+			ROGUE=1752, -- sinister strike
+			PRIEST=585, -- smite
+			DRUID=5176, -- wrath
+			WARRIOR=34428, -- victory rush (not available until 5, sadly)
+			MAGE=44614, -- frostfire bolt
+			WARLOCK=686, -- shadow bolt
+			PALADIN=105361, -- seal of command (level 3)
+			SHAMAN=403, -- lightning bolt
+			HUNTER=3044, -- arcane shot
+			DEATHKNIGHT=47541, -- death coil
+			MONK=100780, -- jab
+		}
 
-	local _, unitClass = UnitClass("player")
-	return defaultSpells[unitClass]
-]]
+		local _, unitClass = UnitClass("player")
+		return defaultSpells[unitClass]
+	end
 end
 
 -- Load us up
-if not IceHUD.WowClassic then
+if IceHUD.CanTrackGCD then
 	IceHUD.GlobalCoolDown = GlobalCoolDown:new()
 end

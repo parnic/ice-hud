@@ -4,11 +4,12 @@ local ComboPoints = IceCore_CreateClass(IceElement)
 local IceHUD = _G.IceHUD
 
 local AnticipationSpellId = 114015
+local AnticipationExists = GetSpellInfo(AnticipationSpellId) and IceHUD.WowVer < 70000
 
 ComboPoints.prototype.comboSize = 20
 
 local SPELL_POWER_COMBO_POINTS = SPELL_POWER_COMBO_POINTS
-if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
+if Enum and Enum.PowerType then
 	SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
 end
 
@@ -24,7 +25,9 @@ function ComboPoints.prototype:init()
 	ComboPoints.super.prototype.init(self, "ComboPoints")
 
 	self:SetDefaultColor("ComboPoints", 1, 1, 0)
-	self:SetDefaultColor("AnticipationPoints", 1, 0, 1)
+	if AnticipationExists then
+		self:SetDefaultColor("AnticipationPoints", 1, 0, 1)
+	end
 	self:SetDefaultColor("KyrianAnimaComboPoint", 0.3137254901960784, 0.3725490196078432, 1)
 	self.scalingEnabled = true
 end
@@ -171,7 +174,7 @@ function ComboPoints.prototype:GetOptions()
 		order = 33.2
 	}
 
-	if IceHUD.WowVer < 70000 and not IceHUD.WowClassic then
+	if AnticipationExists then
 		opts["anticipation"] = {
 			type = "toggle",
 			name = L["Show Anticipation"],
@@ -283,8 +286,8 @@ function ComboPoints.prototype:Enable(core)
 	ComboPoints.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateComboPoints")
-	if IceHUD.WowVer >= 30000 or IceHUD.WowClassic then
-		if IceHUD.WowVer < 70000 and not IceHUD.WowClassic then
+	if not IceHUD.EventExistsPlayerComboPoints then
+		if IceHUD.EventExistsUnitComboPoints then
 			self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
 		else
 			self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateComboPoints")
@@ -296,7 +299,7 @@ function ComboPoints.prototype:Enable(core)
 			self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateComboPoints")
 			self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateComboPoints")
 		end
-		if IceHUD.WowVer < 70000 and not IceHUD.WowClassic then
+		if AnticipationExists then
 			self:RegisterEvent("PLAYER_TALENT_UPDATE", "AddAnticipation")
 			self:AddAnticipation()
 		end
@@ -452,7 +455,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 	end
 
 	-- create Anticipation points
-	if IceHUD.WowVer < 70000 then
+	if AnticipationExists then
 		for i = 1, 5 do
 			if (not self.frame.graphicalAnt[i]) then
 				local frame = CreateFrame("Frame", nil, self.frame)
@@ -499,17 +502,17 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 	local points, anticipate, _
 	if IceHUD.IceCore:IsInConfigMode() then
 		points = self:GetMaxComboPoints()
-	elseif IceHUD.WowVer >= 30000 or IceHUD.WowClassic then
+	elseif IceHUD.WowVer >= 30000 or IceHUD.WowClassic or IceHUD.WowClassicBC then
 		-- Parnic: apparently some fights have combo points while the player is in a vehicle?
 		local isInVehicle = UnitHasVehicleUI and UnitHasVehicleUI("player")
 		local checkUnit = isInVehicle and "vehicle" or "player"
-		if IceHUD.WowVer >= 60000 or IceHUD.WowClassic then
-			points = UnitPower(checkUnit, SPELL_POWER_COMBO_POINTS)
-		else
+		if IceHUD.PerTargetComboPoints then
 			points = GetComboPoints(checkUnit, "target")
+		else
+			points = UnitPower(checkUnit, SPELL_POWER_COMBO_POINTS)
 		end
 
-		if IceHUD.WowVer < 70000 and IceHUD.WowVer >= 50000 then
+		if AnticipationExists then
 			_, _, _, anticipate = UnitAura("player", GetSpellInfo(AnticipationSpellId))
 		else
 			anticipate = 0
@@ -601,6 +604,6 @@ end
 
 -- Load us up
 local _, class = UnitClass("player")
-if not IceHUD.WowClassic or class == "ROGUE" or class == "DRUID" then
+if (not IceHUD.WowClassic and not IceHUD.WowClassicBC) or class == "ROGUE" or class == "DRUID" then
 	IceHUD.ComboPoints = ComboPoints:new()
 end

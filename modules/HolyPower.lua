@@ -2,7 +2,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local HolyPower = IceCore_CreateClass(IceClassPowerCounter)
 
 local SPELL_POWER_HOLY_POWER = SPELL_POWER_HOLY_POWER
-if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
+if Enum and Enum.PowerType then
 	SPELL_POWER_HOLY_POWER = Enum.PowerType.HolyPower
 end
 

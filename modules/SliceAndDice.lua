@@ -25,6 +25,11 @@ local sixComboPointsTalentID = 19240
 local CurrMaxSnDDuration = 0
 local PotentialSnDDuration = 0
 
+local sndBuffName = 132306
+if IceHUD.WowMain and IceHUD.WowVer < 80000 then
+	sndBuffName = "Ability_Rogue_SliceDice"
+end
+
 if IceHUD.WowVer >= 50000 then
 	baseTime = 12
 	gapPerComboPoint = 6
@@ -33,10 +38,14 @@ if IceHUD.WowClassic then
 	impSndBonusPerRank = 0.15
 	impSndTalentPage = 1
 	impSndTalentIdx = 6
+elseif IceHUD.WowClassicBC then
+	impSndBonusPerRank = 0.15
+	impSndTalentPage = 2
+	impSndTalentIdx = 4
 end
 
 local SPELL_POWER_COMBO_POINTS = SPELL_POWER_COMBO_POINTS
-if IceHUD.WowVer >= 80000 then
+if Enum and Enum.PowerType then
 	SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
 end
 
@@ -61,7 +70,7 @@ function SliceAndDice.prototype:Enable(core)
 	SliceAndDice.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_AURA", "UpdateSliceAndDice")
-	if IceHUD.WowVer < 70000 and not IceHUD.WowClassic then
+	if IceHUD.EventExistsUnitComboPoints then
 		self:RegisterEvent("UNIT_COMBO_POINTS", "ComboPointsChanged")
 	else
 		self:RegisterEvent(IceHUD.UnitPowerEvent, "ComboPointsChanged")
@@ -227,7 +236,7 @@ end
 function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
 	local i = 1
 	local buff, _, texture, duration, endTime, remaining
-	if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+	if IceHUD.SpellFunctionsReturnRank then
 		buff, _, texture, _, _, duration, endTime = UnitBuff(unitName, i)
 	else
 		buff, texture, _, _, duration, endTime = UnitBuff(unitName, i)
@@ -243,7 +252,7 @@ function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
 
 		i = i + 1;
 
-		if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+		if IceHUD.SpellFunctionsReturnRank then
 			buff, _, texture, _, _, duration, endTime = UnitBuff(unitName, i)
 		else
 			buff, texture, _, _, duration, endTime = UnitBuff(unitName, i)
@@ -264,10 +273,10 @@ function SliceAndDice.prototype:MyOnUpdate()
 end
 
 local function SNDGetComboPoints(unit)
-	if IceHUD.WowVer >= 60000 or IceHUD.WowClassic then
-		return UnitPower(unit, SPELL_POWER_COMBO_POINTS)
-	elseif IceHUD.WowVer >= 30000 then
+	if IceHUD.PerTargetComboPoints then
 		return GetComboPoints(unit, "target")
+	elseif IceHUD.WowVer >= 60000 then
+		return UnitPower(unit, SPELL_POWER_COMBO_POINTS)
 	else
 		return GetComboPoints()
 	end
@@ -281,7 +290,7 @@ local function HasSpell(id)
 end
 
 local function ShouldHide()
-	if IceHUD.WowVer >= 90000 then
+	if IceHUD.WowVer >= 90000 or IceHUD.WowClassicBC then
 		return false
 	end
 
@@ -300,7 +309,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
 	local remaining = nil
 
 	if not fromUpdate or IceHUD.WowVer < 30000 then
-		sndDuration, remaining = self:GetBuffDuration(self.unit, (IceHUD.WowVer < 80000 and not IceHUD.WowClassic) and "Ability_Rogue_SliceDice" or 132306)
+		sndDuration, remaining = self:GetBuffDuration(self.unit, sndBuffName)
 
 		if not remaining then
 			sndEndTime = 0

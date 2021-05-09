@@ -13,12 +13,12 @@ IceCastBar.prototype.unit = nil
 IceCastBar.prototype.current = nil
 
 local SPELL_POWER_MANA = SPELL_POWER_MANA
-if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
+if Enum and Enum.PowerType then
 	SPELL_POWER_MANA = Enum.PowerType.Mana
 end
 
 local UnitCastingInfo, UnitChannelInfo = UnitCastingInfo, UnitChannelInfo
-if IceHUD.WowClassic then
+if not UnitCastingInfo then
 	UnitCastingInfo = CastingInfo
 	UnitChannelInfo = ChannelInfo
 end
@@ -407,13 +407,13 @@ end
 
 function IceCastBar.prototype:StartBar(action, message)
 	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill
-	if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+	if IceHUD.SpellFunctionsReturnRank then
 		spell, rank, displayName, icon, startTime, endTime, isTradeSkill = UnitCastingInfo(self.unit)
 	else
 		spell, displayName, icon, startTime, endTime, isTradeSkill = UnitCastingInfo(self.unit)
 	end
 	if not (spell) then
-		if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+		if IceHUD.SpellFunctionsReturnRank then
 			spell, rank, displayName, icon, startTime, endTime = UnitChannelInfo(self.unit)
 		else
 			spell, displayName, icon, startTime, endTime = UnitChannelInfo(self.unit)
@@ -568,7 +568,7 @@ function IceCastBar.prototype:SpellCastDelayed(event, unit, castGuid, spellId)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastDelayed", unit, UnitCastingInfo(unit))
 
-	local endTime = select((IceHUD.WowVer < 80000 and not IceHUD.WowClassic) and 6 or 5, UnitCastingInfo(self.unit))
+	local endTime = select(IceHUD.SpellFunctionsReturnRank and 6 or 5, UnitCastingInfo(self.unit))
 
 	if (endTime and self.actionStartTime) then
 		-- apparently this check is needed, got nils during a horrible lag spike
@@ -629,7 +629,7 @@ function IceCastBar.prototype:SpellCastChannelUpdate(event, unit)
 	--IceHUD:Debug("SpellCastChannelUpdate", unit, UnitChannelInfo(unit))
 
 	local spell, rank, displayName, icon, startTime, endTime
-	if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+	if IceHUD.SpellFunctionsReturnRank then
 		spell, rank, displayName, icon, startTime, endTime = UnitChannelInfo(unit)
 	else
 		spell, displayName, icon, startTime, endTime = UnitChannelInfo(unit)

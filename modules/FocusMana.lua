@@ -4,7 +4,7 @@ local FocusMana = IceCore_CreateClass(IceUnitBar)
 local SPELL_POWER_RAGE = SPELL_POWER_RAGE
 local SPELL_POWER_FOCUS = SPELL_POWER_FOCUS
 local SPELL_POWER_ENERGY = SPELL_POWER_ENERGY
-if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
+if Enum and Enum.PowerType then
 	SPELL_POWER_RAGE = Enum.PowerType.Rage
 	SPELL_POWER_FOCUS = Enum.PowerType.Focus
 	SPELL_POWER_ENERGY = Enum.PowerType.Energy

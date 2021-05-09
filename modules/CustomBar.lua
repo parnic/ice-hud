@@ -36,7 +36,7 @@ function IceCustomBar.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_AURA", "UpdateCustomBarEvent")
 	self:RegisterEvent("UNIT_PET", "UpdateCustomBarEvent")
-	if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+	if IceHUD.EventExistsPlayerPetChanged then
 		self:RegisterEvent("PLAYER_PET_CHANGED", "UpdateCustomBarEvent")
 	end
 	if FocusUnit then
@@ -81,7 +81,7 @@ function IceCustomBar.prototype:Disable(core)
 end
 
 function IceCustomBar.prototype:GetUnitToTrack()
-	if IceHUD.WowClassic then
+	if not IceHUD.CanTrackOtherUnitBuffs then
 		return "player"
 	end
 
@@ -262,7 +262,7 @@ function IceCustomBar.prototype:GetOptions()
 		order = 30.3,
 	}
 
-	if not IceHUD.WowClassic then
+	if IceHUD.CanTrackOtherUnitBuffs then
 		opts["unitToTrack"] = {
 			type = 'select',
 			values = validUnits,
@@ -673,7 +673,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 	local isBuff = self.moduleSettings.buffOrDebuff == "buff" and true or false
 	local buffFilter = (isBuff and "HELPFUL" or "HARMFUL") .. (self.moduleSettings.trackOnlyMine and "|PLAYER" or "")
 	local buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId
-	if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+	if IceHUD.SpellFunctionsReturnRank then
 		buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
 	else
 		buff, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
@@ -703,7 +703,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 
 		i = i + 1;
 
-		if IceHUD.WowVer < 80000 and not IceHUD.WowClassic then
+		if IceHUD.SpellFunctionsReturnRank then
 			buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
 		else
 			buff, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)

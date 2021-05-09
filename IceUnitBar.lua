@@ -20,7 +20,7 @@ IceUnitBar.prototype.hasPet = nil
 IceUnitBar.prototype.noFlash = nil
 
 local SPELL_POWER_INSANITY, SPELL_POWER_RAGE = SPELL_POWER_INSANITY, SPELL_POWER_RAGE
-if IceHUD.WowVer >= 80000 or IceHUD.WowClassic then
+if Enum and Enum.PowerType then
 	SPELL_POWER_INSANITY = Enum.PowerType.Insanity
 	SPELL_POWER_RAGE = Enum.PowerType.Rage
 end

@@ -91,7 +91,7 @@ function TargetCast.prototype:TargetChanged(unit)
 
 	if UnitCastingInfo then
 		local spell = UnitCastingInfo(self.unit)
-		local notInterruptible = select((IceHUD.WowVer < 80000 and not IceHUD.WowClassic) and 9 or 8, UnitCastingInfo(self.unit))
+		local notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 9 or 8, UnitCastingInfo(self.unit))
 		if spell then
 			self.notInterruptible = notInterruptibleCast
 			self:StartBar(IceCastBar.Actions.Cast)
@@ -101,7 +101,7 @@ function TargetCast.prototype:TargetChanged(unit)
 
 	if UnitChannelInfo then
 		local channel = UnitChannelInfo(self.unit)
-		notInterruptible = select((IceHUD.WowVer < 80000 and not IceHUD.WowClassic) and 8 or 7, UnitChannelInfo(self.unit))
+		notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 8 or 7, UnitChannelInfo(self.unit))
 		if channel then
 			self.notInterruptible = notInterruptibleChannel
 			self:StartBar(IceCastBar.Actions.Channel)
