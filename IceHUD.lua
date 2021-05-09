@@ -32,7 +32,7 @@ IceHUD.EventExistsGroupRosterUpdate = IceHUD.WowVer >= 50000 or IceHUD.WowClassi
 IceHUD.EventExistsUnitDynamicFlags = IceHUD.WowMain and IceHUD.WowVer < 80000
 IceHUD.PerPowerEventsExist = IceHUD.WowMain and IceHUD.WowVer < 40000
 IceHUD.PerTargetComboPoints = IceHUD.WowVer < 60000
-IceHUD.CanTrackOtherUnitBuffs = not IceHUD.WowClassicBC
+IceHUD.CanTrackOtherUnitBuffs = not IceHUD.WowClassic
 IceHUD.CanTrackGCD = not IceHUD.WowClassic
 IceHUD.GetSpellInfoReturnsFunnel = IceHUD.WowMain and IceHUD.WowVer < 60000
 
