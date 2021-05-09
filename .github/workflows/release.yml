@@ -35,16 +35,16 @@ jobs:
 
       # once cloned, we just run the GitHub Action for the packager project
       - name: Package and release
-        uses: BigWigsMods/packager@master
+        uses: BigWigsMods/packager@c91d8d4e55bedd96dbb6cb4a564d853d2ed2ce1c
 
       # another example where we supply additional arguments, this example is specifically to release
       # for the Classic version of the game
       - name: Package and release for Classic
-        uses: BigWigsMods/packager@master
+        uses: BigWigsMods/packager@c91d8d4e55bedd96dbb6cb4a564d853d2ed2ce1c
         with:
           args: -g classic -w 0
 
       - name: Package and release for TBC
-        uses: BigWigsMods/packager@master
+        uses: BigWigsMods/packager@c91d8d4e55bedd96dbb6cb4a564d853d2ed2ce1c
         with:
           args: -g bc -w 0
