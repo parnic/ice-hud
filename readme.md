@@ -1,5 +1,7 @@
 # IceHUD
 
+## If you are getting a `PLAYER_TALENT_UPDATE` error in LibRangeCheck-2.0 on BC-Classic, please see https://www.wowace.com/projects/ice-hud/issues/303 - this is not IceHUD's fault.
+
 IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD, MetaHUD, and others designed to keep your focus in the center of the screen where your character is.
 
 ## **What it is**
