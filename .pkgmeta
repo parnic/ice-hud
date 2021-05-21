@@ -58,6 +58,7 @@ optional-dependencies:
 
 move-folders:
     IceHUD/IceHUD_Options: IceHUD_Options
+    IceHUD/libs/LibRangeCheck-2.0/LibRangeCheck-2.0: IceHUD/libs/LibRangeCheck-2.0
 
 tools-used:
     - libdatabroker-1-1
