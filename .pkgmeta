@@ -38,7 +38,7 @@ externals:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
         tag: latest
     libs/LibRangeCheck-2.0:
-        url: svn://svn.wowace.com/wow/librangecheck-2-0/mainline/trunk/LibRangeCheck-2.0
+        url: https://github.com/WeakAuras/LibRangeCheck-2.0/
     libs/LibSharedMedia-3.0:
         url: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk
         tag: latest
