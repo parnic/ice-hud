@@ -626,7 +626,7 @@ do
 							v = DogTag:CleanCode(v)
 						end
 
-						self.moduleSettings.upperText = v
+						self.moduleSettings.upperText = strtrim(v)
 						self:RegisterFontStrings()
 						self:Redraw()
 					end,
@@ -655,7 +655,7 @@ do
 							v = DogTag:CleanCode(v)
 						end
 
-						self.moduleSettings.lowerText = v
+						self.moduleSettings.lowerText = strtrim(v)
 						self:RegisterFontStrings()
 						self:Redraw()
 					end,
