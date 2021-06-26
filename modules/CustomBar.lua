@@ -752,7 +752,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 	local auraIcon = nil
 	local endTime = 0
 
-	if not fromUpdate then
+	--if not fromUpdate then
 		if tonumber(self.moduleSettings.buffToTrack) == nil then
 			self.auraDuration, remaining, self.auraBuffCount, auraIcon, endTime =
 				self:GetAuraDuration(self.unit, self.moduleSettings.buffToTrack)
@@ -787,7 +787,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 		else
 			self.barFrame.icon:Hide()
 		end
-	end
+	--end
 
 	self.auraBuffCount = self.auraBuffCount or 0
 
