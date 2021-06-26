@@ -119,7 +119,7 @@ function IceCustomBar.prototype:ConditionalSubscribe()
 end
 
 function IceCustomBar.prototype:ShouldAlwaysSubscribe()
-	return self.unit == "focustarget" or self.unit == "pettarget"
+	return self.unit == "focustarget" or self.unit == "pettarget" or self.unit == "targettarget"
 end
 
 function IceCustomBar.prototype:TargetChanged()
