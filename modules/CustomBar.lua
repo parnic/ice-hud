@@ -19,6 +19,7 @@ IceCustomBar.prototype.bIsAura = false
 function IceCustomBar.prototype:init()
 	IceCustomBar.super.prototype.init(self, "MyCustomBar", "player")
 	self.textColorOverride = true
+	self.CustomBarUpdateFunc = function() self:UpdateCustomBar(self.unit, true) end
 end
 
 -- 'Public' methods -----------------------------------------------------------
@@ -107,11 +108,7 @@ end
 
 function IceCustomBar.prototype:ConditionalSubscribe()
 	if self:ShouldAlwaysSubscribe() then
-		if not IceHUD.IceCore:IsUpdateSubscribed(self) then
-			if not self.CustomBarUpdateFunc then
-				self.CustomBarUpdateFunc = function() self:UpdateCustomBar() end
-			end
-
+		if not IceHUD.IceCore:IsUpdateSubscribed(self, self.CustomBarUpdateFunc) then
 			self.handlesOwnUpdates = true
 			IceHUD.IceCore:RequestUpdates(self, self.CustomBarUpdateFunc)
 		end
@@ -795,13 +792,9 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 	self.auraBuffCount = self.auraBuffCount or 0
 
 	if self.auraEndTime ~= nil and (self.auraEndTime == 0 or self.auraEndTime >= now) and (not self.moduleSettings.minCount or self.auraBuffCount >= self.moduleSettings.minCount) then
-		if not self:ShouldAlwaysSubscribe() and not fromUpdate and not IceHUD.IceCore:IsUpdateSubscribed(self) then
-			if not self.UpdateCustomBarFunc then
-				self.UpdateCustomBarFunc = function() self:UpdateCustomBar(self.unit, true) end
-			end
-
+		if not self:ShouldAlwaysSubscribe() and not fromUpdate and not IceHUD.IceCore:IsUpdateSubscribed(self, self.CustomBarUpdateFunc) then
 			self.handlesOwnUpdates = true
-			IceHUD.IceCore:RequestUpdates(self, self.UpdateCustomBarFunc)
+			IceHUD.IceCore:RequestUpdates(self, self.CustomBarUpdateFunc)
 		end
 
 		self:Show(true)
