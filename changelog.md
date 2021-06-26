@@ -1,6 +1,6 @@
 # Changelog
 
-vNext:
+v1.13.5:
 
 - Classic-Burning Crusade support
 - Package a community fork of LibRangeCheck with BC-Classic compatibility
