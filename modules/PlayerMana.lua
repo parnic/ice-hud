@@ -280,7 +280,7 @@ function PlayerMana.prototype:ManaType(event, unit)
 
 	if self:ShouldUseTicker() then
 		-- register ticker for rogue energy
-		if (self.moduleSettings.tickerEnabled and (self.manaType == SPELL_POWER_ENERGY) and self.alive) then
+		if self.moduleSettings.tickerEnabled and self.manaType == SPELL_POWER_ENERGY then
 			self.tickerFrame:Show()
 			self.tickerFrame:SetScript("OnUpdate", function() self:EnergyTick() end)
 		else
@@ -438,7 +438,7 @@ function PlayerMana.prototype:EnergyTick()
 		return
 	end
 
-	if not (self.tickStart) then
+	if not self.tickStart or not self.alive then
 		self.tickerFrame:Hide()
 		return
 	end
