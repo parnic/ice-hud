@@ -113,6 +113,8 @@ local IncapacitateCCList = {
 local FearCCList = {
 	-- Psychic Scream
 	8122,
+	-- Fear (Retail)
+	118699,
 	-- Fear
 	5782,
 	-- Howl of Terror
