@@ -375,9 +375,9 @@ function Totems.prototype:CreateTotem(i, name)
 		self.graphicalOnLeave = function() GameTooltip:Hide() end
 	end
 	if not self.graphicalOnMouseUp then
-		self.graphicalOnMouseUp = function (self, mouseButton)
+		self.graphicalOnMouseUp = function (button, mouseButton)
 			if mouseButton == "RightButton" then
-				DestroyTotem(self.slot)
+				DestroyTotem(button.slot)
 			end
 		end
 	end
