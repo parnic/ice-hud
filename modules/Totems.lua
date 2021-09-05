@@ -287,10 +287,9 @@ function Totems.prototype:CreateTotemFrame()
 		self.frame.graphical = {}
 	end
 
-	local totemType
 	for i=1, self.numTotems do
-		slot = TOTEM_PRIORITIES[i]
-		self:CreateTotem(slot,  self.totemNames[slot])
+		local slot = TOTEM_PRIORITIES[i]
+		self:CreateTotem(slot, self.totemNames[slot])
 	end
 end
 
