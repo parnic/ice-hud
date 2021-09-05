@@ -1,5 +1,9 @@
 # Changelog
 
+v1.13.8:
+
+- Fixed Paladin GCD not functioning in BC-Classic.
+
 v1.13.7:
 
 - Fixed energy ticker when zoning back into an instance after dying (Classic builds)
