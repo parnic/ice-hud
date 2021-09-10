@@ -1,5 +1,9 @@
 # Changelog
 
+v1.13.8.1:
+
+- Updated TOC for BC-Classic and Classic.
+
 v1.13.8:
 
 - Fixed Paladin GCD not functioning in BC-Classic.
