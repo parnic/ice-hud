@@ -1,6 +1,5 @@
 # Changelog
 
-v1.13.8.1:
+vNext:
 
-- Fixed Paladin GCD not functioning in BC-Classic.
-- Updated TOC for BC-Classic and Classic.
+- Fixed FocusMana modules attempting to register invalid events in Classic builds.

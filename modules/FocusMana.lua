@@ -39,9 +39,9 @@ end
 function FocusMana.prototype:Enable(core)
 	FocusMana.super.prototype.Enable(self, core)
 
-	if IceHUD.WowVer >= 40000 then
+	if not IceHUD.PerPowerEventsExist then
 		self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateEvent")
-		if IceHUD.WowVer < 80000 then
+		if IceHUD.EventExistsUnitMaxPower then
 			self:RegisterEvent("UNIT_MAXPOWER", "UpdateEvent")
 		end
 	else

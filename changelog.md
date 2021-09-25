@@ -1,5 +1,9 @@
 # Changelog
 
+v1.13.9:
+
+- Fixed FocusMana modules attempting to register invalid events in Classic builds.
+
 v1.13.8.1:
 
 - Updated TOC for BC-Classic and Classic.
