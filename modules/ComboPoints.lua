@@ -330,8 +330,7 @@ function ComboPoints.prototype:UpdateMaxComboPoints(event, unit, powerType)
 end
 
 function ComboPoints.prototype:UpdateChargedComboPoints()
-	local chargedPowerPoints = GetUnitChargedPowerPoints("player")
-	self.chargedPowerPointIndex = chargedPowerPoints and chargedPowerPoints[1]
+	self.chargedPowerPoints = GetUnitChargedPowerPoints("player")
 	self:CreateComboFrame()
 	self:UpdateComboPoints()
 end
@@ -445,7 +444,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 			g = g - ((1 / maxComboPoints)*i)
 		end
 
-		if i == self.chargedPowerPointIndex and self.moduleSettings.bShowAnimaCharged then
+		if self.moduleSettings.bShowAnimaCharged and self:IsAnimaChargedPoint(i) then
 			self.frame.graphical[i].texture:SetVertexColor(self:GetColor("KyrianAnimaComboPoint"))
 		else
 			self.frame.graphical[i].texture:SetVertexColor(r, g, b)
@@ -492,6 +491,20 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 			self.frame.graphicalAnt[i]:Hide()
 		end
 	end
+end
+
+function ComboPoints.prototype:IsAnimaChargedPoint(point)
+	if not self.chargedPowerPoints then
+		return false
+	end
+
+	for i=1, #self.chargedPowerPoints do
+		if self.chargedPowerPoints[i] == point then
+			return true
+		end
+	end
+
+	return false
 end
 
 function ComboPoints.prototype:UpdateComboPoints(...)
