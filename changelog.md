@@ -1,5 +1,9 @@
 # Changelog
 
+v1.13.10:
+
+- Updated TOCs for 9.1.5 and 1.14.1
+
 v1.13.9:
 
 - Fixed FocusMana modules attempting to register invalid events in Classic builds.

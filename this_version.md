@@ -1,7 +1,5 @@
 # Changelog
 
-v1.13.9:
+v1.13.10:
 
-- Fixed FocusMana modules attempting to register invalid events in Classic builds.
-- Add support for multiple anima-charged combo points to display at once.
-- Update TOC for Classic 1.14.0
+- Updated TOCs for 9.1.5 and 1.14.1
