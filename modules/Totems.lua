@@ -405,18 +405,15 @@ function Totems.prototype:CreateTotem(i, name)
 		self.frame.graphical[i]:EnableMouse(true)
 		self.frame.graphical[i]:SetScript("OnEnter", self.graphicalOnEnter)
 		self.frame.graphical[i]:SetScript("OnLeave", self.graphicalOnLeave)
+		self.frame.graphical[i]:SetScript("OnMouseUp", self.graphicalOnMouseUp)
 	else
 		self.frame.graphical[i]:EnableMouse(false)
 		self.frame.graphical[i]:SetScript("OnEnter", nil)
 		self.frame.graphical[i]:SetScript("OnLeave", nil)
+		self.frame.graphical[i]:SetScript("OnMouseUp", nil)
 	end
 	self.frame.graphical[i].slot = i
 	self.frame.graphical[i].name = name
-
-	-- it looks like HookScript will continue to add handlers every time instead of replacing them like SetScript
-	if (bWasNewFrame) then
-		--self.frame.graphical[i]:HookScript("OnMouseUp", self.graphicalOnMouseUp)
-	end
 end
 
 -- Load us up
