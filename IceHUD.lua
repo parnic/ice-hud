@@ -43,9 +43,9 @@ IceHUD.validBarList = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "Riv
 	"BloodGlaives", "ArcHUD", "FangRune", "DHUD", "CleanCurvesOut", "CleanTank", "PillTank", "GemTank" }
 IceHUD.validCustomModules = {Bar="Buff/Debuff watcher", Counter="Buff/Debuff stack counter", CD="Cooldown bar", Health="Health bar", Mana="Mana bar", CounterBar="Stack count bar"}
 
---[==[@debug@
+--@debug@
 IceHUD.optionsLoaded = true
---@end-debug@]==]
+--@end-debug@
 
 local function deepcopy(object)
 	local lookup_table = {}
@@ -244,13 +244,13 @@ function IceHUD:OnInitialize()
 	self:RegisterChatCommand("rl", function() ReloadUI() end)
 
 	-- hack to allow /icehudcl to continue to function by loading the LoD options module and then re-calling the command
-	--@non-debug@
+	--[===[@non-debug@
 	self:RegisterChatCommand("icehudcl", function(arg)
 		self:UnregisterChatCommand("icehudcl")
 		self:LoadOptions()
 		LibStub("AceConfigCmd-3.0"):HandleCommand("icehudcl", "IceHUD", arg)
 		end)
-	--@end-non-debug@
+	--@end-non-debug@]===]
 
 	self:SyncSettingsVersions()
 
@@ -293,9 +293,9 @@ function IceHUD:OnEnable(isFirst)
 		LibDualSpec:EnhanceDatabase(self.db, "IceHUD")
 	end
 
-	--[==[@debug@
+	--@debug@
 	IceHUD_Options:OnLoad()
-	--@end-debug@]==]
+	--@end-debug@
 end
 
 -- add settings changes/updates here so that existing users don't lose their settings
@@ -332,7 +332,7 @@ function IceHUD:InitLDB()
 
 		if ldbButton then
 			function ldbButton:OnTooltipShow()
-				self:AddLine(L["IceHUD"] .. " 1.13.10")
+				self:AddLine(L["IceHUD"] .. " @project-version@")
 				self:AddLine(L["Click to open IceHUD options."], 1, 1, 1)
 			end
 		end
