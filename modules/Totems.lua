@@ -339,7 +339,6 @@ function Totems.prototype:CreateTotem(i, name)
 		return
 	end
 	local haveTotem, name, startTime, duration, icon = GetTotemInfo(i)
-	local bWasNewFrame = false
 	if (not self.frame.graphical[i]) then
 		self.frame.graphical[i] = CreateFrame("Frame", nil, self.frame)
 		self.frame.graphical[i].totem = self.frame.graphical[i]:CreateTexture(nil, "LOW")
@@ -348,7 +347,6 @@ function Totems.prototype:CreateTotem(i, name)
 
 		self.frame.graphical[i].totem:SetTexture(icon)
 		self.frame.graphical[i].totem:SetAllPoints(self.frame.graphical[i])
-		bWasNewFrame = true
 	end
 
 	self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
@@ -405,18 +403,19 @@ function Totems.prototype:CreateTotem(i, name)
 		self.frame.graphical[i]:EnableMouse(true)
 		self.frame.graphical[i]:SetScript("OnEnter", self.graphicalOnEnter)
 		self.frame.graphical[i]:SetScript("OnLeave", self.graphicalOnLeave)
+		if IceHUD.CanHookDestroyTotem then
+			self.frame.graphical[i]:SetScript("OnMouseUp", self.graphicalOnMouseUp)
+		end
 	else
 		self.frame.graphical[i]:EnableMouse(false)
 		self.frame.graphical[i]:SetScript("OnEnter", nil)
 		self.frame.graphical[i]:SetScript("OnLeave", nil)
+		if IceHUD.CanHookDestroyTotem then
+			self.frame.graphical[i]:SetScript("OnMouseUp", nil)
+		end
 	end
 	self.frame.graphical[i].slot = i
 	self.frame.graphical[i].name = name
-
-	-- it looks like HookScript will continue to add handlers every time instead of replacing them like SetScript
-	if (bWasNewFrame) then
-		--self.frame.graphical[i]:HookScript("OnMouseUp", self.graphicalOnMouseUp)
-	end
 end
 
 -- Load us up
