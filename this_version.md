@@ -1,5 +1,6 @@
 # Changelog
 
-v1.13.10:
+Unreleased:
 
-- Updated TOCs for 9.1.5 and 1.14.1
+- Fixed totem bar dismissal for BC-Classic and Classic
+- Updated TOC for BC-Clasic

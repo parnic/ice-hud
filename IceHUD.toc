@@ -1,7 +1,7 @@
 ## Interface: 90105
 ## Interface-Retail: 90105
 ## Interface-Classic: 11401
-## Interface-BCC: 20502
+## Interface-BCC: 20503
 ## Author: Parnic, originally created by Iceroth
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f-Ace3-|r
