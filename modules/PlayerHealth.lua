@@ -1407,15 +1407,18 @@ end
 
 
 function PlayerHealth.prototype:ShowBlizz()
-	PlayerFrame:Show()
-	PlayerFrame:GetScript("OnLoad")(PlayerFrame)
+	PlayerFrame:SetParent(self.OriginalPlayerFrameParent or UIParent)
 end
 
 
 function PlayerHealth.prototype:HideBlizz()
-	PlayerFrame:Hide()
+	if not self.PlayerFrameParent then
+		self.PlayerFrameParent = CreateFrame("Frame")
+		self.PlayerFrameParent:Hide()
+	end
 
-	PlayerFrame:UnregisterAllEvents()
+	self.OriginalPlayerFrameParent = PlayerFrame:GetParent()
+	PlayerFrame:SetParent(self.PlayerFrameParent)
 end
 
 function PlayerHealth.prototype:HideBlizzardParty()
