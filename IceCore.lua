@@ -41,6 +41,26 @@ IceCore.TextDecorationStyle = {
 	NoDecoration = L["No decoration"],
 }
 
+local ZM_MAP_ID = 1970
+IceCore.zmPuzzleIds = {
+	--Fugueal Protolock
+	366046,
+	366108,
+	359488,
+	--Mezzonic Protolock
+	366042,
+	366106,
+	351405,
+	--Cantaric Protolock
+	365840,
+	366107,
+	348792,
+}
+IceCore.zmPuzzleMap = {}
+for i=1, #IceCore.zmPuzzleIds do
+	IceCore.zmPuzzleMap[IceCore.zmPuzzleIds[i]] = true
+end
+
 local SUNDER_SPELL_ID = 7386
 local LACERATE_SPELL_ID = 33745
 local MAELSTROM_SPELL_ID = 53817
@@ -259,6 +279,10 @@ function IceCore.prototype:Enable(userToggle)
 		self.IceHUDFrame:RegisterEvent("BARBER_SHOP_OPEN")
 		self.IceHUDFrame:RegisterEvent("BARBER_SHOP_CLOSE")
 	end
+	if C_Map then
+		self.IceHUDFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+		self.IceHUDFrame:RegisterEvent("ZONE_CHANGED")
+	end
 	self.IceHUDFrame:RegisterEvent("UNIT_AURA")
 	self.IceHUDFrame:SetScript("OnEvent", function(self, event, ...)
 		if (event == "PET_BATTLE_OPENING_START") then
@@ -286,6 +310,37 @@ function IceCore.prototype:Enable(userToggle)
 		elseif (event == "UNIT_EXITED_VEHICLE") then
 			self:UnregisterEvent("UNIT_EXITED_VEHICLE")
 			self:Show()
+		elseif (event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED") then
+			if C_Map then
+				local bestMapID = C_Map.GetBestMapForUnit("player")
+				if bestMapID == ZM_MAP_ID then
+					self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+					local puzzleStatus = IceHUD:HasBuffs("player", IceCore.zmPuzzleIds)
+					for i=1, #puzzleStatus do
+						if puzzleStatus[i] then
+							self:Hide()
+						end
+					end
+				else
+					self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+				end
+			end
+		elseif (event == "COMBAT_LOG_EVENT_UNFILTERED") then
+			local _,subevent,_,_,_,_,_,_,destName,_,_,spellId = CombatLogGetCurrentEventInfo()
+
+			if subevent == "SPELL_AURA_APPLIED" then
+                if destName == UnitName("player") then
+                    if IceCore.zmPuzzleMap[spellId] then
+                        self:Hide()
+                    end
+                end
+			elseif subevent == "SPELL_AURA_REMOVED" then
+                if destName == UnitName("player") then
+                    if IceCore.zmPuzzleMap[spellId] then
+                        self:Show()
+                    end
+                end
+            end
 		end
 	end)
 
