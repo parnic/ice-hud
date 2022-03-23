@@ -1057,20 +1057,25 @@ end
 
 
 function IceTargetHealth.prototype:ShowBlizz()
-	TargetFrame:Show()
-	TargetFrame:GetScript("OnLoad")(TargetFrame)
-
-	ComboFrame:Show()
-	ComboFrame:GetScript("OnLoad")(ComboFrame)
+	TargetFrame:SetParent(self.OriginalTargetFrameParent or UIParent)
+	ComboFrame:SetParent(self.OriginalComboFrameParent or UIParent)
 end
 
 
 function IceTargetHealth.prototype:HideBlizz()
-	TargetFrame:Hide()
-	TargetFrame:UnregisterAllEvents()
+	if not self.TargetFrameParent then
+		self.TargetFrameParent = CreateFrame("Frame")
+		self.TargetFrameParent:Hide()
+	end
+	if not self.ComboFrameParent then
+		self.ComboFrameParent = CreateFrame("Frame")
+		self.ComboFrameParent:Hide()
+	end
 
-	ComboFrame:Hide()
-	ComboFrame:UnregisterAllEvents()
+	self.OriginalTargetFrameParent = TargetFrame:GetParent()
+	TargetFrame:SetParent(self.TargetFrameParent)
+	self.OriginalComboFrameParent = ComboFrame:GetParent()
+	ComboFrame:SetParent(self.ComboFrameParent)
 end
 
 function IceTargetHealth.prototype:UpdateBar(scale, color, alpha)
