@@ -329,18 +329,18 @@ function IceCore.prototype:Enable(userToggle)
 			local _,subevent,_,_,_,_,_,_,destName,_,_,spellId = CombatLogGetCurrentEventInfo()
 
 			if subevent == "SPELL_AURA_APPLIED" then
-                if destName == UnitName("player") then
-                    if IceCore.zmPuzzleMap[spellId] then
-                        self:Hide()
-                    end
-                end
+				if destName == UnitName("player") then
+					if IceCore.zmPuzzleMap[spellId] then
+						self:Hide()
+					end
+				end
 			elseif subevent == "SPELL_AURA_REMOVED" then
-                if destName == UnitName("player") then
-                    if IceCore.zmPuzzleMap[spellId] then
-                        self:Show()
-                    end
-                end
-            end
+				if destName == UnitName("player") then
+					if IceCore.zmPuzzleMap[spellId] then
+						self:Show()
+					end
+				end
+			end
 		end
 	end)
 
