@@ -493,6 +493,30 @@ do
 	function IceHUD:HasDebuffs(unit, spellIDs, filter)
 		return IceHUD:HasBuffs(unit, spellIDs, filter and filter.."|HARMFUL" or "HARMFUL")
 	end
+
+	function IceHUD:HasAnyBuff(unit, spellIDs, filter)
+		local buffs = IceHUD:HasBuffs(unit, spellIDs, filter)
+
+		for i=1, #buffs do
+			if buffs[i] then
+				return true
+			end
+		end
+
+		return false
+	end
+
+	function IceHUD:HasAnyDebuff(unit, spellIDs, filter)
+		local debuffs = IceHUD:HasDebuffs(unit, spellIDs, filter)
+
+		for i=1, #debuffs do
+			if debuffs[i] then
+				return true
+			end
+		end
+
+		return false
+	end
 end
 
 function IceHUD:OnDisable()
