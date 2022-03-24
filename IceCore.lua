@@ -303,9 +303,23 @@ function IceCore.prototype:Enable(userToggle)
 			end
 		elseif (event == "UNIT_AURA") then
 			local unit = ...
-			if IceHUD.IceCore.settings.bHideDuringShellGame and unit == "player" and IceHUD:HasDebuffs("player", {271571})[1] and UnitInVehicle("player") then
+			if unit ~= "player" then
+				return
+			end
+
+			if IceHUD.IceCore.settings.bHideDuringShellGame and IceHUD:HasAnyDebuff("player", {271571}) and UnitInVehicle("player") then
 				self:RegisterEvent("UNIT_EXITED_VEHICLE")
 				self:Hide()
+			elseif C_Map then
+				local bestMapID = C_Map.GetBestMapForUnit("player")
+				if bestMapID ~= ZM_MAP_ID then
+					return
+				end
+
+				if IceHUD:HasAnyBuff("player", IceCore.zmPuzzleIds) then
+					self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+					self:Hide()
+				end
 			end
 		elseif (event == "UNIT_EXITED_VEHICLE") then
 			self:UnregisterEvent("UNIT_EXITED_VEHICLE")
@@ -314,30 +328,20 @@ function IceCore.prototype:Enable(userToggle)
 			if C_Map then
 				local bestMapID = C_Map.GetBestMapForUnit("player")
 				if bestMapID == ZM_MAP_ID then
-					self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-					local puzzleStatus = IceHUD:HasBuffs("player", IceCore.zmPuzzleIds)
-					for i=1, #puzzleStatus do
-						if puzzleStatus[i] then
-							self:Hide()
-						end
+					if IceHUD:HasAnyBuff("player", IceCore.zmPuzzleIds) then
+						self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+						self:Hide()
 					end
-				else
-					self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 				end
 			end
 		elseif (event == "COMBAT_LOG_EVENT_UNFILTERED") then
 			local _,subevent,_,_,_,_,_,_,destName,_,_,spellId = CombatLogGetCurrentEventInfo()
 
-			if subevent == "SPELL_AURA_APPLIED" then
-				if destName == UnitName("player") then
-					if IceCore.zmPuzzleMap[spellId] then
-						self:Hide()
-					end
-				end
-			elseif subevent == "SPELL_AURA_REMOVED" then
+			if subevent == "SPELL_AURA_REMOVED" then
 				if destName == UnitName("player") then
 					if IceCore.zmPuzzleMap[spellId] then
 						self:Show()
+						self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 					end
 				end
 			end
