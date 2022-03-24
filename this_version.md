@@ -1,7 +1,6 @@
 # Changelog
 
-v1.13.12:
+v1.13.13:
 
-- Hide IceHUD during Zereth Mortis puzzles
-- Fixed default player and target frames coming back sometimes (github issue #19)
-- Updated TOC for 9.2.0 and 1.14.2
+- Slight optimization of Zereth Mortis puzzle detection logic.
+- Fixed target health updating infrequently on Classic-BC.
