@@ -642,6 +642,10 @@ function IceTargetHealth.prototype:Enable(core)
 			self:RegisterEvent("LFG_PROPOSAL_FAILED", "CheckPartyRole")
 			self:RegisterEvent("LFG_ROLE_UPDATE", "CheckPartyRole")
 		end
+
+		if IceHUD.ShouldUpdateTargetHealthEveryTick and self.unit == "target" then
+			self.frame:SetScript("OnUpdate", function() self:Update(self.unit) end)
+		end
 	end
 
 	if (self.moduleSettings.hideBlizz) then
@@ -658,6 +662,10 @@ function IceTargetHealth.prototype:Disable(core)
 	IceTargetHealth.super.prototype.Disable(self, core)
 
 	UnregisterUnitWatch(self.frame)
+
+	if self.registerEvents and IceHUD.ShouldUpdateTargetHealthEveryTick and self.unit == "target" then
+		self.frame:SetScript("OnUpdate", nil)
+	end
 
 	if self.moduleSettings.hideBlizz then
 		self:ShowBlizz()
