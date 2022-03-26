@@ -197,7 +197,7 @@ end
 function TargetInvuln.prototype:UpdateTargetBuffs(event, unit, isUpdate)
 	local name, duration, remaining
 
-	if not isUpdate then
+	if not isUpdate or not self.lastUpdateTime then
 		self.buffName, self.buffDuration, self.buffRemaining = self:GetMaxbuffDuration(self.unit, self.buffList)
 	else
 		self.buffRemaining = math.max(0, self.buffRemaining - (GetTime() - self.lastUpdateTime))
