@@ -36,7 +36,7 @@ IceHUD.CanTrackOtherUnitBuffs = not IceHUD.WowClassic
 IceHUD.CanTrackGCD = not IceHUD.WowClassic
 IceHUD.GetSpellInfoReturnsFunnel = IceHUD.WowMain and IceHUD.WowVer < 60000
 IceHUD.CanHookDestroyTotem = IceHUD.WowClassic or IceHUD.WowClassicBC
-IceHUD.ShouldUpdateTargetHealthEveryTick = IceHUD.WowClassicBC and GetCVarBool("predictedHealth")
+IceHUD.ShouldUpdateTargetHealthEveryTick = (IceHUD.WowClassic or IceHUD.WowClassicBC) and GetCVarBool("predictedHealth")
 
 IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 

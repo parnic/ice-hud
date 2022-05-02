@@ -1,5 +1,9 @@
 # Changelog
 
+v1.13.14:
+
+- Fixed target health updating infrequently on Classic.
+
 v1.13.13:
 
 - Slight optimization of Zereth Mortis puzzle detection logic.

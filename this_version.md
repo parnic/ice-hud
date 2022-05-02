@@ -1,7 +1,5 @@
 # Changelog
 
-v1.13.13:
+v1.13.14:
 
-- Slight optimization of Zereth Mortis puzzle detection logic.
-- Fixed target health updating infrequently on Classic-BC.
-- Fixed reported error in TargetInvuln module.
+- Fixed target health updating infrequently on Classic.
