@@ -800,7 +800,9 @@ if UnitPopupButtons then
 	end
 
 	IceHUD_UnitFrame_DropDown = CreateFrame("Frame", "IceHUD_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
-	UnitPopupFrames[#UnitPopupFrames+1] = "IceHUD_UnitFrame_DropDown"
+	if UnitPopupFrames then
+		UnitPopupFrames[#UnitPopupFrames+1] = "IceHUD_UnitFrame_DropDown"
+	end
 
 	IceHUD.DropdownUnit = nil
 	UIDropDownMenu_Initialize(IceHUD_UnitFrame_DropDown, function()
