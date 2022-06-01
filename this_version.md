@@ -1,5 +1,5 @@
 # Changelog
 
-v1.13.14:
+v1.13.15:
 
-- Fixed target health updating infrequently on Classic.
+- Fixed compatibility with WoW 9.2.5.
