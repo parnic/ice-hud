@@ -44,6 +44,8 @@ IceHUD.validBarList = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "Riv
 	"BloodGlaives", "ArcHUD", "FangRune", "DHUD", "CleanCurvesOut", "CleanTank", "PillTank", "GemTank" }
 IceHUD.validCustomModules = {Bar="Buff/Debuff watcher", Counter="Buff/Debuff stack counter", CD="Cooldown bar", Health="Health bar", Mana="Mana bar", CounterBar="Stack count bar"}
 
+IceHUD_UnitFrame_DropDown = CreateFrame("Frame", "IceHUD_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
+
 --@debug@
 IceHUD.optionsLoaded = true
 --@end-debug@
@@ -684,14 +686,17 @@ function IceHUD:GetIsInLFGGroup()
 	return IsInLFGGroup
 end
 
+local BLACKLISTED_UNIT_MENU_OPTIONS = {}
 if UnitPopupButtons then
-	local BLACKLISTED_UNIT_MENU_OPTIONS = {
+	BLACKLISTED_UNIT_MENU_OPTIONS = {
 		SET_FOCUS = "ICEHUD_SET_FOCUS",
 		CLEAR_FOCUS = "ICEHUD_CLEAR_FOCUS",
-		PET_DISMISS = "ICEHUD_PET_DISMISS",
 		LOCK_FOCUS_FRAME = true,
 		UNLOCK_FOCUS_FRAME = true,
 	}
+	if select(2, UnitClass("player")) ~= "WARLOCK" then
+		BLACKLISTED_UNIT_MENU_OPTIONS[PET_DISMISS] = "ICEHUD_PET_DISMISS"
+	end
 
 	UnitPopupButtons["ICEHUD_SET_FOCUS"] = {
 		text = L["Type %s to set focus"]:format(SLASH_FOCUS1),
@@ -710,110 +715,166 @@ if UnitPopupButtons then
 		tooltipText = L["Blizzard currently does not provide a proper way to right-click dismiss a pet with custom unit frames."],
 		dist = 0,
 	}
+elseif UnitPopupSetFocusButtonMixin then
+	IceHUDUnitPopupSetFocusButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin)
+	function IceHUDUnitPopupSetFocusButtonMixin:GetText()
+		return L["Type %s to set focus"]:format(SLASH_FOCUS1)
+	end
+	function IceHUDUnitPopupSetFocusButtonMixin:OnClick()
+	end
 
-	local munged_unit_menus = {}
-	local function munge_unit_menu(menu)
-		local result = munged_unit_menus[menu]
-		if result then
-			return result
+	IceHUDUnitPopupClearFocusButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin)
+	function IceHUDUnitPopupClearFocusButtonMixin:GetText()
+		return L["Type %s to clear focus"]:format(SLASH_CLEARFOCUS1)
+	end
+	function IceHUDUnitPopupClearFocusButtonMixin:OnClick()
+	end
+
+	IceHUDUnitPopupPetDismissButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin)
+	function IceHUDUnitPopupPetDismissButtonMixin:GetText()
+		return L["Use your Dismiss Pet spell to dismiss a pet"]
+	end
+	function IceHUDUnitPopupPetDismissButtonMixin:CanShow()
+		return UnitPopupPetDismissButtonMixin:CanShow()
+	end
+	function IceHUDUnitPopupPetDismissButtonMixin:OnClick()
+	end
+
+	BLACKLISTED_UNIT_MENU_OPTIONS[SET_FOCUS] = IceHUDUnitPopupSetFocusButtonMixin
+	BLACKLISTED_UNIT_MENU_OPTIONS[CLEAR_FOCUS] = IceHUDUnitPopupClearFocusButtonMixin
+	BLACKLISTED_UNIT_MENU_OPTIONS[LOCK_FOCUS_FRAME] = true
+	BLACKLISTED_UNIT_MENU_OPTIONS[UNLOCK_FOCUS_FRAME] = true
+
+	if select(2, UnitClass("player")) ~= "WARLOCK" then
+		BLACKLISTED_UNIT_MENU_OPTIONS[PET_DISMISS] = IceHUDUnitPopupPetDismissButtonMixin
+	end
+end
+
+local munged_unit_menus = {}
+local function munge_unit_menu(menu)
+	local result = munged_unit_menus[menu]
+	if result then
+		return result
+	end
+
+	if not UnitPopupMenus then
+		munged_unit_menus[menu] = menu
+		return menu
+	end
+
+	local data = UnitPopupMenus[menu]
+	if not data then
+		munged_unit_menus[menu] = menu
+		return menu
+	end
+
+	local found = false
+	if data.GetMenuButtons then
+		local btns = data.GetMenuButtons()
+		for i=1, #btns do
+			if BLACKLISTED_UNIT_MENU_OPTIONS[btns[i]:GetText()] then
+				found = true
+				break
+			end
 		end
-
-		if not UnitPopupMenus then
-			munged_unit_menus[menu] = menu
-			return menu
-		end
-
-		local data = UnitPopupMenus[menu]
-		if not data then
-			munged_unit_menus[menu] = menu
-			return menu
-		end
-
-		local found = false
-		local _, v
+	else
 		for _, v in ipairs(data) do
 			if BLACKLISTED_UNIT_MENU_OPTIONS[v] then
 				found = true
 				break
 			end
 		end
+	end
 
-		if not found then
-			-- nothing to remove or add, we're all fine here.
-			munged_unit_menus[menu] = menu
-			return menu
+	if not found then
+		-- nothing to remove or add, we're all fine here.
+		munged_unit_menus[menu] = menu
+		return menu
+	end
+
+	local new_data = {}
+	if data.GetMenuButtons then
+		local new_buttons_list = {}
+		local btns = data.GetMenuButtons()
+		for i=1, #btns do
+			local blacklisted = BLACKLISTED_UNIT_MENU_OPTIONS[btns[i]:GetText()]
+			if not blacklisted then
+				new_buttons_list[#new_buttons_list+1] = btns[i]
+			elseif blacklisted ~= true then
+				new_buttons_list[#new_buttons_list+1] = blacklisted
+			end
 		end
 
-		local new_data = {}
+		new_data = data
+		function new_data:GetMenuButtons()
+			return new_buttons_list
+		end
+	else
 		for _, v in ipairs(data) do
 			local blacklisted = BLACKLISTED_UNIT_MENU_OPTIONS[v]
-			if v == "PET_DISMISS" and select(2, UnitClass("player")) == "WARLOCK" then
-				blacklisted = false
-			end
 			if not blacklisted then
 				new_data[#new_data+1] = v
 			elseif blacklisted ~= true then
 				new_data[#new_data+1] = blacklisted
 			end
 		end
-		local new_menu_name = "ICEHUD_" .. menu
-
-		UnitPopupMenus[new_menu_name] = new_data
-		munged_unit_menus[menu] = new_menu_name
-		return new_menu_name
 	end
-	IceHUD.MungeUnitMenu = munge_unit_menu
+	local new_menu_name = "ICEHUD_" .. menu
 
-	local function figure_unit_menu(unit)
-		if unit == "focus" then
-			return "FOCUS"
-		end
-
-		if UnitIsUnit(unit, "player") then
-			return "SELF"
-		end
-
-		if UnitIsUnit(unit, "vehicle") then
-			-- NOTE: vehicle check must come before pet check for accuracy's sake because
-			-- a vehicle may also be considered your pet
-			return "VEHICLE"
-		end
-
-		if UnitIsUnit(unit, "pet") then
-			return "PET"
-		end
-
-		if not UnitIsPlayer(unit) then
-			return "TARGET"
-		end
-
-		local id = UnitInRaid(unit)
-		if id then
-			return "RAID_PLAYER", id
-		end
-
-		if UnitInParty(unit) then
-			return "PARTY"
-		end
-
-		return "PLAYER"
-	end
-
-	IceHUD_UnitFrame_DropDown = CreateFrame("Frame", "IceHUD_UnitFrame_DropDown", UIParent, "UIDropDownMenuTemplate")
-	if UnitPopupFrames then
-		UnitPopupFrames[#UnitPopupFrames+1] = "IceHUD_UnitFrame_DropDown"
-	end
-
-	IceHUD.DropdownUnit = nil
-	UIDropDownMenu_Initialize(IceHUD_UnitFrame_DropDown, function()
-		if not IceHUD.DropdownUnit then
-			return
-		end
-
-		local menu, id = figure_unit_menu(IceHUD.DropdownUnit)
-		if menu then
-			menu = IceHUD.MungeUnitMenu(menu)
-			UnitPopup_ShowMenu(IceHUD_UnitFrame_DropDown, menu, IceHUD.DropdownUnit, nil, id)
-		end
-	end, "MENU", nil)
+	UnitPopupMenus[new_menu_name] = new_data
+	munged_unit_menus[menu] = new_menu_name
+	return new_menu_name
 end
+IceHUD.MungeUnitMenu = munge_unit_menu
+
+local function figure_unit_menu(unit)
+	if unit == "focus" then
+		return "FOCUS"
+	end
+
+	if UnitIsUnit(unit, "player") then
+		return "SELF"
+	end
+
+	if UnitIsUnit(unit, "vehicle") then
+		-- NOTE: vehicle check must come before pet check for accuracy's sake because
+		-- a vehicle may also be considered your pet
+		return "VEHICLE"
+	end
+
+	if UnitIsUnit(unit, "pet") then
+		return "PET"
+	end
+
+	if not UnitIsPlayer(unit) then
+		return "TARGET"
+	end
+
+	local id = UnitInRaid(unit)
+	if id then
+		return "RAID_PLAYER", id
+	end
+
+	if UnitInParty(unit) then
+		return "PARTY"
+	end
+
+	return "PLAYER"
+end
+
+if UnitPopupFrames then
+	UnitPopupFrames[#UnitPopupFrames+1] = "IceHUD_UnitFrame_DropDown"
+end
+
+IceHUD.DropdownUnit = nil
+UIDropDownMenu_Initialize(IceHUD_UnitFrame_DropDown, function()
+	if not IceHUD.DropdownUnit then
+		return
+	end
+
+	local menu, id = figure_unit_menu(IceHUD.DropdownUnit)
+	if menu then
+		menu = IceHUD.MungeUnitMenu(menu)
+		UnitPopup_ShowMenu(IceHUD_UnitFrame_DropDown, menu, IceHUD.DropdownUnit, nil, id)
+	end
+end, "MENU", nil)

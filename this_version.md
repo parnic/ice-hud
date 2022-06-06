@@ -1,5 +1,9 @@
 # Changelog
 
+v1.13.14.2:
+
+- Restored right-click menus on Info and Health bars.
+
 v1.13.14.1:
 
 - Restored guard around array that doesn't exist on Classic clients.
