@@ -1,5 +1,9 @@
 # Changelog
 
+v1.13.14.3:
+
+- Restored right-click menus on Info and Health bars when targeting other players.
+
 v1.13.14.2:
 
 - Restored right-click menus on Info and Health bars.

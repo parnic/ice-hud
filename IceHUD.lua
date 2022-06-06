@@ -772,8 +772,22 @@ local function munge_unit_menu(menu)
 	if data.GetMenuButtons then
 		local btns = data.GetMenuButtons()
 		for i=1, #btns do
-			if BLACKLISTED_UNIT_MENU_OPTIONS[btns[i]:GetText()] then
-				found = true
+			if btns[i].IsMenu() then
+				local subbtns = btns[i].GetMenuButtons()
+				for j=1, #subbtns do
+					if BLACKLISTED_UNIT_MENU_OPTIONS[subbtns[j]:GetText()] then
+						found = true
+						break
+					end
+				end
+			else
+				if BLACKLISTED_UNIT_MENU_OPTIONS[btns[i]:GetText()] then
+					found = true
+					break
+				end
+			end
+
+			if found then
 				break
 			end
 		end
@@ -797,11 +811,23 @@ local function munge_unit_menu(menu)
 		local new_buttons_list = {}
 		local btns = data.GetMenuButtons()
 		for i=1, #btns do
-			local blacklisted = BLACKLISTED_UNIT_MENU_OPTIONS[btns[i]:GetText()]
-			if not blacklisted then
-				new_buttons_list[#new_buttons_list+1] = btns[i]
-			elseif blacklisted ~= true then
-				new_buttons_list[#new_buttons_list+1] = blacklisted
+			if btns[i].IsMenu() then
+				local subbtns = btns[i].GetMenuButtons()
+				for j=1, #subbtns do
+					local blacklisted = BLACKLISTED_UNIT_MENU_OPTIONS[subbtns[j]:GetText()]
+					if not blacklisted then
+						new_buttons_list[#new_buttons_list+1] = subbtns[j]
+					elseif blacklisted ~= true then
+						new_buttons_list[#new_buttons_list+1] = blacklisted
+					end
+				end
+			else
+				local blacklisted = BLACKLISTED_UNIT_MENU_OPTIONS[btns[i]:GetText()]
+				if not blacklisted then
+					new_buttons_list[#new_buttons_list+1] = btns[i]
+				elseif blacklisted ~= true then
+					new_buttons_list[#new_buttons_list+1] = blacklisted
+				end
 			end
 		end
 
