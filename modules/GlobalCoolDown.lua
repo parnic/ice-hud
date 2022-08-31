@@ -286,7 +286,7 @@ function GlobalCoolDown.prototype:GetSpellId()
 			MONK=100780, -- jab
 		}
 
-		if IceHUD.WowClassicBC or IceHUD.WowClassic then
+		if IceHUD.UseFallbackPaladinGCDSpell then
 			defaultSpells["PALADIN"] = 635
 		end
 

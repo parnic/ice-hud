@@ -42,6 +42,10 @@ elseif IceHUD.WowClassicBC then
 	impSndBonusPerRank = 0.15
 	impSndTalentPage = 2
 	impSndTalentIdx = 4
+elseif IceHUD.WowClassicWrath then
+	impSndBonusPerRank = 0.25
+	impSndTalentPage = 2
+	impSndTalentIdx = 23
 end
 
 local SPELL_POWER_COMBO_POINTS = SPELL_POWER_COMBO_POINTS
@@ -290,7 +294,7 @@ local function HasSpell(id)
 end
 
 local function ShouldHide()
-	if IceHUD.WowVer >= 90000 or IceHUD.WowClassicBC then
+	if IceHUD.WowVer >= 90000 or IceHUD.WowClassicBC or IceHUD.WowClassicWrath then
 		return false
 	end
 
