@@ -9,15 +9,15 @@ if CooldownFrame_Set then
 end
 
 local RUNETYPE_BLOOD = 1;
-local RUNETYPE_DEATH = IceHUD.WowVer < 70300 and 2 or 3;
-local RUNETYPE_FROST = IceHUD.WowVer < 70300 and 3 or 2;
+local RUNETYPE_DEATH = IceHUD.DeathKnightUnholyFrostRunesSwapped and 2 or 3;
+local RUNETYPE_FROST = IceHUD.DeathKnightUnholyFrostRunesSwapped and 3 or 2;
 local RUNETYPE_CHROMATIC = 4;
 local RUNETYPE_LEGION = 5; -- not real, but makes for an easy update
 
 local GetRuneType = GetRuneType
-if IceHUD.WowVer >= 70000 and IceHUD.WowVer < 70300 then
+if IceHUD.WowVer >= 70000 and IceHUD.WowVer < 70300 and RUNETYPE_LEGION then
 	GetRuneType = function() return RUNETYPE_LEGION end
-elseif IceHUD.WowVer >= 70300 then
+elseif IceHUD.WowVer >= 70300 and GetSpecialization then
 	GetRuneType = function() return GetSpecialization() end
 end
 

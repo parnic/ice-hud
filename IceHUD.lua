@@ -19,24 +19,35 @@ IceHUD.debugging = false
 IceHUD.WowVer = select(4, GetBuildInfo())
 IceHUD.WowMain = not WOW_PROJECT_ID or WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 IceHUD.WowClassic = WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-IceHUD.WowClassicBC = WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
+IceHUD.WowClassicBC = false
+IceHUD.WowClassicWrath = false
+if WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+	if not LE_EXPANSION_LEVEL_CURRENT or LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_BURNING_CRUSADE then
+		IceHUD.WowClassicBC = true
+	elseif LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+		IceHUD.WowClassicWrath = true
+	end
+end
 
 -- compatibility/feature flags
 IceHUD.SpellFunctionsReturnRank = IceHUD.WowMain and IceHUD.WowVer < 80000
-IceHUD.EventExistsPlayerPetChanged = IceHUD.WowVer < 80000 and not IceHUD.WowClassic and not IceHUD.WowClassicBC
-IceHUD.EventExistsPetBarChanged = IceHUD.WowVer < 80000 and not IceHUD.WowClassic and not IceHUD.WowClassicBC
+IceHUD.EventExistsPlayerPetChanged = IceHUD.WowVer < 80000 and not IceHUD.WowClassic and not IceHUD.WowClassicBC and not IceHUD.WowClassicWrath
+IceHUD.EventExistsPetBarChanged = IceHUD.WowVer < 80000 and not IceHUD.WowClassic and not IceHUD.WowClassicBC and not IceHUD.WowClassicWrath
 IceHUD.EventExistsPlayerComboPoints = IceHUD.WowMain and IceHUD.WowVer < 30000
 IceHUD.EventExistsUnitComboPoints = IceHUD.WowMain and IceHUD.WowVer < 70000
 IceHUD.EventExistsUnitMaxPower = IceHUD.WowMain and IceHUD.WowVer < 80000
-IceHUD.EventExistsGroupRosterUpdate = IceHUD.WowVer >= 50000 or IceHUD.WowClassic or IceHUD.WowClassicBC
+IceHUD.EventExistsGroupRosterUpdate = IceHUD.WowVer >= 50000 or IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath
 IceHUD.EventExistsUnitDynamicFlags = IceHUD.WowMain and IceHUD.WowVer < 80000
 IceHUD.PerPowerEventsExist = IceHUD.WowMain and IceHUD.WowVer < 40000
 IceHUD.PerTargetComboPoints = IceHUD.WowVer < 60000
 IceHUD.CanTrackOtherUnitBuffs = not IceHUD.WowClassic
 IceHUD.CanTrackGCD = not IceHUD.WowClassic
 IceHUD.GetSpellInfoReturnsFunnel = IceHUD.WowMain and IceHUD.WowVer < 60000
-IceHUD.CanHookDestroyTotem = IceHUD.WowClassic or IceHUD.WowClassicBC
+IceHUD.CanHookDestroyTotem = IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath
 IceHUD.ShouldUpdateTargetHealthEveryTick = (IceHUD.WowClassic or IceHUD.WowClassicBC) and GetCVarBool("predictedHealth")
+IceHUD.UsesUIPanelButtonTemplate = IceHUD.WowVer >= 50000 or IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath
+IceHUD.EventExistsSpellcastInterruptible = IceHUD.WowVer >= 30200 and not IceHUD.WowClassicWrath
+IceHUD.DeathKnightUnholyFrostRunesSwapped = IceHUD.WowVer < 70300 and not IceHUD.WowClassicWrath
 
 IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 
@@ -345,7 +356,7 @@ end
 -- blizzard interface options
 local blizOptionsPanel = CreateFrame("FRAME", "IceHUDConfigPanel", UIParent)
 blizOptionsPanel.name = "IceHUD"
-blizOptionsPanel.button = CreateFrame("BUTTON", "IceHUDOpenConfigButton", blizOptionsPanel, (IceHUD.WowVer >= 50000 or IceHUD.WowClassic or IceHUD.WowClassicBC) and "UIPanelButtonTemplate" or "UIPanelButtonTemplate2")
+blizOptionsPanel.button = CreateFrame("BUTTON", "IceHUDOpenConfigButton", blizOptionsPanel, IceHUD.UsesUIPanelButtonTemplate and "UIPanelButtonTemplate" or "UIPanelButtonTemplate2")
 blizOptionsPanel.button:SetText("Open IceHUD configuration")
 blizOptionsPanel.button:SetWidth(240)
 blizOptionsPanel.button:SetHeight(30)

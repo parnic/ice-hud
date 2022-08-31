@@ -15,7 +15,7 @@ end
 function TargetCast.prototype:Enable(core)
 	TargetCast.super.prototype.Enable(self, core)
 
-	if IceHUD.WowVer >= 30200 then
+	if IceHUD.EventExistsSpellcastInterruptible then
 		self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE", "SpellCastInterruptible")
 		self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "SpellCastNotInterruptible")
 	end

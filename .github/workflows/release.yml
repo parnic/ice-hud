@@ -48,3 +48,8 @@ jobs:
         uses: BigWigsMods/packager@master
         with:
           args: -g bcc -w 0
+
+      - name: Package and release for Wrath
+        uses: BigWigsMods/packager@master
+        with:
+          args: -g wrath -w 0
