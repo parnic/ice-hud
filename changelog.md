@@ -1,5 +1,10 @@
 # Changelog
 
+v1.13.15:
+
+- Updated TOC for Retail (9.2.7).
+- Added Wrath-Classic compatibility.
+
 v1.13.14.3:
 
 - Restored right-click menus on Info and Health bars when targeting other players.
