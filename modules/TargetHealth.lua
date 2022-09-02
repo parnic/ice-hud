@@ -1108,7 +1108,7 @@ function IceTargetHealth.prototype:CheckPartyRole()
 			proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader = GetLFGProposal()
 
 			local p = self.unit
-			if IceHUD.WowVer < 40000 then
+			if not IceHUD.UnitGroupRolesReturnsRoleString then
 				isTank, isHeal, isDPS = UnitGroupRolesAssigned(p)
 			else
 				local grpRole = UnitGroupRolesAssigned(p)
