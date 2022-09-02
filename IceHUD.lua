@@ -27,6 +27,8 @@ if WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
 	elseif LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_WRATH_OF_THE_LICH_KING then
 		IceHUD.WowClassicWrath = true
 	end
+elseif WOW_PROJECT_WRATH_CLASSIC then
+	IceHUD.WowClassicWrath = true
 end
 
 -- compatibility/feature flags
