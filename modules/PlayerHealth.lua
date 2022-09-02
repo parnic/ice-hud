@@ -105,7 +105,7 @@ function PlayerHealth.prototype:Enable(core)
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
 	end
 
-	if IceHUD.WowVer < 40000 then
+	if not IceHUD.SupportsHealPrediction then
 		HealComm = LibStub("LibHealComm-4.0", true)
 		if HealComm then
 			HealComm.RegisterCallback(self, "HealComm_HealStarted", function(event, casterGUID, spellID, spellType, endTime, ...) self:HealComm_HealEvent(event, casterGUID, spellID, spellType, endTime, ...) end)
@@ -169,7 +169,7 @@ function PlayerHealth.prototype:HealComm_ModifierChanged(event, guid)
 end
 
 function PlayerHealth.prototype:IncomingHealPrediction(event, unit)
-	if IceHUD.WowVer >= 40000 then
+	if IceHUD.SupportsHealPrediction then
 		if unit and unit ~= self.unit then
 			return
 		end
@@ -321,7 +321,7 @@ function PlayerHealth.prototype:GetOptions()
 			self:Update()
 		end,
 		disabled = function()
-			return not (self.moduleSettings.enabled and (IceHUD.WowVer >= 40000 or HealComm))
+			return not (self.moduleSettings.enabled and (IceHUD.SupportsHealPrediction or HealComm))
 		end,
 		order = 43.6
 	}
@@ -942,7 +942,7 @@ function PlayerHealth.prototype:CreateHealBar()
 
 	self:UpdateBar(1, "undef")
 
-	if not self.moduleSettings.showIncomingHeals or (IceHUD.WowVer < 40000 and not HealComm) then
+	if not self.moduleSettings.showIncomingHeals or (not IceHUD.SupportsHealPrediction and not HealComm) then
 		self.healFrame.bar:Hide()
 	end
 end

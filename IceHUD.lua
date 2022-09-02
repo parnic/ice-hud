@@ -51,6 +51,7 @@ IceHUD.UsesUIPanelButtonTemplate = IceHUD.WowVer >= 50000 or IceHUD.WowClassic o
 IceHUD.EventExistsSpellcastInterruptible = IceHUD.WowVer >= 30200 and not IceHUD.WowClassicWrath
 IceHUD.DeathKnightUnholyFrostRunesSwapped = IceHUD.WowVer < 70300 and not IceHUD.WowClassicWrath
 IceHUD.UseFallbackPaladinGCDSpell = IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath
+IceHUD.SupportsHealPrediction = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
 
 IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 
