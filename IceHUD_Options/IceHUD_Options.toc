@@ -11,4 +11,7 @@
 ## Dependencies: IceHUD
 ## LoadOnDemand: 1
 
+Json.lua
+JsonDecode.lua
+JsonEncode.lua
 Options.lua

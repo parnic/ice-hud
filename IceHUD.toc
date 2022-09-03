@@ -100,5 +100,8 @@ modules\ArcaneCharges.lua
 modules\RollTheBones.lua
 
 #@do-not-package@
+IceHUD_Options\Json.lua
+IceHUD_Options\JsonDecode.lua
+IceHUD_Options\JsonEncode.lua
 IceHUD_Options\Options.lua
 #@end-do-not-package@

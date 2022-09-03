@@ -7,8 +7,6 @@ local SML = LibStub("LibSharedMedia-3.0")
 local ACR = LibStub("AceConfigRegistry-3.0")
 local ConfigDialog = LibStub("AceConfigDialog-3.0")
 local icon = LibStub("LibDBIcon-1.0", true)
-local AceGUI = LibStub("AceGUI-3.0")
-local AceSerializer = LibStub("AceSerializer-3.0", 1)
 
 local pendingModuleLoads = {}
 local bReadyToRegisterModules = false
@@ -91,6 +89,43 @@ local function deepcopy(object)
 end
 
 IceHUD.deepcopy = deepcopy
+
+function IceHUD:removeDefaults(db, defaults, blocker)
+	-- remove all metatables from the db, so we don't accidentally create new sub-tables through them
+	setmetatable(db, nil)
+	-- loop through the defaults and remove their content
+	for k,v in pairs(defaults) do
+		if type(v) == "table" and type(db[k]) == "table" then
+			-- if a blocker was set, dive into it, to allow multi-level defaults
+			self:removeDefaults(db[k], v, blocker and blocker[k])
+			if next(db[k]) == nil then
+				db[k] = nil
+			end
+		else
+			-- check if the current value matches the default, and that its not blocked by another defaults table
+			if db[k] == defaults[k] and (not blocker or blocker[k] == nil) then
+				db[k] = nil
+			end
+		end
+	end
+end
+
+function IceHUD:populateDefaults(db, defaults, blocker)
+	-- remove all metatables from the db, so we don't accidentally create new sub-tables through them
+	setmetatable(db, nil)
+	-- loop through the defaults and add their content
+	for k,v in pairs(defaults) do
+		if type(v) == "table" and type(db[k]) == "table" then
+			-- if a blocker was set, dive into it, to allow multi-level defaults
+			self:populateDefaults(db[k], v, blocker and blocker[k])
+		else
+			-- check if the current value matches the default, and that its not blocked by another defaults table
+			if db[k] == nil then
+				db[k] = defaults[k]
+			end
+		end
+	end
+end
 
 IceHUD.Location = "Interface\\AddOns\\IceHUD"
 

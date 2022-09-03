@@ -1,6 +1,8 @@
 local LibDualSpec = LibStub('LibDualSpec-1.0', true)
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local icon = LibStub("LibDBIcon-1.0", true)
+local AceGUI = LibStub("AceGUI-3.0")
+local AceSerializer = LibStub("AceSerializer-3.0", 1)
 local lastCustomModule = "Bar"
 
 IceHUD_Options = {}
@@ -757,6 +759,9 @@ function IceHUD_Options:OnLoad()
 	self:GenerateModuleOptions(true)
 	self.options.args.colors.args = IceHUD.IceCore:GetColorOptions()
 	self.options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(IceHUD.db)
+	--@debug@
+	IceHUD_Options:SetupProfileImportButtons()
+	--@end-debug@
 
 	-- Add dual-spec support
 	if IceHUD.db ~= nil and LibDualSpec then
@@ -787,14 +792,14 @@ function IceHUD_Options:SetupProfileImportButtons()
 				editbox:SetLabel("Profile")
 				editbox:SetFullWidth(true)
 				editbox:SetFullHeight(true)
-				local profileTable = deepcopy(IceHUD.db.profile)
+				local profileTable = IceHUD.deepcopy(IceHUD.db.profile)
 				IceHUD:removeDefaults(profileTable, IceHUD.IceCore.defaults.profile)
-				editbox:SetText(IceHUD:Serialize(profileTable))
+				editbox:SetText(IceHUD.json.encode(profileTable))
 				editbox:DisableButton(true)
 				frame:AddChild(editbox)
 			end,
 			hidden =
-				-- hello, snooper! this feature doesn't actually work yet, so enabling it won't help you much :)
+				-- hello, snooper! exporting works well enough, but importing is very rough, so enable this at your own peril
 				--[===[@non-debug@
 				true
 				--@end-non-debug@]===]
@@ -803,7 +808,7 @@ function IceHUD_Options:SetupProfileImportButtons()
 				--@end-debug@
 			,
 			disabled =
-				-- hello, snooper! this feature doesn't actually work yet, so enabling it won't help you much :)
+				-- hello, snooper! exporting works well enough, but importing is very rough, so enable this at your own peril
 				--[===[@non-debug@
 				true
 				--@end-non-debug@]===]
@@ -824,11 +829,14 @@ function IceHUD_Options:SetupProfileImportButtons()
 				frame:SetStatusText("Exported profile details")
 				frame:SetLayout("Flow")
 				frame:SetCallback("OnClose", function(widget)
-					local success, newTable = IceHUD:Deserialize(widget.children[1]:GetText())
-					if success then
+					local newTable, err = IceHUD.json.decode(widget.children[1]:GetText())
+					if err ~= nil then
+						print("failed to import profile: "..err)
+					else
+						print("importing profile")
 						IceHUD:PreProfileChanged()
 						IceHUD:populateDefaults(newTable, IceHUD.IceCore.defaults.profile)
-						IceHUD.db.profile = deepcopy(newTable)
+						IceHUD.db.profile = IceHUD.deepcopy(newTable)
 						IceHUD:PostProfileChanged()
 					end
 					AceGUI:Release(widget)
@@ -841,7 +849,7 @@ function IceHUD_Options:SetupProfileImportButtons()
 				frame:AddChild(editbox)
 			end,
 			hidden =
-				-- hello, snooper! this feature doesn't actually work yet, so enabling it won't help you much :)
+				-- hello, snooper! this feature is really rough, so enable it at your own peril
 				--[===[@non-debug@
 				true
 				--@end-non-debug@]===]
@@ -850,7 +858,7 @@ function IceHUD_Options:SetupProfileImportButtons()
 				--@end-debug@
 			,
 			disabled =
-				-- hello, snooper! this feature doesn't actually work yet, so enabling it won't help you much :)
+				-- hello, snooper! this feature is really rough, so enable it at your own peril
 				--[===[@non-debug@
 				true
 				--@end-non-debug@]===]
@@ -862,7 +870,3 @@ function IceHUD_Options:SetupProfileImportButtons()
 		}
 	end
 end
-
---@debug@
-IceHUD_Options:SetupProfileImportButtons()
---@end-debug@
