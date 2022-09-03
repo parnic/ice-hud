@@ -18,17 +18,23 @@ IceHUD.debugging = false
 
 IceHUD.WowVer = select(4, GetBuildInfo())
 IceHUD.WowMain = not WOW_PROJECT_ID or WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-IceHUD.WowClassic = WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-IceHUD.WowClassicBC = false
-IceHUD.WowClassicWrath = false
-if WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
-	if not LE_EXPANSION_LEVEL_CURRENT or LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_BURNING_CRUSADE then
-		IceHUD.WowClassicBC = true
-	elseif LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+if GetClassicExpansionLevel then
+	IceHUD.WowClassic = GetClassicExpansionLevel() == 0
+	IceHUD.WowClassicBC = GetClassicExpansionLevel() == 1
+	IceHUD.WowClassicWrath = GetClassicExpansionLevel() == 2
+else
+	IceHUD.WowClassic = WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+	IceHUD.WowClassicBC = false
+	IceHUD.WowClassicWrath = false
+	if WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+		if not LE_EXPANSION_LEVEL_CURRENT or LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_BURNING_CRUSADE then
+			IceHUD.WowClassicBC = true
+		elseif LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+			IceHUD.WowClassicWrath = true
+		end
+	elseif WOW_PROJECT_WRATH_CLASSIC and WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
 		IceHUD.WowClassicWrath = true
 	end
-elseif WOW_PROJECT_WRATH_CLASSIC then
-	IceHUD.WowClassicWrath = true
 end
 
 -- compatibility/feature flags
