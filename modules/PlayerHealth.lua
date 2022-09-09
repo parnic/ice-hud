@@ -367,7 +367,7 @@ function PlayerHealth.prototype:GetOptions()
 			self:Update()
 		end,
 		disabled = function()
-			return not (self.moduleSettings.enabled and IceHUD.WowVer >= 70000)
+			return not (self.moduleSettings.enabled and UnitGetTotalAbsorbs)
 		end,
 		order = 43.8
 	}
@@ -954,7 +954,7 @@ function PlayerHealth.prototype:CreateAbsorbBar()
 
 	self:UpdateBar(1, "undef")
 
-	if not self.moduleSettings.showAbsorbs or UnitGetTotalAbsorbs == nil then
+	if not self.moduleSettings.showAbsorbs or not UnitGetTotalAbsorbs then
 		self.absorbFrame.bar:Hide()
 	end
 end

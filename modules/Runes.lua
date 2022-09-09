@@ -15,7 +15,7 @@ local RUNETYPE_CHROMATIC = 4;
 local RUNETYPE_LEGION = 5; -- not real, but makes for an easy update
 
 local GetRuneType = GetRuneType
-if IceHUD.WowVer >= 70000 and IceHUD.WowVer < 70300 and RUNETYPE_LEGION then
+if IceHUD.WowVer >= 70000 and IceHUD.WowVer < 70300 then
 	GetRuneType = function() return RUNETYPE_LEGION end
 elseif IceHUD.WowVer >= 70300 and GetSpecialization then
 	GetRuneType = function() return GetSpecialization() end
