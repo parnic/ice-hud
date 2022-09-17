@@ -3,6 +3,11 @@ local CastBar = IceCore_CreateClass(IceCastBar)
 
 local IceHUD = _G.IceHUD
 
+local CastingBarFrame = CastingBarFrame
+if not CastingBarFrame then
+	CastingBarFrame = PlayerCastingBarFrame
+end
+
 CastBar.prototype.spellCastSent = nil
 
 -- Constructor --
