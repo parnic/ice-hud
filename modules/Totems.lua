@@ -341,7 +341,7 @@ function Totems.prototype:CreateTotem(i, name)
 	local haveTotem, name, startTime, duration, icon = GetTotemInfo(i)
 	if (not self.frame.graphical[i]) then
 		self.frame.graphical[i] = CreateFrame("Frame", nil, self.frame)
-		self.frame.graphical[i].totem = self.frame.graphical[i]:CreateTexture(nil, "LOW")
+		self.frame.graphical[i].totem = self.frame.graphical[i]:CreateTexture(nil, "BACKGROUND")
 		self.frame.graphical[i].cd = CreateFrame("Cooldown", nil, self.frame.graphical[i], "CooldownFrameTemplate")
 		self.frame.graphical[i].shine = self.frame.graphical[i]:CreateTexture(nil, "OVERLAY")
 
