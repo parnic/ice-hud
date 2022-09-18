@@ -101,7 +101,7 @@ function IceClassPowerCounter.prototype:GetOptions()
 	opts["displayMode"] = {
 		type = 'select',
 		name = L["Display mode"],
-		desc = L["Choose whether you'd like a graphical or numeric representation of the runes.\n\nNOTE: The color of 'Numeric' mode can be controlled by the HolyPowerNumeric color."],
+		desc = L["Choose whether you'd like a graphical or numeric representation of the runes."],
 		get = function(info)
 			return IceHUD:GetSelectValue(info, self.moduleSettings.runeMode)
 		end,
