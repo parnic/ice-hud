@@ -277,7 +277,7 @@ function IceCustomCounterBar.prototype:CreateFrame()
 	IceCustomCounterBar.super.prototype.CreateFrame(self)
 
 	if not self.barFrame.icon then
-		self.barFrame.icon = self.masterFrame:CreateTexture(nil, "LOW")
+		self.barFrame.icon = self.masterFrame:CreateTexture(nil, "BACKGROUND")
 		self.barFrame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 		self.barFrame.icon:SetDrawLayer("OVERLAY")
 		self.barFrame.icon:Hide()

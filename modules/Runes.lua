@@ -503,7 +503,7 @@ function Runes.prototype:CreateRune(i, type, name)
 	-- create runes
 	if (not self.frame.graphical[i]) then
 		self.frame.graphical[i] = CreateFrame("Frame", nil, self.frame)
-		self.frame.graphical[i].rune = self.frame.graphical[i]:CreateTexture(nil, "LOW")
+		self.frame.graphical[i].rune = self.frame.graphical[i]:CreateTexture(nil, "BACKGROUND")
 		self.frame.graphical[i].rune:SetAllPoints(self.frame.graphical[i])
 		self.frame.graphical[i].cd = CreateFrame("Cooldown", nil, self.frame.graphical[i], "CooldownFrameTemplate")
 		self.frame.graphical[i].shine = self.frame.graphical[i]:CreateTexture(nil, "OVERLAY")

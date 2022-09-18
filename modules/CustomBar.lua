@@ -171,7 +171,7 @@ function IceCustomBar.prototype:CreateBar()
 	IceCustomBar.super.prototype.CreateBar(self)
 
 	if not self.barFrame.icon then
-		self.barFrame.icon = self.masterFrame:CreateTexture(nil, "LOW")
+		self.barFrame.icon = self.masterFrame:CreateTexture(nil, "BACKGROUND")
 		-- this cuts off the border around the buff icon
 		self.barFrame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 		self.barFrame.icon:SetDrawLayer("OVERLAY")
