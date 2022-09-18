@@ -376,14 +376,18 @@ function RollTheBones.prototype:UpdateDurationBar(event, unit)
   end
 
   local points = RTBGetComboPoints(self.unit)
-  -- check for Deeper Stratagem
-  local _, _, _, DeeperStratagem = GetTalentInfoByID(sixComboPointsTalentID, GetActiveSpecGroup())
-
-  if DeeperStratagem then
-    -- first, set the cached upper limit of RtB duration
-    CurrMaxRtBDuration = self:GetMaxBuffTime(maxComboPoints + 1)
+  if UnitPowerMax then
+    CurrMaxRtBDuration = self:GetMaxBuffTime(UnitPowerMax(self.unit, SPELL_POWER_COMBO_POINTS))
   else
-    CurrMaxRtBDuration = self:GetMaxBuffTime(maxComboPoints)
+    -- check for Deeper Stratagem
+    local _, _, _, DeeperStratagem = GetTalentInfoByID(sixComboPointsTalentID, GetActiveSpecGroup())
+    
+    if DeeperStratagem then
+      -- first, set the cached upper limit of RtB duration
+      CurrMaxRtBDuration = self:GetMaxBuffTime(maxComboPoints + 1)
+    else
+      CurrMaxRtBDuration = self:GetMaxBuffTime(maxComboPoints)
+    end
   end
 
   if event then

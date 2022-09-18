@@ -95,8 +95,12 @@ function SliceAndDice.prototype:Enable(core)
 end
 
 function SliceAndDice.prototype:CheckMaxComboPoints()
-	local talentID, name, texture, selected, available, spellID, unknown, row, column, known, grantedByAura = GetTalentInfoByID(sixComboPointsTalentID, GetActiveSpecGroup())
-	maxComboPoints = selected and 6 or 5
+	if UnitPowerMax then
+		maxComboPoints = UnitPowerMax(self.unit, SPELL_POWER_COMBO_POINTS)
+	else
+		local talentID, name, texture, selected, available, spellID, unknown, row, column, known, grantedByAura = GetTalentInfoByID(sixComboPointsTalentID, GetActiveSpecGroup())
+		maxComboPoints = selected and 6 or 5
+	end
 end
 
 function SliceAndDice.prototype:Disable(core)
