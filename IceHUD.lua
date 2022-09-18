@@ -41,7 +41,7 @@ IceHUD.EventExistsPlayerPetChanged = IceHUD.WowVer < 80000 and not IceHUD.WowCla
 IceHUD.EventExistsPetBarChanged = IceHUD.WowVer < 80000 and not IceHUD.WowClassic and not IceHUD.WowClassicBC and not IceHUD.WowClassicWrath
 IceHUD.EventExistsPlayerComboPoints = IceHUD.WowMain and IceHUD.WowVer < 30000
 IceHUD.EventExistsUnitComboPoints = IceHUD.WowMain and IceHUD.WowVer < 70000
-IceHUD.EventExistsUnitMaxPower = IceHUD.WowMain and IceHUD.WowVer < 80000
+IceHUD.EventExistsUnitMaxPower = IceHUD.WowMain and IceHUD.WowVer >= 40000
 IceHUD.EventExistsGroupRosterUpdate = IceHUD.WowVer >= 50000 or IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath
 IceHUD.EventExistsUnitDynamicFlags = IceHUD.WowMain and IceHUD.WowVer < 80000
 IceHUD.PerPowerEventsExist = IceHUD.WowMain and IceHUD.WowVer < 40000
