@@ -307,7 +307,7 @@ function IceCore.prototype:Enable(userToggle)
 				return
 			end
 
-			if IceHUD.IceCore.settings.bHideDuringShellGame and IceHUD:HasAnyDebuff("player", {271571}) and UnitInVehicle("player") then
+			if IceHUD.IceCore.settings.bHideDuringShellGame and IceHUD:HasAnyDebuff("player", {IceHUD.ShellGameSpellID}) and UnitInVehicle("player") then
 				self:RegisterEvent("UNIT_EXITED_VEHICLE")
 				self:Hide()
 			elseif C_Map then

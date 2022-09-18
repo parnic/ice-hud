@@ -57,6 +57,8 @@ IceHUD.DeathKnightUnholyFrostRunesSwapped = IceHUD.WowVer < 70300 and not IceHUD
 IceHUD.UseFallbackPaladinGCDSpell = IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath
 IceHUD.SupportsHealPrediction = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
 IceHUD.UnitGroupRolesReturnsRoleString = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
+IceHUD.ShellGameSpellID = 271571
+IceHUD.HasShellGame = GetSpellInfo(IceHUD.ShellGameSpellID)
 
 IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 

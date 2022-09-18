@@ -146,7 +146,7 @@ function IceCastBar.prototype:GetOptions()
 		end,
 		order = 39.998
 	}
-if IceHUD.WowVer < 80000 then
+if IceHUD.SpellFunctionsReturnRank then
 	opts["showSpellRank"] =
 	{
 		type = 'toggle',
@@ -470,7 +470,7 @@ function IceCastBar.prototype:StopBar()
 end
 
 function IceCastBar.prototype:GetShortRank(rank)
-	if IceHUD.WowVer < 80000 and rank then
+	if IceHUD.SpellFunctionsReturnRank and rank then
 		local _, _, sRank = string.find(rank, "(%d+)")
 		if (sRank) then
 			return " (" .. sRank .. ")"

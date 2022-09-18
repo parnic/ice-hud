@@ -29,7 +29,7 @@ function IceHUDPlayerAlternatePower.prototype:Enable(core)
 	IceHUDPlayerAlternatePower.super.prototype.Enable(self, core)
 
 	self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateEvent")
-	if IceHUD.WowVer < 80000 then
+	if IceHUD.EventExistsUnitMaxPower then
 		self:RegisterEvent("UNIT_MAXPOWER", "UpdateEvent")
 	end
 	self:RegisterEvent("UNIT_POWER_BAR_SHOW", "PowerBarShow")

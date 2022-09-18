@@ -185,7 +185,7 @@ function StaggerBar.prototype:GetDebuffInfo()
 	local staggerLevel = 1
 
 	for i = 1, IceCore.BuffLimit do
-		local debuffID = select(IceHUD.WowVer < 80000 and 11 or 10, UnitDebuff(self.unit, i))
+		local debuffID = select(IceHUD.SpellFunctionsReturnRank and 11 or 10, UnitDebuff(self.unit, i))
 
 		if debuffID == LightID or debuffID == ModerateID or debuffID == HeavyID then
 			local spellName = UnitDebuff(self.unit, i)
@@ -236,7 +236,7 @@ end
 
 function StaggerBar.prototype:GetDebuffDuration(unitName, buffId)
 	local name, _, duration, endTime
-	if IceHUD.WowVer < 80000 then
+	if IceHUD.SpellFunctionsReturnRank then
 		name, _, _, _, _, duration, endTime = UnitDebuff(unitName, buffName)
 	else
 		for i = 1, IceCore.BuffLimit do

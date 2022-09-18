@@ -235,7 +235,7 @@ end
 function RollTheBones.prototype:GetBuffDuration(unitName, ids)
   local i = 1
   local buff, _, type, duration, endTime, spellId
-  if IceHUD.WowVer < 80000 then
+  if IceHUD.SpellFunctionsReturnRank then
     buff, _, _, _, type, duration, endTime, _, _, _, spellId = UnitBuff(unitName, i)
   else
     buff, _, _, type, duration, endTime, _, _, _, spellId = UnitBuff(unitName, i)
@@ -256,7 +256,7 @@ function RollTheBones.prototype:GetBuffDuration(unitName, ids)
 
     i = i + 1;
 
-    if IceHUD.WowVer < 80000 then
+    if IceHUD.SpellFunctionsReturnRank then
       buff, _, _, _, type, duration, endTime, _, _, _, spellId = UnitBuff(unitName, i)
     else
       buff, _, _, type, duration, endTime, _, _, _, spellId = UnitBuff(unitName, i)

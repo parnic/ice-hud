@@ -423,7 +423,7 @@ The Classic game client doesn't provide this information to addons because it wa
 							IceHUD.IceCore.IceHUDFrame:Show()
 						end
 					end,
-					hidden = IceHUD.WowVer < 80000,
+					hidden = not IceHUD.HasShellGame,
 					order = 36,
 				},
 			}

@@ -183,11 +183,11 @@ function TargetCast.prototype:StartBar(action, message)
 	local spell, notInterruptible
 	if UnitCastingInfo then
 		spell = UnitCastingInfo(self.unit)
-		notInterruptible = select(IceHUD.WowVer < 80000 and 9 or 8, UnitCastingInfo(self.unit))
+		notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 9 or 8, UnitCastingInfo(self.unit))
 	end
 	if UnitChannelInfo and not spell then
 		spell = UnitChannelInfo(self.unit)
-		notInterruptible = select(IceHUD.WowVer < 80000 and 8 or 7, UnitChannelInfo(self.unit))
+		notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 8 or 7, UnitChannelInfo(self.unit))
 
 		if not spell then
 			return

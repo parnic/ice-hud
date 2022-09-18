@@ -291,7 +291,7 @@ function ComboPoints.prototype:Enable(core)
 			self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
 		else
 			self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateComboPoints")
-			if IceHUD.WowVer < 80000 then
+			if IceHUD.EventExistsUnitMaxPower then
 				self:RegisterEvent("UNIT_MAXPOWER", "UpdateMaxComboPoints")
 			end
 		end
@@ -593,7 +593,7 @@ do
 	function ComboPoints.prototype:CheckAnticipation(e, unit) -- UNIT_AURA handler
 		if UnitIsUnit(unit, "player") then
 			local _, _, _, newAntStacks
-			if IceHUD.WowVer < 80000 then
+			if IceHUD.SpellFunctionsReturnRank then
 				_, _, _, newAntStacks = UnitAura("player", GetSpellInfo(AnticipationSpellId))
 			else
 				_, _, newAntStacks = UnitAura("player", GetSpellInfo(AnticipationSpellId))
