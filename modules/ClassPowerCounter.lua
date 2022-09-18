@@ -468,6 +468,9 @@ function IceClassPowerCounter.prototype:DisplayCounter()
 	self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateRunePower")
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "UpdateRunePower")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
+	if IceHUD.EventExistsUnitMaxPower then
+		self:RegisterEvent("UNIT_MAXPOWER", "UpdateRunePower")
+	end
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
@@ -497,8 +500,22 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 	if IceHUD.WowVer >= 70000 then
 		local numMax = UnitPowerMax(self.unit, self.unitPower)
 		if numMax ~= self.numRunes then
+			local oldMax = self.numRunes
 			self.numRunes = numMax
 			self:CreateFrame()
+			self:SetDisplayMode()
+
+			for i=self.numRunes+1, oldMax do
+				if self.frame.graphical[i] then
+					self.frame.graphical[i]:Hide()
+				end
+			end
+			for i=oldMax+1, self.numRunes do
+				if self:GetRuneMode() ~= "Numeric" then
+					self.frame.graphical[i]:Show()
+				end
+				self:HideRune(i)
+			end
 		end
 	end
 
@@ -567,11 +584,7 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 					end
 				end
 			else
-				if self.moduleSettings.inactiveDisplayMode == "Darkened" then
-					self.frame.graphical[i].rune:SetVertexColor(0, 0, 0)
-				elseif self.moduleSettings.inactiveDisplayMode == "Hidden" then
-					self.frame.graphical[i]:Hide()
-				end
+				self:HideRune(i)
 			end
 		end
 	end
@@ -589,6 +602,19 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
+	end
+end
+
+function IceClassPowerCounter.prototype:HideRune(i)
+	if self:GetRuneMode() == "Numeric" then
+		self.frame.graphical[i].Hide()
+		return
+	end
+
+	if self.moduleSettings.inactiveDisplayMode == "Darkened" then
+		self.frame.graphical[i].rune:SetVertexColor(0, 0, 0)
+	elseif self.moduleSettings.inactiveDisplayMode == "Hidden" then
+		self.frame.graphical[i]:Hide()
 	end
 end
 
@@ -717,6 +743,9 @@ function IceClassPowerCounter.prototype:CreateRuneFrame()
 	for i=1, self.numRunes do
 		self:CreateRune(i)
 	end
+	for i=self.numRunes+1, #self.frame.graphical do
+		self.frame.graphical[i]:Hide()
+	end
 end
 
 function IceClassPowerCounter.prototype:CreateRune(i)
@@ -758,7 +787,13 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 	end
 end
 
+function IceClassPowerCounter.prototype:SetupNewRune(rune)
+end
+
 function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
+	if rune > #self.runeCoords then
+		self:SetupNewRune(rune)
+	end
 	if not rune or rune < 1 or rune > #self.runeCoords then
 		return
 	end
