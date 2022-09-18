@@ -7,7 +7,7 @@ TargetCC.prototype.debuffRemaining = 0
 TargetCC.prototype.debuffDuration = 0
 
 local GetNumPartyMembers, GetNumRaidMembers = GetNumPartyMembers, GetNumRaidMembers
-if IceHUD.WowVer >= 50000 then
+if GetNumGroupMembers then
 	GetNumPartyMembers = GetNumGroupMembers
 	GetNumRaidMembers = GetNumGroupMembers
 end

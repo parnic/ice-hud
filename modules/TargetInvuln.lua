@@ -7,7 +7,7 @@ TargetInvuln.prototype.buffRemaining = 0
 TargetInvuln.prototype.buffDuration = 0
 
 local GetNumPartyMembers, GetNumRaidMembers = GetNumPartyMembers, GetNumRaidMembers
-if IceHUD.WowVer >= 50000 then
+if GetNumGroupMembers then
 	GetNumPartyMembers = GetNumGroupMembers
 	GetNumRaidMembers = GetNumGroupMembers
 end

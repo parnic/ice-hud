@@ -83,7 +83,7 @@ function IceTargetMana.prototype:Enable(core)
 			self:RegisterEvent("UNIT_FOCUS", "UpdateEvent")
 
 			-- DK rune stuff
-			if IceHUD.WowVer >= 30000 then
+			if SPELL_POWER_RUNIC_POWER then
 				self:RegisterEvent("UNIT_RUNIC_POWER", "UpdateEvent")
 				self:RegisterEvent("UNIT_MAXRUNIC_POWER", "UpdateEvent")
 			end
@@ -135,13 +135,13 @@ function IceTargetMana.prototype:Update(unit)
 			self.color = "TargetEnergy"
 		elseif (manaType == SPELL_POWER_RUNIC_POWER) then
 			self.color = "TargetRunicPower"
-		elseif (IceHUD.WowVer >= 70000 and manaType == SPELL_POWER_INSANITY) then
+		elseif (manaType == SPELL_POWER_INSANITY) then
 			self.color = "TargetInsanity"
-		elseif (IceHUD.WowVer >= 70000 and manaType == SPELL_POWER_FURY) then
+		elseif (manaType == SPELL_POWER_FURY) then
 			self.color = "TargetFury"
-		elseif (IceHUD.WowVer >= 70000 and manaType == SPELL_POWER_MAELSTROM) then
+		elseif (manaType == SPELL_POWER_MAELSTROM) then
 			self.color = "TargetMaelstrom"
-		elseif (IceHUD.WowVer >= 70000 and manaType == SPELL_POWER_PAIN) then
+		elseif (manaType == SPELL_POWER_PAIN) then
 			self.color = "TargetPain"
 		end
 
