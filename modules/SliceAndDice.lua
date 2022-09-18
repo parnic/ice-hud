@@ -85,6 +85,10 @@ function SliceAndDice.prototype:Enable(core)
 		self:CheckMaxComboPoints()
 	end
 
+	if IceHUD.EventExistsUnitMaxPower then
+		self:RegisterEvent("UNIT_MAXPOWER", "CheckMaxComboPoints")
+	end
+
 	if not self.moduleSettings.alwaysFullAlpha then
 		self:Show(false)
 	else
@@ -419,13 +423,11 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 end
 
 function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints)
-	local maxduration
-
 	if numComboPoints == 0 then
 		return 0
 	end
 
-	maxduration = baseTime + ((numComboPoints - 1) * gapPerComboPoint)
+	local maxduration = baseTime + ((numComboPoints - 1) * gapPerComboPoint)
 
 	if self:HasNetherbladeBonus() then
 		maxduration = maxduration + netherbladeBonus
