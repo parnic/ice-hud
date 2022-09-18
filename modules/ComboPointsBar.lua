@@ -142,7 +142,9 @@ function ComboPointsBar.prototype:UpdateComboPoints(...)
 	end
 
 	self:SetBottomText1(points or "0")
-	self:SetBottomText2(self.chargedPowerPointIndex)
+	if self.chargedPowerPointIndex then
+		self:SetBottomText2(self.chargedPowerPointIndex)
+	end
 end
 
 function ComboPointsBar.prototype:Update()

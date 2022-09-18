@@ -21,7 +21,7 @@ function ComboPoints.prototype:init()
 	if AnticipationExists then
 		self:SetDefaultColor("AnticipationPoints", 1, 0, 1)
 	end
-	self:SetDefaultColor("KyrianAnimaComboPoint", 0.3137254901960784, 0.3725490196078432, 1)
+	self:SetDefaultColor("ChargedComboPoint", 0.3137254901960784, 0.3725490196078432, 1)
 	self.scalingEnabled = true
 end
 
@@ -222,16 +222,16 @@ function ComboPoints.prototype:GetOptions()
 		order = 35
 	}
 
-	opts["bShowAnimaCharged"] = {
+	opts["bShowCharged"] = {
 		type = 'toggle',
 		width = 'double',
-		name = L["Show Anima-charged points"],
-		desc = L["Whether or not to color an anima-charged combo point a separate color. Set the KyrianAnimaComboPoint color to the color you would like it to be."],
+		name = L["Show Charged points"],
+		desc = L["Whether or not to color a charged combo point a separate color. Set the ChargedComboPoint color to the color you would like it to be."],
 		get = function()
-			return self.moduleSettings.bShowAnimaCharged
+			return self.moduleSettings.bShowCharged
 		end,
 		set = function(info, v)
-			self.moduleSettings.bShowAnimaCharged = v
+			self.moduleSettings.bShowCharged = v
 			self:UpdateChargedComboPoints()
 		end,
 		disabled = function()
@@ -261,7 +261,7 @@ function ComboPoints.prototype:GetDefaultSettings()
 	defaults["comboGap"] = 0
 	defaults["showAnticipation"] = true
 	defaults["bShowWithNoTarget"] = true
-	defaults["bShowAnimaCharged"] = true
+	defaults["bShowCharged"] = true
 	return defaults
 end
 
@@ -440,8 +440,8 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 			g = g - ((1 / maxComboPoints)*i)
 		end
 
-		if self.moduleSettings.bShowAnimaCharged and self:IsAnimaChargedPoint(i) then
-			self.frame.graphical[i].texture:SetVertexColor(self:GetColor("KyrianAnimaComboPoint"))
+		if self.moduleSettings.bShowCharged and self:IsChargedPoint(i) then
+			self.frame.graphical[i].texture:SetVertexColor(self:GetColor("ChargedComboPoint"))
 		else
 			self.frame.graphical[i].texture:SetVertexColor(r, g, b)
 		end
@@ -489,7 +489,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 	end
 end
 
-function ComboPoints.prototype:IsAnimaChargedPoint(point)
+function ComboPoints.prototype:IsChargedPoint(point)
 	if not self.chargedPowerPoints then
 		return false
 	end
