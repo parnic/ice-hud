@@ -38,7 +38,7 @@ function HolyPower.prototype:init()
 	self.bTreatEmptyAsFull = true
 	self.unit = "player"
 	self.numRunes = 5
-	if IceHUD.WowVer >= 50000 then
+	if HOLY_POWER_FULL then
 		self.numConsideredFull = HOLY_POWER_FULL
 	else
 		self.numConsideredFull = 3

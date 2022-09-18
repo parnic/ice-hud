@@ -119,7 +119,7 @@ function EclipseBar.prototype:UpdateShown()
 
 	if form == MOONKIN_FORM or not form then
 		local PrimaryTalentTree = 0
-		if IceHUD.WowVer >= 50000 then
+		if GetSpecialization then
 			PrimaryTalentTree = GetSpecialization()
 		else
 			PrimaryTalentTree = GetPrimaryTalentTree()

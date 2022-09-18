@@ -353,13 +353,13 @@ function PlayerMana.prototype:Update(unit, powertype)
 			color = "PlayerRunicPower"
 		elseif (self.manaType == SPELL_POWER_FOCUS) then
 			color = "PlayerFocus"
-		elseif (IceHUD.WowVer >= 70000 and self.manaType == SPELL_POWER_INSANITY) then
+		elseif (self.manaType == SPELL_POWER_INSANITY) then
 			color = "PlayerInsanity"
-		elseif (IceHUD.WowVer >= 70000 and self.manaType == SPELL_POWER_FURY) then
+		elseif (self.manaType == SPELL_POWER_FURY) then
 			color = "PlayerFury"
-		elseif (IceHUD.WowVer >= 70000 and self.manaType == SPELL_POWER_MAELSTROM) then
+		elseif (self.manaType == SPELL_POWER_MAELSTROM) then
 			color = "PlayerMaelstrom"
-		elseif (IceHUD.WowVer >= 70000 and self.manaType == SPELL_POWER_PAIN) then
+		elseif (self.manaType == SPELL_POWER_PAIN) then
 			color = "PlayerPain"
 		end
 	end

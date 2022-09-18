@@ -2,6 +2,9 @@ local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local HarmonyPower = IceCore_CreateClass(IceClassPowerCounter)
 
 local SPELL_POWER_CHI = SPELL_POWER_CHI
+if not SPELL_POWER_CHI then
+	SPELL_POWER_CHI = SPELL_POWER_LIGHT_FORCE
+end
 if Enum and Enum.PowerType then
 	SPELL_POWER_CHI = Enum.PowerType.Chi
 end
@@ -23,11 +26,7 @@ function HarmonyPower.prototype:init()
 	}
 	self.numRunes = 4
 	self.numericColor = "ChiNumeric"
-	if IceHUD.WowVer >= 50100 then
-		self.unitPower = SPELL_POWER_CHI
-	else
-		self.unitPower = SPELL_POWER_LIGHT_FORCE
-	end
+	self.unitPower = SPELL_POWER_CHI
 	if IceHUD.WowVer >= 70000 then
 		self.requiredSpec = SPEC_MONK_WINDWALKER
 	end
@@ -117,6 +116,6 @@ end
 
 -- Load us up
 local _, unitClass = UnitClass("player")
-if (unitClass == "MONK" and IceHUD.WowVer >= 50000) then
+if unitClass == "MONK" then
 	IceHUD.HarmonyPower = HarmonyPower:new()
 end

@@ -68,7 +68,7 @@ function PlayerHealth.prototype:Enable(core)
 	PlayerHealth.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_HEALTH", "UpdateEvent")
-	if IceHUD.WowVer < 90000 then
+	if IceHUD.EventExistsUnitHealthFrequent then
 		self:RegisterEvent("UNIT_HEALTH_FREQUENT", "UpdateEvent")
 	end
 	self:RegisterEvent("UNIT_MAXHEALTH", "UpdateEvent")

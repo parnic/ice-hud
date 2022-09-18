@@ -90,7 +90,7 @@ function ComboPointsBar.prototype:Enable(core)
 		self:RegisterEvent("PLAYER_COMBO_POINTS", "UpdateComboPoints")
 	end
 
-	if IceHUD.WowVer >= 90000 then
+	if GetUnitChargedPowerPoints then
 		self:RegisterEvent("UNIT_POWER_POINT_CHARGE", "UpdateChargedComboPoints")
 	end
 
@@ -119,7 +119,7 @@ function ComboPointsBar.prototype:UpdateComboPoints(...)
 	local points
 	if IceHUD.IceCore:IsInConfigMode() then
 		points = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS)
-	elseif IceHUD.WowVer >= 30000 or IceHUD.WowClassic or IceHUD.WowClassicBC then
+	elseif UnitHasVehicleUI then
 		-- Parnic: apparently some fights have combo points while the player is in a vehicle?
 		local isInVehicle = UnitHasVehicleUI and UnitHasVehicleUI("player")
 		local checkUnit = isInVehicle and "vehicle" or "player"
