@@ -103,7 +103,7 @@ end
 
 -- Load us up
 local _, unitClass = UnitClass("player")
-if (unitClass == "PRIEST" and IceHUD.WowVer >= 50000 and IceHUD.WowVer < 70000) then
+if (unitClass == "PRIEST" and PriestBarFrame) then
 	IceHUD.ShadowOrbs = ShadowOrbs:new()
 end
 

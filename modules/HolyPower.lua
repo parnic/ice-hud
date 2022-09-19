@@ -134,7 +134,7 @@ end
 
 -- Load us up
 local _, unitClass = UnitClass("player")
-if (unitClass == "PALADIN" and IceHUD.WowVer >= 40000) then
+if (unitClass == "PALADIN" and (PaladinPowerBar or PaladinPowerBarFrame)) then
 	IceHUD.HolyPower = HolyPower:new()
 end
 

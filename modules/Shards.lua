@@ -276,6 +276,6 @@ end
 
 -- Load us up
 local _, unitClass = UnitClass("player")
-if (unitClass == "WARLOCK" and IceHUD.WowVer >= 40000) then
+if (unitClass == "WARLOCK" and WarlockPowerFrame) then
 	IceHUD.ShardCounter = ShardCounter:new()
 end
