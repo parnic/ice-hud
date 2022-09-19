@@ -124,7 +124,7 @@ function ComboPointsBar.prototype:UpdateComboPoints(...)
 			points = UnitPower(checkUnit, SPELL_POWER_COMBO_POINTS)
 		end
 	else
-		points = GetComboPoints("target")
+		points = GetComboPoints("player", "target")
 	end
 
 	if (points == 0) then

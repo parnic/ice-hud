@@ -527,7 +527,7 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 			anticipate = 0
 		end
 	else
-		points = GetComboPoints("target")
+		points = GetComboPoints("player", "target")
 	end
 
 	points = points or 0
