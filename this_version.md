@@ -1,5 +1,9 @@
 # Changelog
 
+v1.13.17.1:
+
+- Fixed Priests hanging on login on the retail client.
+
 v1.13.17:
 
 - Internal maintainability updates. There are so many versions of the game now, updates need to be as easy and safe as possible.
