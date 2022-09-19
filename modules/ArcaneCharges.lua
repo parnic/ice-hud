@@ -61,6 +61,6 @@ end
 
 -- Load us up
 local _, unitClass = UnitClass("player")
-if (unitClass == "MAGE" and IceHUD.WowVer >= 70000) then
+if (unitClass == "MAGE" and MageArcaneChargesFrame) then
 	IceHUD.ArcaneCharges = ArcaneCharges:new()
 end

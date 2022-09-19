@@ -37,12 +37,12 @@ end
 
 -- compatibility/feature flags
 IceHUD.SpellFunctionsReturnRank = IceHUD.WowMain and IceHUD.WowVer < 80000
-IceHUD.EventExistsPlayerPetChanged = IceHUD.WowVer < 80000 and not IceHUD.WowClassic and not IceHUD.WowClassicBC and not IceHUD.WowClassicWrath
-IceHUD.EventExistsPetBarChanged = IceHUD.WowVer < 80000 and not IceHUD.WowClassic and not IceHUD.WowClassicBC and not IceHUD.WowClassicWrath
+IceHUD.EventExistsPlayerPetChanged = IceHUD.WowMain and IceHUD.WowVer < 80000
+IceHUD.EventExistsPetBarChanged = IceHUD.WowMain and IceHUD.WowVer < 80000
 IceHUD.EventExistsPlayerComboPoints = IceHUD.WowMain and IceHUD.WowVer < 30000
 IceHUD.EventExistsUnitComboPoints = IceHUD.WowMain and IceHUD.WowVer < 70000
 IceHUD.EventExistsUnitMaxPower = IceHUD.WowMain and IceHUD.WowVer >= 40000
-IceHUD.EventExistsGroupRosterUpdate = IceHUD.WowVer >= 50000 or IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath
+IceHUD.EventExistsGroupRosterUpdate = IceHUD.WowVer >= 50000 or not IceHUD.WowMain
 IceHUD.EventExistsUnitDynamicFlags = IceHUD.WowMain and IceHUD.WowVer < 80000
 IceHUD.PerPowerEventsExist = IceHUD.WowMain and IceHUD.WowVer < 40000
 IceHUD.PerTargetComboPoints = IceHUD.WowVer < 60000
@@ -51,10 +51,9 @@ IceHUD.CanTrackGCD = not IceHUD.WowClassic
 IceHUD.GetSpellInfoReturnsFunnel = IceHUD.WowMain and IceHUD.WowVer < 60000
 IceHUD.CanHookDestroyTotem = IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath
 IceHUD.ShouldUpdateTargetHealthEveryTick = (IceHUD.WowClassic or IceHUD.WowClassicBC) and GetCVarBool("predictedHealth")
-IceHUD.UsesUIPanelButtonTemplate = IceHUD.WowVer >= 50000 or IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath
+IceHUD.UsesUIPanelButtonTemplate = IceHUD.WowVer >= 50000 or not IceHUD.WowMain
 IceHUD.EventExistsSpellcastInterruptible = IceHUD.WowVer >= 30200 and not IceHUD.WowClassicWrath
 IceHUD.DeathKnightUnholyFrostRunesSwapped = IceHUD.WowVer < 70300 and not IceHUD.WowClassicWrath
-IceHUD.UseFallbackPaladinGCDSpell = IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath
 IceHUD.SupportsHealPrediction = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
 IceHUD.UnitGroupRolesReturnsRoleString = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
 IceHUD.ShellGameSpellID = 271571
@@ -718,14 +717,14 @@ function IceHUD:GetIsInLFGGroup()
 	end
 
 	local mode, submode
-	if IceHUD.WowVer >= 50000 then
+	if LE_LFG_CATEGORY_LFD then
 		mode, submode = GetLFGMode(LE_LFG_CATEGORY_LFD)
 	else
 		mode, submode = GetLFGMode()
 	end
 	local IsInLFGGroup = CheckLFGMode(mode)
 
-	if IceHUD.WowVer < 50000 then
+	if not LE_LFG_CATEGORY_LFD then
 		return IsInLFGGroup
 	end
 
