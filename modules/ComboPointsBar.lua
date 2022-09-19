@@ -6,13 +6,6 @@ if Enum and Enum.PowerType then
 	SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
 end
 
-local GetUnitChargedPowerPoints = GetUnitChargedPowerPoints
-if not GetUnitChargedPowerPoints then
-	GetUnitChargedPowerPoints = function()
-		return nil
-	end
-end
-
 function ComboPointsBar.prototype:init()
 	ComboPointsBar.super.prototype.init(self, "ComboPointsBar")
 
@@ -98,9 +91,11 @@ function ComboPointsBar.prototype:Enable(core)
 end
 
 function ComboPointsBar.prototype:UpdateChargedComboPoints()
-	local chargedPowerPoints = GetUnitChargedPowerPoints("player")
-	self.chargedPowerPointIndex = chargedPowerPoints and chargedPowerPoints[1]
-	self:UpdateComboPoints()
+	if GetUnitChargedPowerPoints then
+		local chargedPowerPoints = GetUnitChargedPowerPoints("player")
+		self.chargedPowerPointIndex = chargedPowerPoints and chargedPowerPoints[1]
+		self:UpdateComboPoints()
+	end
 end
 
 function ComboPointsBar.prototype:CreateFrame()

@@ -13,13 +13,6 @@ if Enum and Enum.PowerType then
 	SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
 end
 
-local GetUnitChargedPowerPoints = GetUnitChargedPowerPoints
-if not GetUnitChargedPowerPoints then
-	GetUnitChargedPowerPoints = function()
-		return nil
-	end
-end
-
 -- Constructor --
 function ComboPoints.prototype:init()
 	ComboPoints.super.prototype.init(self, "ComboPoints")
@@ -229,25 +222,26 @@ function ComboPoints.prototype:GetOptions()
 		order = 35
 	}
 
-	if GetUnitChargedPowerPoints then
-		opts["bShowAnimaCharged"] = {
-			type = 'toggle',
-			width = 'double',
-			name = L["Show Anima-charged points"],
-			desc = L["Whether or not to color an anima-charged combo point a separate color. Set the KyrianAnimaComboPoint color to the color you would like it to be."],
-			get = function()
-				return self.moduleSettings.bShowAnimaCharged
-			end,
-			set = function(info, v)
-				self.moduleSettings.bShowAnimaCharged = v
-				self:UpdateChargedComboPoints()
-			end,
-			disabled = function()
-				return not self.moduleSettings.enabled
-			end,
-			order = 36
-		}
-	end
+	opts["bShowAnimaCharged"] = {
+		type = 'toggle',
+		width = 'double',
+		name = L["Show Anima-charged points"],
+		desc = L["Whether or not to color an anima-charged combo point a separate color. Set the KyrianAnimaComboPoint color to the color you would like it to be."],
+		get = function()
+			return self.moduleSettings.bShowAnimaCharged
+		end,
+		set = function(info, v)
+			self.moduleSettings.bShowAnimaCharged = v
+			self:UpdateChargedComboPoints()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return not GetUnitChargedPowerPoints
+		end,
+		order = 36
+	}
 
 	return opts
 end
@@ -330,9 +324,11 @@ function ComboPoints.prototype:UpdateMaxComboPoints(event, unit, powerType)
 end
 
 function ComboPoints.prototype:UpdateChargedComboPoints()
-	self.chargedPowerPoints = GetUnitChargedPowerPoints("player")
-	self:CreateComboFrame()
-	self:UpdateComboPoints()
+	if GetUnitChargedPowerPoints then
+		self.chargedPowerPoints = GetUnitChargedPowerPoints("player")
+		self:CreateComboFrame()
+		self:UpdateComboPoints()
+	end
 end
 
 -- 'Protected' methods --------------------------------------------------------
