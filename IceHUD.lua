@@ -44,6 +44,7 @@ IceHUD.EventExistsUnitComboPoints = IceHUD.WowMain and IceHUD.WowVer < 70000
 IceHUD.EventExistsUnitMaxPower = IceHUD.WowMain and IceHUD.WowVer >= 40000
 IceHUD.EventExistsGroupRosterUpdate = IceHUD.WowVer >= 50000 or not IceHUD.WowMain
 IceHUD.EventExistsUnitDynamicFlags = IceHUD.WowMain and IceHUD.WowVer < 80000
+IceHUD.EventExistsUnitHealthFrequent = not IceHUD.WowMain or (IceHUD.WowVer >= 40000 and IceHUD.WowVer < 90000)
 IceHUD.PerPowerEventsExist = IceHUD.WowMain and IceHUD.WowVer < 40000
 IceHUD.PerTargetComboPoints = IceHUD.WowVer < 60000
 IceHUD.CanTrackOtherUnitBuffs = not IceHUD.WowClassic
