@@ -3,6 +3,8 @@ local Runes = IceCore_CreateClass(IceElement)
 
 local IceHUD = _G.IceHUD
 
+local RunesReturnedByMaxPower = IceHUD.WowVer >= 70000
+
 local CooldownFrame_SetTimer = CooldownFrame_SetTimer
 if CooldownFrame_Set then
 	CooldownFrame_SetTimer = CooldownFrame_Set
@@ -265,7 +267,7 @@ end
 
 -- OVERRIDE
 function Runes.prototype:Enable(core)
-	if IceHUD.WowVer >= 70000 then
+	if RunesReturnedByMaxPower then
 		self.numRunes = UnitPowerMax("player", SPELL_POWER_RUNES)
 	end
 
@@ -283,7 +285,9 @@ function Runes.prototype:Enable(core)
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "UpdateRuneColors")
 	end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
-	self:RegisterEvent("UNIT_MAXPOWER", "CheckMaxNumRunes")
+	if RunesReturnedByMaxPower then
+		self:RegisterEvent("UNIT_MAXPOWER", "CheckMaxNumRunes")
+	end
 
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()

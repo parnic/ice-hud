@@ -1,5 +1,9 @@
 # Changelog
 
+v1.13.17.2:
+
+- Fixed Runes disappearing for Death Knights on Wrath Classic when using the dual spec feature.
+
 v1.13.17.1:
 
 - Fixed Priests hanging on login on the retail client.
