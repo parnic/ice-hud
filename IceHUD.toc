@@ -19,6 +19,7 @@
 ## X-Website: https://www.wowace.com/projects/ice-hud
 ## X-Curse-Project-ID: 5394
 ## X-WoWI-ID: 8149
+## X-Wago-ID: 5bGolJN0
 
 #@no-lib-strip@
 # Libraries
