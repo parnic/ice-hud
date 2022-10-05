@@ -1,5 +1,9 @@
 # Changelog
 
+v1.13.17.3:
+
+- Packaged latest LibDogTag-Unit to work around crash in Wrath Classic client.
+
 v1.13.17.2:
 
 - Fixed Runes disappearing for Death Knights on Wrath Classic when using the dual spec feature.
