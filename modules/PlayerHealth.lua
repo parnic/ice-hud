@@ -10,6 +10,7 @@ PlayerHealth.prototype.absorbAmount = 0
 local configMode = false
 local HealComm
 local incomingHealAmt = 0
+local groupEvent = IceHUD.EventExistsGroupRosterUpdate and "GROUP_ROSTER_UPDATE" or "PARTY_MEMBERS_CHANGED"
 
 -- Constructor --
 function PlayerHealth.prototype:init()
@@ -81,11 +82,7 @@ function PlayerHealth.prototype:Enable(core)
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckCombat")
 
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "CheckLeader")
-	if IceHUD.EventExistsGroupRosterUpdate then
-		self:RegisterEvent("GROUP_ROSTER_UPDATE", "CheckLeader")
-	else
-		self:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckLeader")
-	end
+	self:RegisterEvent(groupEvent, "CheckLeader")
 	if GetLFGProposal then
 		self:RegisterEvent("LFG_PROPOSAL_UPDATE", "CheckPartyRole")
 		self:RegisterEvent("LFG_PROPOSAL_FAILED", "CheckPartyRole")
@@ -1427,39 +1424,34 @@ function PlayerHealth.prototype:HideBlizzardParty()
 		return
 	end
 
-	-- Both Pitbull 4 and Xperl use these exact code, so we use it too.
-	for i = 1, MAX_PARTY_MEMBERS do
-		local party = _G['PartyMemberFrame'..i]
-		if party then
-			party:UnregisterAllEvents()
-			party:Hide()
-			party.Show = function() end
+	if PartyFrame then
+		PartyFrame:Hide()
+		PartyFrame:UnregisterEvent(groupEvent)
+	else
+		for i = 1, MAX_PARTY_MEMBERS do
+			local frame = _G["PartyMemberFrame" .. i]
+			frame:SetAttribute("statehidden", true)
+			hook_frames(frame)
 		end
+		UIParent:UnregisterEvent(groupEvent)
 	end
-
-	UIParent:UnregisterEvent('RAID_ROSTER_UPDATE')
-
 end
 
 
 function PlayerHealth.prototype:ShowBlizzardParty()
-	-- Both Pitbull 4 and Xperl use these exact code, so we use it too.
-	for i = 1, MAX_PARTY_MEMBERS do
-		local frame = _G["PartyMemberFrame"..i]
-		if frame then
-			frame.Show = nil
-			frame:GetScript("OnLoad")(frame)
-			if IceHUD.WowVer >= 50000 then
-				frame:GetScript("OnEvent")(frame, "GROUP_ROSTER_UPDATE")
-			else
-				frame:GetScript("OnEvent")(frame, "PARTY_MEMBERS_CHANGED")
-			end
-
-			PartyMemberFrame_UpdateMember(frame)
+	if PartyFrame then
+		PartyFrame:Show()
+		PartyFrame:Layout()
+		PartyFrame:RegisterEvent(groupEvent)
+	else
+		for i = 1, MAX_PARTY_MEMBERS do
+			local frame = _G["PartyMemberFrame" .. i]
+			frame:SetAttribute("statehidden", nil)
+			unhook_frames(frame)
+			frame:GetScript("OnEvent")(frame, groupEvent)
 		end
+		UIParent:RegisterEvent(groupEvent)
 	end
-
-	UIParent:RegisterEvent("RAID_ROSTER_UPDATE")
 end
 
 --function PlayerHealth.prototype:ShowBlizzParty()
