@@ -1430,9 +1430,11 @@ function PlayerHealth.prototype:HideBlizzardParty()
 	-- Both Pitbull 4 and Xperl use these exact code, so we use it too.
 	for i = 1, MAX_PARTY_MEMBERS do
 		local party = _G['PartyMemberFrame'..i]
-		party:UnregisterAllEvents()
-		party:Hide()
-		party.Show = function() end
+		if party then
+			party:UnregisterAllEvents()
+			party:Hide()
+			party.Show = function() end
+		end
 	end
 
 	UIParent:UnregisterEvent('RAID_ROSTER_UPDATE')
