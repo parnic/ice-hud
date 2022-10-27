@@ -65,6 +65,7 @@ tools-used:
 
 ignore:
     - readme.md
+    - FUNDING.yml
 
 manual-changelog: this_version.md
 
