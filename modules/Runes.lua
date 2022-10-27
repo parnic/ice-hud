@@ -134,6 +134,9 @@ function Runes.prototype:GetOptions()
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
+		hidden = function()
+			return not PlayerFrame_HideVehicleTexture
+		end,
 		order = 32
 	}
 
@@ -581,6 +584,10 @@ local function hook_playerframe()
 end
 
 function Runes.prototype:HideBlizz()
+	if not PlayerFrame_HideVehicleTexture then
+		return
+	end
+
 	RuneFrame:Hide()
 	RuneFrame:UnregisterAllEvents()
 
