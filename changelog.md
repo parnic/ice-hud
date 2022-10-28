@@ -1,5 +1,10 @@
 # Changelog
 
+v1.14.0:
+
+- 10.0 compatibility
+- Renamed Anima Charged combo points to Charged, and removed specific references to Kyrian.
+
 v1.13.17.3:
 
 - Packaged latest LibDogTag-Unit to work around crash in Wrath Classic client.
