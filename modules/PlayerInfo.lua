@@ -115,7 +115,9 @@ end
 
 function PlayerInfo.prototype:ShowBlizz()
 	BuffFrame:Show()
-	TemporaryEnchantFrame:Show()
+	if TemporaryEnchantFrame then
+		TemporaryEnchantFrame:Show()
+	end
 
 	BuffFrame:GetScript("OnLoad")(BuffFrame)
 end
@@ -123,7 +125,9 @@ end
 
 function PlayerInfo.prototype:HideBlizz()
 	BuffFrame:Hide()
-	TemporaryEnchantFrame:Hide()
+	if TemporaryEnchantFrame then
+		TemporaryEnchantFrame:Hide()
+	end
 
 	BuffFrame:UnregisterAllEvents()
 end
