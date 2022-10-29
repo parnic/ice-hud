@@ -277,7 +277,7 @@ end
 function SliceAndDice.prototype:MyOnUpdate()
 	SliceAndDice.super.prototype.MyOnUpdate(self)
 	if self.bUpdateSnd then
-		self:UpdateSliceAndDice(nil, self.unit, true)
+		self:UpdateSliceAndDice("internal", self.unit)
 	end
 	if self.target or self.moduleSettings.bShowWithNoTarget then
 		self:UpdateDurationBar()
@@ -312,13 +312,14 @@ local function ShouldHide()
 	-- with different durations
 end
 
-function SliceAndDice.prototype:UpdateSliceAndDice(event, unit, fromUpdate)
+function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 	if unit and unit ~= self.unit then
 		return
 	end
 
 	local now = GetTime()
 	local remaining = nil
+	local fromUpdate = event == "internal"
 
 	if not fromUpdate or IceHUD.WowVer < 30000 then
 		sndDuration, remaining = self:GetBuffDuration(self.unit, sndBuffName)

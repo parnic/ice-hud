@@ -274,7 +274,7 @@ end
 function RollTheBones.prototype:MyOnUpdate()
   RollTheBones.super.prototype.MyOnUpdate(self)
   if self.bUpdateRtb then
-    self:UpdateRollTheBones(nil, self.unit, true)
+    self:UpdateRollTheBones("internal", self.unit)
   end
   if self.target or self.moduleSettings.bShowWithNoTarget then
     self:UpdateDurationBar()
@@ -296,13 +296,14 @@ local function ShouldHide()
   return not HasSpell(193316)
 end
 
-function RollTheBones.prototype:UpdateRollTheBones(event, unit, fromUpdate)
+function RollTheBones.prototype:UpdateRollTheBones(event, unit)
   if unit and unit ~= self.unit then
     return
   end
 
   local now = GetTime()
   local remaining = nil
+  local fromUpdate = event == "internal"
 
   if not fromUpdate then
     rtbDuration, remaining, rtbCount = self:GetBuffDuration(self.unit, RtBSet)
