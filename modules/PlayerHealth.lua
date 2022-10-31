@@ -1418,6 +1418,44 @@ function PlayerHealth.prototype:HideBlizz()
 	PlayerFrame:SetParent(self.PlayerFrameParent)
 end
 
+local parents = {}
+local hide_frame = IceHUD:OutOfCombatWrapper(function(self) self:Hide() end)
+
+local function hook_frames(...)
+	for i = 1, select("#", ...) do
+		local frame = select(i, ...)
+		frame:UnregisterAllEvents()
+		if not IceHUD:IsHooked(frame, "OnShow") then
+			IceHUD:SecureHookScript(frame, "OnShow", hide_frame)
+		end
+		frame:Hide()
+	end
+end
+
+local function unhook_frame(frame)
+	if IceHUD:IsHooked(frame, "OnShow") then
+		IceHUD:Unhook(frame, "OnShow")
+		local parent = parents[frame]
+		if parent then
+			frame:SetParent(parent)
+		end
+	elseif IceHUD:IsHooked(frame, "Show") then
+		IceHUD:Unhook(frame, "Show")
+		IceHUD:Unhook(frame, "SetPoint")
+	end
+end
+
+local function unhook_frames(...)
+	for i = 1, select("#", ...) do
+		local frame = select(i, ...)
+		unhook_frame(frame)
+		local handler = frame:GetScript("OnLoad")
+		if handler then
+			handler(frame)
+		end
+	end
+end
+
 function PlayerHealth.prototype:HideBlizzardParty()
 	if self.combat then
 		self.pendingBlizzardPartyHide = true

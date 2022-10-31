@@ -284,6 +284,8 @@ function IceCore.prototype:Enable(userToggle)
 		self.IceHUDFrame:RegisterEvent("ZONE_CHANGED")
 	end
 	self.IceHUDFrame:RegisterEvent("UNIT_AURA")
+	self.IceHUDFrame:RegisterEvent("PLAYER_REGEN_ENABLED", IceHUD.PLAYER_REGEN_ENABLED)
+	self.IceHUDFrame:RegisterEvent("PLAYER_REGEN_DISABLED", IceHUD.PLAYER_REGEN_DISABLED)
 	self.IceHUDFrame:SetScript("OnEvent", function(self, event, ...)
 		if (event == "PET_BATTLE_OPENING_START") then
 			if IceHUD.IceCore.settings.bHideDuringPetBattles then

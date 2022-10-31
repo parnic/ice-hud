@@ -1,5 +1,5 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
-IceHUD = LibStub("AceAddon-3.0"):NewAddon("IceHUD", "AceConsole-3.0")
+IceHUD = LibStub("AceAddon-3.0"):NewAddon("IceHUD", "AceConsole-3.0", "AceHook-3.0")
 
 local IceHUD = IceHUD
 
@@ -963,3 +963,53 @@ UIDropDownMenu_Initialize(IceHUD_UnitFrame_DropDown, function()
 		UnitPopup_ShowMenu(IceHUD_UnitFrame_DropDown, menu, IceHUD.DropdownUnit, nil, id)
 	end
 end, "MENU", nil)
+
+function IceHUD:OutOfCombatWrapper(func)
+	return function(...)
+		return IceHUD:RunOnLeaveCombat(func, ...)
+	end
+end
+
+do
+	local in_combat = false
+	local in_lockdown = false
+	local actions_to_perform = {}
+	local pool = setmetatable({}, {__mode='k'})
+	function IceHUD:PLAYER_REGEN_ENABLED()
+		in_combat = false
+		in_lockdown = false
+		for i, t in ipairs(actions_to_perform) do
+			t.f(unpack(t, 1, t.n))
+			actions_to_perform[i] = nil
+			wipe(t)
+			pool[t] = true
+		end
+	end
+	function IceHUD:PLAYER_REGEN_DISABLED()
+		in_combat = true
+	end
+	function IceHUD:RunOnLeaveCombat(func, ...)
+		if not in_combat then
+			-- out of combat, call right away and return
+			func(...)
+			return
+		end
+		if not in_lockdown then
+			in_lockdown = InCombatLockdown() -- still in PLAYER_REGEN_DISABLED
+			if not in_lockdown then
+				func(...)
+				return
+			end
+		end
+		local t = next(pool) or {}
+		pool[t] = nil
+
+		t.f = func
+		local n = select('#', ...)
+		t.n = n
+		for i = 1, n do
+			t[i] = select(i, ...)
+		end
+		actions_to_perform[#actions_to_perform+1] = t
+	end
+end
