@@ -191,11 +191,12 @@ end
 
 function TargetInvuln.prototype:MyOnUpdate()
 	TargetInvuln.super.prototype.MyOnUpdate(self)
-	self:UpdateTargetBuffs(nil, self.unit, true)
+	self:UpdateTargetBuffs("internal", self.unit)
 end
 
-function TargetInvuln.prototype:UpdateTargetBuffs(event, unit, isUpdate)
+function TargetInvuln.prototype:UpdateTargetBuffs(event, unit)
 	local name, duration, remaining
+	local isUpdate = event == "internal"
 
 	if not isUpdate or not self.lastUpdateTime then
 		self.buffName, self.buffDuration, self.buffRemaining = self:GetMaxbuffDuration(self.unit, self.buffList)

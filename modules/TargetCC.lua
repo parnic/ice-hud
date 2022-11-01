@@ -375,11 +375,12 @@ end
 
 function TargetCC.prototype:MyOnUpdate()
 	TargetCC.super.prototype.MyOnUpdate(self)
-	self:UpdateTargetDebuffs(nil, self.unit, true)
+	self:UpdateTargetDebuffs("internal", self.unit)
 end
 
-function TargetCC.prototype:UpdateTargetDebuffs(event, unit, isUpdate)
+function TargetCC.prototype:UpdateTargetDebuffs(event, unit)
 	local name, duration, remaining
+	local isUpdate = event == "internal"
 
 	if not isUpdate or not self.lastUpdateTime then
 		self.debuffName, self.debuffDuration, self.debuffRemaining = self:GetMaxDebuffDuration(self.unit, self.debuffList)
