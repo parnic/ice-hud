@@ -52,7 +52,13 @@ function IceStackCounter_GetOptions(frame, opts)
 	opts["auraName"] = {
 		type = 'input',
 		name = L["Aura to track"],
-		desc = L["Which buff/debuff this counter will be tracking. \n\nRemember to press ENTER after filling out this box with the name you want or it will not save."],
+		desc = function()
+			if IceHUD.GetPlayerAuraBySpellID then
+				return L["Which buff/debuff this counter will be tracking. Can use the name or spell id. \n\nRemember to press ENTER after filling out this box with the name you want or it will not save."]
+			else
+				return L["Which buff/debuff this counter will be tracking. \n\nRemember to press ENTER after filling out this box with the name you want or it will not save."]
+			end
+		end,
 		get = function()
 			return frame.moduleSettings.auraName
 		end,

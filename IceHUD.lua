@@ -36,6 +36,7 @@ else
 end
 
 -- compatibility/feature flags
+IceHUD.GetPlayerAuraBySpellID = IceHUD.WowMain and IceHUD.WowVer > 90000
 IceHUD.SpellFunctionsReturnRank = IceHUD.WowMain and IceHUD.WowVer < 80000
 IceHUD.EventExistsPlayerPetChanged = IceHUD.WowMain and IceHUD.WowVer < 80000
 IceHUD.EventExistsPetBarChanged = IceHUD.WowMain and IceHUD.WowVer < 80000
@@ -492,6 +493,16 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 		end
 
 		return 0
+	end
+
+	-- Support for Spell IDs
+	if (IceHUD.GetPlayerAuraBySpellID and tonumber(ability) ~= nil) then
+		local aura = C_UnitAuras.GetPlayerAuraBySpellID(ability)
+		if aura ~= nil then
+			return aura.applications
+		else
+			return 0
+		end
 	end
 
 	local i = 1
