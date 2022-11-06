@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.3:
+
+- Add Spell ID support for aura tracking.
+
 v1.14.2:
 
 - Fix CC and Invuln modules not showing immediately when they should.
