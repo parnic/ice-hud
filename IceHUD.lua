@@ -36,7 +36,7 @@ else
 end
 
 -- compatibility/feature flags
-IceHUD.GetPlayerAuraBySpellID = IceHUD.WowMain and IceHUD.WowVer > 90000
+IceHUD.GetPlayerAuraBySpellID = _G["C_UnitAuras"] and C_UnitAuras.GetPlayerAuraBySpellID
 IceHUD.SpellFunctionsReturnRank = IceHUD.WowMain and IceHUD.WowVer < 80000
 IceHUD.EventExistsPlayerPetChanged = IceHUD.WowMain and IceHUD.WowVer < 80000
 IceHUD.EventExistsPetBarChanged = IceHUD.WowMain and IceHUD.WowVer < 80000
