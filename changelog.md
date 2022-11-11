@@ -3,6 +3,8 @@
 v1.14.3:
 
 - Add Spell ID support for aura tracking.
+- Add Evoker support.
+- Add Empowered Casting (hold-to-cast levels) support.
 
 v1.14.2:
 

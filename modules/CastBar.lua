@@ -39,6 +39,9 @@ function CastBar.prototype:GetDefaultSettings()
 	settings["rangeColor"] = true
 	settings["bAllowExpand"] = false
 	settings["respectLagTolerance"] = true
+	settings["lockUpperTextAlpha"] = true
+	settings["lockLowerTextAlpha"] = true
+	settings["empowerStageTextDisplay"] = "TOPLINE"
 
 	return settings
 end
@@ -236,6 +239,7 @@ function CastBar.prototype:GetOptions()
 				end,
 				set = function(info, v)
 					self.moduleSettings.lockUpperTextAlpha = v
+					self.moduleSettings.lockLowerTextAlpha = v
 					self:Redraw()
 				end,
 				order = 13
@@ -308,7 +312,26 @@ function CastBar.prototype:GetOptions()
 				disabled = function()
 					return not self.moduleSettings.enabled
 				end,
-			}
+			},
+
+			empowerStageText = {
+				type = 'select',
+				name = L["Empower stage label display"],
+				desc = L["How to display the stage of an empowered spell"],
+				get = function()
+					return self.moduleSettings.empowerStageTextDisplay
+				end,
+				set = function(info, value)
+					self.moduleSettings.empowerStageTextDisplay = value
+				end,
+				values = { NONE = L["Don't show"], TOPLINE = L["After spell name"], BOTTOMLINE = L["Below spell name"] },
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				hidden = function()
+					return not GetUnitEmpowerMinHoldTime
+				end,
+			},
 		}
 	}
 

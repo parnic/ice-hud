@@ -462,10 +462,14 @@ function IceClassPowerCounter.prototype:CheckValidSpec()
 	end
 end
 
+function IceClassPowerCounter.prototype:GetPowerEvent()
+	return IceHUD.UnitPowerEvent
+end
+
 function IceClassPowerCounter.prototype:DisplayCounter()
 	self:UnregisterEvent("PLAYER_LEVEL_UP")
 
-	self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateRunePower")
+	self:RegisterEvent(self:GetPowerEvent(), "UpdateRunePower")
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "UpdateRunePower")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
 	if IceHUD.EventExistsUnitMaxPower then
@@ -493,7 +497,7 @@ function IceClassPowerCounter.prototype:EnteringWorld()
 end
 
 function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
-	if event and (event == IceHUD.UnitPowerEvent or event == "UNIT_POWER_FREQUENT") and arg1 ~= "player" and arg1 ~= "vehicle" then
+	if event and (event == self:GetPowerEvent() or event == "UNIT_POWER_FREQUENT") and arg1 ~= "player" and arg1 ~= "vehicle" then
 		return
 	end
 

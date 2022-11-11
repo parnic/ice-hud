@@ -3,7 +3,7 @@ IceCastBar = IceCore_CreateClass(IceBarElement)
 
 local IceHUD = _G.IceHUD
 
-IceCastBar.Actions = { None = 0, Cast = 1, Channel = 2, Instant = 3, Success = 4, Failure = 5 }
+IceCastBar.Actions = { None = 0, Cast = 1, Channel = 2, Instant = 3, Success = 4, Failure = 5, ReverseChannel = 6 }
 
 IceCastBar.prototype.action = nil
 IceCastBar.prototype.actionStartTime = nil
@@ -49,6 +49,13 @@ function IceCastBar.prototype:init(name)
 	self:SetDefaultColor("CastChanneling", 242, 242, 10)
 	self:SetDefaultColor("CastSuccess", 242, 242, 70)
 	self:SetDefaultColor("CastFail", 1, 0, 0)
+	if GetUnitEmpowerMinHoldTime then
+		self:SetDefaultColor("EmpowerStage0", 165, 165, 165)
+		self:SetDefaultColor("EmpowerStage1", 242, 42, 10)
+		self:SetDefaultColor("EmpowerStage2", 242, 142, 10)
+		self:SetDefaultColor("EmpowerStage3", 242, 242, 10)
+		self:SetDefaultColor("EmpowerStage4", 242, 242, 242)
+	end
 	self.unit = "player"
 
 	self.delay = 0
@@ -108,6 +115,12 @@ function IceCastBar.prototype:Enable(core)
 		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "SpellCastChannelStart") -- unit, spell, rank
 		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "SpellCastChannelUpdate") -- unit, spell, rank
 		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "SpellCastChannelStop") -- unit, spell, rank
+
+		if GetUnitEmpowerHoldAtMaxTime then
+			self:RegisterEvent("UNIT_SPELLCAST_EMPOWER_START", "SpellCastChannelStart")
+			self:RegisterEvent("UNIT_SPELLCAST_EMPOWER_UPDATE", "SpellCastChannelUpdate")
+			self:RegisterEvent("UNIT_SPELLCAST_EMPOWER_STOP", "SpellCastChannelStop")
+		end
 
 	end
 	self:Show(false)
@@ -311,7 +324,13 @@ function IceCastBar.prototype:PositionIcons()
 	self.barFrame.icon:SetHeight(AuraIconHeight * self.moduleSettings.auraIconScale)
 end
 
+function IceCastBar.prototype:GetRemainingCastTime()
+	return self.actionStartTime + self.actionDuration - GetTime()
+end
 
+function IceCastBar.prototype:GetCurrentCastDurationMs()
+	return (GetTime() - (self.actionStartTime or GetTime())) * 1000
+end
 
 -- OnUpdate handler
 function IceCastBar.prototype:MyOnUpdate()
@@ -322,17 +341,15 @@ function IceCastBar.prototype:MyOnUpdate()
 		return
 	end
 
-	local time = GetTime()
-
 	self:Update()
 	self:SetTextAlpha()
 
 	-- handle casting and channeling
-	if (self.action == IceCastBar.Actions.Cast or self.action == IceCastBar.Actions.Channel) then
-		local remainingTime = self.actionStartTime + self.actionDuration - time
+	if (self.action == IceCastBar.Actions.Cast or self.action == IceCastBar.Actions.Channel or self.action == IceCastBar.Actions.ReverseChannel) then
+		local remainingTime = self:GetRemainingCastTime()
 		local scale = 1 - (self.actionDuration ~= 0 and remainingTime / self.actionDuration or 0)
 
-		if (self.moduleSettings.reverseChannel and self.action == IceCastBar.Actions.Channel) then
+		if self.action == IceCastBar.Actions.ReverseChannel then
 			scale = self.actionDuration ~= 0 and remainingTime / self.actionDuration or 0
 		end
 
@@ -343,14 +360,22 @@ function IceCastBar.prototype:MyOnUpdate()
 		end
 
 		local timeString = self.moduleSettings.showCastTime and string.format("%.1fs ", remainingTime) or ""
-		self:SetBottomText1(timeString .. self.actionMessage)
+		local empowerString = self.NumStages ~= nil and (L["Stage %d"]):format(self:GetCurrentStage()) or ""
+		local line1 = timeString .. self.actionMessage
+		if self.moduleSettings.empowerStageTextDisplay == "TOPLINE" then
+			line1 = line1 .. " " .. empowerString
+		end
+		if self.moduleSettings.empowerStageTextDisplay == "BOTTOMLINE" then
+			self:SetBottomText2(empowerString)
+		end
+		self:SetBottomText1(line1)
 
 		return
 	end
 
 
 	-- stop bar if casting or channeling is done (in theory this should not be needed)
-	if (self.action == IceCastBar.Actions.Cast or self.action == IceCastBar.Actions.Channel) then
+	if (self.action == IceCastBar.Actions.Cast or self.action == IceCastBar.Actions.Channel or self.action == IceCastBar.Actions.ReverseChannel) then
 		self:StopBar()
 		return
 	end
@@ -361,7 +386,7 @@ function IceCastBar.prototype:MyOnUpdate()
 		self.action == IceCastBar.Actions.Success or
 		self.action == IceCastBar.Actions.Failure)
 	then
-		local scale = time - self.actionStartTime
+		local scale = GetTime() - self.actionStartTime
 
 		if (scale > 1) then
 			self:StopBar()
@@ -381,12 +406,60 @@ function IceCastBar.prototype:MyOnUpdate()
 	self:StopBar()
 end
 
-function IceCastBar.prototype:GetCurrentCastingColor()
-	local updateColor = "CastCasting"
-	if self.action == IceCastBar.Actions.Channel then
-		updateColor = "CastChanneling"
+function IceCastBar.prototype:GetStageDuration(stage)
+	if not GetUnitEmpowerMinHoldTime then
+		return 0
 	end
-	return updateColor
+
+	if stage == 0 then
+		return GetUnitEmpowerMinHoldTime(self.unit)
+	end
+
+	return GetUnitEmpowerStageDuration(self.unit, stage);
+end
+
+function IceCastBar.prototype:GetDurationUpToStage(stage)
+	if stage == nil or stage < 0 then
+		return 0
+	end
+
+	local total = 0
+	for i=0,stage-1 do
+		total = total + self:GetStageDuration(i)
+	end
+
+	return total
+end
+
+function IceCastBar.prototype:GetCurrentStage()
+	if not GetUnitEmpowerMinHoldTime then
+		return 0
+	end
+
+	local castDuration = self:GetCurrentCastDurationMs()
+	for i=1,self.NumStages do
+		if castDuration < self:GetDurationUpToStage(i) then
+			return i - 1
+		end
+	end
+
+	return self.NumStages
+end
+
+function IceCastBar.prototype:IsCastingEmpowerSpell()
+	return self.NumStages ~= nil
+end
+
+function IceCastBar.prototype:GetCurrentCastingColor()
+	if self:IsCastingEmpowerSpell() then
+		return ("EmpowerStage%d"):format(self:GetCurrentStage())
+	end
+
+	if self.action == IceCastBar.Actions.Channel or self.action == IceCastBar.Actions.ReverseChannel then
+		return "CastChanneling"
+	end
+
+	return "CastCasting"
 end
 
 function IceCastBar.prototype:FlashBar(color, alpha, text, textColor)
@@ -406,7 +479,7 @@ end
 
 
 function IceCastBar.prototype:StartBar(action, message)
-	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill
+	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill, numStages
 	if IceHUD.SpellFunctionsReturnRank then
 		spell, rank, displayName, icon, startTime, endTime, isTradeSkill = UnitCastingInfo(self.unit)
 	else
@@ -416,7 +489,24 @@ function IceCastBar.prototype:StartBar(action, message)
 		if IceHUD.SpellFunctionsReturnRank then
 			spell, rank, displayName, icon, startTime, endTime = UnitChannelInfo(self.unit)
 		else
-			spell, displayName, icon, startTime, endTime = UnitChannelInfo(self.unit)
+			spell, displayName, icon, startTime, endTime, isTradeSkill, _, _, _, numStages = UnitChannelInfo(self.unit)
+		end
+	end
+
+	local isChargeSpell = numStages and numStages > 0
+	if isChargeSpell then
+		self.NumStages = numStages
+		endTime = endTime + GetUnitEmpowerHoldAtMaxTime(self.unit)
+		action = IceCastBar.Actions.ReverseChannel
+	else
+		self.NumStages = nil
+	end
+
+	if self.moduleSettings.reverseChannel then
+		if action == IceCastBar.Actions.Channel then
+			action = IceCastBar.Actions.ReverseChannel
+		elseif action == IceCastBar.Actions.ReverseChannel then
+			action = IceCastBar.Actions.Channel
 		end
 	end
 
@@ -465,6 +555,7 @@ function IceCastBar.prototype:StopBar()
 	self.actionDuration = nil
 
 	self:SetBottomText1()
+	self:SetBottomText2()
 	self:SetScale(0)
 	self:Show(false)
 end
@@ -514,7 +605,8 @@ function IceCastBar.prototype:SpellCastStop(event, unit, castGuid, spellId)
 
 	if (self.action ~= IceCastBar.Actions.Success and
 		self.action ~= IceCastBar.Actions.Failure and
-		self.action ~= IceCastBar.Actions.Channel)
+		self.action ~= IceCastBar.Actions.Channel and
+		self.action ~= IceCastBar.Actions.ReverseChannel)
 	then
 		self:StopBar()
 		self.current = nil
@@ -532,7 +624,7 @@ function IceCastBar.prototype:SpellCastFailed(event, unit, castGuid, spellId)
 	end
 
 	-- channeled spells will call ChannelStop, not cast failed
-	if self.action == IceCastBar.Actions.Channel then
+	if self.action == IceCastBar.Actions.Channel or self.action == IceCastBar.Actions.ReverseChannel then
 		return
 	end
 
@@ -582,7 +674,7 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 	--IceHUD:Debug("SpellCastSucceeded", unit, castGuid, spellId)
 
 	-- never show on channeled (why on earth does this event even fire when channeling starts?)
-	if (self.action == IceCastBar.Actions.Channel) then
+	if (self.action == IceCastBar.Actions.Channel or self.action == IceCastBar.Actions.ReverseChannel) then
 		return
 	end
 

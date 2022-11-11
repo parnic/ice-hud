@@ -99,6 +99,7 @@ modules\Stagger.lua
 modules\PlayerAltMana.lua
 modules\ArcaneCharges.lua
 modules\RollTheBones.lua
+modules\EssencePower.lua
 
 #@do-not-package@
 IceHUD_Options\Json.lua
