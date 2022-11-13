@@ -85,13 +85,13 @@ If you have |cff42ffffDogTags|r enabled, you can open the Text Settings for the 
 This is a side effect of the animation API that I'm co-opting to force a rotation without having to provide duplicates of every bar texture in the mod. Any bar moving sufficiently quickly and updating rapidly will cause this. |cff9999ffIceHUD|r is intended to be a vertically-oriented mod, so the rotation feature is there for people who are willing to accept the side effects that come with it. My suggestion is to use one of the many horizontally-oriented bar mods out there if you're wanting horizontal bars. |cff42ffffQuartz|r is a good castbar replacement that you can use and disable |cff9999ffIceHUD|r's built-in castbar, for example.
 
 |cff9999ff18. How do I get rid of the bars that showed up beneath the player in the 7.0 patch?|r
-Blizzard added a "Personal Resource Display" feature in the 7.0 game client. You can disable it in the Game options -> Interface -> Names -> Personal Resource Display (or Options -> Combat, in 10.0+).
+Blizzard added a "Personal Resource Display" feature in the 7.0 game client. You can disable it in the Game options -> |cffffdc42Interface|r -> |cffffdc42Names|r -> |cffffdc42Personal Resource Display|r (or Options -> |cffffdc42Combat|r -> |cffffdc42Personal Resource Display|r, in 10.0+).
 
 |cff9999ff19. Why is there no target castbar for Classic?|r
-The Classic game client doesn't offer a reliable way to show castbars for anyone except the player. You can install the LibCasterCasterino addon to enable support, but it's a best guess and not at all accurate.
+The Classic game client doesn't offer a reliable way to show castbars for anyone except the player. You can install the |cff42ffffLibCasterCasterino|r addon to enable support, but it's a best guess and not at all accurate.
 
 |cff9999ff20. Why do buff/debuff timers not work in Classic?|r
-The Classic game client doesn't provide this information to addons because it wasn't a feature when the game first released. You can install the LibClassicDurations addon to enable support, but it's a best guess and not at all accurate.]]
+The Classic game client doesn't provide this information to addons because it wasn't a feature when the game first released. You can install the |cff42ffffLibClassicDurations|r addon to enable support, but it's a best guess and not at all accurate.]]
 				}
 			}
 		},
