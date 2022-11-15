@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.4:
+
+- Update TOC for 10.0.2
+
 v1.14.3:
 
 - Add Spell ID support for aura tracking.
