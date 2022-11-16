@@ -393,6 +393,8 @@ function IceCastBar.prototype:MyOnUpdate()
 			return
 		end
 
+		self:UpdateBar(1, self:GetCurrentCastingColor())
+
 		if (self.action == IceCastBar.Actions.Failure) then
 			self:FlashBar("CastFail", 1-scale, self.actionMessage, "CastFail")
 		else
@@ -478,7 +480,7 @@ function IceCastBar.prototype:FlashBar(color, alpha, text, textColor)
 end
 
 
-function IceCastBar.prototype:StartBar(action, message)
+function IceCastBar.prototype:StartBar(action, message, spellId)
 	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill, numStages
 	if IceHUD.SpellFunctionsReturnRank then
 		spell, rank, displayName, icon, startTime, endTime, isTradeSkill = UnitCastingInfo(self.unit)
@@ -491,6 +493,10 @@ function IceCastBar.prototype:StartBar(action, message)
 		else
 			spell, displayName, icon, startTime, endTime, isTradeSkill, _, _, _, numStages = UnitChannelInfo(self.unit)
 		end
+	end
+
+	if spellId and not spell then
+		spell, rank, icon = GetSpellInfo(spellId)
 	end
 
 	local isChargeSpell = numStages and numStages > 0
@@ -514,7 +520,7 @@ function IceCastBar.prototype:StartBar(action, message)
 	if LibClassicCasterino and not spell then
 		self:StopBar()
 	elseif not spell then
-	  return
+		return
 	end
 
 	if icon ~= nil then
@@ -590,7 +596,7 @@ function IceCastBar.prototype:SpellCastStart(event, unit, castGuid, spellId)
 	IceHUD:Debug("SpellCastStart", unit, castGuid, spellId)
 	--UnitCastingInfo(unit)
 
-	self:StartBar(IceCastBar.Actions.Cast)
+	self:StartBar(IceCastBar.Actions.Cast, nil, spellId)
 	self.current = castGuid
 end
 
@@ -609,8 +615,9 @@ function IceCastBar.prototype:SpellCastStop(event, unit, castGuid, spellId)
 		self.action ~= IceCastBar.Actions.ReverseChannel)
 	then
 		self:StopBar()
-		self.current = nil
 	end
+
+	self.current = nil
 end
 
 
@@ -639,7 +646,7 @@ function IceCastBar.prototype:SpellCastFailed(event, unit, castGuid, spellId)
 		end
 	end
 
-	self:StartBar(IceCastBar.Actions.Failure, "Failed")
+	self:StartBar(IceCastBar.Actions.Failure, "Failed", nil, spellId)
 end
 
 function IceCastBar.prototype:SpellCastInterrupted(event, unit, castGuid, spellId)
@@ -653,7 +660,7 @@ function IceCastBar.prototype:SpellCastInterrupted(event, unit, castGuid, spellI
 
 	self.current = nil
 
-	self:StartBar(IceCastBar.Actions.Failure, "Interrupted")
+	self:StartBar(IceCastBar.Actions.Failure, "Interrupted", spellId)
 end
 
 function IceCastBar.prototype:SpellCastDelayed(event, unit, castGuid, spellId)
@@ -687,7 +694,7 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 
 	-- show after normal successfull cast
 	if (self.action == IceCastBar.Actions.Cast) then
-		self:StartBar(IceCastBar.Actions.Success, spell.. self:GetShortRank(rank))
+		self:StartBar(IceCastBar.Actions.Success, spell.. self:GetShortRank(rank), spellId)
 		return
 	end
 
@@ -700,7 +707,7 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 		end
 	end
 
-	self:StartBar(IceCastBar.Actions.Success, spell.. self:GetShortRank(rank))
+	self:StartBar(IceCastBar.Actions.Success, spell.. self:GetShortRank(rank), spellId)
 end
 
 

@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.5:
+
+- Fix castbar flashing. There are controls on the player castbar module for flashing when a spell succeeds or fails, and separate controls for flashing when an instant cast completes. Those were broken, but now work again.
+
 v1.14.4:
 
 - Update TOC for 10.0.2
