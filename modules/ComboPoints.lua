@@ -545,6 +545,9 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 		self.frame.numeric:SetTextColor(r, g, b, 0.7)
 
 		local pointsText = tostring(points)
+		if self.moduleSettings.bShowCharged and self:IsChargedPoint(points) then
+			pointsText = pointsText.."@"
+		end
 		if anticipate > 0 then
 			pointsText = pointsText.."+"..tostring(anticipate)
 		end
