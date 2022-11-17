@@ -10,6 +10,7 @@ local buffOrDebuff = {"buff", "debuff"}
 local validBuffTimers = {"none", "seconds", "minutes:seconds", "minutes"}
 local AuraIconWidth = 20
 local AuraIconHeight = 20
+local displayModes = {NORMAL = L["When present"], ALWAYS = L["Always"], WHEN_TARGETING = L["Always, when targeting"], MISSING = L["When missing"]}
 
 IceCustomBar.prototype.auraDuration = -1
 IceCustomBar.prototype.auraEndTime = -1
@@ -27,6 +28,16 @@ end
 -- OVERRIDE
 function IceCustomBar.prototype:Enable(core)
 	IceCustomBar.super.prototype.Enable(self, core)
+
+	-- fix up for new display mode setting
+	if self.moduleSettings.displayWhenTargeting then
+		self.moduleSettings.displayMode = displayModes.WHEN_TARGETING
+		self.moduleSettings.displayWhenTargeting = nil
+	end
+	if self.moduleSettings.displayWhenEmpty then
+		self.moduleSettings.displayMode = displayModes.ALWAYS
+		self.moduleSettings.displayWhenEmpty = nil
+	end
 
 	if IceHUD.IceCore:ShouldUseDogTags() then
 		DogTag = LibStub("LibDogTag-3.0", true)
@@ -149,8 +160,7 @@ function IceCustomBar.prototype:GetDefaultSettings()
 	settings["buffOrDebuff"] = "buff"
 	settings["barColor"] = {r=1, g=0, b=0, a=1}
 	settings["trackOnlyMine"] = true
-	settings["displayWhenEmpty"] = false
-	settings["displayWhenTargeting"] = false
+	settings["displayMode"] = displayModes.NORMAL
 	settings["hideAnimationSettings"] = true
 	settings["buffTimerDisplay"] = "minutes"
 	settings["maxDuration"] = 0
@@ -431,38 +441,39 @@ function IceCustomBar.prototype:GetOptions()
 		order = 30.8,
 	}
 
-	opts["displayWhenEmpty"] = {
-		type = 'toggle',
-		name = L["Display when empty"],
-		desc = L["Whether or not to display this bar even if the buff/debuff specified is not present."],
-		get = function()
-			return self.moduleSettings.displayWhenEmpty
+	opts["displayMode"] = {
+		type = 'select',
+		values = displayModes,
+		name = L["Display mode"],
+		desc = L["When to show the bar"],
+		get = function(info)
+			return IceHUD:GetSelectValue(info, self.moduleSettings.displayMode)
 		end,
 		set = function(info, v)
-			self.moduleSettings.displayWhenEmpty = v
+			self.moduleSettings.displayMode = info.option.values[v]
 			self:UpdateCustomBar()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 30.9
+		order = 30.9,
 	}
 
-	opts["displayWhenTargeting"] = {
+	opts["displayWhenUnitExists"] = {
 		type = 'toggle',
-		name = L["Display when targeting"],
-		desc = L["Whether to display this bar when you target a unit, even if the buff/debuff specified is not present."],
-		get = function()
-			return self.moduleSettings.displayWhenTargeting
+		name = L["Only if unit exists"],
+		desc = L["If checked, the bar will only be displayed (according to the 'Display mode' rules) when the Unit to Track exists (e.g. if set to Target and you're targeting something)."],
+		get = function(info)
+			return self.moduleSettings.displayWhenUnitExists
 		end,
 		set = function(info, v)
-			self.moduleSettings.displayWhenTargeting = v
+			self.moduleSettings.displayWhenUnitExists = v
 			self:UpdateCustomBar()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		order = 30.91
+		order = 30.91,
 	}
 
 	opts["buffTimerDisplay"] = {
@@ -866,9 +877,16 @@ function IceCustomBar.prototype:Show(bShouldShow, bForceHide)
 		return
 	end
 
-	if self.moduleSettings.displayWhenTargeting and self.target then
+	if self.moduleSettings.displayWhenUnitExists and not UnitExists(self.unit) then
+		IceCustomBar.super.prototype.Show(self, false)
+		return
+	end
+
+	if self.moduleSettings.displayMode == displayModes.MISSING then
+		IceCustomBar.super.prototype.Show(self, not bShouldShow)
+	elseif self.moduleSettings.displayMode == displayModes.WHEN_TARGETING and self.target then
 		IceCustomBar.super.prototype.Show(self, true)
-	elseif self.moduleSettings.displayWhenEmpty then
+	elseif self.moduleSettings.displayMode == displayModes.ALWAYS then
 		if not self.bIsVisible then
 			IceCustomBar.super.prototype.Show(self, true)
 		end
