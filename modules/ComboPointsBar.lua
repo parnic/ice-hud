@@ -11,6 +11,7 @@ function ComboPointsBar.prototype:init()
 
 	self:SetDefaultColor("ComboPointsBarMin", 1, 1, 0)
 	self:SetDefaultColor("ComboPointsBarMax", 0, 1, 0)
+	self:SetDefaultColor("ChargedComboPointBar", 0.3137254901960784, 0.3725490196078432, 1)
 
 	self.bTreatEmptyAsFull = true
 end
@@ -52,6 +53,26 @@ function ComboPointsBar.prototype:GetOptions()
 		end,
 	}
 
+	opts["bShowCharged"] = {
+		type = 'toggle',
+		width = 'double',
+		name = L["Show Charged points"],
+		desc = L["Whether or not to color a charged combo point a separate color and append an @ sign to the number. Set the ChargedComboPointBar color to the color you would like it to be."],
+		get = function()
+			return self.moduleSettings.bShowCharged
+		end,
+		set = function(info, v)
+			self.moduleSettings.bShowCharged = v
+			self:UpdateComboPoints()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return not GetUnitChargedPowerPoints
+		end,
+	}
+
 	return opts
 end
 
@@ -62,6 +83,7 @@ function ComboPointsBar.prototype:GetDefaultSettings()
 	defaults.alwaysDisplay = false
 	defaults.desiredLerpTime = 0.05
 	defaults.bShowWithNoTarget = true
+	defaults.bShowCharged = true
 	return defaults
 end
 
@@ -84,17 +106,7 @@ function ComboPointsBar.prototype:Enable(core)
 	end
 
 	if GetUnitChargedPowerPoints then
-		self:RegisterEvent("UNIT_POWER_POINT_CHARGE", "UpdateChargedComboPoints")
-	end
-
-	self:UpdateChargedComboPoints()
-end
-
-function ComboPointsBar.prototype:UpdateChargedComboPoints()
-	if GetUnitChargedPowerPoints then
-		local chargedPowerPoints = GetUnitChargedPowerPoints("player")
-		self.chargedPowerPointIndex = chargedPowerPoints and chargedPowerPoints[1]
-		self:UpdateComboPoints()
+		self:RegisterEvent("UNIT_POWER_POINT_CHARGE", "UpdateComboPoints")
 	end
 end
 
@@ -131,20 +143,46 @@ function ComboPointsBar.prototype:UpdateComboPoints(...)
 		points = nil
 	end
 
+	local isCharged = self:IsChargedPoint(points) and self.moduleSettings.bShowCharged
+
 	if points == nil or points == 0 or (not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget) then
 		self:Show(self.moduleSettings.alwaysDisplay)
 		self:UpdateBar(0, "undef")
 	else
 		self:Show(true)
-		self:SetScaledColor(color, (points - 1) / 4.0, self.settings.colors["ComboPointsBarMax"], self.settings.colors["ComboPointsBarMin"])
+		if isCharged then
+			color.r, color.g, color.b = self:GetColor("ChargedComboPointBar")
+		else
+			self:SetScaledColor(color, (points - 1) / 4.0, self.settings.colors["ComboPointsBarMax"], self.settings.colors["ComboPointsBarMin"])
+		end
 		self:UpdateBar(points / UnitPowerMax("player", SPELL_POWER_COMBO_POINTS), "undef")
 		self.barFrame.bar:SetVertexColor(color.r, color.g, color.b, self.alpha)
 	end
 
-	self:SetBottomText1(points or "0")
-	if self.chargedPowerPointIndex then
-		self:SetBottomText2(self.chargedPowerPointIndex)
+	local pointsText = tostring(points or 0)
+	if isCharged then
+		pointsText = pointsText .. "@"
 	end
+	self:SetBottomText1(pointsText or "0")
+end
+
+function ComboPointsBar.prototype:IsChargedPoint(point)
+	if not GetUnitChargedPowerPoints or not point then
+		return false
+	end
+
+	local chargedPoints = GetUnitChargedPowerPoints("player")
+	if not chargedPoints then
+		return false
+	end
+
+	for i=1, #chargedPoints do
+		if chargedPoints[i] == point then
+			return true
+		end
+	end
+
+	return false
 end
 
 function ComboPointsBar.prototype:Update()

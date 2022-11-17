@@ -4,6 +4,7 @@ v1.14.5:
 
 - Fix castbar flashing. There are controls on the player castbar module for flashing when a spell succeeds or fails, and separate controls for flashing when an instant cast completes. Those were broken, but now work again.
 - Add "@" after the number when the Combo Points module is in Numeric mode, "Show Charged points" is enabled, and the current combo point is charged.
+- Fix Charged point support in the ComboPointsBar module.
 
 v1.14.4:
 
