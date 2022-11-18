@@ -707,6 +707,11 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 		end
 	end
 
+	-- handle special spells that are used for quests or other things that don't apply to the player
+	if self.unit == "player" and not IsPlayerSpell(spellId) then
+		return
+	end
+
 	self:StartBar(IceCastBar.Actions.Success, spell.. self:GetShortRank(rank), spellId)
 end
 
