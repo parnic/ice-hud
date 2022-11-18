@@ -63,6 +63,10 @@ function IceElement.prototype:GetElementName()
 	return self.elementName
 end
 
+function IceElement.prototype:GetElementDescription()
+	return L["Module options"]
+end
+
 
 function IceElement.prototype:Create(parent)
 	assert(parent, "IceElement 'parent' can't be nil")

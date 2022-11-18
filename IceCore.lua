@@ -645,10 +645,11 @@ function IceCore.prototype:GetModuleOptions()
 
 	for i = 1, table.getn(self.elements) do
 		local modName = self.elements[i]:GetElementName()
+		local modDesc = self.elements[i]:GetElementDescription()
 		local opt = self.elements[i]:GetOptions()
 		options[modName] =  {
 			type = 'group',
-			desc = L["Module options"],
+			desc = modDesc,
 			name = modName,
 			args = opt
 		}
