@@ -4,6 +4,7 @@ v1.14.6:
 
 - Add ability for buff/debuff watchers to only display when the specified buff/debuff is missing. This also adds the ability to require that the given unit exists. So if you had Unit set to Target, Display mode set to Missing, and Only if unit exists checked, you'd show the bar if you have a target and they don't have the given buff/debuff.
 - Don't flash the castbar for instant-cast spells that the player didn't cast (such as internal quest spells).
+- Add DruidEnergy module (disabled by default). This module will show the player's Energy level if they're a Druid and currently shapeshifted to a non-energy-using form (eligible forms are configurable by the user).
 
 v1.14.5:
 
