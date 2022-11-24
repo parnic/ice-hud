@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.7:
+
+- Add option to scale absorb bar by the unit's maximum health.
+
 v1.14.6:
 
 - Add ability for buff/debuff watchers to only display when the specified buff/debuff is missing. This also adds the ability to require that the given unit exists. So if you had Unit set to Target, Display mode set to Missing, and Only if unit exists checked, you'd show the bar if you have a target and they don't have the given buff/debuff.
