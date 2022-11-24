@@ -1,3 +1,4 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 IceTargetAbsorb = IceCore_CreateClass(IceUnitBar)
 
 IceTargetAbsorb.prototype.highestAbsorbSinceLastZero = 0
@@ -29,6 +30,28 @@ function IceTargetAbsorb.prototype:GetDefaultSettings()
 	return settings
 end
 
+function IceTargetAbsorb.prototype:GetOptions()
+	local opts = IceTargetAbsorb.super.prototype.GetOptions(self)
+
+	opts["scaleToUnitHealth"] = {
+		type = 'toggle',
+		name = L["Scale to health"],
+		desc = L["Whether the bar's maximum value should be set to the unit's maximum health or not. If set, any absorb above that amount will not be shown."],
+		get = function()
+			return self.moduleSettings.scaleToUnitHealth
+		end,
+		set = function(info, v)
+			self.moduleSettings.scaleToUnitHealth = v
+			self:Update()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end
+	}
+
+	return opts
+end
+
 function IceTargetAbsorb.prototype:Enable(core)
 	IceTargetAbsorb.super.prototype.Enable(self, core)
 
@@ -47,6 +70,7 @@ function IceTargetAbsorb.prototype:MyUnregisterCustomEvents()
 end
 
 function IceTargetAbsorb.prototype:Update()
+	IceTargetAbsorb.super.prototype.Update(self)
 	self:UpdateAbsorbAmount()
 end
 
@@ -63,13 +87,17 @@ function IceTargetAbsorb.prototype:UpdateAbsorbAmount(event, unit)
 		self.highestAbsorbSinceLastZero = absorbAmount
 	end
 
-	self.absorbPercent = self.highestAbsorbSinceLastZero ~= 0 and absorbAmount / self.highestAbsorbSinceLastZero or 0
+	local maxAbsorb = self.highestAbsorbSinceLastZero
+	if self.moduleSettings.scaleToUnitHealth then
+		maxAbsorb = self.maxHealth
+	end
+	self.absorbPercent = maxAbsorb ~= 0 and IceHUD:Clamp(absorbAmount / maxAbsorb, 0, 1) or 0
 
-	if absorbAmount <= 0 or self.highestAbsorbSinceLastZero <= 0 then
+	if absorbAmount <= 0 or maxAbsorb <= 0 then
 		self:Show(false)
 	else
 		self:Show(true)
-		self:UpdateBar(absorbAmount / self.highestAbsorbSinceLastZero, self.ColorName)
+		self:UpdateBar(self.absorbPercent, self.ColorName)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
