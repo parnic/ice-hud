@@ -280,12 +280,12 @@ function IceUnitBar.prototype:Update()
 	if( self.moduleSettings.lowThresholdColor ) then
 		if( self.healthPercentage < self.moduleSettings.lowThreshold ) then
 			self.settings.colors[ "ScaledHealthColor" ] = self.settings.colors[ "MinHealthColor" ]
-		else
+		elseif not self.moduleSettings.scaleHealthColor then
 			self.settings.colors[ "ScaledHealthColor" ] = self.settings.colors[ "MaxHealthColor" ]
 		end
 		if( self.manaPercentage < self.moduleSettings.lowThreshold ) then
 			self.settings.colors[ "ScaledManaColor" ] = self.settings.colors[ "MinManaColor" ]
-		else
+		elseif not self.moduleSettings.scaleManaColor then
 			self.settings.colors[ "ScaledManaColor" ] = self.settings.colors[ "MaxManaColor" ]
 		end
 	end
