@@ -278,12 +278,12 @@ function IceUnitBar.prototype:Update()
 	-- This looks slightly quirky. Basically the easiest way for me to achieve this is to have lowThresholdColor override
 	-- the scaled color. You'll need to switch them both on to get things to work.
 	if( self.moduleSettings.lowThresholdColor ) then
-		if( self.healthPercentage < self.moduleSettings.lowThreshold ) then
+		if( self.healthPercentage <= self.moduleSettings.lowThreshold ) then
 			self.settings.colors[ "ScaledHealthColor" ] = self.settings.colors[ "MinHealthColor" ]
 		elseif not self.moduleSettings.scaleHealthColor then
 			self.settings.colors[ "ScaledHealthColor" ] = self.settings.colors[ "MaxHealthColor" ]
 		end
-		if( self.manaPercentage < self.moduleSettings.lowThreshold ) then
+		if( self.manaPercentage <= self.moduleSettings.lowThreshold ) then
 			self.settings.colors[ "ScaledManaColor" ] = self.settings.colors[ "MinManaColor" ]
 		elseif not self.moduleSettings.scaleManaColor then
 			self.settings.colors[ "ScaledManaColor" ] = self.settings.colors[ "MaxManaColor" ]
