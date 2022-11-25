@@ -1,5 +1,10 @@
 # Changelog
 
+v1.14.8:
+
+- Fix Color By Health % to work with Low Threshold Color option. Previously, if Low Threshold was set, the color was always either MaxHealth/MaxMana or MinHealth/MinMana, it would never be colored by health %. Now if both are set, it will scale by health % until it reaches the low threshold, at which point it will switch to the Min color.
+- Fix Low Threshold color and flashing to work at the same percentage. Previously these were slightly different such that it would start flashing at 40% but not turn to the Min color until 39.9999%, for example.
+
 v1.14.7:
 
 - Add option to scale absorb bar by the unit's maximum health.
