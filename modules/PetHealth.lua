@@ -93,6 +93,8 @@ function PetHealth.prototype:Update(unit)
 
 	if (self.moduleSettings.scaleHealthColor) then
 		color = "ScaledHealthColor"
+	elseif self.moduleSettings.lowThresholdColor and self.healthPercentage <= self.moduleSettings.lowThreshold then
+		color = "ScaledHealthColor"
 	end
 
 	if not (self.alive) then

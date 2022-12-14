@@ -87,7 +87,7 @@ function IceUnitBar.prototype:GetOptions()
 			self:Redraw()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.lowThresholdFlash
+			return not self.moduleSettings.enabled or not (self.moduleSettings.lowThresholdFlash or self.moduleSettings.lowThresholdColor)
 		end,
 		min = 0,
 		max = 1,
@@ -105,9 +105,13 @@ function IceUnitBar.prototype:GetOptions()
 		end,
 		set = function(info, v)
 			self.moduleSettings.lowThresholdFlash = v
+			self:Redraw()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return self.noFlash
 		end,
 		order = 30.092
 	}
@@ -123,7 +127,7 @@ function IceUnitBar.prototype:GetOptions()
 			self:Redraw()
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled or not (self.moduleSettings.scaleHealthColor and self.moduleSettings.scaleManaColor)
+			return not self.moduleSettings.enabled
 		end,
 		order = 30.093
 	}

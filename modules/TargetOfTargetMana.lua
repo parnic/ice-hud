@@ -83,6 +83,8 @@ function TargetTargetMana.prototype:Update(unit)
 
 	if (self.moduleSettings.scaleManaColor) then
 		self.color = "ScaledManaColor"
+	elseif self.moduleSettings.lowThresholdColor and self.manaPercentage <= self.moduleSettings.lowThreshold then
+		self.color = "ScaledManaColor"
 	end
 
 	if (manaType == 1) then

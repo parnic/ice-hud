@@ -364,6 +364,8 @@ function FocusHealth.prototype:Update(unit)
 
 	if (self.moduleSettings.scaleHealthColor) then
 		self.color = "ScaledHealthColor"
+	elseif self.moduleSettings.lowThresholdColor and self.healthPercentage <= self.moduleSettings.lowThreshold then
+		self.color = "ScaledHealthColor"
 	end
 
 	if (self.tapped) then

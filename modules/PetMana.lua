@@ -173,6 +173,8 @@ function PetMana.prototype:Update(unit)
 	local color = "PetMana"
 	if (self.moduleSettings.scaleManaColor) then
 		color = "ScaledManaColor"
+	elseif self.moduleSettings.lowThresholdColor and self.manaPercentage <= self.moduleSettings.lowThreshold then
+		color = "ScaledManaColor"
 	end
 	if not (self.alive) then
 		color = "Dead"

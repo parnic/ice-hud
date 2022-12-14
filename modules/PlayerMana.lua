@@ -344,6 +344,8 @@ function PlayerMana.prototype:Update(unit, powertype)
 		color = "Dead"
 	elseif (self.moduleSettings.scaleManaColor and (UnitPowerType(self.unit) == SPELL_POWER_MANA or self.moduleSettings.scaleManaColorForAll)) then
 		color = "ScaledManaColor"
+	elseif self.moduleSettings.lowThresholdColor and self.manaPercentage <= self.moduleSettings.lowThreshold then
+		color = "ScaledManaColor"
 	else
 		if (self.manaType == SPELL_POWER_RAGE) then
 			color = "PlayerRage"

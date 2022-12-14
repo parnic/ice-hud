@@ -88,6 +88,8 @@ function FocusMana.prototype:Update(unit)
 	local color = "FocusMana"
 	if (self.moduleSettings.scaleManaColor) then
 		color = "ScaledManaColor"
+	elseif self.moduleSettings.lowThresholdColor and self.manaPercentage <= self.moduleSettings.lowThreshold then
+		color = "ScaledManaColor"
 	end
 	if (manaType == SPELL_POWER_RAGE) then
 		color = "FocusRage"

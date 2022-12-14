@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.9:
+
+- Fix Low Threshold to be usable even when Color By Health/Mana % is disabled. (ticket #334)
+
 v1.14.8:
 
 - Fix Color By Health % to work with Low Threshold Color option. Previously, if Low Threshold was set, the color was always either MaxHealth/MaxMana or MinHealth/MinMana, it would never be colored by health %. Now if both are set, it will scale by health % until it reaches the low threshold, at which point it will switch to the Min color.
