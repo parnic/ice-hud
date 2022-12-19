@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.10:
+
+- Fix an error in TargetTargetHealth/Mana and CustomHealth when Low Threshold Color was checked and Scale by Health % was un-checked.
+
 v1.14.9:
 
 - Fix Low Threshold to be usable even when Color By Health/Mana % is disabled. (ticket #334)
