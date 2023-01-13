@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.11:
+
+- Packaged a new version of LibDogTag-Unit to fix the Guild roster resetting its scroll position every 20 seconds.
+
 v1.14.10:
 
 - Fix an error in TargetTargetHealth/Mana and CustomHealth when Low Threshold Color was checked and Scale by Health % was un-checked.
