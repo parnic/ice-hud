@@ -101,6 +101,7 @@ modules\ArcaneCharges.lua
 modules\RollTheBones.lua
 modules\EssencePower.lua
 modules\DruidEnergy.lua
+modules\DragonridingVigor.lua
 
 #@do-not-package@
 IceHUD_Options\Json.lua

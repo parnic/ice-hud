@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.12:
+
+- Added a module for showing Dragonriding Vigor points.
+
 v1.14.11:
 
 - Packaged a new version of LibDogTag-Unit to fix the Guild roster resetting its scroll position every 20 seconds.

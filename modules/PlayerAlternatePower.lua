@@ -35,6 +35,7 @@ function PlayerAlternatePower.prototype:Enable(core)
 	self:RegisterEvent("UNIT_POWER_BAR_SHOW", "PowerBarShow")
 	self:RegisterEvent("UNIT_POWER_BAR_HIDE", "PowerBarHide")
 
+	self.wantToShow = true
 	self:Update(self.unit)
 
 	if self.maxPower == 0 then
@@ -50,6 +51,7 @@ function PlayerAlternatePower.prototype:PowerBarShow(event, unit)
 		return
 	end
 
+	self.wantToShow = true
 	self:Show(true)
 	self:Update(self.unit)
 end
@@ -59,6 +61,7 @@ function PlayerAlternatePower.prototype:PowerBarHide(event, unit)
 		return
 	end
 
+	self.wantToShow = false
 	self:Show(false)
 	self:Update(self.unit)
 end
@@ -71,6 +74,12 @@ function PlayerAlternatePower.prototype:Update(unit)
 	PlayerAlternatePower.super.prototype.Update(self)
 	if (unit and (unit ~= self.unit)) then
 		return
+	end
+
+	if IceHUD.DragonridingVigor and IceHUD.DragonridingVigor.bIsVisible then
+		self:Show(false)
+	elseif self.wantToShow then
+		self:Show(true)
 	end
 
 	self.maxPower = UnitPowerMax(self.unit, self.powerIndex)
