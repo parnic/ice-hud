@@ -21,6 +21,7 @@ IceClassPowerCounter.prototype.unit = "player"
 IceClassPowerCounter.prototype.round = ceil
 IceClassPowerCounter.prototype.growModes = { width = 1, height = 2 }
 IceClassPowerCounter.prototype.currentGrowMode = IceClassPowerCounter.prototype.growModes["height"]
+IceClassPowerCounter.prototype.shouldRegisterDisplayPower = true
 
 -- Constructor --
 function IceClassPowerCounter.prototype:init(name)
@@ -470,7 +471,9 @@ function IceClassPowerCounter.prototype:DisplayCounter()
 	self:UnregisterEvent("PLAYER_LEVEL_UP")
 
 	self:RegisterEvent(self:GetPowerEvent(), "UpdateRunePower")
-	self:RegisterEvent("UNIT_DISPLAYPOWER", "UpdateRunePower")
+	if self.shouldRegisterDisplayPower then
+		self:RegisterEvent("UNIT_DISPLAYPOWER", "UpdateRunePower")
+	end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
 	if IceHUD.EventExistsUnitMaxPower then
 		self:RegisterEvent("UNIT_MAXPOWER", "UpdateRunePower")
