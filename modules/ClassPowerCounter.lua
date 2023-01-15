@@ -542,7 +542,7 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 		for i=1, self.numRunes do
 			if i <= self.round(percentReady) then
 				if self:GetRuneMode() == "Graphical" then
-					self.frame.graphical[i].rune:SetVertexColor(1, 1, 1)
+					self:SetRuneGraphicalTexture(i)
 				else
 					self:SetCustomColor(i)
 				end
@@ -826,12 +826,7 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 	end
 
 	if self:GetRuneMode() == "Graphical" then
-		local tex = self:GetRuneTexture(rune)
-		if tex then
-			self.frame.graphical[rune].rune:SetTexture(tex)
-		else
-			self.frame.graphical[rune].rune:SetAtlas(self:GetRuneAtlas(rune), self:UseAtlasSize(rune))
-		end
+		self:SetRuneGraphicalTexture(rune)
 	elseif self:GetRuneMode() == "Graphical Bar" then
 		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "Combo")
 	elseif self:GetRuneMode() == "Graphical Circle" then
@@ -840,6 +835,17 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "ComboGlow")
 	elseif self:GetRuneMode() == "Graphical Clean Circle" then
 		self.frame.graphical[rune].rune:SetTexture(IceElement.TexturePath .. "ComboCleanCurves")
+	end
+end
+
+function IceClassPowerCounter.prototype:SetRuneGraphicalTexture(rune)
+	self.frame.graphical[rune].rune:SetVertexColor(1, 1, 1)
+
+	local tex = self:GetRuneTexture(rune)
+	if tex then
+		self.frame.graphical[rune].rune:SetTexture(tex)
+	else
+		self.frame.graphical[rune].rune:SetAtlas(self:GetRuneAtlas(rune), self:UseAtlasSize(rune))
 	end
 end
 
