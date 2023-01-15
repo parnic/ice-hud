@@ -713,6 +713,14 @@ function IceClassPowerCounter.prototype:GetShineAtlas(rune)
 	return nil
 end
 
+function IceClassPowerCounter.prototype:GetFrameAtlas(rune)
+	return nil
+end
+
+function IceClassPowerCounter.prototype:GetBackgroundAtlas(rune)
+	return nil
+end
+
 function IceClassPowerCounter.prototype:GetPartialRuneAtlas(rune)
 	return nil
 end
@@ -749,6 +757,21 @@ function IceClassPowerCounter.prototype:SetDisplayMode()
 		for i=1, self.numRunes do
 			self:SetupRuneTexture(i)
 			self.frame.graphical[i]:Show()
+
+			if self.frame.graphical[i].frame then
+				if self:GetRuneMode() == "Graphical" then
+					self.frame.graphical[i].frame:Show()
+				else
+					self.frame.graphical[i].frame:Hide()
+				end
+			end
+			if self.frame.graphical[i].bg then
+				if self:GetRuneMode() == "Graphical" then
+					self.frame.graphical[i].bg:Show()
+				else
+					self.frame.graphical[i].bg:Hide()
+				end
+			end
 		end
 	end
 end
@@ -783,7 +806,7 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 		self.frame.graphical[i] = CreateFrame("Frame", nil, self.frame)
 		self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
 
-		self.frame.graphical[i].rune = self.frame.graphical[i]:CreateTexture(nil, "ARTWORK")
+		self.frame.graphical[i].rune = self.frame.graphical[i]:CreateTexture(nil, "BORDER")
 		self.frame.graphical[i].rune:SetVertexColor(0, 0, 0)
 		self:SetupRuneTexture(i)
 
@@ -802,6 +825,22 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 		self.frame.graphical[i].shine:SetHeight(self.runeHeight + 10)
 		self.frame.graphical[i].shine:Hide()
 
+		local frameAtlas = self:GetFrameAtlas(i)
+		if frameAtlas then
+			self.frame.graphical[i].frame = self.frame.graphical[i]:CreateTexture(nil, "ARTWORK")
+			self.frame.graphical[i].frame:SetAtlas(frameAtlas)
+			self.frame.graphical[i].frame:ClearAllPoints()
+			self.frame.graphical[i].frame:SetPoint("CENTER", self.frame.graphical[i], "CENTER")
+		end
+
+		local bgAtlas = self:GetBackgroundAtlas(i)
+		if bgAtlas then
+			self.frame.graphical[i].bg = self.frame.graphical[i]:CreateTexture(nil, "BACKGROUND")
+			self.frame.graphical[i].bg:SetAtlas(bgAtlas)
+			self.frame.graphical[i].bg:ClearAllPoints()
+			self.frame.graphical[i].bg:SetAllPoints(self.frame.graphical[i])
+		end
+
 		self.frame.graphical[i]:Hide()
 	end
 
@@ -809,6 +848,10 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 	self.frame.graphical[i]:SetHeight(self.runeHeight)
 	self.frame.graphical[i].rune:SetWidth(self.runeWidth)
 	self.frame.graphical[i].rune:SetHeight(self.runeHeight)
+	if self.frame.graphical[i].frame then
+		self.frame.graphical[i].frame:SetWidth(self.runeWidth + 10)
+		self.frame.graphical[i].frame:SetHeight(self.runeHeight + 10)
+	end
 	if self.currentGrowMode == self.growModes["width"] then
 		self.frame.graphical[i].rune:SetPoint("LEFT", self.frame.graphical[i], "LEFT")
 	else
