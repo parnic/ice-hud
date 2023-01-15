@@ -772,7 +772,7 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 			self.frame.graphical[i].shine:SetAtlas(self:GetShineAtlas(i))
 		else
 			self.frame.graphical[i].shine:SetTexture("Interface\\ComboFrame\\ComboPoint")
-		self.frame.graphical[i].shine:SetTexCoord(0.5625, 1, 0, 1)
+			self.frame.graphical[i].shine:SetTexCoord(0.5625, 1, 0, 1)
 		end
 		self.frame.graphical[i].shine:SetBlendMode("ADD")
 		self.frame.graphical[i].shine:ClearAllPoints()
