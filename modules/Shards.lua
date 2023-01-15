@@ -131,7 +131,7 @@ function ShardCounter.prototype:UpdatePowerType(event)
 
 	self.shouldShowUnmodified = false
 	self.requiredSpec = CurrentSpec
-	self.currentGrowMode = nil
+	self.currentGrowMode = self.growModes["height"]
 
 	if CurrentSpec == SPEC_WARLOCK_AFFLICTION then
 		self.runeCoords = AfflictionCoords

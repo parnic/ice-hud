@@ -20,7 +20,7 @@ IceClassPowerCounter.prototype.unmodifiedMaxPerRune = 10
 IceClassPowerCounter.prototype.unit = "player"
 IceClassPowerCounter.prototype.round = ceil
 IceClassPowerCounter.prototype.growModes = { width = 1, height = 2 }
-IceClassPowerCounter.prototype.currentGrowMode = nil
+IceClassPowerCounter.prototype.currentGrowMode = IceClassPowerCounter.prototype.growModes["height"]
 
 -- Constructor --
 function IceClassPowerCounter.prototype:init(name)
@@ -549,33 +549,14 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 				end
 
 				if i > numReady or self.numRunes == 1 then
-					local left, right, top, bottom = 0, 1, 0, 1
-					if self:GetRuneMode() == "Graphical" then
-						left, right, top, bottom = unpack(self.runeCoords[i])
-					end
-
 					local currPercent = percentReady - numReady
 					if self.numRunes == 1 then
 						currPercent = numReady / UnitPowerMax("player", self.unitPower)
 					end
 
-					if self.currentGrowMode == self.growModes["height"] then
-						top = bottom - (currPercent * (bottom - top))
-						self.frame.graphical[i].rune:SetHeight(currPercent * self.runeHeight)
-					elseif self.currentGrowMode == self.growModes["width"] then
-						right = left + (currPercent * (right - left))
-						self.frame.graphical[i].rune:SetWidth(currPercent * self.runeWidth)
-					end
-					self.frame.graphical[i].rune:SetTexCoord(left, right, top, bottom)
+					self:SetRuneCoords(i, currPercent)
 				elseif i > self.lastNumReady then
-					if self.runeCoords ~= nil and #self.runeCoords >= i then
-						local left, right, top, bottom = 0, 1, 0, 1
-						if self:GetRuneMode() == "Graphical" then
-							left, right, top, bottom = unpack(self.runeCoords[i])
-						end
-						self.frame.graphical[i].rune:SetTexCoord(left, right, top, bottom)
-						self.frame.graphical[i].rune:SetHeight(self.runeHeight)
-					end
+					self:SetRuneCoords(i, 1)
 
 					if self.moduleSettings.flashWhenBecomingReady then
 						local fadeInfo={
@@ -607,6 +588,27 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 	if (self.moduleSettings.hideBlizz) then
 		self:HideBlizz()
 	end
+end
+
+function IceClassPowerCounter.prototype:SetRuneCoords(rune, percent)
+	if self.runeCoords == nil or #self.runeCoords < rune then
+		return
+	end
+
+	local left, right, top, bottom = 0, 1, 0, 1
+	if self:GetRuneMode() == "Graphical" then
+		left, right, top, bottom = unpack(self.runeCoords[rune])
+	end
+
+	if self.currentGrowMode == self.growModes["height"] then
+		top = bottom - (percent * (bottom - top))
+		self.frame.graphical[rune].rune:SetHeight(percent * self.runeHeight)
+	elseif self.currentGrowMode == self.growModes["width"] then
+		right = left + (percent * (right - left))
+		self.frame.graphical[rune].rune:SetWidth(percent * self.runeWidth)
+	end
+
+	self.frame.graphical[rune].rune:SetTexCoord(left, right, top, bottom)
 end
 
 function IceClassPowerCounter.prototype:HideRune(i)
