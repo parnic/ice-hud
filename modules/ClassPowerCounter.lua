@@ -391,7 +391,7 @@ function IceClassPowerCounter.prototype:GetDefaultSettings()
 	defaults["hideFriendly"] = false
 	defaults["pulseWhenFull"] = true
 	defaults["overrideAlpha"] = true
-	defaults["numericVerticalOffset"] = 0
+	defaults["numericVerticalOffset"] = -25
 	defaults["alwaysShowNumeric"] = false
 
 	return defaults
@@ -712,6 +712,7 @@ end
 function IceClassPowerCounter.prototype:SetDisplayMode()
 	if self:GetRuneMode() == "Numeric" or self.moduleSettings.alsoShowNumeric then
 		self.frame.numeric:Show()
+		self.frame.numeric:SetPoint("CENTER", self.frame.numericParent, "CENTER", 0, self.moduleSettings.runeMode == "Numeric" and 0 or self.moduleSettings.numericVerticalOffset)
 		for i=1, self.numRunes do
 			self.frame.graphical[i]:Hide()
 		end
@@ -737,7 +738,6 @@ function IceClassPowerCounter.prototype:CreateRuneFrame()
 
 	self.frame.numeric:SetJustifyH("CENTER")
 
-	self.frame.numeric:SetPoint("CENTER", self.frame.numericParent, "CENTER", 0, self.moduleSettings.numericVerticalOffset)
 	self.frame.numeric:Hide()
 
 	if (not self.frame.graphical) then
