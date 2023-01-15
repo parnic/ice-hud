@@ -530,10 +530,15 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 	local percentReady = self.shouldShowUnmodified and (UnitPower("player", self.unitPower, true) / self.unmodifiedMaxPerRune) or numReady
 
 	if self:GetRuneMode() == "Numeric" or self.moduleSettings.alsoShowNumeric then
+		local displayPercent = percentReady
+		if self.partialReadyPercent then
+			displayPercent = percentReady + self.partialReadyPercent
+		end
+
 		if self.numericFormat then
-			self.frame.numeric:SetText(format(self.numericFormat, percentReady))
+			self.frame.numeric:SetText(format(self.numericFormat, displayPercent))
 		else
-			self.frame.numeric:SetText(tostring(percentReady))
+			self.frame.numeric:SetText(tostring(displayPercent))
 		end
 		self.frame.numeric:SetTextColor(self:GetColor(self.numericColor))
 	end
@@ -572,6 +577,17 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 					end
 				end
 			else
+				if self.partialReady then
+					if i == self.partialReady then
+						self:SetRuneCoords(i, self.partialReadyPercent)
+						if self:GetRuneMode() == "Graphical" then
+							self:SetRuneGraphicalTexture(i, true)
+						end
+					else
+						self:SetRuneCoords(i, 0)
+					end
+				end
+
 				self:HideRune(i)
 			end
 		end
@@ -694,6 +710,10 @@ function IceClassPowerCounter.prototype:UseAtlasSize(rune)
 end
 
 function IceClassPowerCounter.prototype:GetShineAtlas(rune)
+	return nil
+end
+
+function IceClassPowerCounter.prototype:GetPartialRuneAtlas(rune)
 	return nil
 end
 
@@ -838,14 +858,16 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 	end
 end
 
-function IceClassPowerCounter.prototype:SetRuneGraphicalTexture(rune)
+function IceClassPowerCounter.prototype:SetRuneGraphicalTexture(rune, partial)
 	self.frame.graphical[rune].rune:SetVertexColor(1, 1, 1)
 
 	local tex = self:GetRuneTexture(rune)
 	if tex then
 		self.frame.graphical[rune].rune:SetTexture(tex)
 	else
-		self.frame.graphical[rune].rune:SetAtlas(self:GetRuneAtlas(rune), self:UseAtlasSize(rune))
+		local partialAtlas = self:GetPartialRuneAtlas(rune)
+		local atlas = (partial and partialAtlas) and partialAtlas or self:GetRuneAtlas(rune)
+		self.frame.graphical[rune].rune:SetAtlas(atlas, self:UseAtlasSize(rune))
 	end
 end
 
