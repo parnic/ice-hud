@@ -71,8 +71,6 @@ function DragonridingVigor.prototype:UpdateVigorRecharge(event, widget)
 	if event ~= "internal" then
 		if self.moduleSettings.hideBlizz then
 			self:HideBlizz()
-		else
-			self:ShowBlizz()
 		end
 	end
 
