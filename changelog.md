@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.13:
+
+- Fixed Vigor module hiding default Climbing, Film, etc. UIs. (wowace ticket #336)
+
 v1.14.12:
 
 - Added a module for showing Dragonriding Vigor points.
