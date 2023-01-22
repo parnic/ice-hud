@@ -53,6 +53,9 @@ function DragonridingVigor.prototype:CheckShouldShow(event, unit, info)
 		self:Show(true)
 	else
 		self:Show(false)
+		if self.moduleSettings.hideBlizz then
+			self:ShowBlizz()
+		end
 	end
 end
 
@@ -71,6 +74,8 @@ function DragonridingVigor.prototype:UpdateVigorRecharge(event, widget)
 	if event ~= "internal" then
 		if self.moduleSettings.hideBlizz then
 			self:HideBlizz()
+		else
+			self:ShowBlizz()
 		end
 	end
 
