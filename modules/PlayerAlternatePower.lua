@@ -35,11 +35,12 @@ function PlayerAlternatePower.prototype:Enable(core)
 	self:RegisterEvent("UNIT_POWER_BAR_SHOW", "PowerBarShow")
 	self:RegisterEvent("UNIT_POWER_BAR_HIDE", "PowerBarHide")
 
-	self.wantToShow = true
 	self:Update(self.unit)
 
 	if self.maxPower == 0 then
 		self:Show(false)
+	else
+		self.wantToShow = true
 	end
 	if self.moduleSettings.hideBlizz then
 		self:HideBlizz()
