@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.15:
+
+- Updated TOCs for 10.0.5
+
 v1.14.14:
 
 - Fixed PlayerAlternatePower bar showing up when it shouldn't have, such as when casting Power Word: Shield before ever having done anything to trigger a game-level "alternate power" event, such as mounting a Dragonriding mount.
