@@ -89,11 +89,11 @@ function Totems.prototype:GetOptions()
 		end,
 		order = 31
 	}
---[[
+
 	opts["hideBlizz"] = {
 		type = "toggle",
 		name = L["Hide Blizzard Frame"],
-		desc = L["Hides Blizzard Rune frame and disables all events related to it"],
+		desc = L["Hides Blizzard frame and disables all events related to it.\n\nNOTE: Blizzard attaches this UI to the player's unitframe, so if you have that hidden in PlayerHealth, then this won't do anything."],
 		get = function()
 			return self.moduleSettings.hideBlizz
 		end,
@@ -110,7 +110,7 @@ function Totems.prototype:GetOptions()
 		end,
 		order = 32
 	}
---]]
+
 	opts["displayMode"] = {
 		type = 'select',
 		name = L["Totem orientation"],
