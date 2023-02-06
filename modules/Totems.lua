@@ -193,7 +193,7 @@ function Totems.prototype:GetDefaultSettings()
 	defaults["totemFontSize"] = 20
 	defaults["totemMode"] = "Graphical"
 	defaults["usesDogTagStrings"] = false
-	defaults["hideBlizz"] = true
+	defaults["hideBlizz"] = IceHUD.CanHookDestroyTotem
 	defaults["alwaysFullAlpha"] = false
 	defaults["displayMode"] = "Horizontal"
 	defaults["cooldownMode"] = "Cooldown"
