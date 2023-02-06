@@ -616,7 +616,10 @@ function IceClassPowerCounter.prototype:SetRuneCoords(rune, percent)
 
 	local left, right, top, bottom = 0, 1, 0, 1
 	if self:GetRuneMode() == "Graphical" then
-		left, right, top, bottom = unpack(self.runeCoords[rune])
+		local coords = self.runeCoords[rune]
+		if coords then
+			left, right, top, bottom = unpack(coords)
+		end
 	end
 
 	if self.currentGrowMode == self.growModes["height"] then
@@ -874,7 +877,10 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 	local a,b,c,d = 0, 1, 0, 1
 	if self:GetRuneMode() == "Graphical" then
 		width = self.runeWidth
-		a,b,c,d = unpack(self.runeCoords[rune])
+		local coords = self.runeCoords[rune]
+		if coords then
+			a,b,c,d = unpack(coords)
+		end
 	end
 
 	-- make sure any texture aside from the special one is square and has the proper coordinates

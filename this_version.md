@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.16:
+
+- Fixed a reported error when playing Darkmoon Faire games.
+
 v1.14.15:
 
 - Updated TOCs for 10.0.5
