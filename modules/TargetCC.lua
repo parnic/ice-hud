@@ -72,10 +72,20 @@ local IncapacitateCCList = {
 	19503,
 	-- Sleep
 	700,
-	-- Polymorph
+	-- Polymorph (rank 1)
 	118,
+	-- Also Polymorph
+	65801,
+	-- Polymorph rank 2
+	12824,
+	-- Polymorph rank 3
+	12825,
+	-- Polymorph rank 4
+	12826,
 	-- Polymorph: Pig
 	28272,
+	-- Also Polymorph: Pig
+	28285,
 	-- Polymorph: Turtle
 	28271,
 	-- Polymorph: Penguin

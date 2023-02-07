@@ -4,6 +4,7 @@ v1.14.16:
 
 - Exposed the option in the Totems module to hide the Blizzard Totems frame or not, and changed the default value to not hide when on a version of the game that doesn't support right-clicking to destroy totems (any version after Wrath). This enables using the default Totems frame to cancel totems early.
 - Fixed a reported error when playing Darkmoon Faire games.
+- Added a few more Polymorph ranks to TargetCC for Classic. I'm sure there are more missing.
 
 v1.14.15:
 
