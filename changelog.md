@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.17:
+
+- Updated TOCs for 10.0.7
+
 v1.14.16:
 
 - Exposed the option in the Totems module to hide the Blizzard Totems frame or not, and changed the default value to not hide when on a version of the game that doesn't support right-clicking to destroy totems (any version after Wrath). This enables using the default Totems frame to cancel totems early.
