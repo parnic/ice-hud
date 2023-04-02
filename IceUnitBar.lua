@@ -19,10 +19,11 @@ IceUnitBar.prototype.hasPet = nil
 
 IceUnitBar.prototype.noFlash = nil
 
-local SPELL_POWER_INSANITY, SPELL_POWER_RAGE = SPELL_POWER_INSANITY, SPELL_POWER_RAGE
+local SPELL_POWER_INSANITY, SPELL_POWER_RAGE, SPELL_POWER_RUNIC_POWER = SPELL_POWER_INSANITY, SPELL_POWER_RAGE, SPELL_POWER_RUNIC_POWER
 if Enum and Enum.PowerType then
 	SPELL_POWER_INSANITY = Enum.PowerType.Insanity
 	SPELL_POWER_RAGE = Enum.PowerType.Rage
+	SPELL_POWER_RUNIC_POWER = Enum.PowerType.RunicPower
 end
 
 -- Constructor --
@@ -239,7 +240,9 @@ function IceUnitBar.prototype:Update()
 	-- so this technically doesn't get us the answer we want most of the time. too risky to change at this point, though.
 	self.mana = UnitPower(self.unit, UnitPowerType(self.unit))
 	self.maxMana = UnitPowerMax(self.unit, UnitPowerType(self.unit))
-	if UnitPowerType(self.unit) == SPELL_POWER_RAGE and self.maxMana == 1000 then
+	local powerType = UnitPowerType(self.unit)
+	if (powerType == SPELL_POWER_RAGE and self.maxMana == 1000)
+		or (powerType == SPELL_POWER_RUNIC_POWER and self.maxMana >= 1000) then
 		self.mana = IceHUD:MathRound(self.mana / 10)
 		self.maxMana = IceHUD:MathRound(self.maxMana / 10)
 	end

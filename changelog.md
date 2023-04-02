@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.18:
+
+- Fixed Runic Power showing on a scale of 0-1000+ instead of 0-100+ with DogTags off
+
 v1.14.17:
 
 - Updated TOCs for 10.0.7
