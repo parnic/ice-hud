@@ -3,6 +3,7 @@
 v1.14.18:
 
 - Fixed Runic Power showing on a scale of 0-1000+ instead of 0-100+ with DogTags off
+- Added option (enabled by default) to hide mod during cataloging.
 
 v1.14.17:
 

@@ -60,6 +60,8 @@ IceHUD.SupportsHealPrediction = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
 IceHUD.UnitGroupRolesReturnsRoleString = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
 IceHUD.ShellGameSpellID = 271571
 IceHUD.HasShellGame = GetSpellInfo(IceHUD.ShellGameSpellID)
+IceHUD.CatalogingSpellIDs = {366290, 372817, 385025, 385635, 386070, 386504, 400043, 403115}
+IceHUD.HasCataloging = GetSpellInfo(366290)
 
 IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 

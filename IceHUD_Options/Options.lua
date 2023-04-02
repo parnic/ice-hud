@@ -426,6 +426,24 @@ The Classic game client doesn't provide this information to addons because it wa
 					hidden = not IceHUD.HasShellGame,
 					order = 36,
 				},
+
+				bHideDuringCataloging = {
+					type = 'toggle',
+					name = L["Hide during cataloging"],
+					desc = L["This will hide the entire mod when using the Dragonflight Cataloging camera."],
+					width = 'double',
+					get = function()
+						return IceHUD.IceCore.settings.bHideDuringCataloging
+					end,
+					set = function(info, value)
+						IceHUD.IceCore.settings.bHideDuringCataloging = value
+						if not value then
+							IceHUD.IceCore.IceHUDFrame:Show()
+						end
+					end,
+					hidden = not IceHUD.HasCataloging,
+					order = 36,
+				},
 			}
 		},
 

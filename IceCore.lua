@@ -115,6 +115,7 @@ function IceCore.prototype:SetupDefaults()
 			bHideDuringPetBattles = true,
 			bHideInBarberShop = true,
 			bHideDuringShellGame = true,
+			bHideDuringCataloging = true,
 		},
 		global = {
 			lastRunVersion = 0,
@@ -284,6 +285,7 @@ function IceCore.prototype:Enable(userToggle)
 		self.IceHUDFrame:RegisterEvent("ZONE_CHANGED")
 	end
 	self.IceHUDFrame:RegisterEvent("UNIT_AURA")
+	self.IceHUDFrame:RegisterEvent("UNIT_ENTERED_VEHICLE")
 	self.IceHUDFrame:RegisterEvent("PLAYER_REGEN_ENABLED", IceHUD.PLAYER_REGEN_ENABLED)
 	self.IceHUDFrame:RegisterEvent("PLAYER_REGEN_DISABLED", IceHUD.PLAYER_REGEN_DISABLED)
 	self.IceHUDFrame:SetScript("OnEvent", function(self, event, ...)
@@ -303,6 +305,11 @@ function IceCore.prototype:Enable(userToggle)
 			if IceHUD.IceCore.settings.bHideInBarberShop then
 				self:Show()
 			end
+		elseif event == "UNIT_ENTERED_VEHICLE" then
+			if IceHUD.IceCore.settings.bHideDuringCataloging and IceHUD:HasAnyBuff("player", IceHUD.CatalogingSpellIDs) then
+				self:RegisterEvent("UNIT_EXITED_VEHICLE")
+				self:Hide()
+			end
 		elseif (event == "UNIT_AURA") then
 			local unit = ...
 			if unit ~= "player" then
@@ -310,6 +317,9 @@ function IceCore.prototype:Enable(userToggle)
 			end
 
 			if IceHUD.IceCore.settings.bHideDuringShellGame and IceHUD:HasAnyDebuff("player", {IceHUD.ShellGameSpellID}) and UnitInVehicle("player") then
+				self:RegisterEvent("UNIT_EXITED_VEHICLE")
+				self:Hide()
+			elseif IceHUD.IceCore.settings.bHideDuringCataloging and IceHUD:HasAnyBuff("player", IceHUD.CatalogingSpellIDs) and UnitInVehicle("player") then
 				self:RegisterEvent("UNIT_EXITED_VEHICLE")
 				self:Hide()
 			elseif C_Map then
