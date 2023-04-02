@@ -120,6 +120,9 @@ function PlayerInfo.prototype:ShowBlizz()
 	end
 
 	BuffFrame:GetScript("OnLoad")(BuffFrame)
+	if BuffFrame.Update then
+		BuffFrame:Update()
+	end
 end
 
 
