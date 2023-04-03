@@ -1,5 +1,16 @@
 # Changelog
 
+v1.14.18:
+
+- Fixed Runic Power showing on a scale of 0-1000+ instead of 0-100+ with DogTags off
+- Added option (enabled by default) to hide mod during cataloging.
+- Fixed "Hide Blizzard Buffs" option on PlayerInfo causing errors and "?" icons when toggling off.
+- Also hide Debuff frame if it exists (Dragonflight+) when enabling "Hide Blizzard Buffs" in the PlayerInfo module.
+
+v1.14.17:
+
+- Updated TOCs for 10.0.7
+
 v1.14.16:
 
 - Exposed the option in the Totems module to hide the Blizzard Totems frame or not, and changed the default value to not hide when on a version of the game that doesn't support right-clicking to destroy totems (any version after Wrath). This enables using the default Totems frame to cancel totems early.
