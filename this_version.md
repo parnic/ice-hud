@@ -1,5 +1,11 @@
 # Changelog
 
+v1.14.19:
+
+- Updated TOCs for 10.1.0
+- Added addon icon for 10.1.0 clients
+- Fixed Dragonriding Vigor charges not showing up in 10.1.0
+
 v1.14.18:
 
 - Fixed Runic Power showing on a scale of 0-1000+ instead of 0-100+ with DogTags off

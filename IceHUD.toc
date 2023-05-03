@@ -1,5 +1,5 @@
-## Interface: 100007
-## Interface-Retail: 100007
+## Interface: 100100
+## Interface-Retail: 100100
 ## Interface-Classic: 11403
 ## Interface-BCC: 20504
 ## Interface-Wrath: 30401
@@ -14,6 +14,7 @@
 # ## Version: @project-version@
 #@end-non-debug@
 ## SavedVariables: IceCoreDB
+## IconTexture: Interface\Icons\Spell_Frost_Frost
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDogTag-3.0, LibDogTag-Unit-3.0, LibRangeCheck-2.0, LibDualSpec-1.0, LibDBIcon-1.0, AceGUI-3.0-SharedMediaWidgets
 ## X-Category: HUDs
 ## X-Website: https://www.wowace.com/projects/ice-hud

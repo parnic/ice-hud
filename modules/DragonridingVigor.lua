@@ -10,6 +10,8 @@ local DragonridingBuffs = {
 
 local vigorWidgetSetID = 283
 local vigorWidgetID = 4460
+local unitPowerType = Enum and Enum.PowerType and Enum.PowerType.AlternateMount
+unitPowerType = unitPowerType or ALTERNATE_POWER_INDEX
 
 function DragonridingVigor.prototype:init()
 	DragonridingVigor.super.prototype.init(self, "Vigor")
@@ -18,7 +20,7 @@ function DragonridingVigor.prototype:init()
 
 	self.unit = "player"
 	self.numericColor = "VigorNumeric"
-	self.unitPower = ALTERNATE_POWER_INDEX
+	self.unitPower = unitPowerType
 	self.minLevel = 0
 	self.bTreatEmptyAsFull = false
 	self.runeWidth = self.runeHeight
@@ -26,7 +28,7 @@ function DragonridingVigor.prototype:init()
 end
 
 function DragonridingVigor.prototype:Enable(core)
-	self.numRunes = UnitPowerMax(self.unit, ALTERNATE_POWER_INDEX)
+	self.numRunes = UnitPowerMax(self.unit, unitPowerType)
 	self.runeCoords = { }
 	for i = 1, self.numRunes do
 		self:SetupNewRune(i)
@@ -151,6 +153,6 @@ function DragonridingVigor.prototype:HideBlizz()
 end
 
 -- Load us up
-if ALTERNATE_POWER_INDEX and C_UIWidgetManager and C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo then
+if unitPowerType and C_UIWidgetManager and C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo then
 	IceHUD.DragonridingVigor = DragonridingVigor:new()
 end
