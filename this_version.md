@@ -5,6 +5,7 @@ v1.14.19:
 - Updated TOCs for 10.1.0
 - Added addon icon for 10.1.0 clients
 - Fixed Dragonriding Vigor charges not showing up in 10.1.0
+- Fixed Vigor not always updating correctly when loading into the game or a new zone
 
 v1.14.18:
 

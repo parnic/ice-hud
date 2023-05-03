@@ -43,7 +43,7 @@ end
 function DragonridingVigor.prototype:EnteringWorld()
 	DragonridingVigor.super.prototype.EnteringWorld(self)
 
-	self:CheckShouldShow("player")
+	self:CheckShouldShow("PLAYER_ENTERING_WORLD", "player")
 end
 
 function DragonridingVigor.prototype:CheckShouldShow(event, unit, info)
