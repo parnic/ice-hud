@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.20:
+
+- Added Winding Slitherdrake as recognized for the Dragonriding Vigor module
+
 v1.14.19:
 
 - Updated TOCs for 10.1.0

@@ -6,6 +6,7 @@ local DragonridingBuffs = {
 	368896, -- Renewed Proto-Drake
 	368899, -- Windborn Velocidrake
 	368901, -- Cliffside Wylderdrake
+	368893, -- Winding Slitherdrake
 }
 
 local vigorWidgetSetID = 283
