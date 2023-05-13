@@ -161,7 +161,7 @@ The Classic game client doesn't provide this information to addons because it wa
 						IceHUD.IceCore:SetScale(v)
 					end,
 					min = 0.2,
-					max = 2.0,
+					max = 4.0,
 					step = 0.05,
 					isPercent = true,
 					order = 14,

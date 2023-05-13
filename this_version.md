@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.21:
+
+- Increased maximum scale/zoom to 400%, by request.
+
 v1.14.20:
 
 - Added Winding Slitherdrake as recognized for the Dragonriding Vigor module
