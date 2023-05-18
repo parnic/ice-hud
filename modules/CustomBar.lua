@@ -83,6 +83,7 @@ function IceCustomBar.prototype:Enable(core)
 	self:FixupTextColors()
 	self:SetCustomTextColor(self.frame.bottomUpperText, self.moduleSettings.upperTextColor)
 	self:SetCustomTextColor(self.frame.bottomLowerText, self.moduleSettings.lowerTextColor)
+	self:UpdateAuraIcon()
 end
 
 function IceCustomBar.prototype:Disable(core)
@@ -204,6 +205,7 @@ end
 function IceCustomBar.prototype:Redraw()
 	IceCustomBar.super.prototype.Redraw(self)
 
+	self:UpdateAuraIcon()
 	self:UpdateCustomBar(self.unit)
 end
 
@@ -902,4 +904,14 @@ function IceCustomBar.prototype:Show(bShouldShow, bForceHide)
 	else
 		IceCustomBar.super.prototype.Show(self, bShouldShow)
 	end
+end
+
+function IceCustomBar.prototype:UpdateAuraIcon()
+	if not self.barFrame or not self.barFrame.icon then
+		return
+	end
+
+	local _, _, auraIcon = GetSpellInfo(self.moduleSettings.buffToTrack)
+
+	self.barFrame.icon:SetTexture(auraIcon)
 end

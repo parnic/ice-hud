@@ -6,6 +6,7 @@ v1.14.21:
 - Fixed TargetCC/FocusCC modules on Wrath Classic.
 - Fixed disabled Buff/Debuff Watchers showing a static gray bar when set to When Missing or Always display modes.
 - Fixed Buff/Debuff Watchers showing an empty bar when set to Missing mode. If the background was disabled, this looked like just a floating spell icon.
+- Fixed spell icons sometimes not showing up for custom bars until the tracked spell had been cast once.
 
 v1.14.20:
 
