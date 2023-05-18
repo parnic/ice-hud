@@ -883,9 +883,14 @@ function IceCustomBar.prototype:Show(bShouldShow, bForceHide)
 	end
 
 	if self.moduleSettings.displayMode == displayModes.MISSING then
-		IceCustomBar.super.prototype.Show(self, not bShouldShow)
+		local show = not bShouldShow
+		if show and not self:IsEnabled() then
+			show = false
+		end
+
+		IceCustomBar.super.prototype.Show(self, show)
 	elseif self.moduleSettings.displayMode == displayModes.WHEN_TARGETING and self.target then
-		IceCustomBar.super.prototype.Show(self, true)
+		IceCustomBar.super.prototype.Show(self, self:IsEnabled())
 	elseif self.moduleSettings.displayMode == displayModes.ALWAYS then
 		if not self.bIsVisible then
 			IceCustomBar.super.prototype.Show(self, true)
