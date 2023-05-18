@@ -822,7 +822,11 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 
 		self:UpdateBar(self.auraDuration ~= 0 and remaining / self.auraDuration or 0, "undef")
 	else
-		self:UpdateBar(0, "undef")
+		local updateVal = 0
+		if self.moduleSettings.displayMode == displayModes.MISSING then
+			updateVal = 1
+		end
+		self:UpdateBar(updateVal, "undef")
 		self:Show(false)
 		if not self:ShouldAlwaysSubscribe() then
 			self.handlesOwnUpdates = false
