@@ -360,7 +360,7 @@ function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 	while debuff do
 		remaining = endTime - GetTime()
 
-		if debuffNames[spellId] and (not self.moduleSettings.onlyShowForMyDebuffs or isMine) then
+		if (debuffNames[spellId] or debuffNames[debuff]) and (not self.moduleSettings.onlyShowForMyDebuffs or isMine) then
 			if result[0] then
 				if result[2] < remaining then
 					result = {debuff, duration, remaining}

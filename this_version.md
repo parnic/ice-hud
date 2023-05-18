@@ -3,6 +3,7 @@
 v1.14.21:
 
 - Increased maximum scale/zoom to 400%, by request.
+- Fixed TargetCC/FocusCC modules on Wrath Classic.
 
 v1.14.20:
 
