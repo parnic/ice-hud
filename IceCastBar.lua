@@ -386,19 +386,24 @@ function IceCastBar.prototype:MyOnUpdate()
 		self.action == IceCastBar.Actions.Success or
 		self.action == IceCastBar.Actions.Failure)
 	then
-		local scale = GetTime() - self.actionStartTime
+		local scale
+		if self.actionStartTime then
+			scale = GetTime() - self.actionStartTime
+		end
 
-		if (scale > 1) then
+		if scale and (scale > 1) then
 			self:StopBar()
 			return
 		end
 
 		self:UpdateBar(1, self:GetCurrentCastingColor())
 
-		if (self.action == IceCastBar.Actions.Failure) then
-			self:FlashBar("CastFail", 1-scale, self.actionMessage, "CastFail")
-		else
-			self:FlashBar("CastSuccess", 1-scale, self.actionMessage)
+		if scale then
+			if (self.action == IceCastBar.Actions.Failure) then
+				self:FlashBar("CastFail", 1-scale, self.actionMessage, "CastFail")
+			else
+				self:FlashBar("CastSuccess", 1-scale, self.actionMessage)
+			end
 		end
 		return
 	end
@@ -465,7 +470,9 @@ function IceCastBar.prototype:GetCurrentCastingColor()
 end
 
 function IceCastBar.prototype:FlashBar(color, alpha, text, textColor)
-	self.frame:SetAlpha(alpha)
+	if alpha then
+		self.frame:SetAlpha(alpha)
+	end
 
 	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
 	if (self.settings.backgroundToggle) then
