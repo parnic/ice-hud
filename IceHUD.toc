@@ -2,7 +2,7 @@
 ## Interface-Retail: 100100
 ## Interface-Classic: 11403
 ## Interface-BCC: 20504
-## Interface-Wrath: 30401
+## Interface-Wrath: 30402
 ## Author: Parnic, originally created by Iceroth
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f-Ace3-|r
