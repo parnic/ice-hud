@@ -3,6 +3,7 @@
 v1.14.22:
 
 - Fixed reported issue with a Lua error on Wrath Classic clients. https://www.wowace.com/projects/ice-hud/issues/344
+- Fixed Vigor module not working when riding Grotto Netherwing Drake (and theoretically all future Dragonriding mount types).
 
 v1.14.21:
 

@@ -7,10 +7,12 @@ local DragonridingBuffs = {
 	368899, -- Windborn Velocidrake
 	368901, -- Cliffside Wylderdrake
 	368893, -- Winding Slitherdrake
+	412088, -- Grotto Netherwing Drake
 }
 
 local vigorWidgetSetID = 283
 local vigorWidgetID = 4460
+local knowsAlternateMountEnum = Enum and Enum.PowerType and Enum.PowerType.AlternateMount
 local unitPowerType = Enum and Enum.PowerType and Enum.PowerType.AlternateMount
 unitPowerType = unitPowerType or ALTERNATE_POWER_INDEX
 
@@ -52,7 +54,9 @@ function DragonridingVigor.prototype:CheckShouldShow(event, unit, info)
 		return
 	end
 
-	if IceHUD:HasAnyBuff("player", DragonridingBuffs) then
+	if knowsAlternateMountEnum and UnitPowerMax(self.unit, unitPowerType) > 0 then
+		self:Show(true)
+	elseif IceHUD:HasAnyBuff("player", DragonridingBuffs) then
 		self:Show(true)
 	else
 		self:Show(false)
