@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.23:
+
+- Update Dragonflight TOC for 10.1.5
+
 v1.14.22:
 
 - Fixed reported issue with a Lua error on Wrath Classic clients. https://www.wowace.com/projects/ice-hud/issues/344
