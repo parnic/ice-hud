@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.24:
+
+- Fixed an error when targeting a player and right-clicking a module that should show a menu in 10.1.5.
+
 v1.14.23:
 
 - Update Dragonflight TOC for 10.1.5
