@@ -1453,7 +1453,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 				end
 			else
 				self.frame[auraFrame].iconFrames[i]:Hide()
-				buffData[aura][i] = nil
+				table.remove(buffData[aura], i)
 			end
 		end
 	end
