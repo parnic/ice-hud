@@ -996,7 +996,7 @@ function IceBarElement.prototype:CreateBackground()
 		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.masterFrame)
 	end
 
-	self.frame:SetFrameStrata("BACKGROUND")
+	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	self.frame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.frame:SetHeight(self.settings.barHeight)
 

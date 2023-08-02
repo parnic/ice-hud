@@ -74,7 +74,7 @@ function IceElement.prototype:Create(parent)
 	self.parent = parent
 	if not self.masterFrame then
 		self.masterFrame = CreateFrame("Frame", "IceHUD_Element_"..self.elementName, self.parent)
-		self.masterFrame:SetFrameStrata("MEDIUM")
+		self.masterFrame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("MEDIUM"))
 	end
 	self:CreateFrame()
 	self:Show(false)

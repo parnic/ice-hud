@@ -612,7 +612,7 @@ function IceCore.prototype:IsEnabled()
 end
 
 function IceCore.prototype:DrawFrame()
-	self.IceHUDFrame:SetFrameStrata("BACKGROUND")
+	self.IceHUDFrame:SetFrameStrata(self:DetermineStrata("BACKGROUND"))
 	self.IceHUDFrame:SetWidth(self.settings.gap)
 	self.IceHUDFrame:SetHeight(20)
 
