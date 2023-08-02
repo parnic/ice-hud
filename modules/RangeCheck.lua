@@ -126,7 +126,7 @@ function RangeCheck.prototype:CreateFrame(redraw)
 	end
 
 	self.frame:SetScale(self.moduleSettings.scale)
-	self.frame:SetFrameStrata("BACKGROUND")
+	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	self.frame:SetWidth(200)
 	self.frame:SetHeight(32)
 	self.frame:ClearAllPoints()

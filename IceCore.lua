@@ -116,6 +116,8 @@ function IceCore.prototype:SetupDefaults()
 			bHideInBarberShop = true,
 			bHideDuringShellGame = true,
 			bHideDuringCataloging = true,
+			
+			addedStrata = 0,
 		},
 		global = {
 			lastRunVersion = 0,
@@ -931,6 +933,48 @@ function IceCore.prototype:SetColor(color, r, g, b)
 	self:Redraw()
 end
 
+function IceCore.prototype:GetAddedStrata()
+	return self.settings.addedStrata
+end
+
+function IceCore.prototype:SetAddedStrata(value)
+	self.settings.addedStrata = value
+end
+
+-- Preventing ugly if-else blocks in module creations
+-- (but could probably itself be smarter/prettier)
+-- Frisbees/AddonWhiner
+function IceCore.prototype:DetermineStrata(baseStrata)
+	if self.settings.addedStrata == 0 then
+		return baseStrata
+	end
+	
+	if self.settings.addedStrata == 1 then
+		if baseStrata == "BACKGROUND" then
+			return "LOW"
+		elseif baseStrata == "LOW" then
+			return "MEDIUM"
+		elseif baseStrata == "MEDIUM" then
+			return "HIGH"
+		elseif baseStrata == "HIGH" then
+			return "DIALOG"
+		end
+	end
+	
+	if self.settings.addedStrata == 2 then
+		if baseStrata == "BACKGROUND" then
+			return "MEDIUM"
+		elseif baseStrata == "LOW" then
+			return "HIGH"
+		elseif baseStrata == "MEDIUM" then
+			return "DIALOG"
+		elseif baseStrata == "HIGH" then
+			return "FULLSCREEN"
+		end
+	end
+	
+	return baseStrata -- failsafe
+end
 
 function IceCore.prototype:IsInConfigMode()
 	return self.bConfigMode

@@ -1136,7 +1136,7 @@ do 	-- OVERRIDE: IceTargetInfo.prototype:CreateFrame(redraw)
 
 		self.frame:SetScale(self.moduleSettings.scale)
 
-		self.frame:SetFrameStrata("BACKGROUND")
+		self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 		self.frame:SetWidth(self.width)
 		self.frame:SetHeight(32)
 		self.frame:ClearAllPoints()
@@ -1220,7 +1220,7 @@ function IceTargetInfo.prototype:CreateAuraFrame(aura, redraw)
 
 	if (not self.frame[auraFrame]) then
 		self.frame[auraFrame] = CreateFrame("Frame", nil, self.frame)
-		self.frame[auraFrame]:SetFrameStrata("BACKGROUND")
+		self.frame[auraFrame]:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 		self.frame[auraFrame]:SetWidth(1)
 		self.frame[auraFrame]:SetHeight(1)
 		self.frame[auraFrame]:Show()
@@ -1244,7 +1244,7 @@ end
 do
 	local function FrameFactory(frameType, parentFrame, inheritsFrame)
 		local frame = CreateFrame(frameType, nil, parentFrame, inheritsFrame)
-		frame:SetFrameStrata("BACKGROUND")
+		frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 		frame:ClearAllPoints()
 		return frame
 	end

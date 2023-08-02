@@ -137,7 +137,7 @@ function StaggerBar.prototype:CreateFrame()
 end
 
 function StaggerBar.prototype:CreateTimerBar()
-	self.timerFrame = self:BarFactory(self.timerFrame, "MEDIUM","ARTWORK", "Timer")
+	self.timerFrame = self:BarFactory(self.timerFrame, IceHUD.IceCore:DetermineStrata("MEDIUM"),"ARTWORK", "Timer")
 
 	self.CurrScale = 0
 

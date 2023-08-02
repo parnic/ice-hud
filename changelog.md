@@ -1,5 +1,10 @@
 # Changelog
 
+v1.14.25:
+
+- Fixed lua error that would appear when targetting webwrapped players in heroic alpha/beta titan rune dungeons.
+- Added ability to adjust strata globally.
+
 v1.14.24:
 
 - Fixed an error when targeting a player and right-clicking a module that should show a menu in 10.1.5.

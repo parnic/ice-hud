@@ -984,9 +984,9 @@ end
 
 function IceTargetHealth.prototype:UpdateRaidTargetIcon()
 	if self.moduleSettings.raidIconOnTop then
-		self.frame.raidIcon:SetFrameStrata("MEDIUM")
+		self.frame.raidIcon:SetFrameStrata(IceHUD.IceCore:DetermineStrata("MEDIUM"))
 	else
-		self.frame.raidIcon:SetFrameStrata("LOW")
+		self.frame.raidIcon:SetFrameStrata(IceHUD.IceCore:DetermineStrata("LOW"))
 	end
 
 	if not self.moduleSettings.showRaidIcon or (not UnitExists(self.unit) and (not self.configMode and not IceHUD.IceCore:IsInConfigMode())) then

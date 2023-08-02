@@ -444,6 +444,22 @@ The Classic game client doesn't provide this information to addons because it wa
 					hidden = not IceHUD.HasCataloging,
 					order = 36,
 				},
+				
+				bIncreaseStrata = {
+					type = 'range',
+					name = L["Added strata"],
+					desc = L["Push IceHUD modules to the foreground. Increase if other addons are covering IceHUD. Requires reload."],
+					get = function()
+						return IceHUD.IceCore:GetAddedStrata()
+					end,
+					set = function(info, v)
+						IceHUD.IceCore:SetAddedStrata(v)
+					end,
+					min = 0,
+					max = 2,
+					step = 1,
+					order = 37,
+				},
 			}
 		},
 

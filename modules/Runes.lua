@@ -456,7 +456,7 @@ end
 function Runes.prototype:CreateFrame()
 	Runes.super.prototype.CreateFrame(self)
 
-	self.frame:SetFrameStrata("BACKGROUND")
+	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	self.frame:SetWidth(self.runeSize*self.numRunes)
 	self.frame:SetHeight(1)
 	self.frame:ClearAllPoints()
@@ -516,7 +516,7 @@ function Runes.prototype:CreateRune(i, type, name)
 		self.frame.graphical[i].shine = self.frame.graphical[i]:CreateTexture(nil, "OVERLAY")
 	end
 
-	self.frame.graphical[i]:SetFrameStrata("BACKGROUND")
+	self.frame.graphical[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	self.frame.graphical[i]:SetWidth(self.runeSize)
 	self.frame.graphical[i]:SetHeight(self.runeSize)
 
@@ -546,7 +546,7 @@ function Runes.prototype:CreateRune(i, type, name)
 		self.frame.graphical[i]:Hide()
 	end
 
-	self.frame.graphical[i].cd:SetFrameStrata("BACKGROUND")
+	self.frame.graphical[i].cd:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	self.frame.graphical[i].cd:SetFrameLevel(self.frame.graphical[i]:GetFrameLevel()+1)
 	self.frame.graphical[i].cd:ClearAllPoints()
 	self.frame.graphical[i].cd:SetAllPoints(self.frame.graphical[i])

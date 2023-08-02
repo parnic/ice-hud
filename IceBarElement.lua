@@ -1040,7 +1040,8 @@ end
 
 -- Creates the actual bar
 function IceBarElement.prototype:CreateBar()
-	self.barFrame = self:BarFactory(self.barFrame, "LOW", "ARTWORK", "Bar")
+	self.barFrame = self:BarFactory(self.barFrame, IceHUD.IceCore:DetermineStrata("LOW"), "ARTWORK", "Bar")
+	
 	self:SetBarCoord(self.barFrame)
 
 	self.barFrame.bar:SetBlendMode(self.settings.barBlendMode)
@@ -1055,7 +1056,7 @@ function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer,
 		barFrame = CreateFrame("Frame", "IceHUD_"..self.elementName.."_"..(nameSuffix or "Bar"), self.frame)
 	end
 
-	barFrame:SetFrameStrata(frameStrata and frameStrata or "LOW")
+	barFrame:SetFrameStrata(frameStrata and frameStrata or IceHUD.IceCore:DetermineStrata("LOW"))
 	barFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	barFrame:SetHeight(self.settings.barHeight)
 	self:SetBarFramePoints(barFrame)

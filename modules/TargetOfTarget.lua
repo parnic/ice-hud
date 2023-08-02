@@ -314,7 +314,7 @@ function TargetOfTarget.prototype:CreateFrame()
 		self.frame:SetAttribute("unit", self.unit)
 	end
 
-	self.frame:SetFrameStrata("BACKGROUND")
+	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	if self.moduleSettings.sizeToGap then
 		self.frame:SetWidth(self.settings.gap)
 	else
@@ -368,7 +368,7 @@ function TargetOfTarget.prototype:CreateBarFrame()
 
 	self.frame.bg:SetTexture(0,0,0)
 
-	self.frame.bar:SetFrameStrata("BACKGROUND")
+	self.frame.bar:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	if self.moduleSettings.sizeToGap then
 		self.frame.bg:SetWidth(self.settings.gap + 2)
 		self.frame.bar:SetWidth(self.settings.gap)
@@ -435,7 +435,7 @@ function TargetOfTarget.prototype:CreateDebuffFrame()
 	end
 	self.frame.debuffFrame = CreateFrame("Frame", nil, self.frame)
 
-	self.frame.debuffFrame:SetFrameStrata("BACKGROUND")
+	self.frame.debuffFrame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	self.frame.debuffFrame:SetWidth(10)
 	self.frame.debuffFrame:SetHeight(self.height)
 
@@ -451,7 +451,7 @@ function TargetOfTarget.prototype:CreateIconFrames(parent)
 
 	for i = 1, IceCore.BuffLimit do
 		buffs[i] = CreateFrame("Frame", nil, parent)
-		buffs[i]:SetFrameStrata("BACKGROUND")
+		buffs[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 		buffs[i]:SetWidth(self.buffSize)
 		buffs[i]:SetHeight(self.buffSize)
 		buffs[i]:SetPoint("LEFT", (i-1) * self.buffSize + (i-1), 0)

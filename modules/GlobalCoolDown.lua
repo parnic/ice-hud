@@ -38,7 +38,7 @@ function GlobalCoolDown.prototype:Enable(core)
 
 	self:Show(false)
 
-	self.frame:SetFrameStrata("LOW")
+	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("LOW"))
 
 	self.CDSpellId = self:GetSpellId()
 end
@@ -255,7 +255,7 @@ function GlobalCoolDown.prototype:CreateFrame()
 end
 
 function GlobalCoolDown.prototype:CreateLagBar()
-	self.lagBar = self:BarFactory(self.lagBar, "LOW", "OVERLAY", "Lag")
+	self.lagBar = self:BarFactory(self.lagBar, IceHUD.IceCore:DetermineStrata("LOW"), "OVERLAY", "Lag")
 
 	local r, g, b = self:GetColor("CastLag")
 	if (self.settings.backgroundToggle) then
