@@ -933,7 +933,7 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 end
 
 function PlayerHealth.prototype:CreateHealBar()
-	self.healFrame = self:BarFactory(self.healFrame, IceHUD.IceCore:DetermineStrata("LOW"),"BACKGROUND", "Heal")
+	self.healFrame = self:BarFactory(self.healFrame, "LOW","BACKGROUND", "Heal")
 
 	self.healFrame.bar:SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
 
@@ -945,7 +945,7 @@ function PlayerHealth.prototype:CreateHealBar()
 end
 
 function PlayerHealth.prototype:CreateAbsorbBar()
-	self.absorbFrame = self:BarFactory(self.absorbFrame, IceHUD.IceCore:DetermineStrata("LOW"),"BACKGROUND", "Absorb")
+	self.absorbFrame = self:BarFactory(self.absorbFrame, "LOW","BACKGROUND", "Absorb")
 
 	self.absorbFrame.bar:SetVertexColor(self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
 

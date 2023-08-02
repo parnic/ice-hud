@@ -214,7 +214,7 @@ function SliceAndDice.prototype:CreateFrame()
 end
 
 function SliceAndDice.prototype:CreateDurationBar()
-	self.durationFrame = self:BarFactory(self.durationFrame, IceHUD.IceCore:DetermineStrata("BACKGROUND"),"ARTWORK", "Duration")
+	self.durationFrame = self:BarFactory(self.durationFrame, "BACKGROUND", "ARTWORK", "Duration")
 
 	-- Rokiyo: Do we need to call this here?
 	self.CurrScale = 0

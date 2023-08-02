@@ -199,7 +199,7 @@ function RollTheBones.prototype:CreateDurationBar()
     return
   end
 
-  self.durationFrame = self:BarFactory(self.durationFrame, IceHUD.IceCore:DetermineStrata("BACKGROUND"),"ARTWORK", "Duration")
+  self.durationFrame = self:BarFactory(self.durationFrame, "BACKGROUND","ARTWORK", "Duration")
 
   -- Rokiyo: Do we need to call this here?
   self.CurrScale = 0

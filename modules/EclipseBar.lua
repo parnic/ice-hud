@@ -107,7 +107,7 @@ function EclipseBar.prototype:CreateFrame()
 end
 
 function EclipseBar.prototype:CreateSolarBar()
-	self.solarBar = self:BarFactory(self.solarBar, IceHUD.IceCore:DetermineStrata("BACKGROUND"), "ARTWORK", "Solar")
+	self.solarBar = self:BarFactory(self.solarBar, "BACKGROUND", "ARTWORK", "Solar")
 	self:SetBarCoord(self.solarBar, 0.5, true)
 
 	self.solarBar.bar:SetVertexColor(self:GetColor("EclipseSolar", 1))
