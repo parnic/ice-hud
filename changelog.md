@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.26:
+
+- Update TOC for classic-era to 1.14.4
+
 v1.14.25:
 
 - Fixed lua error that would appear when targetting webwrapped players in heroic alpha/beta titan rune dungeons.
