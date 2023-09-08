@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.27:
+
+- Update TOC for Dragonflight to 10.1.7
+
 v1.14.26:
 
 - Update TOC for classic-era to 1.14.4
