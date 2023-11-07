@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.28:
+
+- Update TOC for Dragonflight to 10.2.0
+
 v1.14.27:
 
 - Update TOC for Dragonflight to 10.1.7
