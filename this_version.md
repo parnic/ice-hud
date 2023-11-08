@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.29:
+
+- Fix Stagger bar error for 10.2.0 (wowace ticket #348)
+
 v1.14.28:
 
 - Update TOC for Dragonflight to 10.2.0
