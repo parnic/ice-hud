@@ -36,6 +36,7 @@ else
 end
 
 -- compatibility/feature flags
+IceHUD.CanShowTargetCasting = not IceHUD.WowClassic or LibClassicCasterino or (IceHUD.WowClassic and IceHUD.WowVer >= 11500)
 IceHUD.GetPlayerAuraBySpellID = _G["C_UnitAuras"] and C_UnitAuras.GetPlayerAuraBySpellID
 IceHUD.SpellFunctionsReturnRank = IceHUD.WowMain and IceHUD.WowVer < 80000
 IceHUD.EventExistsPlayerPetChanged = IceHUD.WowMain and IceHUD.WowVer < 80000

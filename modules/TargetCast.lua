@@ -204,6 +204,6 @@ end
 
 -- Fulzamoth 2019-09-27 : load in Classic if LibClassicCasterino exists
 -- Load us up
-if not IceHUD.WowClassic or LibClassicCasterino then
+if IceHUD.CanShowTargetCasting then
 	IceHUD.TargetCast = TargetCast:new()
 end
