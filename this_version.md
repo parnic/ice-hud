@@ -1,5 +1,10 @@
 # Changelog
 
+v1.14.30:
+
+- Update Classic-era TOC for 1.15.0
+- Enable TargetCastBar module on Classic-era 1.15+
+
 v1.14.29:
 
 - Fix Stagger bar error for 10.2.0 (wowace ticket #348)
