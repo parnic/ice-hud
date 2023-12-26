@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.31:
+
+- Fix nil concatenation error (wowace ticket #351)
+
 v1.14.30:
 
 - Update Classic-era TOC for 1.15.0

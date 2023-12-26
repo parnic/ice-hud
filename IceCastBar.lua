@@ -361,7 +361,7 @@ function IceCastBar.prototype:MyOnUpdate()
 
 		local timeString = self.moduleSettings.showCastTime and string.format("%.1fs ", remainingTime) or ""
 		local empowerString = self.NumStages ~= nil and (L["Stage %d"]):format(self:GetCurrentStage()) or ""
-		local line1 = timeString .. self.actionMessage
+		local line1 = timeString .. (self.actionMessage or "")
 		if self.moduleSettings.empowerStageTextDisplay == "TOPLINE" then
 			line1 = line1 .. " " .. empowerString
 		end
