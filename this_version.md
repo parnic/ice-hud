@@ -1,5 +1,10 @@
 # Changelog
 
+v1.14.32:
+
+- Enable GlobalCoolDown module in Classic Era 1.15.0+
+- Enable tracking non-player buffs/debuffs in Classic Era 1.15.0+
+
 v1.14.31:
 
 - Fix nil concatenation error (wowace ticket #351)

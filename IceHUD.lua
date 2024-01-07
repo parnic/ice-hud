@@ -49,8 +49,8 @@ IceHUD.EventExistsUnitDynamicFlags = IceHUD.WowMain and IceHUD.WowVer < 80000
 IceHUD.EventExistsUnitHealthFrequent = not IceHUD.WowMain or (IceHUD.WowVer >= 40000 and IceHUD.WowVer < 90000)
 IceHUD.PerPowerEventsExist = IceHUD.WowMain and IceHUD.WowVer < 40000
 IceHUD.PerTargetComboPoints = IceHUD.WowVer < 60000
-IceHUD.CanTrackOtherUnitBuffs = not IceHUD.WowClassic
-IceHUD.CanTrackGCD = not IceHUD.WowClassic
+IceHUD.CanTrackOtherUnitBuffs = not IceHUD.WowClassic or IceHUD.WowVer >= 11500
+IceHUD.CanTrackGCD = not IceHUD.WowClassic or IceHUD.WowVer >= 11500
 IceHUD.GetSpellInfoReturnsFunnel = IceHUD.WowMain and IceHUD.WowVer < 60000
 IceHUD.CanHookDestroyTotem = IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath
 IceHUD.ShouldUpdateTargetHealthEveryTick = (IceHUD.WowClassic or IceHUD.WowClassicBC) and GetCVarBool("predictedHealth")

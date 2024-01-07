@@ -289,6 +289,12 @@ function GlobalCoolDown.prototype:GetSpellId()
 		if not GetSpellInfo(defaultSpells["PALADIN"]) then
 			defaultSpells["PALADIN"] = 635
 		end
+		if not GetSpellInfo(defaultSpells["MAGE"]) then
+			defaultSpells["MAGE"] = 133
+		end
+		if not GetSpellInfo(defaultSpells["WARRIOR"]) then
+			defaultSpells["WARRIOR"] = 6673
+		end
 
 		local _, unitClass = UnitClass("player")
 		return defaultSpells[unitClass]
