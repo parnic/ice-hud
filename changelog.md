@@ -1,9 +1,13 @@
 # Changelog
 
+v1.14.33:
+
+- Update TOC for Dragonflight to 10.2.5
+
 v1.14.32:
 
 - Enable GlobalCoolDown module in Classic Era 1.15.0+
-- Enable tracking non-player buffs/debuffs in Classic Era 1.15.0+
+- Enable tracking target buffs/debuffs in Classic Era 1.15.0+
 
 v1.14.31:
 
