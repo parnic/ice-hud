@@ -56,7 +56,7 @@ function DragonridingVigor.prototype:CheckShouldShow(event, unit, info)
 
 	if knowsAlternateMountEnum and UnitPowerMax(self.unit, unitPowerType) > 0 then
 		self:Show(true)
-	elseif IceHUD:HasAnyBuff("player", DragonridingBuffs) then
+	elseif not knowsAlternateMountEnum and IceHUD:HasAnyBuff("player", DragonridingBuffs) then
 		self:Show(true)
 	else
 		self:Show(false)
