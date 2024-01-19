@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.34:
+
+- Fix Vigor showing up sometimes when it shouldn't.
+
 v1.14.33:
 
 - Update TOC for Dragonflight to 10.2.5

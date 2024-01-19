@@ -38,6 +38,7 @@ function DragonridingVigor.prototype:Enable(core)
 	end
 
 	DragonridingVigor.super.prototype.Enable(self, core)
+	self:Show(false)
 
 	self:RegisterEvent("UNIT_AURA", "CheckShouldShow")
 	self:RegisterEvent("UPDATE_UI_WIDGET", "UpdateVigorRecharge")
@@ -54,16 +55,28 @@ function DragonridingVigor.prototype:CheckShouldShow(event, unit, info)
 		return
 	end
 
-	if knowsAlternateMountEnum and UnitPowerMax(self.unit, unitPowerType) > 0 then
-		self:Show(true)
-	elseif not knowsAlternateMountEnum and IceHUD:HasAnyBuff("player", DragonridingBuffs) then
-		self:Show(true)
-	else
+	local info = C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(vigorWidgetID)
+	if not info or info.shownState == 0 then
 		self:Show(false)
 		if self.moduleSettings.hideBlizz then
 			self:ShowBlizz()
 		end
+
+		return
 	end
+
+	self:Show(true)
+
+	-- if knowsAlternateMountEnum and UnitPowerMax(self.unit, unitPowerType) > 0 then
+	-- 	self:Show(true)
+	-- elseif not knowsAlternateMountEnum and IceHUD:HasAnyBuff("player", DragonridingBuffs) then
+	-- 	self:Show(true)
+	-- else
+	-- 	self:Show(false)
+	-- 	if self.moduleSettings.hideBlizz then
+	-- 		self:ShowBlizz()
+	-- 	end
+	-- end
 end
 
 function DragonridingVigor.prototype:UpdateRunePower(event, arg1, arg2)
