@@ -58,6 +58,7 @@ function DragonridingVigor.prototype:CheckShouldShow(event, unit, info)
 	local info = C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(vigorWidgetID)
 	if not info or info.shownState == 0 then
 		self:Show(false)
+		self.suppressHideBlizz = true
 		if self.moduleSettings.hideBlizz then
 			self:ShowBlizz()
 		end
@@ -90,6 +91,8 @@ function DragonridingVigor.prototype:UpdateVigorRecharge(event, widget)
 	if event ~= "internal" and (not widget or widget.widgetSetID ~= vigorWidgetSetID) then
 		return
 	end
+
+	self.suppressHideBlizz = false
 
 	if event ~= "internal" then
 		if self.moduleSettings.hideBlizz then
@@ -167,7 +170,9 @@ function DragonridingVigor.prototype:ShowBlizz()
 end
 
 function DragonridingVigor.prototype:HideBlizz()
-	UIWidgetPowerBarContainerFrame:Hide()
+	if not self.suppressHideBlizz then
+		UIWidgetPowerBarContainerFrame:Hide()
+	end
 end
 
 -- Load us up

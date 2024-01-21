@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.35:
+
+- Fix IceHUD stomping on other uses of the PowerBarContainer such as the Digging bar for the Archive event.
+
 v1.14.34:
 
 - Fix Vigor showing up sometimes when it shouldn't.
