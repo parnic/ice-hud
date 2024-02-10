@@ -174,6 +174,10 @@ function DragonridingVigor.prototype:ShowBlizz()
 end
 
 function DragonridingVigor.prototype:HideBlizz()
+	if not UIWidgetPowerBarContainerFrame.widgetFrames or not UIWidgetPowerBarContainerFrame.widgetFrames[vigorWidgetID] then
+		return
+	end
+
 	if not self.suppressHideBlizz then
 		UIWidgetPowerBarContainerFrame.widgetFrames[vigorWidgetID]:Hide()
 	end
