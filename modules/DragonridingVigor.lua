@@ -92,7 +92,12 @@ function DragonridingVigor.prototype:UpdateVigorRecharge(event, widget)
 		return
 	end
 
-	self.suppressHideBlizz = false
+	local info = C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(vigorWidgetID)
+	if not info then
+		return
+	end
+
+	self.suppressHideBlizz = not info or info.shownState == 0
 
 	if event ~= "internal" then
 		if self.moduleSettings.hideBlizz then
@@ -100,11 +105,6 @@ function DragonridingVigor.prototype:UpdateVigorRecharge(event, widget)
 		else
 			self:ShowBlizz()
 		end
-	end
-
-	local info = C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(vigorWidgetID)
-	if not info then
-		return
 	end
 
 	if info.numFullFrames == info.numTotalFrames then
@@ -166,12 +166,16 @@ function DragonridingVigor.prototype:GetPartialRuneAtlas(rune)
 end
 
 function DragonridingVigor.prototype:ShowBlizz()
-	UIWidgetPowerBarContainerFrame:Show()
+	local info = C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(vigorWidgetID)
+	if not info or info.shownState == 0 then
+		return
+	end
+	UIWidgetPowerBarContainerFrame.widgetFrames[vigorWidgetID]:Show()
 end
 
 function DragonridingVigor.prototype:HideBlizz()
 	if not self.suppressHideBlizz then
-		UIWidgetPowerBarContainerFrame:Hide()
+		UIWidgetPowerBarContainerFrame.widgetFrames[vigorWidgetID]:Hide()
 	end
 end
 
