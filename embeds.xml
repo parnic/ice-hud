@@ -14,7 +14,7 @@
 	<Include file="libs\AceHook-3.0\AceHook-3.0.xml"/>
 	<Include file="libs\LibDogTag-3.0\lib.xml"/>
 	<Include file="libs\LibDogTag-Unit-3.0\lib.xml"/>
-	<Script file="libs\LibRangeCheck-2.0\LibRangeCheck-2.0.lua"/>
+	<Script file="libs\LibRangeCheck-3.0\LibRangeCheck-3.0.lua"/>
 	<Include file="libs\LibSharedMedia-3.0\lib.xml"/>
 	<Include file="libs\AceGUI-3.0-SharedMediaWidgets\widget.xml"/>
 	<Script file="LibDataBroker-1.1.lua"/>

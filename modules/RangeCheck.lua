@@ -11,7 +11,7 @@ function RangeCheck.prototype:init()
 
 	self.scalingEnabled = true
 
-	LibRange = LibStub("LibRangeCheck-2.0", true)
+	LibRange = LibStub("LibRangeCheck-3.0", true)
 end
 
 function RangeCheck.prototype:Enable(core)

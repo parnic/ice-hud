@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.37:
+
+- Update LibRangeCheck version to address taint issues (wowace ticket #353)
+
 v1.14.36:
 
 - Really fix IceHUD stomping on other uses of the PowerBarContainer such as the Digging bar for the Archive event.
