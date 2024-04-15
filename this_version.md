@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.38:
+
+- Update TOCs
+
 v1.14.37:
 
 - Update LibRangeCheck version to address taint issues (wowace ticket #353)
