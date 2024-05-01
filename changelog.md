@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.39:
+
+- Support Cataclysm Classic 4.4.0
+
 v1.14.38:
 
 - Update TOCs
