@@ -410,7 +410,7 @@ function TargetOfTarget.prototype:CreateToTFrame()
 
 	self.frame.totName:SetHeight(self.moduleSettings.moduleHeight)
 	self.frame.totName:SetJustifyH("LEFT")
-	self.frame.totName:SetJustifyV("CENTER")
+	self.frame.totName:SetJustifyV("MIDDLE")
 
 	self.frame.totName:SetPoint("LEFT", self.frame, "LEFT", 0, -1)
 	self.frame.totName:Show()
@@ -422,7 +422,7 @@ function TargetOfTarget.prototype:CreateToTHPFrame()
 
 	self.frame.totHealth:SetHeight(self.moduleSettings.moduleHeight)
 	self.frame.totHealth:SetJustifyH("RIGHT")
-	self.frame.totHealth:SetJustifyV("CENTER")
+	self.frame.totHealth:SetJustifyV("MIDDLE")
 
 	self.frame.totHealth:SetPoint("RIGHT", self.frame, "RIGHT", 0, 0)
 	self.frame.totHealth:Show()

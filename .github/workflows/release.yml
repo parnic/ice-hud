@@ -56,3 +56,9 @@ jobs:
         uses: BigWigsMods/packager@v2
         with:
           args: -g wrath -w 0
+
+      - name: Package and release for Cataclysm
+        uses: BigWigsMods/packager@v2
+        with:
+          args: -g cata -w 0
+  

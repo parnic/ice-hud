@@ -20,10 +20,12 @@ if GetClassicExpansionLevel then
 	IceHUD.WowClassic = GetClassicExpansionLevel() == 0
 	IceHUD.WowClassicBC = GetClassicExpansionLevel() == 1
 	IceHUD.WowClassicWrath = GetClassicExpansionLevel() == 2
+	IceHUD.WowClassicCataclysm = GetClassicExpansionLevel() == 3
 else
 	IceHUD.WowClassic = WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 	IceHUD.WowClassicBC = false
 	IceHUD.WowClassicWrath = false
+	IceHUD.WowClassicCataclysm = false
 	if WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
 		if not LE_EXPANSION_LEVEL_CURRENT or LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_BURNING_CRUSADE then
 			IceHUD.WowClassicBC = true
@@ -32,6 +34,8 @@ else
 		end
 	elseif WOW_PROJECT_WRATH_CLASSIC and WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
 		IceHUD.WowClassicWrath = true
+	elseif WOW_PROJECT_CATACLYSM_CLASSIC and WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC then
+		IceHUD.WowClassicCataclysm = true
 	end
 end
 
@@ -52,7 +56,7 @@ IceHUD.PerTargetComboPoints = IceHUD.WowVer < 60000
 IceHUD.CanTrackOtherUnitBuffs = not IceHUD.WowClassic or IceHUD.WowVer >= 11500
 IceHUD.CanTrackGCD = not IceHUD.WowClassic or IceHUD.WowVer >= 11500
 IceHUD.GetSpellInfoReturnsFunnel = IceHUD.WowMain and IceHUD.WowVer < 60000
-IceHUD.CanHookDestroyTotem = IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath
+IceHUD.CanHookDestroyTotem = IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath or IceHUD.WowClassicCataclysm
 IceHUD.ShouldUpdateTargetHealthEveryTick = (IceHUD.WowClassic or IceHUD.WowClassicBC) and GetCVarBool("predictedHealth")
 IceHUD.UsesUIPanelButtonTemplate = IceHUD.WowVer >= 50000 or not IceHUD.WowMain
 IceHUD.EventExistsSpellcastInterruptible = IceHUD.WowVer >= 30200 and not IceHUD.WowClassicWrath
