@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.40:
+
+- Update TOC for Dragonflight to 10.2.7
+
 v1.14.39:
 
 - Support Cataclysm Classic 4.4.0
