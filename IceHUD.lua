@@ -60,7 +60,7 @@ IceHUD.CanHookDestroyTotem = IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.
 IceHUD.ShouldUpdateTargetHealthEveryTick = (IceHUD.WowClassic or IceHUD.WowClassicBC) and GetCVarBool("predictedHealth")
 IceHUD.UsesUIPanelButtonTemplate = IceHUD.WowVer >= 50000 or not IceHUD.WowMain
 IceHUD.EventExistsSpellcastInterruptible = IceHUD.WowVer >= 30200 and not IceHUD.WowClassicWrath
-IceHUD.DeathKnightUnholyFrostRunesSwapped = IceHUD.WowVer < 70300 and not IceHUD.WowClassicWrath
+IceHUD.DeathKnightUnholyFrostRunesSwapped = IceHUD.WowVer < 70300 and not IceHUD.WowClassicWrath and not IceHUD.WowClassicCataclysm
 IceHUD.SupportsHealPrediction = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
 IceHUD.UnitGroupRolesReturnsRoleString = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
 IceHUD.ShellGameSpellID = 271571

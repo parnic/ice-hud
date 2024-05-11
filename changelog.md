@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.41:
+
+- Fix swapped DK runes in Cataclysm Classic
+
 v1.14.40:
 
 - Update TOC for Dragonflight to 10.2.7
