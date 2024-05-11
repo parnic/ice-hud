@@ -4,6 +4,7 @@ v1.14.41:
 
 - Fix swapped DK runes in Cataclysm Classic
 - Possible fix for castbar flashing sometimes when set to "Never"
+- Fix IceHUD Vigor bar not showing up for some types of dragons such as the Algarian Stormrider
 
 v1.14.40:
 

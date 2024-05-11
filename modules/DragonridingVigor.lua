@@ -11,7 +11,9 @@ local DragonridingBuffs = {
 }
 
 local vigorWidgetSetID = 283
-local vigorWidgetID = 4460
+local vigorWidgetType = 24
+local defaultVigorWidgetID = 4460
+local vigorWidgetIDs = nil
 local knowsAlternateMountEnum = Enum and Enum.PowerType and Enum.PowerType.AlternateMount
 local unitPowerType = Enum and Enum.PowerType and Enum.PowerType.AlternateMount
 unitPowerType = unitPowerType or ALTERNATE_POWER_INDEX
@@ -51,12 +53,24 @@ function DragonridingVigor.prototype:EnteringWorld()
 end
 
 function DragonridingVigor.prototype:CheckShouldShow(event, unit, info)
-	if unit ~= "player" then
+	if not vigorWidgetIDs or #vigorWidgetIDs == 0 then
+		self:PopulateVigorWidgetIDs()
+	end
+
+	if unit ~= "player" or not vigorWidgetIDs then
 		return
 	end
 
-	local info = C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(vigorWidgetID)
-	if not info or info.shownState == 0 then
+	local shown = false
+	for i=1,#vigorWidgetIDs do
+		local info = C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(vigorWidgetIDs[i])
+		if info and info.shownState ~= 0 then
+			shown = true
+			break
+		end
+	end
+
+	if not shown then
 		self:Show(false)
 		self.suppressHideBlizz = true
 		if self.moduleSettings.hideBlizz then
@@ -85,14 +99,43 @@ function DragonridingVigor.prototype:UpdateRunePower(event, arg1, arg2)
 	DragonridingVigor.super.prototype.UpdateRunePower(self, event, arg1, arg2)
 end
 
+function DragonridingVigor.prototype:PopulateVigorWidgetIDs()
+	local widgets = C_UIWidgetManager.GetAllWidgetsBySetID(vigorWidgetSetID)
+	if not widgets then
+		return
+	end
+
+	for i=1,#widgets do
+		if widgets[i].widgetType == vigorWidgetType then
+			if not vigorWidgetIDs then
+				vigorWidgetIDs = {}
+			end
+
+			table.insert(vigorWidgetIDs, widgets[i].widgetID)
+		end
+	end
+end
+
 function DragonridingVigor.prototype:UpdateVigorRecharge(event, widget)
+	if not vigorWidgetIDs or #vigorWidgetIDs == 0 then
+		self:PopulateVigorWidgetIDs()
+	end
+	if not vigorWidgetIDs or #vigorWidgetIDs == 0 then
+		return
+	end
+
 	self.partialReady = nil
 	self.partialReadyPercent = nil
 	if event ~= "internal" and (not widget or widget.widgetSetID ~= vigorWidgetSetID) then
 		return
 	end
 
-	local info = C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(vigorWidgetID)
+	local widgetID = defaultVigorWidgetID
+	if widget then
+		widgetID = widget.widgetID
+	end
+
+	local info = C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(widgetID)
 	if not info then
 		return
 	end
@@ -166,20 +209,20 @@ function DragonridingVigor.prototype:GetPartialRuneAtlas(rune)
 end
 
 function DragonridingVigor.prototype:ShowBlizz()
-	local info = C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(vigorWidgetID)
+	local info = C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(defaultVigorWidgetID)
 	if not info or info.shownState == 0 then
 		return
 	end
-	UIWidgetPowerBarContainerFrame.widgetFrames[vigorWidgetID]:Show()
+	UIWidgetPowerBarContainerFrame.widgetFrames[defaultVigorWidgetID]:Show()
 end
 
 function DragonridingVigor.prototype:HideBlizz()
-	if not UIWidgetPowerBarContainerFrame.widgetFrames or not UIWidgetPowerBarContainerFrame.widgetFrames[vigorWidgetID] then
+	if not UIWidgetPowerBarContainerFrame.widgetFrames or not UIWidgetPowerBarContainerFrame.widgetFrames[defaultVigorWidgetID] then
 		return
 	end
 
 	if not self.suppressHideBlizz then
-		UIWidgetPowerBarContainerFrame.widgetFrames[vigorWidgetID]:Hide()
+		UIWidgetPowerBarContainerFrame.widgetFrames[defaultVigorWidgetID]:Hide()
 	end
 end
 
