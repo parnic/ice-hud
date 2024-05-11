@@ -470,6 +470,10 @@ function IceCastBar.prototype:GetCurrentCastingColor()
 end
 
 function IceCastBar.prototype:FlashBar(color, alpha, text, textColor)
+	if self.moduleSettings.flashInstants == "Never" then
+		return
+	end
+
 	if alpha then
 		self.frame:SetAlpha(alpha)
 	end

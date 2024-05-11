@@ -3,6 +3,7 @@
 v1.14.41:
 
 - Fix swapped DK runes in Cataclysm Classic
+- Possible fix for castbar flashing sometimes when set to "Never"
 
 v1.14.40:
 
