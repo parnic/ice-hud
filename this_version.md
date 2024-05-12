@@ -1,5 +1,9 @@
 # Changelog
 
+v1.14.42:
+
+- Fix Vengeance module in Cataclysm Classic
+
 v1.14.41:
 
 - Fix swapped DK runes in Cataclysm Classic

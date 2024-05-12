@@ -50,41 +50,16 @@ end
 -- scan the tooltip and extract the vengeance value
 do
 	-- making these local as they're not used anywhere else
-	local regions = {}
 	local spellName = GetSpellInfo(VENGEANCE_SPELL_ID)
-	local tooltipBuffer = CreateFrame("GameTooltip","tooltipBuffer",nil,"GameTooltipTemplate")
-	tooltipBuffer:SetOwner(WorldFrame, "ANCHOR_NONE")
-
-	-- suggested by Antiarc as a way to repopulate the same table instead of repeatedly creating a new one
-	local function makeTable(t, ...)
-		wipe(t)
-		for i = 1, select("#", ...) do
-			t[i] = select(i, ...)
-		end
-	end
 
 	function Vengeance.prototype:UpdateCurrent(event, unit)
 		if (unit and (unit ~= self.unit)) then
 			return
 		end
 
-		local name = UnitAura(self.unit, spellName)
-		if name then
-			-- Buff found, copy it into the buffer for scanning
-			tooltipBuffer:ClearLines()
-			tooltipBuffer:SetUnitBuff(self.unit, name)
-
-			-- Grab all regions, stuff em into our table
-			makeTable(regions, tooltipBuffer:GetRegions())
-
-			-- Convert FontStrings to strings, replace anything else with ""
-			for i=1, #regions do
-				local region = regions[i]
-				regions[i] = region:GetObjectType() == "FontString" and region:GetText() or ""
-			end
-
-			-- Find the number, save it
-			self.current = tonumber(string.match(table.concat(regions),"%d+")) or 0
+		local _, idx = IceHUD:GetBuffCount(self.unit, spellName, true, true)
+		if idx then
+			self.current = select(17, UnitAura(self.unit, idx))
 		else
 			self.current = 0
 		end

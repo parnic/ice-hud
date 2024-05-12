@@ -486,7 +486,7 @@ end
 
 function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 	if not unit or not ability then
-		return 0
+		return 0, nil
 	end
 
 	if unit == "main hand weapon" or unit == "off hand weapon" then
@@ -494,21 +494,21 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 			= GetWeaponEnchantInfo()
 
 		if unit == "main hand weapon" and hasMainHandEnchant then
-			return mainHandCharges
+			return mainHandCharges, nil
 		elseif unit == "off hand weapon" and hasOffHandEnchant then
-			return offHandCharges
+			return offHandCharges, nil
 		end
 
-		return 0
+		return 0, nil
 	end
 
 	-- Support for Spell IDs
 	if (IceHUD.GetPlayerAuraBySpellID and tonumber(ability) ~= nil) then
 		local aura = C_UnitAuras.GetPlayerAuraBySpellID(ability)
 		if aura ~= nil then
-			return aura.applications
+			return aura.applications, nil
 		else
-			return 0
+			return 0, nil
 		end
 	end
 
@@ -522,7 +522,7 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 	while name do
 		if (not matchByName and string.match(texture:upper(), ability:upper()))
 			or (matchByName and string.match(name:upper(), ability:upper())) then
-			return applications
+			return applications, i
 		end
 
 		i = i + 1
@@ -533,7 +533,7 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 		end
 	end
 
-	return 0
+	return 0, nil
 end
 
 do
