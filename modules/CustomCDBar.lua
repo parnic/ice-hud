@@ -17,6 +17,29 @@ local COOLDOWN_TYPE_ITEM = 2
 
 local localizedInventorySlotNames = {}
 
+local IsSpellInRange = IsSpellInRange
+if not IsSpellInRange and C_Spell then
+	IsSpellInRange = C_Spell.IsSpellInRange
+end
+
+local GetSpellName = GetSpellInfo
+if C_Spell and C_Spell.GetSpellName then
+	GetSpellName = C_Spell.GetSpellName
+end
+
+local GetSpellInfo = GetSpellInfo
+if not GetSpellInfo and C_Spell and C_Spell.GetSpellInfo then
+	GetSpellInfo = function(id)
+		local info = C_Spell.GetSpellInfo
+		return info.name, nil, info.iconID
+	end
+end
+
+local GetItemInfo = GetItemInfo
+if not GetItemInfo and C_Item then
+	GetItemInfo = C_Item.GetItemInfo
+end
+
 IceCustomCDBar.prototype.cooldownDuration = 0
 IceCustomCDBar.prototype.cooldownEndTime = 0
 IceCustomCDBar.prototype.coolingDown = false
@@ -161,7 +184,7 @@ function IceCustomCDBar.prototype:GetDisplayText(fromValue)
 
 	if not self.moduleSettings.cooldownType or self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL then
 		if tonumber(fromValue) ~= nil then
-			local spellName = GetSpellInfo(tonumber(fromValue))
+			local spellName = GetSpellName(tonumber(fromValue))
 			if spellName then
 				v = spellName
 			end
@@ -278,7 +301,7 @@ function IceCustomCDBar.prototype:GetOptions()
 		set = function(info, v)
 			local orig = v
 			if tonumber(v) ~= nil then
-				v = GetSpellInfo(tonumber(v))
+				v = GetSpellName(tonumber(v))
 			end
 			if v == nil then
 				v = orig

@@ -124,24 +124,26 @@ function TargetOfTarget.prototype:GetOptions()
 		order = 34
 	}
 
-	opts["texture"] = {
-		type = 'select',
-		dialogControl = "LSM30_Statusbar",
-		name = L["Texture"],
-		desc = L["ToT frame texture"],
-		get = function(info)
-			return self.moduleSettings.texture
-		end,
-		set = function(info, v)
-			self.moduleSettings.texture = v
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		values = AceGUIWidgetLSMlists.statusbar,
-		order = 35
-	}
+	if AceGUIWidgetLSMlists then
+		opts["texture"] = {
+			type = 'select',
+			dialogControl = "LSM30_Statusbar",
+			name = L["Texture"],
+			desc = L["ToT frame texture"],
+			get = function(info)
+				return self.moduleSettings.texture
+			end,
+			set = function(info, v)
+				self.moduleSettings.texture = v
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			values = AceGUIWidgetLSMlists.statusbar,
+			order = 35
+		}
+	end
 
 	opts["sizeToGap"] = {
 		type = 'toggle',

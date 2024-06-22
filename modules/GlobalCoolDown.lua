@@ -1,6 +1,19 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local GlobalCoolDown = IceCore_CreateClass(IceBarElement)
 
+local GetSpellName = GetSpellInfo
+if C_Spell and C_Spell.GetSpellName then
+	GetSpellName = C_Spell.GetSpellName
+end
+
+local GetSpellInfo = GetSpellInfo
+if not GetSpellInfo and C_Spell and C_Spell.GetSpellInfo then
+	GetSpellInfo = function(id)
+		local info = C_Spell.GetSpellInfo
+		return info.name, nil, info.iconID, info.castTime
+	end
+end
+
 -- Constructor --
 function GlobalCoolDown.prototype:init()
 	GlobalCoolDown.super.prototype.init(self, "GlobalCoolDown")
@@ -267,7 +280,7 @@ function GlobalCoolDown.prototype:CreateLagBar()
 end
 
 function GlobalCoolDown.prototype:GetSpellId()
-	if GetSpellInfo(61304) then
+	if GetSpellName(61304) then
 		return 61304
 	else
 		local defaultSpells
@@ -286,13 +299,13 @@ function GlobalCoolDown.prototype:GetSpellId()
 			MONK=100780, -- jab
 		}
 
-		if not GetSpellInfo(defaultSpells["PALADIN"]) then
+		if not GetSpellName(defaultSpells["PALADIN"]) then
 			defaultSpells["PALADIN"] = 635
 		end
-		if not GetSpellInfo(defaultSpells["MAGE"]) then
+		if not GetSpellName(defaultSpells["MAGE"]) then
 			defaultSpells["MAGE"] = 133
 		end
-		if not GetSpellInfo(defaultSpells["WARRIOR"]) then
+		if not GetSpellName(defaultSpells["WARRIOR"]) then
 			defaultSpells["WARRIOR"] = 6673
 		end
 

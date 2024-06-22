@@ -7,6 +7,14 @@ local AuraIconWidth = 20
 local AuraIconHeight = 20
 local DefaultAuraIcon = "Interface\\Icons\\Spell_Frost_Frost"
 
+local GetSpellInfo = GetSpellInfo
+if not GetSpellInfo and C_Spell and C_Spell.GetSpellInfo then
+	GetSpellInfo = function(id)
+		local info = C_Spell.GetSpellInfo
+		return info.name, nil, info.iconID
+	end
+end
+
 function IceCustomCounterBar.prototype:init()
 	IceCustomCounterBar.super.prototype.init(self, "CustomCounterBar")
 

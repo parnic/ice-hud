@@ -11,6 +11,20 @@ local icon = LibStub("LibDBIcon-1.0", true)
 local pendingModuleLoads = {}
 local bReadyToRegisterModules = false
 
+local LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or LoadAddOn
+
+IceHUD.UnitAura = UnitAura
+if not IceHUD.UnitAura then
+	IceHUD.UnitAura = function(unitToken, index, filter)
+		local auraData = C_UnitAuras.GetAuraDataByIndex(unitToken, index, filter)
+		if not auraData then
+			return nil
+		end
+
+		return AuraUtil.UnpackAuraData(auraData)
+	end
+end
+
 IceHUD.CurrTagVersion = 3
 IceHUD.debugging = false
 
@@ -39,6 +53,11 @@ else
 	end
 end
 
+local GetSpellName = GetSpellInfo
+if C_Spell and C_Spell.GetSpellName then
+	GetSpellName = C_Spell.GetSpellName
+end
+
 -- compatibility/feature flags
 IceHUD.CanShowTargetCasting = not IceHUD.WowClassic or LibClassicCasterino or (IceHUD.WowClassic and IceHUD.WowVer >= 11500)
 IceHUD.GetPlayerAuraBySpellID = _G["C_UnitAuras"] and C_UnitAuras.GetPlayerAuraBySpellID
@@ -64,9 +83,9 @@ IceHUD.DeathKnightUnholyFrostRunesSwapped = IceHUD.WowVer < 70300 and not IceHUD
 IceHUD.SupportsHealPrediction = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
 IceHUD.UnitGroupRolesReturnsRoleString = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
 IceHUD.ShellGameSpellID = 271571
-IceHUD.HasShellGame = GetSpellInfo(IceHUD.ShellGameSpellID)
+IceHUD.HasShellGame = GetSpellName(IceHUD.ShellGameSpellID)
 IceHUD.CatalogingSpellIDs = {366290, 372817, 385025, 385635, 386070, 386504, 400043, 403115}
-IceHUD.HasCataloging = GetSpellInfo(366290)
+IceHUD.HasCataloging = GetSpellName(366290)
 
 IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 
@@ -418,7 +437,12 @@ blizOptionsPanel.button:SetWidth(240)
 blizOptionsPanel.button:SetHeight(30)
 blizOptionsPanel.button:SetScript("OnClick", function(self) HideUIPanel(InterfaceOptionsFrame) HideUIPanel(GameMenuFrame) IceHUD:OpenConfig() end)
 blizOptionsPanel.button:SetPoint('TOPLEFT', blizOptionsPanel, 'TOPLEFT', 20, -20)
-InterfaceOptions_AddCategory(blizOptionsPanel)
+if InterfaceOptions_AddCategory then
+	InterfaceOptions_AddCategory(blizOptionsPanel)
+elseif Settings then
+	local category = Settings.RegisterCanvasLayoutCategory(blizOptionsPanel, "IceHUD")
+	Settings.RegisterAddOnCategory(category)
+end
 
 function IceHUD:OpenConfig()
 	if not ConfigDialog then return end
@@ -515,9 +539,9 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 	local i = 1
 	local name, _, texture, applications
 	if IceHUD.SpellFunctionsReturnRank then
-		name, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+		name, _, texture, applications = IceHUD.UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
 	else
-		name, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+		name, texture, applications = IceHUD.UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
 	end
 	while name do
 		if (not matchByName and string.match(texture:upper(), ability:upper()))
@@ -527,9 +551,9 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 
 		i = i + 1
 		if IceHUD.SpellFunctionsReturnRank then
-			name, _, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+			name, _, texture, applications = IceHUD.UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
 		else
-			name, texture, applications = UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+			name, texture, applications = IceHUD.UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
 		end
 	end
 
@@ -547,9 +571,9 @@ do
 		local i = 1
 		local name, _, texture, applications, _, _, _, _, _, _, auraID
 		if IceHUD.SpellFunctionsReturnRank then
-			name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
+			name, _, texture, applications, _, _, _, _, _, _, auraID = IceHUD.UnitAura(unit, i, filter)
 		else
-			name, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
+			name, texture, applications, _, _, _, _, _, _, auraID = IceHUD.UnitAura(unit, i, filter)
 		end
 		while name do
 			for i=1, #spellIDs do
@@ -561,9 +585,9 @@ do
 
 			i = i + 1
 			if IceHUD.SpellFunctionsReturnRank then
-				name, _, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
+				name, _, texture, applications, _, _, _, _, _, _, auraID = IceHUD.UnitAura(unit, i, filter)
 			else
-				name, texture, applications, _, _, _, _, _, _, auraID = UnitAura(unit, i, filter)
+				name, texture, applications, _, _, _, _, _, _, auraID = IceHUD.UnitAura(unit, i, filter)
 			end
 		end
 

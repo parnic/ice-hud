@@ -23,6 +23,11 @@ if STAGGER_STATES then
 	STAGGER_RED_TRANSITION = STAGGER_STATES.RED.threshold
 end
 
+local GetSpellName = GetSpellInfo
+if C_Spell and C_Spell.GetSpellName then
+	GetSpellName = C_Spell.GetSpellName
+end
+
 StaggerBar.prototype.StaggerDuration = 0
 StaggerBar.prototype.StaggerEndTime = 0
 
@@ -119,9 +124,9 @@ function StaggerBar.prototype:Enable(core)
 	StaggerBar.super.prototype.Enable(self, core)
 
 	playerName = UnitName(self.unit)
-	staggerNames[1] = GetSpellInfo(LightID)
-	staggerNames[2] = GetSpellInfo(ModerateID)
-	staggerNames[3] = GetSpellInfo(HeavyID)
+	staggerNames[1] = GetSpellName(LightID)
+	staggerNames[2] = GetSpellName(ModerateID)
+	staggerNames[3] = GetSpellName(HeavyID)
 
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -196,8 +201,8 @@ function StaggerBar.prototype:GetDebuffInfo()
 		if debuffID == LightID or debuffID == ModerateID or debuffID == HeavyID then
 			local spellName = UnitDebuff(self.unit, i)
 
-			duration = select(IceHUD.SpellFunctionsReturnRank and 6 or 5, UnitAura(self.unit, spellName, "", "HARMFUL"))
-			amount = select(IceHUD.SpellFunctionsReturnRank and 15 or 14, UnitAura(self.unit, spellName, "", "HARMFUL"))
+			duration = select(IceHUD.SpellFunctionsReturnRank and 6 or 5, IceHUD.UnitAura(self.unit, spellName, "", "HARMFUL"))
+			amount = select(IceHUD.SpellFunctionsReturnRank and 15 or 14, IceHUD.UnitAura(self.unit, spellName, "", "HARMFUL"))
 			staggerLevel = (debuffID == LightID) and 1 or (debuffID == ModerateID) and 2 or 3
 
 			break

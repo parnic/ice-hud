@@ -1420,11 +1420,11 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 			---- end change by Fulzamoth
 
 			if IceHUD.SpellFunctionsReturnRank then
-				name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
+				name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = IceHUD.UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
 			else
 				---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
 				-- 1. in addition to other info, get the spellID for for the (de)buff
-				name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, _, spellID = UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
+				name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, _, spellID = IceHUD.UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
 				if duration == 0 and LibClassicDurations then
 					-- 2. if no duration defined for the (de)buff, look up the spell in LibClassicDurations
 					local classicDuration, classicExpirationTime = LibClassicDurations:GetAuraDurationByUnit(self.unit, spellID, caster)

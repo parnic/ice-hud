@@ -294,13 +294,6 @@ local function SNDGetComboPoints(unit)
 	end
 end
 
--- use this to figure out if Roll the Bones is available or not. neither IsSpellKnown nor IsPlayerSpell are correct for it
--- when SnD is known, but this is.
-local function HasSpell(id)
-    local spell = GetSpellInfo(id)
-    return spell == GetSpellInfo(spell)
-end
-
 local function ShouldHide()
 	if IceHUD.WowVer >= 90000 or IceHUD.WowClassicBC or IceHUD.WowClassicWrath then
 		return false

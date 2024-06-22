@@ -4,6 +4,11 @@ local Resolve = IceCore_CreateClass(IceUnitBar)
 local RESOLVE_SPELL_ID = 158300
 local RESOLVE_MAX = 240
 
+local GetSpellName = GetSpellInfo
+if C_Spell and C_Spell.GetSpellName then
+	GetSpellName = C_Spell.GetSpellName
+end
+
 Resolve.prototype.current = nil
 Resolve.prototype.max = RESOLVE_MAX
 
@@ -49,14 +54,19 @@ end
 
 -- scan the tooltip and extract the Resolve value
 do
-	local spellName = GetSpellInfo(RESOLVE_SPELL_ID)
+	local spellName = GetSpellName(RESOLVE_SPELL_ID)
 
 	function Resolve.prototype:UpdateCurrent(event, unit)
 		if (unit and (unit ~= self.unit)) then
 			return
 		end
 
-		self.current = select(IceHUD.SpellFunctionsReturnRank and 15 or 14, UnitAura(self.unit, spellName)) or 0
+		if UnitAura then
+			self.current = select(IceHUD.SpellFunctionsReturnRank and 15 or 14, UnitAura(self.unit, spellName)) or 0
+		else
+			local auraInfo = C_UnitAuras.GetAuraDataBySpellName(self.unit, spellName)
+			self.current = auraInfo and auraInfo.timeMod or 0
+		end
 
 		self:Update()
 	end
@@ -80,6 +90,6 @@ end
 -- Load for tanks only
 local _, unitClass = UnitClass("player")
 if (unitClass == "DEATHKNIGHT" or unitClass == "DRUID" or unitClass == "PALADIN" or unitClass == "WARRIOR" or unitClass == "MONK")
-	and GetSpellInfo(RESOLVE_SPELL_ID) then
+	and GetSpellName(RESOLVE_SPELL_ID) then
   IceHUD.Resolve = Resolve:new()
 end

@@ -26,6 +26,11 @@ if Enum and Enum.PowerType then
   SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
 end
 
+local GetSpellName = GetSpellInfo
+if C_Spell and C_Spell.GetSpellName then
+	GetSpellName = C_Spell.GetSpellName
+end
+
 -- Constructor --
 function RollTheBones.prototype:init()
   RollTheBones.super.prototype.init(self, "RollTheBones", "player")
@@ -288,8 +293,8 @@ end
 -- use this to figure out if Roll the Bones is available or not. neither IsSpellKnown nor IsPlayerSpell are correct for it
 -- when SnD is known, but this is.
 local function HasSpell(id)
-    local spell = GetSpellInfo(id)
-    return spell == GetSpellInfo(spell)
+    local spell = GetSpellName(id)
+    return spell == GetSpellName(spell)
 end
 
 local function ShouldHide()

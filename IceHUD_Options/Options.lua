@@ -464,25 +464,6 @@ The Classic game client doesn't provide this information to addons because it wa
 		},
 
 
-		textSettings = {
-			type = 'select',
-			dialogControl = "LSM30_Font",
-			name = L["Font"],
-			desc = L["IceHUD Font"],
-			order = 19,
-			get = function(info)
-				return IceHUD.IceCore:GetFontFamily()
-			end,
-			set = function(info, value)
-				IceHUD.IceCore:SetFontFamily(value)
-			end,
-			disabled = function()
-				return not IceHUD.IceCore:IsEnabled()
-			end,
-			values = AceGUIWidgetLSMlists.font,
-			order = 94.75,
-		},
-
 		barSettings = {
 			type = 'group',
 			name = L["Bar Settings"],
@@ -779,6 +760,26 @@ The Classic game client doesn't provide this information to addons because it wa
 		},
 	}
 }
+
+if AceGUIWidgetLSMlists then
+	options.args.textSettings = {
+		type = 'select',
+		dialogControl = "LSM30_Font",
+		name = L["Font"],
+		desc = L["IceHUD Font"],
+		get = function(info)
+			return IceHUD.IceCore:GetFontFamily()
+		end,
+		set = function(info, value)
+			IceHUD.IceCore:SetFontFamily(value)
+		end,
+		disabled = function()
+			return not IceHUD.IceCore:IsEnabled()
+		end,
+		values = AceGUIWidgetLSMlists.font,
+		order = 94.75,
+	}
+end
 
 IceHUD_Options.options = options
 

@@ -19,6 +19,11 @@ end
 
 local DogTag = LibStub("LibDogTag-3.0", true)
 
+local GetSpellName = GetSpellInfo
+if C_Spell and C_Spell.GetSpellName then
+	GetSpellName = C_Spell.GetSpellName
+end
+
 IceCore = IceCore_CreateClass()
 
 IceCore.Side = { Left = "LEFT", Right = "RIGHT" }
@@ -367,13 +372,13 @@ end
 
 function IceCore.prototype:RedirectRemovedModules()
 	local _, class = UnitClass("player")
-	if class == "WARRIOR" and self.settings.modules["SunderCount"] and GetSpellInfo(SUNDER_SPELL_ID) and IceHUD.WowVer < 60000 then
+	if class == "WARRIOR" and self.settings.modules["SunderCount"] and GetSpellName(SUNDER_SPELL_ID) and IceHUD.WowVer < 60000 then
 		if self.settings.modules["SunderCount"].enabled or self.settings.modules["SunderCount"].enabled == nil then
 			local bFound = false
 
 			for k,v in pairs(self.elements) do
 				if v.moduleSettings.customBarType == "Counter" and v.moduleSettings.auraName
-					and string.upper(v.moduleSettings.auraName) == string.upper(GetSpellInfo(SUNDER_SPELL_ID)) then
+					and string.upper(v.moduleSettings.auraName) == string.upper(GetSpellName(SUNDER_SPELL_ID)) then
 					bFound = true
 					break
 				end
@@ -396,7 +401,7 @@ function IceCore.prototype:RedirectRemovedModules()
 				newCounter.moduleSettings.maxCount = 3
 				newCounter.moduleSettings.auraTarget = "target"
 				newCounter.moduleSettings.auraType = "debuff"
-				newCounter.moduleSettings.auraName = GetSpellInfo(SUNDER_SPELL_ID)
+				newCounter.moduleSettings.auraName = GetSpellName(SUNDER_SPELL_ID)
 				newCounter:Enable()
 			end
 		end
@@ -404,12 +409,12 @@ function IceCore.prototype:RedirectRemovedModules()
 		self.settings.modules["SunderCount"] = nil
 	end
 
-	if class == "DRUID" and self.settings.modules["LacerateCount"] and GetSpellInfo(LACERATE_SPELL_ID) then
+	if class == "DRUID" and self.settings.modules["LacerateCount"] and GetSpellName(LACERATE_SPELL_ID) then
 		if self.settings.modules["LacerateCount"].enabled or self.settings.modules["LacerateCount"].enabled == nil then
 			local bFound = false
 			for k,v in pairs(self.elements) do
 				if v.moduleSettings.customBarType == "Counter" and v.moduleSettings.auraName
-					and string.upper(v.moduleSettings.auraName) == string.upper(GetSpellInfo(LACERATE_SPELL_ID)) then
+					and string.upper(v.moduleSettings.auraName) == string.upper(GetSpellName(LACERATE_SPELL_ID)) then
 					bFound = true
 					break
 				end
@@ -433,7 +438,7 @@ function IceCore.prototype:RedirectRemovedModules()
 				newCounter.moduleSettings.maxCount = 3
 				newCounter.moduleSettings.auraTarget = "target"
 				newCounter.moduleSettings.auraType = "debuff"
-				newCounter.moduleSettings.auraName = GetSpellInfo(LACERATE_SPELL_ID)
+				newCounter.moduleSettings.auraName = GetSpellName(LACERATE_SPELL_ID)
 				newCounter:Enable()
 			end
 		end
@@ -441,12 +446,12 @@ function IceCore.prototype:RedirectRemovedModules()
 		self.settings.modules["LacerateCount"] = nil
 	end
 
-	if class == "SHAMAN" and self.settings.modules["MaelstromCount"] and GetSpellInfo(MAELSTROM_SPELL_ID) then
+	if class == "SHAMAN" and self.settings.modules["MaelstromCount"] and GetSpellName(MAELSTROM_SPELL_ID) then
 		if self.settings.modules["MaelstromCount"].enabled or self.settings.modules["MaelstromCount"].enabled == nil then
 			local bFound = false
 			for k,v in pairs(self.elements) do
 				if v.moduleSettings.customBarType == "Counter" and v.moduleSettings.auraName
-					and string.upper(v.moduleSettings.auraName) == string.upper(GetSpellInfo(MAELSTROM_SPELL_ID)) then
+					and string.upper(v.moduleSettings.auraName) == string.upper(GetSpellName(MAELSTROM_SPELL_ID)) then
 					bFound = true
 					break
 				end
@@ -466,7 +471,7 @@ function IceCore.prototype:RedirectRemovedModules()
 				newCounter.moduleSettings.countMode = self.settings.modules["MaelstromCount"].maelstromMode or newCounter.moduleSettings.countMode
 				newCounter.moduleSettings.countGap = self.settings.modules["MaelstromCount"].maelstromGap or newCounter.moduleSettings.countGap
 				newCounter.moduleSettings.gradient = self.settings.modules["MaelstromCount"].gradient or newCounter.moduleSettings.gradient
-				newCounter.moduleSettings.auraName = GetSpellInfo(MAELSTROM_SPELL_ID)
+				newCounter.moduleSettings.auraName = GetSpellName(MAELSTROM_SPELL_ID)
 				newCounter:Enable()
 			end
 		end

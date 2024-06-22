@@ -12,6 +12,11 @@ if GetNumGroupMembers then
 	GetNumRaidMembers = GetNumGroupMembers
 end
 
+local GetSpellName = GetSpellInfo
+if C_Spell and C_Spell.GetSpellName then
+	GetSpellName = C_Spell.GetSpellName
+end
+
 -- list of spell ID's for each CC type so we can avoid localization issues
 local StunCCList = {
 	-- kidney shot
@@ -259,7 +264,7 @@ function TargetCC.prototype:PopulateSpellList(debuffListVar, ccList, ccName)
 	local spellName
 
 	for i=1,#ccList do
-		spellName = GetSpellInfo(ccList[i])
+		spellName = GetSpellName(ccList[i])
 
 		if spellName and spellName ~= "" then
 			debuffListVar[spellName] = ccName
@@ -349,9 +354,9 @@ function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 	local i = 1
 	local debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId
 	if IceHUD.SpellFunctionsReturnRank then
-		debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
+		debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = IceHUD.UnitAura(unitName, i, "HARMFUL")
 	else
-		debuff, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
+		debuff, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = IceHUD.UnitAura(unitName, i, "HARMFUL")
 	end
 	local isMine = unitCaster == "player"
 	local result = {nil, nil, nil}
@@ -373,9 +378,9 @@ function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 		i = i + 1;
 
 		if IceHUD.SpellFunctionsReturnRank then
-			debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
+			debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = IceHUD.UnitAura(unitName, i, "HARMFUL")
 		else
-			debuff, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, "HARMFUL")
+			debuff, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = IceHUD.UnitAura(unitName, i, "HARMFUL")
 		end
 		isMine = unitCaster == "player"
 	end

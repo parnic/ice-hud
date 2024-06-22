@@ -12,6 +12,19 @@ local AuraIconWidth = 20
 local AuraIconHeight = 20
 local displayModes = {NORMAL = L["When present"], ALWAYS = L["Always"], WHEN_TARGETING = L["Always, when targeting"], MISSING = L["When missing"]}
 
+local GetSpellName = GetSpellInfo
+if C_Spell and C_Spell.GetSpellName then
+	GetSpellName = C_Spell.GetSpellName
+end
+
+local GetSpellInfo = GetSpellInfo
+if not GetSpellInfo and C_Spell and C_Spell.GetSpellInfo then
+	GetSpellInfo = function(id)
+		local info = C_Spell.GetSpellInfo
+		return info.name, nil, info.iconID
+	end
+end
+
 IceCustomBar.prototype.auraDuration = -1
 IceCustomBar.prototype.auraEndTime = -1
 IceCustomBar.prototype.bIsAura = false
@@ -686,9 +699,9 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 	local buffFilter = (isBuff and "HELPFUL" or "HARMFUL") .. (self.moduleSettings.trackOnlyMine and "|PLAYER" or "")
 	local buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId
 	if IceHUD.SpellFunctionsReturnRank then
-		buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
+		buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId = IceHUD.UnitAura(unitName, i, buffFilter)
 	else
-		buff, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
+		buff, texture, count, type, duration, endTime, unitCaster, _, _, spellId = IceHUD.UnitAura(unitName, i, buffFilter)
 	end
 	local isMine = unitCaster == "player"
 	local mySpellId = tonumber(self.moduleSettings.buffToTrack)
@@ -716,9 +729,9 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 		i = i + 1;
 
 		if IceHUD.SpellFunctionsReturnRank then
-			buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
+			buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId = IceHUD.UnitAura(unitName, i, buffFilter)
 		else
-			buff, texture, count, type, duration, endTime, unitCaster, _, _, spellId = UnitAura(unitName, i, buffFilter)
+			buff, texture, count, type, duration, endTime, unitCaster, _, _, spellId = IceHUD.UnitAura(unitName, i, buffFilter)
 		end
 		isMine = unitCaster == "player"
 	end
@@ -773,7 +786,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 				self:GetAuraDuration(self.unit, self.moduleSettings.buffToTrack)
 		else
 			self.auraDuration, remaining, self.auraBuffCount, auraIcon, endTime =
-				self:GetAuraDuration(self.unit, GetSpellInfo(self.moduleSettings.buffToTrack))
+				self:GetAuraDuration(self.unit, GetSpellName(self.moduleSettings.buffToTrack))
 		end
 
 		if endTime == 0 then

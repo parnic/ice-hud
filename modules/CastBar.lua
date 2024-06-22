@@ -8,6 +8,11 @@ if not CastingBarFrame then
 	CastingBarFrame = PlayerCastingBarFrame
 end
 
+local IsSpellInRange = IsSpellInRange
+if not IsSpellInRange and C_Spell then
+	IsSpellInRange = C_Spell.IsSpellInRange
+end
+
 CastBar.prototype.spellCastSent = nil
 
 -- Constructor --

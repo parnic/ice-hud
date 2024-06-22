@@ -30,6 +30,11 @@ if not UnitGroupRolesAssigned then
 	end
 end
 
+local GetItemInfo = GetItemInfo
+if not GetItemInfo and C_Item then
+	GetItemInfo = C_Item.GetItemInfo
+end
+
 local MAX_NUM_RAID_MEMBERS = 40
 local MAX_NUM_PARTY_MEMBERS = 5
 

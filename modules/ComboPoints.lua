@@ -3,8 +3,13 @@ local ComboPoints = IceCore_CreateClass(IceElement)
 
 local IceHUD = _G.IceHUD
 
+local GetSpellName = GetSpellInfo
+if C_Spell and C_Spell.GetSpellName then
+	GetSpellName = C_Spell.GetSpellName
+end
+
 local AnticipationSpellId = 114015
-local AnticipationExists = GetSpellInfo(AnticipationSpellId) and IceHUD.WowVer < 70000
+local AnticipationExists = GetSpellName(AnticipationSpellId) and IceHUD.WowVer < 70000
 
 ComboPoints.prototype.comboSize = 20
 
@@ -522,7 +527,7 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 		end
 
 		if AnticipationExists then
-			_, _, _, anticipate = UnitAura("player", GetSpellInfo(AnticipationSpellId))
+			_, _, _, anticipate = IceHUD.UnitAura("player", GetSpellName(AnticipationSpellId))
 		else
 			anticipate = 0
 		end
@@ -593,9 +598,9 @@ do
 		if UnitIsUnit(unit, "player") then
 			local _, _, _, newAntStacks
 			if IceHUD.SpellFunctionsReturnRank then
-				_, _, _, newAntStacks = UnitAura("player", GetSpellInfo(AnticipationSpellId))
+				_, _, _, newAntStacks = IceHUD.UnitAura("player", GetSpellName(AnticipationSpellId))
 			else
-				_, _, newAntStacks = UnitAura("player", GetSpellInfo(AnticipationSpellId))
+				_, _, newAntStacks = IceHUD.UnitAura("player", GetSpellName(AnticipationSpellId))
 			end
 			if newAntStacks ~= antStacks then
 				antStacks = newAntStacks

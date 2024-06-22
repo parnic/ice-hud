@@ -3,6 +3,11 @@ local Vengeance = IceCore_CreateClass(IceUnitBar)
 
 local VENGEANCE_SPELL_ID = 93098
 
+local GetSpellName = GetSpellInfo
+if C_Spell and C_Spell.GetSpellName then
+	GetSpellName = C_Spell.GetSpellName
+end
+
 Vengeance.prototype.current = nil
 Vengeance.prototype.max = nil
 
@@ -50,18 +55,25 @@ end
 -- scan the tooltip and extract the vengeance value
 do
 	-- making these local as they're not used anywhere else
-	local spellName = GetSpellInfo(VENGEANCE_SPELL_ID)
+	local spellName = GetSpellName(VENGEANCE_SPELL_ID)
 
 	function Vengeance.prototype:UpdateCurrent(event, unit)
 		if (unit and (unit ~= self.unit)) then
 			return
 		end
 
-		local _, idx = IceHUD:GetBuffCount(self.unit, spellName, true, true)
-		if idx then
-			self.current = select(17, UnitAura(self.unit, idx))
+		if C_UnitAuras and C_UnitAuras.GetAuraDataBySpellName then
+			local data = C_UnitAuras.GetAuraDataBySpellName(self.unit, spellName)
+			if data and data.points and #data.points > 0 then
+				self.current = (data and data.points and #data.points > 0) and data.points[1] or 0
+			end
 		else
-			self.current = 0
+			local _, idx = IceHUD:GetBuffCount(self.unit, spellName, true, true)
+			if idx then
+				self.current = select(17, IceHUD.UnitAura(self.unit, idx))
+			else
+				self.current = 0
+			end
 		end
 
 		self:Update()

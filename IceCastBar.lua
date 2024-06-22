@@ -23,6 +23,19 @@ if not UnitCastingInfo then
 	UnitChannelInfo = ChannelInfo
 end
 
+local GetSpellName = GetSpellInfo
+if C_Spell and C_Spell.GetSpellName then
+	GetSpellName = C_Spell.GetSpellName
+end
+
+local GetSpellInfo = GetSpellInfo
+if not GetSpellInfo and C_Spell and C_Spell.GetSpellInfo then
+	GetSpellInfo = function(id)
+		local info = C_Spell.GetSpellInfo
+		return info.name, nil, info.iconID
+	end
+end
+
 -- Fulzamoth 2019-09-27 : Use LibClassicCasterino if it's there so we can use TargetCast 
 --                        module in Classic WoW
 if IceHUD.WowClassic then
@@ -701,11 +714,11 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 		return
 	end
 
-	local spell = GetSpellInfo(spellId)
+	local spell = GetSpellName(spellId)
 
 	-- show after normal successfull cast
 	if (self.action == IceCastBar.Actions.Cast) then
-		self:StartBar(IceCastBar.Actions.Success, spell.. self:GetShortRank(rank), spellId)
+		self:StartBar(IceCastBar.Actions.Success, spell, spellId)
 		return
 	end
 
@@ -723,7 +736,7 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 		return
 	end
 
-	self:StartBar(IceCastBar.Actions.Success, spell.. self:GetShortRank(rank), spellId)
+	self:StartBar(IceCastBar.Actions.Success, spell, spellId)
 end
 
 

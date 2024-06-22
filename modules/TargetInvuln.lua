@@ -12,6 +12,11 @@ if GetNumGroupMembers then
 	GetNumRaidMembers = GetNumGroupMembers
 end
 
+local GetSpellName = GetSpellInfo
+if C_Spell and C_Spell.GetSpellName then
+	GetSpellName = C_Spell.GetSpellName
+end
+
 -- list of spell ID's for each CC type so we can avoid localization issues
 local InvulnList= {
 	-- Anti-Magic Shell
@@ -76,7 +81,7 @@ function TargetInvuln.prototype:PopulateSpellList(buffListVar, ccList, ccName)
 	local spellName
 
 	for i=1,#ccList do
-		spellName = GetSpellInfo(ccList[i])
+		spellName = GetSpellName(ccList[i])
 
 		if spellName and spellName ~= "" then
 			buffListVar[spellName] = ccName
@@ -148,9 +153,9 @@ function TargetInvuln.prototype:GetMaxbuffDuration(unitName, buffNames)
 	local i = 1
 	local buff, rank, texture, count, buffType, duration, endTime, unitCaster
 	if IceHUD.SpellFunctionsReturnRank then
-		buff, rank, texture, count, buffType, duration, endTime, unitCaster = UnitAura(unitName, i, "HELPFUL")
+		buff, rank, texture, count, buffType, duration, endTime, unitCaster = IceHUD.UnitAura(unitName, i, "HELPFUL")
 	else
-		buff, texture, count, buffType, duration, endTime, unitCaster = UnitAura(unitName, i, "HELPFUL")
+		buff, texture, count, buffType, duration, endTime, unitCaster = IceHUD.UnitAura(unitName, i, "HELPFUL")
 	end
 	local isMine = unitCaster == "player"
 	local result = {nil, nil, nil}
@@ -179,9 +184,9 @@ function TargetInvuln.prototype:GetMaxbuffDuration(unitName, buffNames)
 		i = i + 1;
 
 		if IceHUD.SpellFunctionsReturnRank then
-			buff, rank, texture, count, buffType, duration, endTime, unitCaster = UnitAura(unitName, i, "HELPFUL")
+			buff, rank, texture, count, buffType, duration, endTime, unitCaster = IceHUD.UnitAura(unitName, i, "HELPFUL")
 		else
-			buff, texture, count, buffType, duration, endTime, unitCaster = UnitAura(unitName, i, "HELPFUL")
+			buff, texture, count, buffType, duration, endTime, unitCaster = IceHUD.UnitAura(unitName, i, "HELPFUL")
 		end
 		isMine = unitCaster == "player"
 	end
