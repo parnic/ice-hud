@@ -1,5 +1,9 @@
 # Changelog
 
+v1.15.0:
+
+- Support The War Within/11.0
+
 v1.14.42:
 
 - Fix Vengeance module in Cataclysm Classic
