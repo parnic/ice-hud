@@ -42,6 +42,18 @@ if C_Spell and C_Spell.GetSpellName then
 	GetSpellName = C_Spell.GetSpellName
 end
 
+local UnitDebuff = UnitDebuff
+if not UnitDebuff and C_UnitAuras and AuraUtil then
+	UnitDebuff = function(unitToken, index, filter)
+		local auraData = C_UnitAuras.GetDebuffDataByIndex(unitToken, index, filter)
+		if not auraData then
+			return nil
+		end
+
+		return AuraUtil.UnpackAuraData(auraData)
+	end
+end
+
 StaggerBar.prototype.StaggerDuration = 0
 StaggerBar.prototype.StaggerEndTime = 0
 

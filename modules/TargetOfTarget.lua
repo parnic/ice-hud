@@ -4,6 +4,18 @@ local DogTag = nil
 
 local TargetOfTarget = IceCore_CreateClass(IceElement)
 
+local UnitDebuff = UnitDebuff
+if not UnitDebuff and C_UnitAuras and AuraUtil then
+	UnitDebuff = function(unitToken, index, filter)
+		local auraData = C_UnitAuras.GetDebuffDataByIndex(unitToken, index, filter)
+		if not auraData then
+			return nil
+		end
+
+		return AuraUtil.UnpackAuraData(auraData)
+	end
+end
+
 TargetOfTarget.prototype.stackedDebuffs = nil
 TargetOfTarget.prototype.buffSize = nil
 TargetOfTarget.prototype.height = nil

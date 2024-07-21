@@ -53,6 +53,18 @@ if Enum and Enum.PowerType then
 	SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints
 end
 
+local UnitBuff = UnitBuff
+if not UnitBuff and C_UnitAuras and AuraUtil then
+  UnitBuff = function(unitToken, index, filter)
+    local auraData = C_UnitAuras.GetBuffDataByIndex(unitToken, index, filter)
+    if not auraData then
+      return nil
+    end
+
+    return AuraUtil.UnpackAuraData(auraData)
+  end
+end
+
 -- Constructor --
 function SliceAndDice.prototype:init()
 	SliceAndDice.super.prototype.init(self, "SliceAndDice", "player")
