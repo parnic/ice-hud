@@ -1010,17 +1010,20 @@ if UnitPopupFrames then
 end
 
 IceHUD.DropdownUnit = nil
-UIDropDownMenu_Initialize(IceHUD_UnitFrame_DropDown, function()
-	if not IceHUD.DropdownUnit then
-		return
-	end
+-- todo: update for new UnitPopup_OpenMenu() API
+if UnitPopup_ShowMenu then
+	UIDropDownMenu_Initialize(IceHUD_UnitFrame_DropDown, function()
+		if not IceHUD.DropdownUnit then
+			return
+		end
 
-	local menu, id = figure_unit_menu(IceHUD.DropdownUnit)
-	if menu then
-		menu = IceHUD.MungeUnitMenu(menu)
-		UnitPopup_ShowMenu(IceHUD_UnitFrame_DropDown, menu, IceHUD.DropdownUnit, nil, id)
-	end
-end, "MENU", nil)
+		local menu, id = figure_unit_menu(IceHUD.DropdownUnit)
+		if menu then
+			menu = IceHUD.MungeUnitMenu(menu)
+			UnitPopup_ShowMenu(IceHUD_UnitFrame_DropDown, menu, IceHUD.DropdownUnit, nil, id)
+		end
+	end, "MENU", nil)
+end
 
 function IceHUD:OutOfCombatWrapper(func)
 	return function(...)
