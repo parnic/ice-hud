@@ -30,9 +30,15 @@ end
 
 local GetSpellInfo = GetSpellInfo
 if not GetSpellInfo and C_Spell and C_Spell.GetSpellInfo then
-	GetSpellInfo = function(id)
-		local info = C_Spell.GetSpellInfo
-		return info.name, nil, info.iconID
+	GetSpellInfo = function(spellID)
+		if not spellID then
+			return nil
+		end
+
+		local spellInfo = C_Spell.GetSpellInfo(spellID)
+		if spellInfo then
+			return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID
+		end
 	end
 end
 

@@ -30,14 +30,29 @@ end
 local GetSpellInfo = GetSpellInfo
 if not GetSpellInfo and C_Spell and C_Spell.GetSpellInfo then
 	GetSpellInfo = function(id)
-		local info = C_Spell.GetSpellInfo
+		local info = C_Spell.GetSpellInfo(id)
 		return info.name, nil, info.iconID
+	end
+end
+
+local GetSpellCooldown = GetSpellCooldown
+if not GetSpellCooldown and C_Spell then
+	GetSpellCooldown = function(spellID)
+		local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID)
+		if spellCooldownInfo then
+			return spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate
+		end
 	end
 end
 
 local GetItemInfo = GetItemInfo
 if not GetItemInfo and C_Item then
 	GetItemInfo = C_Item.GetItemInfo
+end
+
+local IsUsableSpell = IsUsableSpell
+if not IsUsableSpell and C_Spell then
+	IsUsableSpell = C_Spell.IsSpellUsable
 end
 
 IceCustomCDBar.prototype.cooldownDuration = 0

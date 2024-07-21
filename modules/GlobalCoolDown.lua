@@ -9,8 +9,18 @@ end
 local GetSpellInfo = GetSpellInfo
 if not GetSpellInfo and C_Spell and C_Spell.GetSpellInfo then
 	GetSpellInfo = function(id)
-		local info = C_Spell.GetSpellInfo
+		local info = C_Spell.GetSpellInfo(id)
 		return info.name, nil, info.iconID, info.castTime
+	end
+end
+
+local GetSpellCooldown = GetSpellCooldown
+if not GetSpellCooldown and C_Spell then
+	GetSpellCooldown = function(spellID)
+		local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID)
+		if spellCooldownInfo then
+			return spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate
+		end
 	end
 end
 

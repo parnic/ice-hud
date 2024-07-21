@@ -3,6 +3,11 @@ IceTargetHealth = IceCore_CreateClass(IceUnitBar)
 
 local IceHUD = _G.IceHUD
 
+local IsAddOnLoaded = IsAddOnLoaded
+if not IsAddOnLoaded and C_AddOns then
+	IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+end
+
 IceTargetHealth.prototype.color = nil
 IceTargetHealth.prototype.determineColor = true
 IceTargetHealth.prototype.registerEvents = true

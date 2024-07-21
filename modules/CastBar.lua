@@ -13,6 +13,16 @@ if not IsSpellInRange and C_Spell then
 	IsSpellInRange = C_Spell.IsSpellInRange
 end
 
+local GetSpellCooldown = GetSpellCooldown
+if not GetSpellCooldown and C_Spell then
+	GetSpellCooldown = function(spellID)
+		local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID)
+		if spellCooldownInfo then
+			return spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate
+		end
+	end
+end
+
 CastBar.prototype.spellCastSent = nil
 
 -- Constructor --
