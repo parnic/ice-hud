@@ -794,9 +794,7 @@ function IceHUD_Options:OnLoad()
 	self:GenerateModuleOptions(true)
 	self.options.args.colors.args = IceHUD.IceCore:GetColorOptions()
 	self.options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(IceHUD.db)
-	--@debug@
 	IceHUD_Options:SetupProfileImportButtons()
-	--@end-debug@
 
 	-- Add dual-spec support
 	if IceHUD.db ~= nil and LibDualSpec then
@@ -833,24 +831,6 @@ function IceHUD_Options:SetupProfileImportButtons()
 				editbox:DisableButton(true)
 				frame:AddChild(editbox)
 			end,
-			hidden =
-				-- hello, snooper! exporting works well enough, but importing is very rough, so enable this at your own peril
-				--[===[@non-debug@
-				true
-				--@end-non-debug@]===]
-				--@debug@
-				false
-				--@end-debug@
-			,
-			disabled =
-				-- hello, snooper! exporting works well enough, but importing is very rough, so enable this at your own peril
-				--[===[@non-debug@
-				true
-				--@end-non-debug@]===]
-				--@debug@
-				false
-				--@end-debug@
-			,
 			order = 98.1
 		}
 
@@ -883,24 +863,6 @@ function IceHUD_Options:SetupProfileImportButtons()
 				editbox:DisableButton(true)
 				frame:AddChild(editbox)
 			end,
-			hidden =
-				-- hello, snooper! this feature is really rough, so enable it at your own peril
-				--[===[@non-debug@
-				true
-				--@end-non-debug@]===]
-				--@debug@
-				false
-				--@end-debug@
-			,
-			disabled =
-				-- hello, snooper! this feature is really rough, so enable it at your own peril
-				--[===[@non-debug@
-				true
-				--@end-non-debug@]===]
-				--@debug@
-				false
-				--@end-debug@
-			,
 			order = 98.2
 		}
 	end
