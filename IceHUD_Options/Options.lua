@@ -790,24 +790,6 @@ function IceHUD_Options:GenerateModuleOptions(firstLoad)
 	end
 end
 
-function IceHUD_Options:OnLoad()
-	self:GenerateModuleOptions(true)
-	self.options.args.colors.args = IceHUD.IceCore:GetColorOptions()
-	self.options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(IceHUD.db)
-	IceHUD_Options:SetupProfileImportButtons()
-
-	-- Add dual-spec support
-	if IceHUD.db ~= nil and LibDualSpec then
-		LibDualSpec:EnhanceOptions(IceHUD_Options.options.args.profiles, IceHUD.db)
-	end
-
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("IceHUD", options, "icehudcl")
-end
-
-if IceHUD and IceHUD.IceCore then
-	IceHUD_Options:OnLoad()
-end
-
 function IceHUD_Options:SetupProfileImportButtons()
 	if AceSerializer then
 		AceSerializer:Embed(self)
@@ -866,4 +848,22 @@ function IceHUD_Options:SetupProfileImportButtons()
 			order = 98.2
 		}
 	end
+end
+
+function IceHUD_Options:OnLoad()
+	self:GenerateModuleOptions(true)
+	self.options.args.colors.args = IceHUD.IceCore:GetColorOptions()
+	self.options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(IceHUD.db)
+	self:SetupProfileImportButtons()
+
+	-- Add dual-spec support
+	if IceHUD.db ~= nil and LibDualSpec then
+		LibDualSpec:EnhanceOptions(IceHUD_Options.options.args.profiles, IceHUD.db)
+	end
+
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("IceHUD", options, "icehudcl")
+end
+
+if IceHUD and IceHUD.IceCore then
+	IceHUD_Options:OnLoad()
 end
