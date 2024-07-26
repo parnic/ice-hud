@@ -3,6 +3,7 @@
 v1.15.2:
 
 - Re-enable right-click context menus on 11.x.
+- Update TOC for Classic-era
 
 v1.15.1:
 
