@@ -1010,7 +1010,6 @@ if UnitPopupFrames then
 end
 
 IceHUD.DropdownUnit = nil
--- todo: update for new UnitPopup_OpenMenu() API
 if UnitPopup_ShowMenu then
 	UIDropDownMenu_Initialize(IceHUD_UnitFrame_DropDown, function()
 		if not IceHUD.DropdownUnit then

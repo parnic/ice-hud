@@ -1,5 +1,9 @@
 # Changelog
 
+v1.15.2:
+
+- Re-enable right-click context menus on 11.x.
+
 v1.15.1:
 
 - Fix error opening options.

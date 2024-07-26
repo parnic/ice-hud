@@ -714,7 +714,7 @@ function IceTargetHealth.prototype:CreateBackground(redraw)
 			end
 		end
 
-		if not self.frame.button.menu then
+		if not self.frame.button.menu and UnitPopup_ShowMenu then
 			self.frame.button.menu = function(this, unit)
 				IceHUD.DropdownUnit = unit
 				ToggleDropDownMenu(1, nil, IceHUD_UnitFrame_DropDown, "cursor")
@@ -733,7 +733,7 @@ function IceTargetHealth.prototype:EnableClickTargeting(bEnable)
 		self.frame.button:EnableMouse(true)
 		self.frame.button:RegisterForClicks("AnyUp")
 		self.frame.button:SetAttribute("type1", "target")
-		self.frame.button:SetAttribute("type2", "menu")
+		self.frame.button:SetAttribute("type2", UnitPopup_ShowMenu and "menu" or "togglemenu")
 		self.frame.button:SetAttribute("unit", self.unit)
 
 		-- set up click casting
