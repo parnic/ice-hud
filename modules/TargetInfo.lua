@@ -1150,7 +1150,7 @@ do 	-- OVERRIDE: IceTargetInfo.prototype:CreateFrame(redraw)
 			self.frame:SetScript("OnLeave", function(frame) self:OnLeave(frame) end)
 
 			self.frame:SetAttribute("type1", "target")
-			self.frame:SetAttribute("type2", UnitPopup_ShowMenu and "menu" or "togglemenu")
+			self.frame:SetAttribute("type2", "togglemenu")
 
 			-- set up click casting
 			ClickCastFrames = ClickCastFrames or {}
@@ -1172,13 +1172,6 @@ do 	-- OVERRIDE: IceTargetInfo.prototype:CreateFrame(redraw)
 		self.frame.unit = self.unit
 
 		self.frame:SetAttribute("unit", self.unit)
-
-		if not self.frame.menu and UnitPopup_ShowMenu then
-			self.frame.menu = function(this, unit)
-				IceHUD.DropdownUnit = unit
-				ToggleDropDownMenu(1, nil, IceHUD_UnitFrame_DropDown, "cursor")
-			end
-		end
 
 
 		-- create a fancy highlight frame for mouse over
