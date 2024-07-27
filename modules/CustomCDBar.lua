@@ -637,9 +637,9 @@ function IceCustomCDBar.prototype:GetCooldownDuration(buffName)
 	local localRemaining = nil
 	local localStart, localDuration, hasCooldown = GetSpellCooldown(buffName)
 
-	if (hasCooldown == 1) then
+	if hasCooldown then
 		-- the item has a potential cooldown
-		if (localDuration <= 1.5) then
+		if localDuration <= 1.5 then
 			return nil, nil
 		end
 
@@ -734,7 +734,7 @@ function IceCustomCDBar.prototype:UpdateItemUnitInventoryChanged(event, unit)
 end
 
 function IceCustomCDBar.prototype:UpdateCustomBarEvent(event, unit)
-	if unit ~= self.unit then
+	if unit and unit ~= self.unit then
 		return
 	end
 	if not self.moduleSettings.cooldownType or self.moduleSettings.cooldownType == COOLDOWN_TYPE_SPELL then
