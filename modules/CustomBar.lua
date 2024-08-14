@@ -20,8 +20,14 @@ end
 local GetSpellInfo = GetSpellInfo
 if not GetSpellInfo and C_Spell and C_Spell.GetSpellInfo then
 	GetSpellInfo = function(id)
+		if not id then
+			return nil
+		end
+
 		local info = C_Spell.GetSpellInfo(id)
-		return info.name, nil, info.iconID
+		if info then
+			return info.name, nil, info.iconID
+		end
 	end
 end
 

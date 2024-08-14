@@ -1,5 +1,9 @@
 # Changelog
 
+v1.15.5:
+
+- Fix error when using an invalid spell with a custom bar on 11.x
+
 v1.15.4:
 
 - Update TOC for TWW
