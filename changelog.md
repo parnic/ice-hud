@@ -1,5 +1,9 @@
 # Changelog
 
+v1.15.4:
+
+- Update TOC for TWW
+
 v1.15.3:
 
 - Fix custom cooldown bars not working in 11.x (wowace issue #363)
