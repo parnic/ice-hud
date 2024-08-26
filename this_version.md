@@ -1,5 +1,9 @@
 # Changelog
 
+v1.15.6:
+
+- Package new version of LibDogTag-Unit to fix an error with some units on 11.0.2
+
 v1.15.5:
 
 - Fix error when using an invalid spell with a custom bar on 11.x
