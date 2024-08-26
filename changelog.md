@@ -1,5 +1,9 @@
 # Changelog
 
+v1.15.7:
+
+- Fix cooldown display for overridden spells (such as Evoker spells where Font of Magic replaces the base spell with an override with the same name).
+
 v1.15.6:
 
 - Package new version of LibDogTag-Unit to fix an error with some units on 11.0.2

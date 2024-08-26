@@ -36,7 +36,7 @@ if not GetSpellInfo and C_Spell and C_Spell.GetSpellInfo then
 
 		local info = C_Spell.GetSpellInfo(id)
 		if info then
-			return info.name, nil, info.iconID
+			return info.name, nil, info.iconID, info.spellID
 		end
 	end
 end
@@ -636,8 +636,18 @@ end
 
 -- 'Protected' methods --------------------------------------------------------
 
+function IceCustomCDBar.prototype:GetCooldownDurationOverride(spellID)
+	if spellID and FindSpellOverrideByID then
+		local override = FindSpellOverrideByID(spellID)
+		if override and override ~= spellID then
+			return self:GetCooldownDuration(override)
+		end
+	end
+end
+
 function IceCustomCDBar.prototype:GetCooldownDuration(buffName)
-	buffName = self:GetSpellNameOrId(buffName)
+	local spellID
+	buffName, spellID = self:GetSpellNameOrId(buffName)
 
 	local now = GetTime()
 	local localRemaining = nil
@@ -646,7 +656,7 @@ function IceCustomCDBar.prototype:GetCooldownDuration(buffName)
 	if hasCooldown then
 		-- the item has a potential cooldown
 		if localDuration <= 1.5 then
-			return nil, nil
+			return self:GetCooldownDurationOverride(spellID)
 		end
 
 		localRemaining = localDuration + (localStart - now)
@@ -657,7 +667,7 @@ function IceCustomCDBar.prototype:GetCooldownDuration(buffName)
 
 		return localDuration, localRemaining
 	else
-		return nil, nil
+		return self:GetCooldownDurationOverride(spellID)
 	end
 end
 
@@ -868,7 +878,8 @@ function IceCustomCDBar.prototype:IsReady()
 end
 
 function IceCustomCDBar.prototype:GetSpellNameOrId(spellName)
-	return spellName
+	local id = select(4, GetSpellInfo(spellName))
+	return spellName, id
 end
 
 function IceCustomCDBar.prototype:Show(bShouldShow, bForceHide)
