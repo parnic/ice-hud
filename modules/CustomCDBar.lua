@@ -61,6 +61,11 @@ if not IsUsableSpell and C_Spell then
 	IsUsableSpell = C_Spell.IsSpellUsable
 end
 
+local SpellHasRange = SpellHasRange
+if not SpellHasRange and C_Spell then
+	SpellHasRange = C_Spell.SpellHasRange
+end
+
 IceCustomCDBar.prototype.cooldownDuration = 0
 IceCustomCDBar.prototype.cooldownEndTime = 0
 IceCustomCDBar.prototype.coolingDown = false

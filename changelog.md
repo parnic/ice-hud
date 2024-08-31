@@ -1,5 +1,9 @@
 # Changelog
 
+v1.15.8:
+
+- Fix reported error with custom cooldown bars set to "when ready" mode due to deprecation in 11.x (wowace issue #368)
+
 v1.15.7:
 
 - Fix cooldown display for overridden spells (such as Evoker spells where Font of Magic replaces the base spell with an override with the same name).
