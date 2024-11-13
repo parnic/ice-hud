@@ -1,5 +1,11 @@
 # Changelog
 
+v1.15.9:
+
+- Update Cataclysm Classic TOC to 4.4.1
+- Update Classic-era TOC to 1.15.4
+- Update TWW TOC to 11.0.5
+
 v1.15.8:
 
 - Fix reported error with custom cooldown bars set to "when ready" mode due to deprecation in 11.x (wowace issue #368)
