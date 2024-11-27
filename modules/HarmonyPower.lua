@@ -40,6 +40,13 @@ function HarmonyPower.prototype:Enable(core)
 	HarmonyPower.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_POWER_FREQUENT", "UpdateRunePower")
+	if IceHUD.EventExistsUnitMaxPower then
+		self:RegisterEvent("UNIT_MAXPOWER", "PlayerChiUpdate")
+	end
+end
+
+function HarmonyPower.prototype:PlayerChiUpdate()
+	self:Redraw()
 end
 
 function HarmonyPower.prototype:UpdateRunePower(event, arg1, arg2)
