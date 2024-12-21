@@ -3,6 +3,7 @@
 v1.15.10:
 
 - Fix Chi not updating properly when the player's maximum amount of Chi points changes (e.g. via Ascension talent).
+- Update TOCs
 
 v1.15.9:
 
