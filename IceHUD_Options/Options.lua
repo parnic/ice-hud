@@ -830,7 +830,7 @@ function IceHUD_Options:SetupProfileImportButtons()
 					if err ~= nil then
 						print("failed to import profile: "..err)
 					else
-						print("importing profile")
+						-- print("importing profile")
 						IceHUD:PreProfileChanged()
 						IceHUD:populateDefaults(newTable, IceHUD.IceCore.defaults.profile)
 						IceHUD.db.profile = IceHUD.deepcopy(newTable)
