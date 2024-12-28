@@ -1,5 +1,9 @@
 # Changelog
 
+v1.15.11:
+
+- Fix imported profiles not saving across reloads
+
 v1.15.10:
 
 - Fix Chi not updating properly when the player's maximum amount of Chi points changes (e.g. via Ascension talent).

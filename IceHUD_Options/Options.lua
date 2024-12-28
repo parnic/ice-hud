@@ -834,6 +834,7 @@ function IceHUD_Options:SetupProfileImportButtons()
 						IceHUD:PreProfileChanged()
 						IceHUD:populateDefaults(newTable, IceHUD.IceCore.defaults.profile)
 						IceHUD.db.profile = IceHUD.deepcopy(newTable)
+						IceHUD.db.profiles[IceHUD.db:GetCurrentProfile()] = IceHUD.db.profile
 						IceHUD:PostProfileChanged()
 					end
 					AceGUI:Release(widget)
