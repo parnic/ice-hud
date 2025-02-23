@@ -1,5 +1,9 @@
 # Changelog
 
+v1.15.12:
+
+- Update TOCs
+
 v1.15.11:
 
 - Fix imported profiles not saving across reloads
