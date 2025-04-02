@@ -1,6 +1,6 @@
-## Interface: 110007
-## Interface-Retail: 110007
-## Interface-Classic: 11506
+## Interface: 110100
+## Interface-Retail: 110100
+## Interface-Classic: 11507
 ## Interface-BCC: 20504
 ## Interface-Wrath: 30403
 ## Interface-Cata: 40402
@@ -22,6 +22,18 @@
 ## X-Curse-Project-ID: 5394
 ## X-WoWI-ID: 8149
 ## X-Wago-ID: 5bGolJN0
+## Category-enUS: Unit Frames
+## Category-deDE: Einheitenfenster
+## Category-esES: Marcos de unidades
+## Category-esMX: Marcos de unidades
+## Category-frFR: Portraits d'unités
+## Category-itIT: Riquadri delle unità
+## Category-koKR: 개체창
+## Category-ptBR: Quadros de unidade
+## Category-ruRU: Рамки юнитов
+## Category-zhCN: 单位框体
+## Category-zhTW: 單位框架
+## Group: IceHUD
 
 #@no-lib-strip@
 # Libraries

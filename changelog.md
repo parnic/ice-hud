@@ -1,5 +1,9 @@
 # Changelog
 
+v1.15.13:
+
+- Update TOCs
+
 v1.15.12:
 
 - Update TOCs
@@ -144,7 +148,7 @@ v1.14.23:
 
 v1.14.22:
 
-- Fixed reported issue with a Lua error on Wrath Classic clients. https://www.wowace.com/projects/ice-hud/issues/344
+- Fixed reported issue with a Lua error on Wrath Classic clients. <https://www.wowace.com/projects/ice-hud/issues/344>
 - Fixed Vigor module not working when riding Grotto Netherwing Drake (and theoretically all future Dragonriding mount types).
 - Updated TOC for Wrath-Classic.
 
@@ -565,7 +569,7 @@ v1.10.13:
 
 v1.10.12:
 
-- Tweaked a few Druid CCs in the CC modules. If you've got a more up-to-date list of any of the CCs, please send them along to icehud@parnic.com
+- Tweaked a few Druid CCs in the CC modules. If you've got a more up-to-date list of any of the CCs, please send them along to <icehud@parnic.com>
 - Fixed a problem that could cause a custom counter to loop forever and cause framerate problems. (ticket #230)
 - Updated default text values for Health and Mana modules to show values in shortened form so they're more readable. Anyone who has customized their text will not be affected by this change and the shortened form only kicks in once values reach 10,000.
 
@@ -1582,7 +1586,7 @@ v1.3.17:
 - fixed <http://www.wowace.com/projects/ice-hud/tickets/8-module-target-info-long-targetnames-overwrites-the/> : target name in the TargetInfo module no longer spills to the next line or gets cut off if it's too long
 - made the threat module only display while the player is in combat or the player has some threat on his target
 - added an option to only display the threat module while in a group. set by default
-- adding HungerForBlood user-submitted module. I don't have an assassination rogue and don't plan on having one, so this is _untested_ by me. the author is responsible for fixing bugs in it
+- adding HungerForBlood user-submitted module. I don't have an assassination rogue and don't plan on having one, so this is *untested* by me. the author is responsible for fixing bugs in it
 - also updated a few settings in SliceAndDice to conform with the rest of the mod
 - fix for malygos fight where the player uses combo points while in a vehicle
 - made runes flash when they become active whether the cooldown or alpha setting is being used
