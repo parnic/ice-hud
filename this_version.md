@@ -1,5 +1,10 @@
 # Changelog
 
+v1.15.14:
+
+- Support WoW 11.1.5
+- Update TWW TOC to 11.1.5
+
 v1.15.13:
 
 - Update TOCs

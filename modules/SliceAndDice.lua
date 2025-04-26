@@ -532,7 +532,11 @@ function SliceAndDice.prototype:GetItemIdFromItemLink(linkStr)
 	local _
 
 	if linkStr then
-		_, itemId, _, _, _, _, _, _, _ = strsplit(":", linkStr)
+		_, itemId, itemId2, _, _, _, _, _, _ = strsplit(":", linkStr)
+	end
+
+	if not tonumber(itemId) then
+		itemId = itemId2
 	end
 
 	return itemId or 0
