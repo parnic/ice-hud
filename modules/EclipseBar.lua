@@ -6,6 +6,11 @@ local IceHUD = _G.IceHUD
 EclipseBar.prototype.barUpdateColor = "EclipseLunar"
 EclipseBar.prototype.direction = "none"
 
+local SPELL_POWER_ECLIPSE = SPELL_POWER_ECLIPSE
+if Enum and Enum.PowerType then
+	SPELL_POWER_ECLIPSE = Enum.PowerType.Balance
+end
+
 local DirectionToColorMapping = {
 	none = "Text",
 	sun = "EclipseSolar",
@@ -118,13 +123,8 @@ function EclipseBar.prototype:UpdateShown()
 	local form  = GetShapeshiftFormID()
 
 	if form == MOONKIN_FORM or not form then
-		local PrimaryTalentTree = 0
-		if GetSpecialization then
-			PrimaryTalentTree = GetSpecialization()
-		else
-			PrimaryTalentTree = GetPrimaryTalentTree()
-		end
-		if PrimaryTalentTree == 1 then
+		local PrimaryTalentTree = IceHUD.GetSpecialization()
+		if PrimaryTalentTree == SPEC_DRUID_BALANCE then
 			self:Show(true)
 		else
 			self:Show(false)

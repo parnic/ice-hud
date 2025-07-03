@@ -307,7 +307,7 @@ local function SNDGetComboPoints(unit)
 end
 
 local function ShouldHide()
-	if IceHUD.WowVer >= 90000 or IceHUD.WowClassicBC or IceHUD.WowClassicWrath then
+	if IceHUD.WowVer >= 90000 or IceHUD.WowClassicBC or IceHUD.WowClassicWrath or IceHUD.WowClassicMists then
 		return false
 	end
 

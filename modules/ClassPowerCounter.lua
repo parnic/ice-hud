@@ -454,7 +454,7 @@ function IceClassPowerCounter.prototype:CheckValidSpec()
 
 	self:RegisterEvent("PLAYER_TALENT_UPDATE", "CheckValidLevel")
 
-	local spec = GetSpecialization()
+	local spec = IceHUD.GetSpecialization()
 	if spec == self.requiredSpec then
 		self:DisplayCounter()
 		self:Show(true)

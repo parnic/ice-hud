@@ -65,13 +65,13 @@ end
 
 function ShouldShow(unit)
 	if unitClass == "MONK" then
-		return GetSpecialization() == SPEC_MONK_MISTWEAVER
+		return IceHUD.GetSpecialization() == SPEC_MONK_MISTWEAVER
 	end
 	return UnitPowerType(unit) ~= SPELL_POWER_MANA
 --[[	if unitClass == "PRIEST" then
 		return UnitPowerType(unit) == SPELL_POWER_INSANITY
 	elseif unitClass == "SHAMAN" then
-		return GetSpecialization() ~= SPEC_SHAMAN_RESTORATION
+		return IceHUD.GetSpecialization() ~= SPEC_SHAMAN_RESTORATION
 	elseif unitClass == "DRUID" then
 		return UnitPowerType(unit) ~= SPELL_POWER_MANA
 	end

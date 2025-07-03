@@ -25,6 +25,11 @@ if not IceHUD.UnitAura then
 	end
 end
 
+IceHUD.GetSpecialization = GetSpecialization
+if not IceHUD.GetSpecialization then
+	IceHUD.GetSpecialization = GetPrimaryTalentTree
+end
+
 IceHUD.CurrTagVersion = 3
 IceHUD.debugging = false
 
@@ -35,11 +40,13 @@ if GetClassicExpansionLevel then
 	IceHUD.WowClassicBC = GetClassicExpansionLevel() == 1
 	IceHUD.WowClassicWrath = GetClassicExpansionLevel() == 2
 	IceHUD.WowClassicCataclysm = GetClassicExpansionLevel() == 3
+	IceHUD.WowClassicMists = GetClassicExpansionLevel() == 4
 else
 	IceHUD.WowClassic = WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 	IceHUD.WowClassicBC = false
 	IceHUD.WowClassicWrath = false
 	IceHUD.WowClassicCataclysm = false
+	IceHUD.WowClassicMists = false
 	if WOW_PROJECT_ID and WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
 		if not LE_EXPANSION_LEVEL_CURRENT or LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_BURNING_CRUSADE then
 			IceHUD.WowClassicBC = true
@@ -50,6 +57,8 @@ else
 		IceHUD.WowClassicWrath = true
 	elseif WOW_PROJECT_CATACLYSM_CLASSIC and WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC then
 		IceHUD.WowClassicCataclysm = true
+	elseif WOW_PROJECT_MISTS_CLASSIC and WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
+		IceHUD.WowClassicMists = true
 	end
 end
 
@@ -89,11 +98,11 @@ IceHUD.PerTargetComboPoints = IceHUD.WowVer < 60000
 IceHUD.CanTrackOtherUnitBuffs = not IceHUD.WowClassic or IceHUD.WowVer >= 11500
 IceHUD.CanTrackGCD = not IceHUD.WowClassic or IceHUD.WowVer >= 11500
 IceHUD.GetSpellInfoReturnsFunnel = IceHUD.WowMain and IceHUD.WowVer < 60000
-IceHUD.CanHookDestroyTotem = IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath or IceHUD.WowClassicCataclysm
+IceHUD.CanHookDestroyTotem = IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath or IceHUD.WowClassicCataclysm or IceHUD.WowClassicMists
 IceHUD.ShouldUpdateTargetHealthEveryTick = (IceHUD.WowClassic or IceHUD.WowClassicBC) and GetCVarBool("predictedHealth")
 IceHUD.UsesUIPanelButtonTemplate = IceHUD.WowVer >= 50000 or not IceHUD.WowMain
 IceHUD.EventExistsSpellcastInterruptible = IceHUD.WowVer >= 30200 and not IceHUD.WowClassicWrath
-IceHUD.DeathKnightUnholyFrostRunesSwapped = IceHUD.WowVer < 70300 and not IceHUD.WowClassicWrath and not IceHUD.WowClassicCataclysm
+IceHUD.DeathKnightUnholyFrostRunesSwapped = IceHUD.WowVer < 70300 and not IceHUD.WowClassicWrath and not IceHUD.WowClassicCataclysm and not IceHUD.WowClassicMists
 IceHUD.SupportsHealPrediction = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
 IceHUD.UnitGroupRolesReturnsRoleString = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
 IceHUD.ShellGameSpellID = 271571

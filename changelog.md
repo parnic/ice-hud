@@ -1,5 +1,10 @@
 # Changelog
 
+v1.15.16:
+
+- Support Mists of Pandaria Classic
+- Switched the packaging method to release one version of the addon compatible with all game clients rather than separate packages per client type
+
 v1.15.15:
 
 - Update TWW TOC to 11.1.7

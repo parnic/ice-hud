@@ -186,7 +186,7 @@ function StaggerBar.prototype:CreateTimerBar()
 end
 
 function StaggerBar.prototype:UpdateShown()
-	if GetSpecialization() == SPEC_MONK_BREWMASTER and not UnitInVehicle(self.unit) and UnitLevel(self.unit) >= MinLevel then
+	if IceHUD.GetSpecialization() == SPEC_MONK_BREWMASTER and not UnitInVehicle(self.unit) and UnitLevel(self.unit) >= MinLevel then
 		self:Show(true)
 	else
 		self:Show(false)
@@ -203,7 +203,7 @@ function StaggerBar.prototype:ACTIVE_TALENT_GROUP_CHANGED()
 end
 
 function StaggerBar.prototype:GetDebuffInfo()
-	if IceHUD.WowVer >= 70000 then
+	if UnitStagger then
 		self.amount = UnitStagger(self.unit) or 0
 		self.staggerLevel = 1
 

@@ -19,8 +19,8 @@ local RUNETYPE_LEGION = 5; -- not real, but makes for an easy update
 local GetRuneType = GetRuneType
 if IceHUD.WowVer >= 70000 and IceHUD.WowVer < 70300 then
 	GetRuneType = function() return RUNETYPE_LEGION end
-elseif IceHUD.WowVer >= 70300 and GetSpecialization then
-	GetRuneType = function() return GetSpecialization() end
+elseif IceHUD.WowVer >= 70300 and IceHUD.GetSpecialization then
+	GetRuneType = function() return IceHUD.GetSpecialization() end
 end
 
 local RUNEMODE_DEFAULT = "Blizzard"

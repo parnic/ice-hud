@@ -39,26 +39,3 @@ jobs:
       # once cloned, we just run the GitHub Action for the packager project
       - name: Package and release
         uses: BigWigsMods/packager@v2
-
-      # another example where we supply additional arguments, this example is specifically to release
-      # for the Classic version of the game
-      - name: Package and release for Classic
-        uses: BigWigsMods/packager@v2
-        with:
-          args: -g classic -w 0
-
-      - name: Package and release for TBC
-        uses: BigWigsMods/packager@v2
-        with:
-          args: -g bcc -w 0
-
-      - name: Package and release for Wrath
-        uses: BigWigsMods/packager@v2
-        with:
-          args: -g wrath -w 0
-
-      - name: Package and release for Cataclysm
-        uses: BigWigsMods/packager@v2
-        with:
-          args: -g cata -w 0
-  

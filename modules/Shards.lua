@@ -37,9 +37,11 @@ local DemonologyCoords =
 	{0.03906250, 0.55468750, 0.10546875, 0.19921875},
 }
 
-local SPELL_POWER_SOUL_SHARDS = SPELL_POWER_SOUL_SHARDS
+local SPELL_POWER_SOUL_SHARDS, SPELL_POWER_BURNING_EMBERS, SPELL_POWER_DEMONIC_FURY = SPELL_POWER_SOUL_SHARDS, SPELL_POWER_BURNING_EMBERS, SPELL_POWER_DEMONIC_FURY
 if Enum and Enum.PowerType then
 	SPELL_POWER_SOUL_SHARDS = Enum.PowerType.SoulShards
+	SPELL_POWER_BURNING_EMBERS = Enum.PowerType.BurningEmbers
+	SPELL_POWER_DEMONIC_FURY = Enum.PowerType.DemonicFury
 end
 
 function ShardCounter.prototype:init()
@@ -67,7 +69,7 @@ function ShardCounter.prototype:Enable(core)
 	if IceHUD.WowVer >= 70000 then
 		self.numRunes = UnitPowerMax(self.unit, self.unitPower)
 
-		if IceHUD.WowVer >= 80000 or GetSpecialization() == SPEC_WARLOCK_DESTRUCTION then
+		if IceHUD.WowVer >= 80000 or IceHUD.GetSpecialization() == SPEC_WARLOCK_DESTRUCTION then
 			self.shouldShowUnmodified = true
 			self.numericFormat = "%.1f"
 			self.round = floor
@@ -123,7 +125,7 @@ end
 
 function ShardCounter.prototype:UpdatePowerType(event)
 	if IceHUD.WowVer >= 50000 and IceHUD.WowVer < 80000 then
-		CurrentSpec = GetSpecialization()
+		CurrentSpec = IceHUD.GetSpecialization()
 	else
 		-- all warlocks use shards in pre-5.0/post-8.0, so just act like our spec is affliction
 		CurrentSpec = SPEC_WARLOCK_AFFLICTION

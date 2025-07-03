@@ -203,7 +203,7 @@ function PlayerMana.prototype:CheckVehicle()
 end
 
 function PlayerMana.prototype:ShouldUseTicker()
-	return IceHUD.WowVer < 30000 or (IceHUD.WowVer < 70100 and not GetCVarBool("predictedPower") and not IceHUD.WowClassicWrath)
+	return IceHUD.WowVer < 30000 or (IceHUD.WowVer < 70100 and not GetCVarBool("predictedPower") and not IceHUD.WowClassicWrath and not IceHUD.WowClassicMists)
 end
 
 function PlayerMana.prototype:SetupOnUpdate(enable)

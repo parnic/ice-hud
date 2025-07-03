@@ -527,7 +527,7 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 		return
 	end
 
-	local points, anticipate, _
+	local points, anticipate
 	if IceHUD.IceCore:IsInConfigMode() then
 		points = self:GetMaxComboPoints()
 	elseif UnitHasVehicleUI then
@@ -541,7 +541,7 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 		end
 
 		if AnticipationExists then
-			_, _, _, anticipate = IceHUD.UnitAura("player", GetSpellName(AnticipationSpellId))
+			anticipate = IceHUD:GetBuffCount("player", GetSpellName(AnticipationSpellId), true, true)
 		else
 			anticipate = 0
 		end
@@ -610,12 +610,7 @@ do
 
 	function ComboPoints.prototype:CheckAnticipation(e, unit) -- UNIT_AURA handler
 		if UnitIsUnit(unit, "player") then
-			local _, _, _, newAntStacks
-			if IceHUD.SpellFunctionsReturnRank then
-				_, _, _, newAntStacks = IceHUD.UnitAura("player", GetSpellName(AnticipationSpellId))
-			else
-				_, _, newAntStacks = IceHUD.UnitAura("player", GetSpellName(AnticipationSpellId))
-			end
+			local newAntStacks = IceHUD:GetBuffCount("player", GetSpellName(AnticipationSpellId), true, true)
 			if newAntStacks ~= antStacks then
 				antStacks = newAntStacks
 				self:UpdateComboPoints()

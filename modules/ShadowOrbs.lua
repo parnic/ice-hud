@@ -1,6 +1,11 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local ShadowOrbs = IceCore_CreateClass(IceClassPowerCounter)
 
+local SPELL_POWER_SHADOW_ORBS = SPELL_POWER_SHADOW_ORBS
+if Enum and Enum.PowerType then
+	SPELL_POWER_SHADOW_ORBS = Enum.PowerType.ShadowOrbs
+end
+
 function ShadowOrbs.prototype:init()
 	ShadowOrbs.super.prototype.init(self, "ShadowOrbs")
 
