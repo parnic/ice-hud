@@ -1,5 +1,9 @@
 # Changelog
 
+v1.15.17:
+
+- Fix Warrior Rage showing 1200 instead of 120 when using the Glyph of Unending Rage in MoP Classic
+
 v1.15.16:
 
 - Support Mists of Pandaria Classic
