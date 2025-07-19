@@ -260,7 +260,7 @@ function StaggerBar.prototype:UpdateStaggerBar()
 	local maxHealth = UnitHealthMax(self.unit)
 	local scale = IceHUD:Clamp((self.amount / maxHealth) * (100 / self.moduleSettings.maxPercent), 0, 1)
 
-	if self.amount > 0 and (IceHUD.WowVer >= 70000 or self.duration <= 10) then
+	if self.amount > 0 and (not self.duration or self.duration <= 10) then
 		-- self.timerFrame.bar:SetVertexColor(self:GetColor("StaggerTime", self.moduleSettings.timerAlpha))
 		self:UpdateBar(scale or 0, "Stagger"..self.staggerLevel)
 		self:UpdateShown()

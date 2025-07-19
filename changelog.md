@@ -1,5 +1,9 @@
 # Changelog
 
+v1.15.18:
+
+- Fix Stagger bar error on MoP classic.
+
 v1.15.17:
 
 - Fix Warrior Rage showing 1200 instead of 120 when using the Glyph of Unending Rage in MoP Classic
@@ -7,7 +11,7 @@ v1.15.17:
 v1.15.16:
 
 - Support Mists of Pandaria Classic
-- Switched the packaging method to release one version of the addon compatible with all game clients rather than separate packages per client type
+- Switch the packaging method to release one version of the addon compatible with all game clients rather than separate packages per client type
 
 v1.15.15:
 
