@@ -1186,7 +1186,7 @@ end
 
 
 function PlayerHealth.prototype:CheckLootMaster()
-	local _, lootmaster = GetLootMethod()
+	local _, lootmaster = C_PartyInfo.GetLootMethod()
 	if configMode or lootmaster == 0 then
 		if (configMode or self.moduleSettings.showLootMasterIcon) and not self.frame.lootMasterIcon then
 			self.frame.lootMasterIcon = self:CreateTexCoord(self.frame.lootMasterIcon, "Interface\\GroupFrame\\UI-Group-MasterLooter", 20, 20,
