@@ -738,7 +738,7 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 	end
 
 	-- handle special spells that are used for quests or other things that don't apply to the player
-	if self.unit == "player" and not IsPlayerSpell(spellId) then
+	if self.unit == "player" and not IceHUD.IsPlayerSpell(spellId) then
 		return
 	end
 

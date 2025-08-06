@@ -12,6 +12,11 @@ local HealComm
 local incomingHealAmt = 0
 local groupEvent = IceHUD.EventExistsGroupRosterUpdate and "GROUP_ROSTER_UPDATE" or "PARTY_MEMBERS_CHANGED"
 
+local GetLootMethod = GetLootMethod
+if not GetLootMethod and C_PartyInfo then
+	GetLootMethod = C_PartyInfo.GetLootMethod
+end
+
 -- Constructor --
 function PlayerHealth.prototype:init()
 	PlayerHealth.super.prototype.init(self, "PlayerHealth", "player")

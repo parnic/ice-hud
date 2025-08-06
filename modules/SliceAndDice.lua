@@ -65,6 +65,11 @@ if not UnitBuff and C_UnitAuras and AuraUtil then
   end
 end
 
+local GetTalentInfo = GetTalentInfo
+if not GetTalentInfo and C_SpecializationInfo then
+	GetTalentInfo = C_SpecializationInfo.GetTalentInfo
+end
+
 -- Constructor --
 function SliceAndDice.prototype:init()
 	SliceAndDice.super.prototype.init(self, "SliceAndDice", "player")
@@ -114,7 +119,7 @@ function SliceAndDice.prototype:CheckMaxComboPoints()
 	if UnitPowerMax then
 		maxComboPoints = UnitPowerMax(self.unit, SPELL_POWER_COMBO_POINTS)
 	else
-		local talentID, name, texture, selected, available, spellID, unknown, row, column, known, grantedByAura = GetTalentInfoByID(sixComboPointsTalentID, GetActiveSpecGroup())
+		local talentID, name, texture, selected, available, spellID, unknown, row, column, known, grantedByAura = GetTalentInfoByID(sixComboPointsTalentID, IceHUD.GetActiveSpecGroup())
 		maxComboPoints = selected and 6 or 5
 	end
 end

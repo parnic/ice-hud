@@ -619,7 +619,7 @@ do
 	end
 
 	function ComboPoints.prototype:AddAnticipation() -- Handles both PLAYER_TALENT_CHANGED event and activation from options or initialization.
-		if self.moduleSettings.showAnticipation and IsSpellKnown(AnticipationSpellId) then
+		if self.moduleSettings.showAnticipation and IceHUD.IsSpellKnown(AnticipationSpellId) then
 			self:RegisterEvent("UNIT_AURA", "CheckAnticipation") -- CallbackHandler will just reassign if it's there, so no harm
 		else
 			self:UnregisterEvent("UNIT_AURA") -- Doesn't error if it wasn't there

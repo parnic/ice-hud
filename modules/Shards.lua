@@ -117,7 +117,7 @@ function ShardCounter.prototype:UpdateRunePower(event, arg1, arg2)
 end
 
 function ShardCounter.prototype:CheckGreenFire()
-	if IsSpellKnown(WARLOCK_GREEN_FIRE) then
+	if IceHUD.IsSpellKnown(WARLOCK_GREEN_FIRE) then
 		self:Redraw();
 		self:UnregisterEvent("SPELLS_CHANGED")
 	end
@@ -150,7 +150,7 @@ function ShardCounter.prototype:UpdatePowerType(event)
 		self.numConsideredFull = 99
 
 		if IceHUD.WowVer >= 50000 then
-			if not IsPlayerSpell(WARLOCK_SOULBURN) then
+			if not IceHUD.IsPlayerSpell(WARLOCK_SOULBURN) then
 				self.requiredSpec = nil
 				self:RegisterEvent("SPELLS_CHANGED", "UpdatePowerType")
 			else
@@ -174,10 +174,10 @@ function ShardCounter.prototype:UpdatePowerType(event)
 		self.numConsideredFull = self.numRunes
 		self.currentGrowMode = self.growModes["height"]
 
-		if not IsPlayerSpell(WARLOCK_BURNING_EMBERS) then
+		if not IceHUD.IsPlayerSpell(WARLOCK_BURNING_EMBERS) then
 			self.requiredSpec = nil
 			self:RegisterEvent("SPELLS_CHANGED", "UpdatePowerType")
-		elseif not IsSpellKnown(WARLOCK_GREEN_FIRE) then
+		elseif not IceHUD.IsSpellKnown(WARLOCK_GREEN_FIRE) then
 			self:RegisterEvent("SPELLS_CHANGED", "CheckGreenFire")
 		else
 			self:UnregisterEvent("SPELLS_CHANGED", "UpdatePowerType")
@@ -248,7 +248,7 @@ function ShardCounter.prototype:GetRuneTexture(rune)
 	end
 
 	if CurrentSpec == SPEC_WARLOCK_DESTRUCTION then
-		if IsSpellKnown(WARLOCK_GREEN_FIRE) then
+		if IceHUD.IsSpellKnown(WARLOCK_GREEN_FIRE) then
 			return "Interface\\PlayerFrame\\Warlock-DestructionUI-Green"
 		else
 			return "Interface\\PlayerFrame\\Warlock-DestructionUI"

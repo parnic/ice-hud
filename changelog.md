@@ -1,5 +1,10 @@
 # Changelog
 
+v1.15.19:
+
+- Support WoW 11.2.0
+- Update TWW TOC to 11.2.0
+
 v1.15.18:
 
 - Fix Stagger bar error on MoP classic.

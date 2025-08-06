@@ -301,7 +301,7 @@ function PlayerMana.prototype:TreatEmptyAsFull()
 end
 
 function PlayerMana.prototype:IsFull(scale)
-	if IceHUD.WowVer >= 80000 and self.manaType == SPELL_POWER_LUNAR_POWER and IsPlayerSpell(202430) then
+	if IceHUD.WowVer >= 80000 and self.manaType == SPELL_POWER_LUNAR_POWER and IceHUD.IsPlayerSpell(202430) then
 		return scale - 0.5 >= 0
 	end
 

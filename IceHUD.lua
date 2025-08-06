@@ -29,6 +29,9 @@ IceHUD.GetSpecialization = GetSpecialization
 if not IceHUD.GetSpecialization then
 	IceHUD.GetSpecialization = GetPrimaryTalentTree
 end
+if not IceHUD.GetSpecialization and C_SpecializationInfo then
+	IceHUD.GetSpecialization = C_SpecializationInfo.GetSpecialization
+end
 
 IceHUD.CurrTagVersion = 3
 IceHUD.debugging = false
@@ -115,6 +118,26 @@ IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 IceHUD.validBarList = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc",
 	"BloodGlaives", "ArcHUD", "FangRune", "DHUD", "CleanCurvesOut", "CleanTank", "PillTank", "GemTank" }
 IceHUD.validCustomModules = {Bar="Buff/Debuff watcher", Counter="Buff/Debuff stack counter", CD="Cooldown bar", Health="Health bar", Mana="Mana bar", CounterBar="Stack count bar"}
+
+IceHUD.IsPlayerSpell = IsPlayerSpell
+if not IceHUD.IsPlayerSpell and C_SpellBook then
+	IceHUD.IsPlayerSpell = C_SpellBook.IsSpellKnown
+end
+
+IceHUD.IsSpellKnown = IsSpellKnown
+if not IceHUD.IsSpellKnown and C_SpellBook then
+	IceHUD.IsSpellKnown = C_SpellBook.IsSpellInSpellBook
+end
+
+IceHUD.SendChatMessage = SendChatMessage
+if not IceHUD.SendChatMessage and C_ChatInfo then
+	IceHUD.SendChatMessage = C_ChatInfo.SendChatMessage
+end
+
+IceHUD.GetActiveSpecGroup = GetActiveSpecGroup
+if not IceHUD.GetActiveSpecGroup and C_SpecializationInfo then
+	IceHUD.GetActiveSpecGroup = C_SpecializationInfo.GetActiveSpecGroup
+end
 
 --@debug@
 IceHUD.optionsLoaded = true

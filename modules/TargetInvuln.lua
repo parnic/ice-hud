@@ -238,7 +238,7 @@ function TargetInvuln.prototype:UpdateTargetBuffs(event, unit)
 
 	if (name ~= nil) and (self.previousbuff == nil) and (duration ~= nil) and (remaining ~= nil) then
 		if (duration > 1) and (self.moduleSettings.alertParty) and ((GetNumPartyMembers() >= 1) or (GetNumRaidMembers() >= 1)) then
-			SendChatMessage(targetName .. ": " .. name .. " (" .. tostring(floor(remaining * 10) / 10) .. "/" .. tostring(duration) .. "s)", "PARTY")
+			IceHUD.SendChatMessage(targetName .. ": " .. name .. " (" .. tostring(floor(remaining * 10) / 10) .. "/" .. tostring(duration) .. "s)", "PARTY")
 		end
 
 		self.previousbuff = name

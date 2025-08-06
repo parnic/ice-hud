@@ -23,7 +23,7 @@ function ShadowOrbs.prototype:init()
 		for i=1, PRIEST_BAR_NUM_SMALL_ORBS do
 			self.runeCoords[i] = {0.45703125, 0.60546875, 0.44531250, 0.73437500}
 		end
-		if IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
+		if IceHUD.IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
 			self.numRunes = PRIEST_BAR_NUM_SMALL_ORBS
 		else
 			self.numRunes = PRIEST_BAR_NUM_LARGE_ORBS
@@ -46,14 +46,14 @@ function ShadowOrbs.prototype:Enable(core)
 	ShadowOrbs.super.prototype.Enable(self, core)
 
 	if IceHUD.WowVer >= 60000 then
-		if not IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
+		if not IceHUD.IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
 			self:RegisterEvent("SPELLS_CHANGED", "CheckHasMoreOrbs")
 		end
 	end
 end
 
 function ShadowOrbs.prototype:CheckHasMoreOrbs(event)
-	if IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
+	if IceHUD.IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
 		self:UnregisterEvent("SPELLS_CHANGED")
 		self:UpdateRunePower()
 	end
