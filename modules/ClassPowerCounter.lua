@@ -88,9 +88,9 @@ function IceClassPowerCounter.prototype:GetOptions()
 		set = function(info, value)
 			self.moduleSettings.hideBlizz = value
 			if (value) then
-				self:HideBlizz()
+				self:HideBlizz(true)
 			else
-				self:ShowBlizz()
+				self:ShowBlizz(true)
 			end
 		end,
 		disabled = function()
@@ -984,7 +984,11 @@ function IceClassPowerCounter.prototype:AlphaPassThroughTarget()
 	return self.moduleSettings.hideFriendly and UnitIsFriend("player", "target")
 end
 
-function IceClassPowerCounter.prototype:HideBlizz()
+function IceClassPowerCounter.prototype:ShowBlizz(fromConfig)
+	assert(false, "Must override ShowBlizz in child classes.")
+end
+
+function IceClassPowerCounter.prototype:HideBlizz(fromConfig)
 	assert(false, "Must override HideBlizz in child classes.")
 end
 

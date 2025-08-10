@@ -209,20 +209,40 @@ function DragonridingVigor.prototype:GetPartialRuneAtlas(rune)
 end
 
 function DragonridingVigor.prototype:ShowBlizz()
-	local info = C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(defaultVigorWidgetID)
-	if not info or info.shownState == 0 then
-		return
+	if not vigorWidgetIDs or #vigorWidgetIDs == 0 then
+		self:PopulateVigorWidgetIDs()
 	end
-	UIWidgetPowerBarContainerFrame.widgetFrames[defaultVigorWidgetID]:Show()
+	local testIDs = vigorWidgetIDs
+	if not testIDs or #testIDs == 0 then
+		testIDs = {defaultVigorWidgetID}
+	end
+
+	for i=1,#testIDs do
+		local info = C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(testIDs[i])
+		if info and info.shownState ~= 0 then
+			UIWidgetPowerBarContainerFrame.widgetFrames[testIDs[i]]:Show()
+			return
+		end
+	end
 end
 
-function DragonridingVigor.prototype:HideBlizz()
-	if not UIWidgetPowerBarContainerFrame.widgetFrames or not UIWidgetPowerBarContainerFrame.widgetFrames[defaultVigorWidgetID] then
+function DragonridingVigor.prototype:HideBlizz(fromConfig)
+	if self.suppressHideBlizz and not fromConfig then
 		return
 	end
 
-	if not self.suppressHideBlizz then
-		UIWidgetPowerBarContainerFrame.widgetFrames[defaultVigorWidgetID]:Hide()
+	if not vigorWidgetIDs or #vigorWidgetIDs == 0 then
+		self:PopulateVigorWidgetIDs()
+	end
+	local testIDs = vigorWidgetIDs
+	if not testIDs or #testIDs == 0 then
+		testIDs = {defaultVigorWidgetID}
+	end
+
+	for i=1,#testIDs do
+		if UIWidgetPowerBarContainerFrame.widgetFrames and UIWidgetPowerBarContainerFrame.widgetFrames[testIDs[i]] then
+			UIWidgetPowerBarContainerFrame.widgetFrames[testIDs[i]]:Hide()
+		end
 	end
 end
 
