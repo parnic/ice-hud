@@ -36,22 +36,24 @@ function ComboPointsBar.prototype:GetOptions()
 		order = 31
 	}
 
-	opts["bShowWithNoTarget"] =
-	{
-		type = 'toggle',
-		name = L["Show with no target"],
-		desc = L["Whether or not to display when you have no target selected but have combo points available"],
-		get = function()
-			return self.moduleSettings.bShowWithNoTarget
-		end,
-		set = function(info, v)
-			self.moduleSettings.bShowWithNoTarget = v
-			self:UpdateComboPoints()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-	}
+	if not IceHUD.PerTargetComboPoints then
+		opts["bShowWithNoTarget"] =
+		{
+			type = 'toggle',
+			name = L["Show with no target"],
+			desc = L["Whether or not to display when you have no target selected but have combo points available"],
+			get = function()
+				return self.moduleSettings.bShowWithNoTarget
+			end,
+			set = function(info, v)
+				self.moduleSettings.bShowWithNoTarget = v
+				self:UpdateComboPoints()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+		}
+	end
 
 	opts["bShowCharged"] = {
 		type = 'toggle',
