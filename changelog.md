@@ -1,12 +1,16 @@
 # Changelog
 
+v1.15.22:
+
+- Update TOCs
+
 v1.15.21:
 
 - Update TOCs
 
 v1.15.20:
 
-- Fix Algerian Stormrider showing the Blizzard vigor bar when IceHUD is set to suppress it.
+- Fix Algarian Stormrider showing the Blizzard vigor bar when IceHUD is set to suppress it.
 
 v1.15.19:
 
