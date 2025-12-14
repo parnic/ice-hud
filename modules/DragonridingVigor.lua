@@ -1,8 +1,6 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local DragonridingVigor = IceCore_CreateClass(IceClassPowerCounter)
 
-local gameVersion = select(4, GetBuildInfo())
-
 -- NOTE (TWW 11.2.7+): Blizzard removed the Vigor bar and moved Skyriding to a shared charge system.
 -- This module now supports BOTH:
 --   * Old Vigor UIWidget FillUpFrames (Dragonflight/TWW pre-11.2.7)
@@ -35,6 +33,9 @@ local knowsAlternateMountEnum = Enum and Enum.PowerType and Enum.PowerType.Alter
 local unitPowerType = Enum and Enum.PowerType and Enum.PowerType.AlternateMount
 unitPowerType = unitPowerType or ALTERNATE_POWER_INDEX
 
+
+local BUILD_NUMBER = select(4, GetBuildInfo())
+local FORCE_CHARGES_BUILD = 110207 -- 11.2.7
 -- -------------------------
 -- Helpers
 -- -------------------------
@@ -98,27 +99,20 @@ function DragonridingVigor.prototype:EnsureRuneCount(count)
 end
 
 function DragonridingVigor.prototype:ShouldShowCharges()
-	-- Show only when the player is actually in Skyriding/Advanced Flying mode.
-	-- This mirrors how modern Skyriding UIs detect the state.
-	local powerBarID = UnitPowerBarID and UnitPowerBarID("player") or 0
-	if powerBarID == 650 then -- Derby racing uses different rules
+	-- Show when the player is mounted AND the skyriding charge spell exists.
+	-- (Avoid showing in cities/ground when not skyriding.)
+	if not IsMounted or not IsMounted() then
 		return false
 	end
 
-	local hasSkyridingBar = (GetBonusBarIndex and GetBonusBarOffset and GetBonusBarIndex() == 11 and GetBonusBarOffset() == 5)
-	if hasSkyridingBar then
-		return true
+	local spellID = self:GetChargeSpell()
+	if not spellID then
+		return false
 	end
 
-	-- Fallback: if the game reports gliding capability and a non-zero power bar id, treat as active
-	if C_PlayerInfo and C_PlayerInfo.GetGlidingInfo then
-		local _, canGlide = C_PlayerInfo.GetGlidingInfo()
-		if canGlide and powerBarID ~= 0 then
-			return true
-		end
-	end
-
-	return false
+	-- If the client provides gliding info, we can be stricter and only show when it reports skyriding/gliding.
+	-- But different builds return different payloads, so we keep it permissive.
+	return true
 end
 
 -- -------------------------
@@ -142,43 +136,36 @@ function DragonridingVigor.prototype:init()
 end
 
 function DragonridingVigor.prototype:Enable(core)
-	-- Decide mode: In 11.2.7+ the Vigor widget may still exist but is often never shown (shownState=0).
-	-- Prefer the new Skyriding shared-charge system on 11.2.7+.
-	if gameVersion and gameVersion >= 110207 then
-		self.mode = "charges"
-	elseif self:UsingOldVigorWidgets() then
-		self.mode = "widget"
-	else
-		self.mode = "charges"
-	end
+	-- Decide mode:
+	-- In 11.2.7+ Blizzard removed Vigor and moved Skyriding to shared charges.
+	-- Even if the old Vigor widget still exists, it may stay hidden (shownState=0),
+	-- so we prefer charge mode on modern builds.
+	local preferCharges = (BUILD_NUMBER and BUILD_NUMBER >= FORCE_CHARGES_BUILD) or (not self:UsingOldVigorWidgets())
 
-	if self.mode == "widget" then
-		self.numRunes = UnitPowerMax(self.unit, unitPowerType) or 0
-		self:EnsureRuneCount(self.numRunes)
+	if preferCharges then
+		self.mode = "charges"
+		self.chargeSpellID = self:GetChargeSpell()
+		local _, maxCharges = self.chargeSpellID and SafeGetSpellCharges(self.chargeSpellID) or nil
+		self:EnsureRuneCount(maxCharges or 6)
 	else
-		self.chargeSpellID = self:GetChargeSpell() or 372608 -- shared skyriding charges
-		local _, maxCharges = SafeGetSpellCharges(self.chargeSpellID)
-		self.numRunes = (maxCharges and maxCharges > 0) and maxCharges or 6
+		self.mode = "widget"
+		self.numRunes = UnitPowerMax(self.unit, unitPowerType) or 0
 		self:EnsureRuneCount(self.numRunes)
 	end
 
 	DragonridingVigor.super.prototype.Enable(self, core)
 	self:Show(false)
 
+	-- Widget-driven show/hide + recharge (legacy)
 	self:RegisterEvent("UNIT_AURA", "CheckShouldShow")
-	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED", "CheckShouldShow")
-	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "CheckShouldShow")
-	self:RegisterEvent("PLAYER_CAN_GLIDE_CHANGED", "CheckShouldShow")
-	self:RegisterEvent("PLAYER_IS_GLIDING_CHANGED", "CheckShouldShow")
-
-	-- Widget updates (pre-11.2.7)
 	self:RegisterEvent("UPDATE_UI_WIDGET", "UpdateVigorRecharge")
 
-	-- Charges updates (11.2.7+)
+	-- Charge/power-driven updates (modern)
+	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED", "CheckShouldShow")
 	self:RegisterEvent("SPELL_UPDATE_CHARGES", "UpdateVigorRecharge")
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN", "UpdateVigorRecharge")
-	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "UpdateVigorRecharge")
-	self:RegisterEvent("ACTIONBAR_UPDATE_STATE", "UpdateVigorRecharge")
+	self:RegisterEvent("UNIT_POWER_UPDATE", "UpdateRunePower")
+	self:RegisterEvent("UNIT_POWER_FREQUENT", "UpdateRunePower")
 end
 
 function DragonridingVigor.prototype:EnteringWorld()
@@ -243,6 +230,41 @@ end
 
 function DragonridingVigor.prototype:UpdateRunePower(event, arg1, arg2)
 	self:UpdateVigorRecharge("internal")
+
+	-- In charge mode, the base class still reads UnitPower/UnitPowerMax.
+	-- We temporarily shim those APIs so IceClassPowerCounter renders spell charges as "power".
+	if self.mode == "charges" and self.chargeSpellID then
+		local charges, maxCharges, start, duration = SafeGetSpellCharges(self.chargeSpellID)
+		if maxCharges and maxCharges > 0 then
+			local origUnitPower, origUnitPowerMax = UnitPower, UnitPowerMax
+
+			UnitPower = function(unit, powerType, ...)
+				if unit == "player" and powerType == unitPowerType then
+					return charges or 0
+				end
+				return origUnitPower(unit, powerType, ...)
+			end
+
+			UnitPowerMax = function(unit, powerType, ...)
+				if unit == "player" and powerType == unitPowerType then
+					return maxCharges or 0
+				end
+				return origUnitPowerMax(unit, powerType, ...)
+			end
+
+			local ok, err = pcall(function()
+				DragonridingVigor.super.prototype.UpdateRunePower(self, event, arg1, arg2)
+			end)
+
+			UnitPower, UnitPowerMax = origUnitPower, origUnitPowerMax
+
+			if not ok then
+				error(err)
+			end
+			return
+		end
+	end
+
 	DragonridingVigor.super.prototype.UpdateRunePower(self, event, arg1, arg2)
 end
 
