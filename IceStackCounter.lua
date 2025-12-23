@@ -3,16 +3,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local validUnits = {"player", "target", "focus", "pet", "vehicle", "targettarget", "main hand weapon", "off hand weapon"}
 local buffOrDebuff = {"buff", "debuff", "charges", "spell count"}
 
-local GetSpellCharges = GetSpellCharges
-if not GetSpellCharges and C_Spell then
-	GetSpellCharges = function(spellID)
-		local spellChargeInfo = C_Spell.GetSpellCharges(spellID)
-		if spellChargeInfo then
-			return spellChargeInfo.currentCharges, spellChargeInfo.maxCharges, spellChargeInfo.cooldownStartTime, spellChargeInfo.cooldownDuration, spellChargeInfo.chargeModRate
-		end
-	end
-end
-
 local GetSpellCount = GetSpellCount
 if not GetSpellCount and C_Spell then
 	GetSpellCount = C_Spell.GetSpellCastCount
@@ -130,7 +120,7 @@ end
 
 function IceStackCounter_GetMaxCount(frame)
 	if frame.moduleSettings.auraType == "charges" then
-		local _, max = GetSpellCharges(frame.moduleSettings.auraName)
+		local _, max = IceHUD.GetSpellCharges(frame.moduleSettings.auraName)
 		return max or 1
 	else
 		return tonumber(frame.moduleSettings.maxCount)
@@ -176,7 +166,7 @@ function IceStackCounter_GetCount(frame)
 		points = tonumber(frame.moduleSettings.maxCount)
 	else
 		if frame.moduleSettings.auraType == "charges" then
-			points = GetSpellCharges(frame.moduleSettings.auraName) or 0
+			points = IceHUD.GetSpellCharges(frame.moduleSettings.auraName) or 0
 		elseif frame.moduleSettings.auraType == "spell count" then
 			points = GetSpellCount(frame.moduleSettings.auraName) or 0
 		else

@@ -29,46 +29,28 @@ local vigorWidgetIDs = nil
 --   Skyward Ascent (Skyriding mount ability): 372610
 local SKYRIDING_CHARGE_SPELL_IDS = { 372608, 372610 }
 
-local knowsAlternateMountEnum = Enum and Enum.PowerType and Enum.PowerType.AlternateMount
 local unitPowerType = Enum and Enum.PowerType and Enum.PowerType.AlternateMount
 unitPowerType = unitPowerType or ALTERNATE_POWER_INDEX
 
 
-local BUILD_NUMBER = select(4, GetBuildInfo())
-local FORCE_CHARGES_BUILD = 110207 -- 11.2.7
 -- -------------------------
 -- Helpers
 -- -------------------------
-local function SafeGetSpellCharges(spellID)
-	-- Prefer modern C_Spell API where available
-	if C_Spell and C_Spell.GetSpellCharges then
-		local ch = C_Spell.GetSpellCharges(spellID)
-		-- C_Spell.GetSpellCharges can return a table (Retail) or nil
-		if type(ch) == "table" then
-			return ch.currentCharges, ch.maxCharges, ch.cooldownStartTime, ch.cooldownDuration
-		end
-	end
-
-	-- Fallback to legacy API
-	if GetSpellCharges then
-		local currentCharges, maxCharges, start, duration = GetSpellCharges(spellID)
-		return currentCharges, maxCharges, start, duration
-	end
-
-	return nil
-end
-
 function DragonridingVigor.prototype:UsingOldVigorWidgets()
+	if DragonridingVigor.GetChargeSpell() ~= nil then
+		return false
+	end
+
 	return C_UIWidgetManager
 		and C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo
 		and C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(defaultVigorWidgetID) ~= nil
 end
 
-function DragonridingVigor.prototype:GetChargeSpell()
+function DragonridingVigor.GetChargeSpell()
 	-- Find a skyriding spell that exposes charges (shared-charge system will still report properly)
 	for i = 1, #SKYRIDING_CHARGE_SPELL_IDS do
 		local spellID = SKYRIDING_CHARGE_SPELL_IDS[i]
-		local charges, maxCharges = SafeGetSpellCharges(spellID)
+		local _, maxCharges = IceHUD.GetSpellCharges(spellID)
 		if maxCharges and maxCharges > 0 then
 			return spellID
 		end
@@ -86,16 +68,7 @@ function DragonridingVigor.prototype:EnsureRuneCount(count)
 		return
 	end
 
-	self.numRunes = count
-	self.runeCoords = self.runeCoords or { }
-	for i = 1, self.numRunes do
-		self:SetupNewRune(i)
-	end
-
-	-- Some IceHUD classes redraw automatically; this is a safe poke if it exists
-	if self.Redraw then
-		self:Redraw()
-	end
+	self:Redraw()
 end
 
 function DragonridingVigor.prototype:ShouldShowCharges()
@@ -105,7 +78,7 @@ function DragonridingVigor.prototype:ShouldShowCharges()
 		return false
 	end
 
-	local spellID = self:GetChargeSpell()
+	local spellID = DragonridingVigor.GetChargeSpell()
 	if not spellID then
 		return false
 	end
@@ -118,6 +91,32 @@ end
 -- -------------------------
 -- Core
 -- -------------------------
+function DragonridingVigor.prototype:GetPower()
+	if self.chargeSpellID == nil then
+		return DragonridingVigor.super.prototype.GetPower(self)
+	end
+
+	local charges = IceHUD.GetSpellCharges(self.chargeSpellID)
+	return charges
+end
+
+function DragonridingVigor.prototype:GetPowerUnmodified()
+	if self.chargeSpellID == nil then
+		return DragonridingVigor.super.prototype.GetPowerUnmodified(self)
+	end
+
+	return self:GetPower()
+end
+
+function DragonridingVigor.prototype:GetPowerMax()
+	if self.chargeSpellID == nil then
+		return DragonridingVigor.super.prototype.GetPowerMax(self)
+	end
+
+	local _, maxCharges = IceHUD.GetSpellCharges(self.chargeSpellID)
+	return maxCharges
+end
+
 function DragonridingVigor.prototype:init()
 	DragonridingVigor.super.prototype.init(self, "Vigor")
 
@@ -136,36 +135,34 @@ function DragonridingVigor.prototype:init()
 end
 
 function DragonridingVigor.prototype:Enable(core)
+	DragonridingVigor.super.prototype.Enable(self, core)
+	self:Show(false)
+
 	-- Decide mode:
 	-- In 11.2.7+ Blizzard removed Vigor and moved Skyriding to shared charges.
 	-- Even if the old Vigor widget still exists, it may stay hidden (shownState=0),
 	-- so we prefer charge mode on modern builds.
-	local preferCharges = (BUILD_NUMBER and BUILD_NUMBER >= FORCE_CHARGES_BUILD) or (not self:UsingOldVigorWidgets())
+	local preferCharges = not self:UsingOldVigorWidgets()
 
 	if preferCharges then
 		self.mode = "charges"
-		self.chargeSpellID = self:GetChargeSpell()
-		local _, maxCharges = self.chargeSpellID and SafeGetSpellCharges(self.chargeSpellID) or nil
+		self.chargeSpellID = DragonridingVigor.GetChargeSpell()
+		local _, maxCharges = self.chargeSpellID and IceHUD.GetSpellCharges(self.chargeSpellID) or nil, nil
 		self:EnsureRuneCount(maxCharges or 6)
+
+		self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED", "CheckShouldShow")
+		self:RegisterEvent("SPELL_UPDATE_CHARGES", "UpdateVigorRecharge")
+		self:RegisterEvent("SPELL_UPDATE_COOLDOWN", "UpdateVigorRecharge")
+		self:RegisterEvent("UNIT_POWER_UPDATE", "UpdateRunePower")
+		self:RegisterEvent("UNIT_POWER_FREQUENT", "UpdateRunePower")
 	else
 		self.mode = "widget"
-		self.numRunes = UnitPowerMax(self.unit, unitPowerType) or 0
-		self:EnsureRuneCount(self.numRunes)
+		local numRunes = UnitPowerMax(self.unit, unitPowerType) or 0
+		self:EnsureRuneCount(numRunes)
+
+		self:RegisterEvent("UNIT_AURA", "CheckShouldShow")
+		self:RegisterEvent("UPDATE_UI_WIDGET", "UpdateVigorRecharge")
 	end
-
-	DragonridingVigor.super.prototype.Enable(self, core)
-	self:Show(false)
-
-	-- Widget-driven show/hide + recharge (legacy)
-	self:RegisterEvent("UNIT_AURA", "CheckShouldShow")
-	self:RegisterEvent("UPDATE_UI_WIDGET", "UpdateVigorRecharge")
-
-	-- Charge/power-driven updates (modern)
-	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED", "CheckShouldShow")
-	self:RegisterEvent("SPELL_UPDATE_CHARGES", "UpdateVigorRecharge")
-	self:RegisterEvent("SPELL_UPDATE_COOLDOWN", "UpdateVigorRecharge")
-	self:RegisterEvent("UNIT_POWER_UPDATE", "UpdateRunePower")
-	self:RegisterEvent("UNIT_POWER_FREQUENT", "UpdateRunePower")
 end
 
 function DragonridingVigor.prototype:EnteringWorld()
@@ -180,10 +177,7 @@ function DragonridingVigor.prototype:CheckShouldShow(event, unit, info)
 	end
 
 	-- Charges mode (11.2.7+)
-	if self.mode == "charges" or not self:UsingOldVigorWidgets() then
-		self.mode = "charges"
-		self.chargeSpellID = self.chargeSpellID or self:GetChargeSpell()
-
+	if self.mode == "charges" then
 		local show = self:ShouldShowCharges()
 		self:Show(show)
 
@@ -200,9 +194,6 @@ function DragonridingVigor.prototype:CheckShouldShow(event, unit, info)
 	-- Widget mode (pre-11.2.7)
 	if not vigorWidgetIDs or #vigorWidgetIDs == 0 then
 		self:PopulateVigorWidgetIDs()
-	end
-
-	if not vigorWidgetIDs or #vigorWidgetIDs == 0 then
 		self:Show(false)
 		return
 	end
@@ -230,41 +221,6 @@ end
 
 function DragonridingVigor.prototype:UpdateRunePower(event, arg1, arg2)
 	self:UpdateVigorRecharge("internal")
-
-	-- In charge mode, the base class still reads UnitPower/UnitPowerMax.
-	-- We temporarily shim those APIs so IceClassPowerCounter renders spell charges as "power".
-	if self.mode == "charges" and self.chargeSpellID then
-		local charges, maxCharges, start, duration = SafeGetSpellCharges(self.chargeSpellID)
-		if maxCharges and maxCharges > 0 then
-			local origUnitPower, origUnitPowerMax = UnitPower, UnitPowerMax
-
-			UnitPower = function(unit, powerType, ...)
-				if unit == "player" and powerType == unitPowerType then
-					return charges or 0
-				end
-				return origUnitPower(unit, powerType, ...)
-			end
-
-			UnitPowerMax = function(unit, powerType, ...)
-				if unit == "player" and powerType == unitPowerType then
-					return maxCharges or 0
-				end
-				return origUnitPowerMax(unit, powerType, ...)
-			end
-
-			local ok, err = pcall(function()
-				DragonridingVigor.super.prototype.UpdateRunePower(self, event, arg1, arg2)
-			end)
-
-			UnitPower, UnitPowerMax = origUnitPower, origUnitPowerMax
-
-			if not ok then
-				error(err)
-			end
-			return
-		end
-	end
-
 	DragonridingVigor.super.prototype.UpdateRunePower(self, event, arg1, arg2)
 end
 
@@ -288,49 +244,55 @@ function DragonridingVigor.prototype:PopulateVigorWidgetIDs()
 	end
 end
 
-function DragonridingVigor.prototype:UpdateVigorRecharge(event, widget)
-	-- Charges mode (11.2.7+)
-	if self.mode == "charges" or not self:UsingOldVigorWidgets() then
-		self.mode = "charges"
-		self.chargeSpellID = self.chargeSpellID or self:GetChargeSpell()
-
-		if not self.chargeSpellID then
-			self:Show(false)
-			return
-		end
-
-		local charges, maxCharges, start, duration = SafeGetSpellCharges(self.chargeSpellID)
-		if not maxCharges or maxCharges == 0 then
-			self:Show(false)
-			return
-		end
-
-		self:EnsureRuneCount(maxCharges)
-
-		-- Clear partial fill
-		self.partialReady = nil
-		self.partialReadyPercent = nil
-
-		-- If not full, show partial progress for the NEXT charge being generated
-		local full = charges or 0
-		if duration and duration > 0 and start and start > 0 and full < maxCharges then
-			local now = GetTime()
-			local pct = (now - start) / duration
-			pct = IceHUD:Clamp(pct, 0, 1)
-
-			self.partialReady = IceHUD:Clamp(full + 1, 0, maxCharges)
-			self.partialReadyPercent = pct
-		end
-
-		-- Update
-		if event ~= "internal" then
-			self:UpdateRunePower()
-		end
-
+function DragonridingVigor.prototype:UpdateVigorRechargeCharges(event, widget)
+	if not self.chargeSpellID then
+		self:Show(false)
 		return
 	end
 
-	-- Widget mode (pre-11.2.7)
+	local charges, maxCharges, start, duration = IceHUD.GetSpellCharges(self.chargeSpellID)
+	if not maxCharges or maxCharges == 0 then
+		self:Show(false)
+		return
+	end
+
+	if not IceHUD.IceCore:IsUpdateSubscribed(self) then
+		if not self.MyOnUpdateFunc then
+			self.MyOnUpdateFunc = function() self:UpdateVigorRecharge() end
+		end
+
+		IceHUD.IceCore:RequestUpdates(self, self.MyOnUpdateFunc)
+	end
+
+	-- Clear partial fill
+	self.partialReady = nil
+	self.partialReadyPercent = nil
+
+	-- If not full, show partial progress for the NEXT charge being generated
+	local full = charges or 0
+	if duration and duration > 0 and start and start > 0 and full < maxCharges then
+		local now = GetTime()
+		local pct = (now - start) / duration
+		pct = IceHUD:Clamp(pct, 0, 1)
+
+		self.partialReady = IceHUD:Clamp(full + 1, 0, maxCharges)
+		self.partialReadyPercent = pct
+	else
+		IceHUD.IceCore:RequestUpdates(self, nil)
+	end
+
+	-- Update
+	if event ~= "internal" then
+		self:UpdateRunePower()
+	end
+end
+
+function DragonridingVigor.prototype:UpdateVigorRecharge(event, widget)
+	if self.mode == "charges" then
+		self:UpdateVigorRechargeCharges(event, widget)
+		return
+	end
+
 	if not vigorWidgetIDs or #vigorWidgetIDs == 0 then
 		self:PopulateVigorWidgetIDs()
 	end
@@ -423,11 +385,6 @@ function DragonridingVigor.prototype:GetPartialRuneAtlas(rune)
 end
 
 function DragonridingVigor.prototype:ShowBlizz()
-	-- Old widget frame only exists pre-11.2.7; guard heavily.
-	if self.mode == "charges" then
-		return
-	end
-
 	if not vigorWidgetIDs or #vigorWidgetIDs == 0 then
 		self:PopulateVigorWidgetIDs()
 	end
@@ -481,9 +438,15 @@ function DragonridingVigor.prototype:HideBlizz(fromConfig)
 	end
 end
 
+function DragonridingVigor.ShouldCreate()
+	if DragonridingVigor.GetChargeSpell() ~= nil then
+		return unitPowerType
+	end
+
+	return unitPowerType and C_UIWidgetManager and C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo
+end
+
 -- Load us up
--- Pre-11.2.7: requires UIWidget FillUpFrames
--- 11.2.7+: works via spell charges (GetSpellCharges / C_Spell.GetSpellCharges)
-if unitPowerType then
+if DragonridingVigor.ShouldCreate() then
 	IceHUD.DragonridingVigor = DragonridingVigor:new()
 end
