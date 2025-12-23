@@ -229,7 +229,7 @@ function DragonridingVigor.prototype:PopulateVigorWidgetIDs()
 end
 
 function DragonridingVigor.prototype:UpdateVigorRechargeCharges(event, widget)
-	if not self.chargeSpellID then
+	if not self.chargeSpellID or (canaccesssecrets and not canaccesssecrets()) then
 		self:Show(false)
 		return
 	end

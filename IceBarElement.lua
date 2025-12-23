@@ -1171,7 +1171,9 @@ end
 -- Rokiyo: bar is the only required argument, scale & top are optional
 function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideReverse)
 	if not scale then scale = 0 end
-	scale = IceHUD:Clamp(scale, 0, 1)
+	if not issecretvalue or not issecretvalue(scale) then
+		scale = IceHUD:Clamp(scale, 0, 1)
+	end
 
 	if scale == 0 then
 		barFrame.bar:Hide()
@@ -1223,8 +1225,17 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 end
 
 function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
+	if issecretvalue and issecretvalue(inScale) then
+		self.CurrScale = inScale
+		-- todo: can this even work in midnight?
+		-- in order to set the coordinates, we need to multiply the scale by the desired
+		-- bar size, but the scale here may be/is a secret value which we can't do arithmetic on.
+		-- self:SetBarCoord(self.barFrame, self.CurrScale)
+		return
+	end
+
 	local oldScale = self.CurrScale
-	local min_y, max_y;
+	local min_y, max_y
 
 	if not skipLerp then
 		self.CurrScale = self:LerpScale(inScale)
@@ -1312,7 +1323,9 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 		end
 	end
 
-	if self.DesiredScale ~= scale then
+	if canaccesssecrets and not canaccesssecrets() then
+		self.DesiredScale = scale
+	elseif self.DesiredScale ~= scale then
 		self.DesiredScale = scale
 		self.CurrLerpTime = 0
 		self.lastLerpTime = GetTime()
@@ -1342,15 +1355,16 @@ function IceBarElement.prototype:UseTargetAlpha(scale)
 end
 
 function IceBarElement.prototype:IsFull(scale)
-	if self.reverse then
-		scale = 1 - scale
-	end
+	return true
+	-- if self.reverse then
+	-- 	scale = 1 - scale
+	-- end
 
-	if not self.bTreatEmptyAsFull then
-		return scale and scale == 1
-	else
-		return scale and scale == 0
-	end
+	-- if not self.bTreatEmptyAsFull then
+	-- 	return scale and scale == 1
+	-- else
+	-- 	return scale and scale == 0
+	-- end
 end
 
 

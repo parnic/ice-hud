@@ -1290,7 +1290,11 @@ function PlayerHealth.prototype:Update(unit)
 	self:UpdateBar(self.healthPercentage, color)
 
 	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
-	if self.moduleSettings.showIncomingHeals and self.healFrame and self.healFrame.bar and incomingHealAmt then
+	if self.moduleSettings.showIncomingHeals
+		and self.healFrame
+		and self.healFrame.bar
+		and incomingHealAmt
+		and (not issecretvalue or not issecretvalue(incomingHealAmt)) then
 		local percent
 
 		if incomingHealAmt > 0 then
@@ -1308,7 +1312,11 @@ function PlayerHealth.prototype:Update(unit)
 		self:SetBarCoord(self.healFrame, percent)
 	end
 
-	if self.moduleSettings.showAbsorbs and self.absorbFrame and self.absorbFrame.bar and self.absorbAmount then
+	if self.moduleSettings.showAbsorbs
+		and self.absorbFrame
+		and self.absorbFrame.bar
+		and self.absorbAmount
+		and (not issecretvalue or not issecretvalue(self.absorbAmount)) then
 		local percent
 
 		if self.absorbAmount > 0 then

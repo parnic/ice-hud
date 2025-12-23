@@ -370,11 +370,13 @@ function PlayerMana.prototype:Update(unit, powertype)
 
 	self:ConditionalUpdateFlash()
 
-	if (self.manaPercentage == 1 and not self:TreatEmptyAsFull())
-		or (self.manaPercentage == 0 and self:TreatEmptyAsFull()) then
-		self:SetupOnUpdate(false)
-	else
-		self:SetupOnUpdate(true)
+	if issecretvalue and not issecretvalue(self.manaPercentage) then
+		if (self.manaPercentage == 1 and not self:TreatEmptyAsFull())
+			or (self.manaPercentage == 0 and self:TreatEmptyAsFull()) then
+			self:SetupOnUpdate(false)
+		else
+			self:SetupOnUpdate(true)
+		end
 	end
 
 	if useTicker then

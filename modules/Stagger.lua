@@ -50,7 +50,7 @@ if not UnitDebuff and C_UnitAuras and AuraUtil then
 			return nil
 		end
 
-		return AuraUtil.UnpackAuraData(auraData)
+		return IceHUD.UnpackAuraData(auraData)
 	end
 end
 

@@ -13,6 +13,28 @@ local bReadyToRegisterModules = false
 
 local LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or LoadAddOn
 
+IceHUD.UnpackAuraData = function(auraData)
+	if not auraData then
+		return nil
+	end
+
+	return auraData.name,
+		auraData.icon,
+		auraData.applications,
+		auraData.dispelName,
+		auraData.duration,
+		auraData.expirationTime,
+		auraData.sourceUnit,
+		auraData.isStealable,
+		auraData.nameplateShowPersonal,
+		auraData.spellId,
+		auraData.canApplyAura,
+		auraData.isBossAura,
+		auraData.isFromPlayerOrPlayerPet,
+		auraData.nameplateShowAll,
+		auraData.timeMod
+end
+
 IceHUD.UnitAura = UnitAura
 if not IceHUD.UnitAura then
 	IceHUD.UnitAura = function(unitToken, index, filter)
@@ -21,7 +43,7 @@ if not IceHUD.UnitAura then
 			return nil
 		end
 
-		return AuraUtil.UnpackAuraData(auraData)
+		return IceHUD.UnpackAuraData(auraData)
 	end
 end
 
@@ -629,6 +651,11 @@ do
 		else
 			name, texture, applications, _, _, _, _, _, _, auraID = IceHUD.UnitAura(unit, i, filter)
 		end
+
+		if issecretvalue and issecretvalue(auraID) then
+			return retval
+		end
+
 		while name do
 			for i=1, #spellIDs do
 				if spellIDs[i] == auraID then

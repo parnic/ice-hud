@@ -1331,7 +1331,7 @@ do
 			end
 
 			if type == "buff" then
-				if frame.isStealable and self.playerClass == "MAGE" then
+				if (not issecretvalue or not issecretvalue(frame.isStealable)) and frame.isStealable and self.playerClass == "MAGE" then
 					frame.texture:SetVertexColor(1, 1, 1)
 					frame.texture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
 					icon:SetWidth(size-8)
@@ -1418,7 +1418,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 				---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
 				-- 1. in addition to other info, get the spellID for for the (de)buff
 				name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, _, spellID = IceHUD.UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
-				if duration == 0 and LibClassicDurations then
+				if (not issecretvalue or not issecretvalue(duration)) and duration == 0 and LibClassicDurations then
 					-- 2. if no duration defined for the (de)buff, look up the spell in LibClassicDurations
 					local classicDuration, classicExpirationTime = LibClassicDurations:GetAuraDurationByUnit(self.unit, spellID, caster)
 					-- 3. set the duration if we found one.
@@ -1429,7 +1429,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 				end
 				---- end change by Fulzamoth
 			end
-			local isFromMe = (unitCaster == "player")
+			local isFromMe = (not issecretvalue or not issecretvalue(unitCaster)) and (unitCaster == "player")
 
 			if not icon and IceHUD.IceCore:IsInConfigMode() and UnitExists(self.unit) then
 				icon = [[Interface\Icons\Spell_Frost_Frost]]
@@ -1452,7 +1452,9 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 	end
 
 	if self.moduleSettings.auras[aura].sortByExpiration then
-		table.sort(buffData[aura], BuffExpirationSort)
+		if buffData[aura] and buffData[aura][0] and (not issecretvalue or not issecretvalue(buffData[aura][0][5])) then
+			table.sort(buffData[aura], BuffExpirationSort)
+		end
 		for k,v in pairs(buffData[aura]) do
 			if v then
 				self:SetupAura(v[1], k, v[3], v[4], v[5], v[6], v[7], v[8], v[9])
@@ -1482,27 +1484,39 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 		local alpha = icon and 1 or 0
 		frameTexture:SetTexture(1, 1, 1, alpha)
 
-		local color = auraType and DebuffTypeColor[auraType] or DebuffTypeColor["none"]
-		frameTexture:SetVertexColor(color.r, color.g, color.b)
+		if DebuffTypeColor then
+			local color = auraType and DebuffTypeColor[auraType] or DebuffTypeColor["none"]
+			frameTexture:SetVertexColor(color.r, color.g, color.b)
+		end
 	end
 
 	-- cooldown frame
-	if (duration and duration > 0 and expirationTime and expirationTime > 0) then
-		local start = expirationTime - duration
+	if not issecretvalue or not issecretvalue(duration) then
+		if (duration and duration > 0 and expirationTime and expirationTime > 0) then
+			local start = expirationTime - duration
 
-		CooldownFrame_SetTimer(frame.cd, start, duration, true)
-		frame.cd:Show()
-	else
-		frame.cd:Hide()
+			CooldownFrame_SetTimer(frame.cd, start, duration, true)
+			frame.cd:Show()
+		else
+			frame.cd:Hide()
+		end
 	end
 
-	frame.type = ((auraType == "mh" or auraType == "oh") and auraType) or aura
+	if issecretvalue and issecretvalue(auraType) then
+		frame.type = auraType or aura
+	else
+		frame.type = ((auraType == "mh" or auraType == "oh") and auraType) or aura
+	end
 	frame.fromPlayer = isFromMe
 	frame.id = i
 
 	frameIcon.texture:SetTexture(icon)
 	frameIcon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
-	frameIcon.stack:SetText((count and (count > 1)) and count or nil)
+	if issecretvalue and issecretvalue(count) then
+		frameIcon.stack:SetText(count or nil)
+	else
+		frameIcon.stack:SetText((count and (count > 1)) and count or nil)
+	end
 
 	frame:Show()
 end

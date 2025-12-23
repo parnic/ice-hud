@@ -23,6 +23,16 @@ IceClassPowerCounter.prototype.growModes = { width = 1, height = 2 }
 IceClassPowerCounter.prototype.currentGrowMode = IceClassPowerCounter.prototype.growModes["height"]
 IceClassPowerCounter.prototype.shouldRegisterDisplayPower = true
 
+if canaccesssecrets and not canaccesssecrets() then
+	IceClassPowerCounter.prototype.round = function(var)
+		if not issecretvalue(var) then
+			return ceil(var)
+		end
+
+		return var
+	end
+end
+
 -- Constructor --
 function IceClassPowerCounter.prototype:init(name)
 	assert(name ~= nil, "ClassPowerCounter cannot be instantiated directly - supply a name from the child class and pass it up.")
@@ -518,7 +528,10 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 
 	if IceHUD.WowVer >= 70000 then
 		local numMax = self:GetPowerMax()
-		if numMax ~= self.numRunes then
+		-- todo: no idea how to handle numRunes changing at runtime in midnight...
+		-- will probably be left up to the individual child classes since we can't
+		-- realistically handle it in a cross-compatible way with secrets in the mix
+		if (not issecretvalue or not issecretvalue(numMax)) and numMax ~= self.numRunes then
 			local oldMax = self.numRunes
 			self.numRunes = numMax
 			self:CreateFrame()
@@ -557,7 +570,8 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 
 	if self:GetRuneMode() ~= "Numeric" then
 		for i=1, self.numRunes do
-			if i <= self.round(percentReady) then
+			-- todo: this is stupid for secret vals and effectively disables this whole thing
+			if (not issecretvalue or not issecretvalue(percentReady)) and i <= self.round(percentReady) then
 				if self:GetRuneMode() == "Graphical" then
 					self:SetRuneGraphicalTexture(i)
 				else
@@ -575,7 +589,7 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 					end
 
 					self:SetRuneCoords(i, currPercent)
-				elseif i > self.lastNumReady then
+				elseif (not issecretvalue or not issecretvalue(self.lastNumReady)) and i > self.lastNumReady then
 					self:SetRuneCoords(i, 1)
 
 					if self.moduleSettings.flashWhenBecomingReady then
@@ -1005,6 +1019,10 @@ function IceClassPowerCounter.prototype:HideBlizz(fromConfig)
 end
 
 function IceClassPowerCounter.prototype:UseTargetAlpha()
+	if issecretvalue and issecretvalue(self.lastNumReady) then
+		return false
+	end
+
 	if not self.moduleSettings.overrideAlpha then
 		return false
 	end

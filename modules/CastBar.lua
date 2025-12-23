@@ -481,9 +481,12 @@ function CastBar.prototype:SpellCastStart(event, unit, castGuid, spellId)
 		return
 	end
 
-	self:UpdateLagBar()
-	if IceHUD.GlobalCoolDown then
-		self.nextLagUpdate = GetTime() + (select(2, GetSpellCooldown(IceHUD.GlobalCoolDown:GetSpellId())) / 2)
+	local cd = select(2, GetSpellCooldown(IceHUD.GlobalCoolDown:GetSpellId()))
+	if not issecretvalue or not issecretvalue(cd) then
+		self:UpdateLagBar()
+		if IceHUD.GlobalCoolDown then
+			self.nextLagUpdate = GetTime() + (cd / 2)
+		end
 	end
 end
 
@@ -508,9 +511,12 @@ function CastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 		return
 	end
 
-	self:UpdateLagBar()
-	if IceHUD.GlobalCoolDown then
-		self.nextLagUpdate = GetTime() + (select(2, GetSpellCooldown(IceHUD.GlobalCoolDown:GetSpellId())) / 2)
+	local cd = select(2, GetSpellCooldown(IceHUD.GlobalCoolDown:GetSpellId()))
+	if not issecretvalue or not issecretvalue(cd) then
+		self:UpdateLagBar()
+		if IceHUD.GlobalCoolDown then
+			self.nextLagUpdate = GetTime() + (cd / 2)
+		end
 	end
 end
 

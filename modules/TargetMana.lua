@@ -106,7 +106,8 @@ function IceTargetMana.prototype:Update(unit)
 		return
 	end
 
-	if ((not UnitExists(self.unit)) or (self.maxMana == 0)) then
+	local secret = issecretvalue and issecretvalue(self.maxMana)
+	if not secret and ((not UnitExists(self.unit)) or (self.maxMana == 0)) then
 		self:Show(false)
 		return
 	else

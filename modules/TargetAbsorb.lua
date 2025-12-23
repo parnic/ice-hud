@@ -116,6 +116,6 @@ function IceTargetAbsorb.prototype:Disable(core)
 	self:MyUnregisterCustomEvents()
 end
 
-if UnitGetTotalAbsorbs ~= nil then
+if UnitGetTotalAbsorbs ~= nil and not canaccesssecrets then
 	IceHUD.TargetAbsorb = IceTargetAbsorb:new()
 end

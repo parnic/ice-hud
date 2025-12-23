@@ -222,6 +222,23 @@ function IceUnitBar.prototype:ResetRotation()
 end
 
 
+function IceUnitBar.prototype:ShouldScaleHealthColor()
+	if canaccesssecrets and not canaccesssecrets() then
+		return false
+	end
+
+	return self.moduleSettings.scaleHealthColor
+end
+
+function IceUnitBar.prototype:ShouldScalePowerColor()
+	if canaccesssecrets and not canaccesssecrets() then
+		return false
+	end
+
+	return self.moduleSettings.scaleManaColor
+end
+
+
 -- OVERRIDE
 function IceUnitBar.prototype:Update()
 	IceUnitBar.super.prototype.Update(self)
@@ -234,35 +251,41 @@ function IceUnitBar.prototype:Update()
 
 	self.health = UnitHealth(self.unit)
 	self.maxHealth = UnitHealthMax(self.unit)
-	self.healthPercentage = self.maxHealth ~= 0 and (self.health/self.maxHealth) or 0
+	self.healthPercentage = UnitHealthPercent and UnitHealthPercent(self.unit) or self.maxHealth ~= 0 and (self.health/self.maxHealth) or 0
 
 	-- note that UnitPowerType returns 2 arguments and UnitPower[Max] accepts a third argument to get the values on a different scale
 	-- so this technically doesn't get us the answer we want most of the time. too risky to change at this point, though.
 	self.mana = UnitPower(self.unit, UnitPowerType(self.unit))
 	self.maxMana = UnitPowerMax(self.unit, UnitPowerType(self.unit))
 	local powerType = UnitPowerType(self.unit)
-	if (powerType == SPELL_POWER_RAGE and self.maxMana >= 1000)
-		or (powerType == SPELL_POWER_RUNIC_POWER and self.maxMana >= 1000) then
-		self.mana = IceHUD:MathRound(self.mana / 10)
-		self.maxMana = IceHUD:MathRound(self.maxMana / 10)
-	end
-	if IceHUD.WowVer >= 70300 and UnitPowerType(self.unit) == SPELL_POWER_INSANITY then
-		self.mana = IceHUD:MathRound(self.mana / 100)
-		self.maxMana = IceHUD:MathRound(self.maxMana / 100)
+	if not issecretvalue or not issecretvalue(self.mana) then
+		if (powerType == SPELL_POWER_RAGE and self.maxMana >= 1000)
+			or (powerType == SPELL_POWER_RUNIC_POWER and self.maxMana >= 1000) then
+			self.mana = IceHUD:MathRound(self.mana / 10)
+			self.maxMana = IceHUD:MathRound(self.maxMana / 10)
+		end
+		if IceHUD.WowVer >= 70300 and UnitPowerType(self.unit) == SPELL_POWER_INSANITY then
+			self.mana = IceHUD:MathRound(self.mana / 100)
+			self.maxMana = IceHUD:MathRound(self.maxMana / 100)
+		end
 	end
 
 	-- account for cases where maxMana is 0, perhaps briefly (during certain spells, for example)
 	-- and properly handle it as full. this allows for proper alpha handling during these times.
-	if self.maxMana == self.mana then
-		self.manaPercentage = 1
+	if UnitPowerPercent then
+		self.manaPercentage = UnitPowerPercent(self.unit)
 	else
-		self.manaPercentage = self.maxMana ~= 0 and (self.mana/self.maxMana) or 0
+		if self.maxMana == self.mana then
+			self.manaPercentage = 1
+		else
+			self.manaPercentage = self.maxMana ~= 0 and (self.mana/self.maxMana) or 0
+		end
 	end
 
 	local locClass
 	locClass, self.unitClass = UnitClass(self.unit)
 
-	if( self.moduleSettings.scaleHealthColor ) then
+	if self:ShouldScaleHealthColor() then
 		if self.healthPercentage > 0.5 then
 			self:SetScaledColor(self.scaleHPColorInst, self.healthPercentage * 2 - 1, self.settings.colors["MaxHealthColor"], self.settings.colors["MidHealthColor"])
 		else
@@ -272,7 +295,7 @@ function IceUnitBar.prototype:Update()
 		self.settings.colors["ScaledHealthColor"] = self.scaleHPColorInst
 	end
 
-	if( self.moduleSettings.scaleManaColor ) then
+	if self:ShouldScalePowerColor() then
 		if self.manaPercentage > 0.5 then
 			self:SetScaledColor(self.scaleMPColorInst, self.manaPercentage * 2 - 1, self.settings.colors["MaxManaColor"], self.settings.colors["MidManaColor"])
 		else
@@ -284,7 +307,7 @@ function IceUnitBar.prototype:Update()
 
 	-- This looks slightly quirky. Basically the easiest way for me to achieve this is to have lowThresholdColor override
 	-- the scaled color. You'll need to switch them both on to get things to work.
-	if( self.moduleSettings.lowThresholdColor ) then
+	if self.moduleSettings.lowThresholdColor then
 		if( self.healthPercentage <= self.moduleSettings.lowThreshold ) then
 			self.settings.colors[ "ScaledHealthColor" ] = self.settings.colors[ "MinHealthColor" ]
 		elseif not self.moduleSettings.scaleHealthColor then
