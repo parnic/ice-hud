@@ -1,22 +1,6 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local DragonridingVigor = IceCore_CreateClass(IceClassPowerCounter)
 
--- NOTE (TWW 11.2.7+): Blizzard removed the Vigor bar and moved Skyriding to a shared charge system.
--- This module now supports BOTH:
---   * Old Vigor UIWidget FillUpFrames (Dragonflight/TWW pre-11.2.7)
---   * New Skyriding charges (TWW 11.2.7+)
---
--- If the widget no longer exists, we automatically fall back to charges.
-
-local DragonridingBuffs = {
-	360954, -- Highland Drake
-	368896, -- Renewed Proto-Drake
-	368899, -- Windborn Velocidrake
-	368901, -- Cliffside Wylderdrake
-	368893, -- Winding Slitherdrake
-	412088, -- Grotto Netherwing Drake
-}
-
 -- Old Vigor widget (pre-11.2.7)
 local vigorWidgetSetID = 283
 local vigorWidgetType = 24
