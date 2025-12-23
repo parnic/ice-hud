@@ -1,5 +1,9 @@
 # Changelog
 
+v1.15.23:
+
+- Fix Vigor display for 11.2.7.
+
 v1.15.22:
 
 - Update TOCs

@@ -33,6 +33,18 @@ end
 
 -- 'Public' methods -----------------------------------------------------------
 
+function IceClassPowerCounter.prototype:GetPower()
+	return UnitPower("player", self.unitPower)
+end
+
+function IceClassPowerCounter.prototype:GetPowerUnmodified()
+	return UnitPower("player", self.unitPower, true)
+end
+
+function IceClassPowerCounter.prototype:GetPowerMax()
+	return UnitPowerMax(self.unit, self.unitPower)
+end
+
 
 -- OVERRIDE
 function IceClassPowerCounter.prototype:GetOptions()
@@ -421,7 +433,7 @@ function IceClassPowerCounter.prototype:Enable(core)
 	IceClassPowerCounter.super.prototype.Enable(self, core)
 
 	if IceHUD.WowVer >= 70000 then
-		self.numRunes = UnitPowerMax(self.unit, self.unitPower)
+		self.numRunes = self:GetPowerMax()
 	end
 	self:CreateFrame()
 
@@ -505,7 +517,7 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 	end
 
 	if IceHUD.WowVer >= 70000 then
-		local numMax = UnitPowerMax(self.unit, self.unitPower)
+		local numMax = self:GetPowerMax()
 		if numMax ~= self.numRunes then
 			local oldMax = self.numRunes
 			self.numRunes = numMax
@@ -526,8 +538,8 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 		end
 	end
 
-	local numReady = UnitPower("player", self.unitPower)
-	local percentReady = self.shouldShowUnmodified and (UnitPower("player", self.unitPower, true) / self.unmodifiedMaxPerRune) or numReady
+	local numReady = self:GetPower()
+	local percentReady = self.shouldShowUnmodified and (self:GetPowerUnmodified() / self.unmodifiedMaxPerRune) or numReady
 
 	if self:GetRuneMode() == "Numeric" or self.moduleSettings.alsoShowNumeric then
 		local displayPercent = percentReady
@@ -559,7 +571,7 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 				if i > numReady or self.numRunes == 1 then
 					local currPercent = percentReady - numReady
 					if self.numRunes == 1 then
-						currPercent = numReady / UnitPowerMax("player", self.unitPower)
+						currPercent = numReady / self:GetPowerMax()
 					end
 
 					self:SetRuneCoords(i, currPercent)

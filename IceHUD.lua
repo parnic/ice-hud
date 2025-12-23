@@ -139,6 +139,16 @@ if not IceHUD.GetActiveSpecGroup and C_SpecializationInfo then
 	IceHUD.GetActiveSpecGroup = C_SpecializationInfo.GetActiveSpecGroup
 end
 
+IceHUD.GetSpellCharges = GetSpellCharges
+if not IceHUD.GetSpellCharges and C_Spell then
+	IceHUD.GetSpellCharges = function(spellID)
+		local spellChargeInfo = C_Spell.GetSpellCharges(spellID)
+		if spellChargeInfo then
+			return spellChargeInfo.currentCharges, spellChargeInfo.maxCharges, spellChargeInfo.cooldownStartTime, spellChargeInfo.cooldownDuration, spellChargeInfo.chargeModRate
+		end
+	end
+end
+
 --@debug@
 IceHUD.optionsLoaded = true
 --@end-debug@
