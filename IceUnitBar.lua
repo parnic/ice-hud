@@ -49,6 +49,38 @@ function IceUnitBar.prototype:init(name, unit)
 
 	self.scaleHPColorInst = { r = 0, g = 255, b = 0 }
 	self.scaleMPColorInst = { r = 0, g = 0, b = 255 }
+
+	self:SetColorCurve()
+end
+
+function IceUnitBar.prototype:SetColorCuve()
+	if not C_ColorUtil or not C_CurveUtil or not C_CurveUtil.CreateColorCurve then
+		return
+	end
+
+	local minHP = self.settings.colors["MinHealthColor"]
+	local midHP = self.settings.colors["MidHealthColor"]
+	local maxHP = self.settings.colors["MaxHealthColor"]
+	if not self.hpColorCurve then
+		self.hpColorCurve = C_CurveUtil.CreateColorCurve()
+		self.hpColorCurve:SetType(Enum.LuaCurveType.Linear)
+	end
+	self.hpColorCurve:ClearPoints()
+	self.hpColorCurve:AddPoint(0, CreateColor(minHP.r, minHP.g, minHP.b))
+	self.hpColorCurve:AddPoint(0.5, CreateColor(midHP.r, midHP.g, midHP.b))
+	self.hpColorCurve:AddPoint(1, CreateColor(maxHP.r, maxHP.g, maxHP.b))
+
+	local minMP = self.settings.colors["MinManaColor"]
+	local midMP = self.settings.colors["MidManaColor"]
+	local maxMP = self.settings.colors["MaxManaColor"]
+	if not self.mpColorCurve then
+		self.mpColorCurve = C_CurveUtil.CreateColorCurve()
+		self.mpColorCurve:SetType(Enum.LuaCurveType.Linear)
+	end
+	self.mpColorCurve:ClearPoints()
+	self.mpColorCurve:AddPoint(0, CreateColor(minMP.r, minMP.g, minMP.b))
+	self.mpColorCurve:AddPoint(0.5, CreateColor(midMP.r, midMP.g, midMP.b))
+	self.mpColorCurve:AddPoint(1, CreateColor(maxMP.r, maxMP.g, maxMP.b))
 end
 
 function IceUnitBar.prototype:SetUnit(unit)
@@ -154,6 +186,8 @@ end
 -- OVERRIDE
 function IceUnitBar.prototype:Redraw()
 	IceUnitBar.super.prototype.Redraw(self)
+
+	self:SetColorCurve()
 
 	if (self.moduleSettings.enabled) then
 		self:Update(self.unit)
