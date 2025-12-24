@@ -529,13 +529,17 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 		spell, rank, icon = GetSpellInfo(spellId)
 	end
 
-	local isChargeSpell = numStages and numStages > 0
-	if isChargeSpell then
-		self.NumStages = numStages
-		endTime = endTime + GetUnitEmpowerHoldAtMaxTime(self.unit)
-		action = IceCastBar.Actions.ReverseChannel
-	else
+	if issecretvalue and issecretvalue(numStages) then
 		self.NumStages = nil
+	else
+		local isChargeSpell = numStages and numStages > 0
+		if isChargeSpell then
+			self.NumStages = numStages
+			endTime = endTime + GetUnitEmpowerHoldAtMaxTime(self.unit)
+			action = IceCastBar.Actions.ReverseChannel
+		else
+			self.NumStages = nil
+		end
 	end
 
 	if self.moduleSettings.reverseChannel then
