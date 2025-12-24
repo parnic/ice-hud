@@ -415,7 +415,9 @@ function TargetOfTarget.prototype:CreateBarFrame()
 	self.frame.bar.highLight:Hide()
 
 
-	self.frame.bar:Show()
+	if not InCombatLockdown() then
+		self.frame.bar:Show()
+	end
 end
 
 
