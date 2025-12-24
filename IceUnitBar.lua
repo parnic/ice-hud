@@ -11,8 +11,6 @@ IceUnitBar.prototype.healthPercentage = nil
 IceUnitBar.prototype.mana = nil
 IceUnitBar.prototype.maxMana = nil
 IceUnitBar.prototype.manaPercentage = nil
-IceUnitBar.prototype.scaleHPColorInst = nil
-IceUnitBar.prototype.scaleMPColorInst = nil
 
 IceUnitBar.prototype.unitClass = nil
 IceUnitBar.prototype.hasPet = nil
@@ -46,14 +44,9 @@ function IceUnitBar.prototype:init(name, unit)
 	self:SetDefaultColor("MaxManaColor", 0, 0, 255)
 	self:SetDefaultColor("MidManaColor", 125, 0, 255)
 	self:SetDefaultColor("MinManaColor", 255, 0, 255)
-
-	self.scaleHPColorInst = { r = 0, g = 255, b = 0 }
-	self.scaleMPColorInst = { r = 0, g = 0, b = 255 }
-
-	self:SetColorCurve()
 end
 
-function IceUnitBar.prototype:SetColorCuve()
+function IceUnitBar.prototype:SetColorCurve()
 	if not C_ColorUtil or not C_CurveUtil or not C_CurveUtil.CreateColorCurve then
 		return
 	end
@@ -172,6 +165,8 @@ end
 -- 'Public' methods -----------------------------------------------------------
 
 function IceUnitBar.prototype:Enable()
+	self:SetColorCurve()
+
 	IceUnitBar.super.prototype.Enable(self)
 
 	self:RegisterEvent("PLAYER_UNGHOST", "Alive")
@@ -256,23 +251,6 @@ function IceUnitBar.prototype:ResetRotation()
 end
 
 
-function IceUnitBar.prototype:ShouldScaleHealthColor()
-	if canaccesssecrets and not canaccesssecrets() then
-		return false
-	end
-
-	return self.moduleSettings.scaleHealthColor
-end
-
-function IceUnitBar.prototype:ShouldScalePowerColor()
-	if canaccesssecrets and not canaccesssecrets() then
-		return false
-	end
-
-	return self.moduleSettings.scaleManaColor
-end
-
-
 -- OVERRIDE
 function IceUnitBar.prototype:Update()
 	IceUnitBar.super.prototype.Update(self)
@@ -316,27 +294,29 @@ function IceUnitBar.prototype:Update()
 		end
 	end
 
-	local locClass
-	locClass, self.unitClass = UnitClass(self.unit)
+	local _
+	_, self.unitClass = UnitClass(self.unit)
 
-	if self:ShouldScaleHealthColor() then
+	if not self.hpColorCurve then
+		local colorInst = {r = 0, g = 0, b = 0}
 		if self.healthPercentage > 0.5 then
-			self:SetScaledColor(self.scaleHPColorInst, self.healthPercentage * 2 - 1, self.settings.colors["MaxHealthColor"], self.settings.colors["MidHealthColor"])
+			self:SetScaledColor(colorInst, self.healthPercentage * 2 - 1, self.settings.colors["MaxHealthColor"], self.settings.colors["MidHealthColor"])
 		else
-			self:SetScaledColor(self.scaleHPColorInst, self.healthPercentage * 2, self.settings.colors["MidHealthColor"], self.settings.colors["MinHealthColor"])
+			self:SetScaledColor(colorInst, self.healthPercentage * 2, self.settings.colors["MidHealthColor"], self.settings.colors["MinHealthColor"])
 		end
 
-		self.settings.colors["ScaledHealthColor"] = self.scaleHPColorInst
+		self.settings.colors["ScaledHealthColor"] = colorInst
 	end
 
-	if self:ShouldScalePowerColor() then
+	if not self.mpColorCurve then
+		local colorInst = {r = 0, g = 0, b = 0}
 		if self.manaPercentage > 0.5 then
-			self:SetScaledColor(self.scaleMPColorInst, self.manaPercentage * 2 - 1, self.settings.colors["MaxManaColor"], self.settings.colors["MidManaColor"])
+			self:SetScaledColor(colorInst, self.manaPercentage * 2 - 1, self.settings.colors["MaxManaColor"], self.settings.colors["MidManaColor"])
 		else
-			self:SetScaledColor(self.scaleMPColorInst, self.manaPercentage * 2, self.settings.colors["MidManaColor"], self.settings.colors["MinManaColor"])
+			self:SetScaledColor(colorInst, self.manaPercentage * 2, self.settings.colors["MidManaColor"], self.settings.colors["MinManaColor"])
 		end
 
-		self.settings.colors["ScaledManaColor"] = self.scaleMPColorInst
+		self.settings.colors["ScaledManaColor"] = colorInst
 	end
 
 	-- This looks slightly quirky. Basically the easiest way for me to achieve this is to have lowThresholdColor override
@@ -388,6 +368,15 @@ function IceUnitBar.prototype:UpdateBar(scale, color, alpha)
 	else
 		self.bUpdateFlash = nil
 		self.flashFrame:SetAlpha(0)
+	end
+
+	if self.hpColorCurve and color == "ScaledHealthColor" then
+		local colorCurve = UnitHealthPercent(self.unit, true, self.hpColorCurve)
+		self.barFrame.bar:SetVertexColor(colorCurve:GetRGB())
+	end
+	if self.mpColorCurve and color == "ScaledManaColor" then
+		local colorCurve = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.mpColorCurve)
+		self.barFrame.bar:SetVertexColor(colorCurve:GetRGB())
 	end
 end
 
