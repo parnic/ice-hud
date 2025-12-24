@@ -1053,20 +1053,23 @@ end
 -- Rokiyo: Currently keeping old behaviour of running through bar creation on every Redraw, but I'm not convinced we need to.
 function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer, nameSuffix)
 	if not (barFrame) then
-		barFrame = CreateFrame("Frame", "IceHUD_"..self.elementName.."_"..(nameSuffix or "Bar"), self.frame)
+		barFrame = CreateFrame("StatusBar", "IceHUD_"..self.elementName.."_"..(nameSuffix or "Bar"), self.frame)
+		barFrame:SetMinMaxValues(0, 1)
+		barFrame:SetOrientation("VERTICAL")
 	end
 
 	barFrame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(frameStrata and frameStrata or "LOW"))
 	barFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	barFrame:SetHeight(self.settings.barHeight)
+	barFrame:SetStatusBarTexture(IceElement.TexturePath .. self:GetMyBarTexture() .. (self.moduleSettings.side == IceCore.Side.Left and "-flipped" or ""))
 	self:SetBarFramePoints(barFrame)
 
 	if not barFrame.bar then
 		barFrame.bar = barFrame:CreateTexture(nil, (textureLayer and textureLayer or "ARTWORK"))
 	end
 
-	barFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	barFrame.bar:SetAllPoints(barFrame)
+	-- barFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+	-- barFrame.bar:SetAllPoints(barFrame)
 
 	return barFrame
 end
@@ -1170,14 +1173,18 @@ end
 
 -- Rokiyo: bar is the only required argument, scale & top are optional
 function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideReverse)
-	if not scale then scale = 0 end
-	if not issecretvalue or not issecretvalue(scale) then
-		scale = IceHUD:Clamp(scale, 0, 1)
+	if issecretvalue and issecretvalue(scale) then
+		barFrame:SetValue(scale)
+		return
 	end
+
+	if not scale then scale = 0 end
+	scale = IceHUD:Clamp(scale, 0, 1)
 
 	if scale == 0 then
 		barFrame.bar:Hide()
 	else
+		barFrame:SetValue(scale)
 		local min_y, max_y
 		local offset_y = 0
 
@@ -1213,24 +1220,23 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 		end
 
 		if (self.moduleSettings.side == IceCore.Side.Left) then
-			barFrame.bar:SetTexCoord(1, 0, min_y, max_y)
+			-- barFrame.bar:SetTexCoord(1, 0, min_y, max_y)
+			-- barFrame:GetStatusBarTexture():SetTexCoord(1, 0, min_y, max_y)
 		else
-			barFrame.bar:SetTexCoord(0, 1, min_y, max_y)
+			-- barFrame.bar:SetTexCoord(0, 1, min_y, max_y)
+			-- barFrame:GetStatusBarTexture():SetTexCoord(0, 1, min_y, max_y)
 		end
 
-		self:SetBarFramePoints(barFrame, 0, offset_y)
-		barFrame:SetHeight(self.settings.barHeight * scale)
-		barFrame.bar:Show()
+		-- self:SetBarFramePoints(barFrame, 0, 0)
+		-- barFrame:SetHeight(self.settings.barHeight * scale)
+		-- barFrame.bar:Show()
 	end
 end
 
 function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
 	if issecretvalue and (issecretvalue(inScale) or issecretvalue(self.CurrScale)) then
 		self.CurrScale = inScale
-		-- todo: can this even work in midnight?
-		-- in order to set the coordinates, we need to multiply the scale by the desired
-		-- bar size, but the scale here may be/is a secret value which we can't do arithmetic on.
-		-- self:SetBarCoord(self.barFrame, self.CurrScale)
+		self:SetBarCoord(self.barFrame, self.CurrScale)
 		return
 	end
 
@@ -1315,6 +1321,7 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 
 	self.frame.bg:SetVertexColor(r, g, b, self.backgroundAlpha)
 	self.barFrame.bar:SetVertexColor(self:GetColor(color))
+	self.barFrame:SetStatusBarColor(self:GetColor(color))
 	if self.moduleSettings.markers then
 		for i=1, #self.Markers do
 			local color = self.moduleSettings.markers[i].color
