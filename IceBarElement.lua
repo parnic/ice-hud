@@ -1355,16 +1355,19 @@ function IceBarElement.prototype:UseTargetAlpha(scale)
 end
 
 function IceBarElement.prototype:IsFull(scale)
-	return true
-	-- if self.reverse then
-	-- 	scale = 1 - scale
-	-- end
+	if issecretvalue and issecretvalue(scale) then
+		return false
+	end
 
-	-- if not self.bTreatEmptyAsFull then
-	-- 	return scale and scale == 1
-	-- else
-	-- 	return scale and scale == 0
-	-- end
+	if self.reverse then
+		scale = 1 - scale
+	end
+
+	if not self.bTreatEmptyAsFull then
+		return scale and scale == 1
+	else
+		return scale and scale == 0
+	end
 end
 
 
