@@ -1225,7 +1225,7 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 end
 
 function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
-	if issecretvalue and issecretvalue(inScale) then
+	if issecretvalue and (issecretvalue(inScale) or issecretvalue(self.CurrScale)) then
 		self.CurrScale = inScale
 		-- todo: can this even work in midnight?
 		-- in order to set the coordinates, we need to multiply the scale by the desired
@@ -1235,7 +1235,6 @@ function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
 	end
 
 	local oldScale = self.CurrScale
-	local min_y, max_y
 
 	if not skipLerp then
 		self.CurrScale = self:LerpScale(inScale)
