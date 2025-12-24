@@ -137,8 +137,24 @@ IceHUD.HasCataloging = GetSpellName(366290)
 
 IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 
-IceHUD.validBarList = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc",
-	"BloodGlaives", "ArcHUD", "FangRune", "DHUD", "CleanCurvesOut", "CleanTank", "PillTank", "GemTank" }
+IceHUD.validBarList = {
+	"ArcHUD",
+	"Bar",
+	"BloodGlaives",
+	"CleanCurves",
+	"CleanCurvesOut",
+	"CleanTank",
+	"ColorBar",
+	"DHUD",
+	"FangRune",
+	"GemTank",
+	"GlowArc",
+	"HiBar",
+	"PillTank",
+	"RivetBar",
+	"RivetBar2",
+	"RoundBar",
+}
 IceHUD.validCustomModules = {Bar="Buff/Debuff watcher", Counter="Buff/Debuff stack counter", CD="Cooldown bar", Health="Health bar", Mana="Mana bar", CounterBar="Stack count bar"}
 
 IceHUD.IsPlayerSpell = IsPlayerSpell
