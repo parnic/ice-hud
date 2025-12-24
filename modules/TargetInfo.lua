@@ -1783,7 +1783,7 @@ function IceTargetInfo.prototype:BuffOnEnter(this)
 	end
 
 	GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT")
-	if this.type == "buff" then
+	if (issecretvalue and issecretvalue(this.type)) or this.type == "buff" then
 		GameTooltip:SetUnitBuff(self.unit, this.id)
 	elseif this.type == "mh" or this.type == "oh" then
 		GameTooltip:SetInventoryItem("player", this.type == "mh" and GetInventorySlotInfo("MainHandSlot") or GetInventorySlotInfo("SecondaryHandSlot"))

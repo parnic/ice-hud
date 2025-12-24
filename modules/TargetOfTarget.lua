@@ -497,7 +497,7 @@ end
 function TargetOfTarget.prototype:UpdateBuffs()
 	local debuffs = 0
 
-	if (self.moduleSettings.showDebuffs) then
+	if (self.moduleSettings.showDebuffs) and (not canaccesssecrets or canaccesssecrets()) then
 		for i = 1, IceCore.BuffLimit do
 			local buffName, buffRank, buffTexture, buffApplications
 			if IceHUD.SpellFunctionsReturnRank then

@@ -567,7 +567,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 	self.actionStartTime = GetTime()
 	self.actionMessage = message
 
-	if (startTime and endTime) then
+	if (startTime and endTime) and (not issecretvalue or not issecretvalue(endTime)) then
 		self.actionDuration = (endTime - startTime) / 1000
 
 		-- set start time here in case we start to monitor a cast that is underway already
@@ -635,7 +635,7 @@ function IceCastBar.prototype:SpellCastStop(event, unit, castGuid, spellId)
 	IceHUD:Debug("SpellCastStop", unit, castGuid, spellId)
 
 	-- ignore if not coming from current spell
-	if (self.current and castGuid and self.current ~= castGuid) then
+	if (not issecretvalue or not issecretvalue(self.current)) and self.current and castGuid and self.current ~= castGuid then
 		return
 	end
 
@@ -684,7 +684,7 @@ function IceCastBar.prototype:SpellCastInterrupted(event, unit, castGuid, spellI
 	IceHUD:Debug("SpellCastInterrupted", unit, castGuid, spellId)
 
 	-- ignore if not coming from current spell
-	if (self.current and castGuid and self.current ~= castGuid) then
+	if (not issecretvalue or not issecretvalue(self.current)) and self.current and castGuid and self.current ~= castGuid then
 		return
 	end
 
@@ -716,7 +716,7 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 	end
 
 	-- ignore if not coming from current spell
-	if (self.current and self.current ~= castGuid) then
+	if (not issecretvalue or not issecretvalue(self.current)) and self.current and self.current ~= castGuid then
 		return
 	end
 

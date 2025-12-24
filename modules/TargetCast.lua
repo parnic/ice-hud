@@ -47,7 +47,7 @@ end
 
 function TargetCast.prototype:UpdateInterruptibleColor()
 	if self.moduleSettings.displayNonInterruptible then
-		if self.notInterruptible then
+		if (not issecretvalue or not issecretvalue(self.notInterruptible)) and self.notInterruptible then
 			self.barFrame.bar:SetVertexColor(self:GetColor("CastNotInterruptible"))
 		else
 			self.barFrame.bar:SetVertexColor(self:GetColor(self:GetCurrentCastingColor()))
@@ -92,7 +92,7 @@ function TargetCast.prototype:TargetChanged(unit)
 	if UnitCastingInfo then
 		local spell = UnitCastingInfo(self.unit)
 		local notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 9 or 8, UnitCastingInfo(self.unit))
-		if spell then
+		if spell and (not issecretvalue or not issecretvalue(notInterruptible)) then
 			self.notInterruptible = notInterruptibleCast
 			self:StartBar(IceCastBar.Actions.Cast)
 			return
@@ -102,7 +102,7 @@ function TargetCast.prototype:TargetChanged(unit)
 	if UnitChannelInfo then
 		local channel = UnitChannelInfo(self.unit)
 		notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 8 or 7, UnitChannelInfo(self.unit))
-		if channel then
+		if channel and (not issecretvalue or not issecretvalue(notInterruptible)) then
 			self.notInterruptible = notInterruptibleChannel
 			self:StartBar(IceCastBar.Actions.Channel)
 			return

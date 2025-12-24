@@ -101,7 +101,7 @@ function DruidEnergy.prototype:Update()
 
 	self.DruidEnergy = UnitPower(self.unit, SPELL_POWER_ENERGY)
 	self.DruidEnergyMax = UnitPowerMax(self.unit, SPELL_POWER_ENERGY)
-	self.DruidEnergyPercentage = self.DruidEnergyMax ~= 0 and (self.DruidEnergy/self.DruidEnergyMax) or 0
+	self.DruidEnergyPercentage = UnitPowerPercent and UnitPowerPercent(self.unit, SPELL_POWER_ENERGY) or self.DruidEnergyMax ~= 0 and (self.DruidEnergy/self.DruidEnergyMax) or 0
 
 	if (not self.alive or not self:ShouldShow(self.unit) or not self.DruidEnergy or not self.DruidEnergyMax or self.DruidEnergyMax == 0) then
 		self:Show(false)
