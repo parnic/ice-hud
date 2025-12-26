@@ -344,7 +344,11 @@ function IceCastBar.prototype:PositionIcons()
 end
 
 function IceCastBar.prototype:GetRemainingCastTime()
-	return self.actionStartTime + self.actionDuration - GetTime()
+	if not issecretvalue or not issecretvalue(self.actionStartTime) then
+		return self.actionStartTime + self.actionDuration - GetTime()
+	end
+
+	return self.actionDuration
 end
 
 function IceCastBar.prototype:GetCurrentCastDurationMs()
@@ -365,6 +369,12 @@ function IceCastBar.prototype:MyOnUpdate()
 
 	-- handle casting and channeling
 	if (self.action == IceCastBar.Actions.Cast or self.action == IceCastBar.Actions.Channel or self.action == IceCastBar.Actions.ReverseChannel) then
+		if issecretvalue and issecretvalue(self.actionDuration) then
+			self:UpdateBar(1, self:GetCurrentCastingColor())
+			self:SetBottomText1(self.actionMessage)
+			return
+		end
+
 		local remainingTime = self:GetRemainingCastTime()
 		local scale = 1 - (self.actionDuration ~= 0 and remainingTime / self.actionDuration or 0)
 
@@ -392,14 +402,6 @@ function IceCastBar.prototype:MyOnUpdate()
 		return
 	end
 
-
-	-- stop bar if casting or channeling is done (in theory this should not be needed)
-	if (self.action == IceCastBar.Actions.Cast or self.action == IceCastBar.Actions.Channel or self.action == IceCastBar.Actions.ReverseChannel) then
-		self:StopBar()
-		return
-	end
-
-
 	-- handle bar flashes
 	if (self.action == IceCastBar.Actions.Instant or
 		self.action == IceCastBar.Actions.Success or
@@ -407,7 +409,7 @@ function IceCastBar.prototype:MyOnUpdate()
 	then
 		local scale
 		if self.actionStartTime then
-			scale = GetTime() - self.actionStartTime
+			scale = (GetTime() - self.actionStartTime) * 2
 		end
 
 		if scale and (scale > 1) then
@@ -489,7 +491,7 @@ function IceCastBar.prototype:GetCurrentCastingColor()
 end
 
 function IceCastBar.prototype:FlashBar(color, alpha, text, textColor)
-	if self.moduleSettings.flashInstants == "Never" then
+	if self.action == IceCastBar.Actions.Instant and self.moduleSettings.flashInstants == "Never" then
 		return
 	end
 
@@ -571,11 +573,15 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 	self.actionStartTime = GetTime()
 	self.actionMessage = message
 
-	if (startTime and endTime) and (not issecretvalue or not issecretvalue(endTime)) then
-		self.actionDuration = (endTime - startTime) / 1000
+	if (startTime and endTime) then
+		if not issecretvalue or not issecretvalue(endTime) then
+			self.actionDuration = (endTime - startTime) / 1000
 
-		-- set start time here in case we start to monitor a cast that is underway already
-		self.actionStartTime = startTime / 1000
+			-- set start time here in case we start to monitor a cast that is underway already
+			self.actionStartTime = startTime / 1000
+		else
+			self.actionDuration = endTime
+		end
 	else
 		self.actionDuration = 1 -- instants/failures
 	end
@@ -660,7 +666,7 @@ function IceCastBar.prototype:SpellCastFailed(event, unit, castGuid, spellId)
 	IceHUD:Debug("SpellCastFailed", unit, castGuid, spellId)
 
 	-- ignore if not coming from current spell
-	if (self.current and castGuid and self.current ~= castGuid) then
+	if (self.current and castGuid and self.current ~= castGuid) and (not issecretvalue or not issecretvalue(self.current)) then
 		return
 	end
 
@@ -703,7 +709,7 @@ function IceCastBar.prototype:SpellCastDelayed(event, unit, castGuid, spellId)
 
 	local endTime = select(IceHUD.SpellFunctionsReturnRank and 6 or 5, UnitCastingInfo(self.unit))
 
-	if (endTime and self.actionStartTime) then
+	if (endTime and self.actionStartTime) and (not issecretvalue or not issecretvalue(endTime)) then
 		-- apparently this check is needed, got nils during a horrible lag spike
 		self.actionDuration = endTime/1000 - self.actionStartTime
 	end
@@ -775,7 +781,9 @@ function IceCastBar.prototype:SpellCastChannelUpdate(event, unit)
     if not spell then
         self.actionDuration = 0
     else
-        self.actionDuration = endTime/1000 - self.actionStartTime
+		if not issecretvalue or not issecretvalue(endTime) then
+        	self.actionDuration = endTime/1000 - self.actionStartTime
+		end
     end
 end
 
