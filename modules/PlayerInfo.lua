@@ -24,6 +24,10 @@ function PlayerInfo.prototype:GetDefaultSettings()
 	return settings
 end
 
+function PlayerInfo.prototype:CanSortBuffs()
+	return true
+end
+
 function PlayerInfo.prototype:GetOptions()
 	local opts = PlayerInfo.super.prototype.GetOptions(self)
 
