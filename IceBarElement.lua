@@ -368,25 +368,28 @@ do
 				order = 111
 			}
 
-			opts["desiredLerpTime"] =
-			{
-				type = 'range',
-				name = L["Animation Duration"],
-				desc = L["How long the animation should take to play"],
-				min = 0,
-				max = 2,
-				step = 0.05,
-				get = function()
-					return self.moduleSettings.desiredLerpTime
-				end,
-				set = function(info, value)
-					self.moduleSettings.desiredLerpTime = value
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled or not self.moduleSettings.shouldAnimate
-				end,
-				order = 112
-			}
+			-- in environments where status bars can be smoothly interpolated by the game client, we have no control over the speed
+			if not Enum or not Enum.StatusBarInterpolation then
+				opts["desiredLerpTime"] =
+				{
+					type = 'range',
+					name = L["Animation Duration"],
+					desc = L["How long the animation should take to play"],
+					min = 0,
+					max = 2,
+					step = 0.05,
+					get = function()
+						return self.moduleSettings.desiredLerpTime
+					end,
+					set = function(info, value)
+						self.moduleSettings.desiredLerpTime = value
+					end,
+					disabled = function()
+						return not self.moduleSettings.enabled or not self.moduleSettings.shouldAnimate
+					end,
+					order = 112
+				}
+			end
 		end
 
 		opts["widthModifier"] =
@@ -1169,8 +1172,13 @@ end
 
 -- Rokiyo: bar is the only required argument, scale & top are optional
 function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideReverse)
+	local interp
+	if Enum and Enum.StatusBarInterpolation then
+		interp = self.moduleSettings.shouldAnimate and Enum.StatusBarInterpolation.ExponentialEaseOut or Enum.StatusBarInterpolation.Immediate
+	end
+
 	if not IceHUD.CanAccessValue(scale) then
-		barFrame:SetValue(scale)
+		barFrame:SetValue(scale, interp)
 		return
 	end
 
@@ -1180,7 +1188,7 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 	if scale == 0 then
 		barFrame:Hide()
 	else
-		barFrame:SetValue(scale)
+		barFrame:SetValue(scale, interp)
 		local min_y, max_y
 		local offset_y = 0
 
