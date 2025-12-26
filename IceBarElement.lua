@@ -35,7 +35,9 @@ end
 function IceBarElement.prototype:Enable()
 	IceBarElement.super.prototype.Enable(self)
 
-	self:ConditionalSetupUpdate()
+	if IceHUD.CanAccessValue(self.CurrScale) then
+		self:ConditionalSetupUpdate()
+	end
 
 	if IceHUD.IceCore:ShouldUseDogTags() then
 		DogTag = LibStub("LibDogTag-3.0", true)
@@ -115,7 +117,7 @@ function IceBarElement.prototype:OnHide()
 end
 
 function IceBarElement.prototype:OnShow()
-	if not self:IsFull(self.CurrScale) then
+	if IceHUD.CanAccessValue(self.CurrScale) and not self:IsFull(self.CurrScale) then
 		self:ConditionalSetupUpdate()
 	end
 end
@@ -1262,11 +1264,13 @@ function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
 		self:SetBarCoord(self.barFrame, scale)
 	end
 
-	if not self:IsFull(self.CurrScale) or not self:IsFull(inScale) then
-		self:ConditionalSetupUpdate()
-	else
-		if self.CurrScale == self.DesiredScale then
-			IceHUD.IceCore:RequestUpdates(self, nil)
+	if IceHUD.CanAccessValue(self.CurrScale) and IceHUD.CanAccessValue(inScale) then
+		if not self:IsFull(self.CurrScale) or not self:IsFull(inScale) then
+			self:ConditionalSetupUpdate()
+		else
+			if self.CurrScale == self.DesiredScale then
+				IceHUD.IceCore:RequestUpdates(self, nil)
+			end
 		end
 	end
 end
