@@ -94,9 +94,10 @@ function TargetCast.prototype:TargetChanged(unit)
 		local notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 9 or 8, UnitCastingInfo(self.unit))
 		if spell and (not issecretvalue or not issecretvalue(notInterruptible)) then
 			self.notInterruptible = notInterruptibleCast
-			self:StartBar(IceCastBar.Actions.Cast)
-			return
 		end
+
+		self:StartBar(IceCastBar.Actions.Cast)
+		return
 	end
 
 	if UnitChannelInfo then
@@ -104,9 +105,10 @@ function TargetCast.prototype:TargetChanged(unit)
 		notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 8 or 7, UnitChannelInfo(self.unit))
 		if channel and (not issecretvalue or not issecretvalue(notInterruptible)) then
 			self.notInterruptible = notInterruptibleChannel
-			self:StartBar(IceCastBar.Actions.Channel)
-			return
 		end
+
+		self:StartBar(IceCastBar.Actions.Channel)
+		return
 	end
 
 	self:StopBar()
