@@ -374,8 +374,6 @@ function IceCastBar.prototype:MyOnUpdate()
 	-- handle casting and channeling
 	if (self.action == IceCastBar.Actions.Cast or self.action == IceCastBar.Actions.Channel or self.action == IceCastBar.Actions.ReverseChannel) then
 		if not IceHUD.CanAccessValue(self.actionDuration) then
-			self:UpdateBar(1, self:GetCurrentCastingColor())
-			self:SetBottomText1(self.actionMessage)
 			return
 		end
 
@@ -579,6 +577,10 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 	self.actionStartTime = GetTime()
 	self.actionMessage = message
 
+	if not message and spell then
+		self.actionMessage = spell .. (self.moduleSettings.showSpellRank and self:GetShortRank(rank) or "")
+	end
+
 	local setupUpdates = true
 	if (startTime and endTime) then
 		if IceHUD.CanAccessValue(endTime) then
@@ -595,14 +597,16 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 			end
 
 			self.barFrame:SetTimerDuration(duration)
+			self:UpdateBar(0, self:GetCurrentCastingColor())
+			self:SetBottomText1(self.actionMessage)
 			setupUpdates = false
 		end
 	else
-		self.actionDuration = 1 -- instants/failures
-	end
+		if not IceHUD.CanAccessValue(self.actionDuration) then
+			self.barFrame:SetToTargetValue()
+		end
 
-	if not (message) and spell then
-		self.actionMessage = spell .. (self.moduleSettings.showSpellRank and self:GetShortRank(rank) or "")
+		self.actionDuration = 1 -- instants/failures
 	end
 
 	self:Show(true)
