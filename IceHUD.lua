@@ -187,6 +187,10 @@ if not IceHUD.GetSpellCharges and C_Spell then
 	end
 end
 
+IceHUD.IsSecretEnv = function()
+	return issecretvalue
+end
+
 --@debug@
 IceHUD.optionsLoaded = true
 --@end-debug@
