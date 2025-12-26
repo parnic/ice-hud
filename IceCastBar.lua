@@ -548,6 +548,8 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 		end
 	end
 
+	local origAction = action
+
 	if self.moduleSettings.reverseChannel then
 		if action == IceCastBar.Actions.Channel then
 			action = IceCastBar.Actions.ReverseChannel
@@ -577,6 +579,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 	self.actionStartTime = GetTime()
 	self.actionMessage = message
 
+	local setupUpdates = true
 	if (startTime and endTime) then
 		if IceHUD.CanAccessValue(endTime) then
 			self.actionDuration = (endTime - startTime) / 1000
@@ -585,6 +588,14 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 			self.actionStartTime = startTime / 1000
 		else
 			self.actionDuration = endTime
+
+			local duration = origAction == IceCastBar.Actions.Channel and UnitChannelDuration(self.unit) or UnitCastingDuration(self.unit)
+			if not duration then
+				return
+			end
+
+			self.barFrame:SetTimerDuration(duration)
+			setupUpdates = false
 		end
 	else
 		self.actionDuration = 1 -- instants/failures
@@ -595,7 +606,9 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 	end
 
 	self:Show(true)
-	self:ConditionalSetupUpdate()
+	if setupUpdates then
+		self:ConditionalSetupUpdate()
+	end
 end
 
 
@@ -716,6 +729,11 @@ function IceCastBar.prototype:SpellCastDelayed(event, unit, castGuid, spellId)
 	if IceHUD.CanAccessValue(endTime) and endTime and self.actionStartTime then
 		-- apparently this check is needed, got nils during a horrible lag spike
 		self.actionDuration = endTime/1000 - self.actionStartTime
+	else
+		local duration = UnitCastingDuration(self.unit)
+		if duration then
+			self.barFrame:SetTimerDuration(duration)
+		end
 	end
 end
 
@@ -787,6 +805,11 @@ function IceCastBar.prototype:SpellCastChannelUpdate(event, unit)
     else
 		if IceHUD.CanAccessValue(endTime) then
         	self.actionDuration = endTime/1000 - self.actionStartTime
+		else
+			local duration = UnitChannelDuration(self.unit)
+			if duration then
+				self.barFrame:SetTimerDuration(duration)
+			end
 		end
     end
 end
