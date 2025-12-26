@@ -174,6 +174,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["markers"] = {}
 	settings["bAllowExpand"] = true
 	settings["textVerticalGap"] = 0
+	settings["barTextureOverride"] = IceHUD.validBarList[1]
 
 	return settings
 end
@@ -1128,11 +1129,7 @@ function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer,
 end
 
 function IceBarElement.prototype:GetMyBarTexture()
-	if self.moduleSettings.shouldUseOverride then
-		if not self.moduleSettings.barTextureOverride then
-			return IceHUD.validBarList[1]
-		end
-
+	if self.moduleSettings.shouldUseOverride and self.moduleSettings.barTextureOverride then
 		return self.moduleSettings.barTextureOverride
 	else
 		return self.settings.barTexture
