@@ -230,6 +230,7 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, castGuid, sp
 		if dur then
 			self.barFrame:SetTimerDuration(dur, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.RemainingTime)
 			self:Show(true)
+			IceHUD.IceCore:RequestUpdates(self, nil)
 		end
 
 		return
