@@ -229,13 +229,13 @@ function DragonridingVigor.prototype:PopulateVigorWidgetIDs()
 end
 
 function DragonridingVigor.prototype:UpdateVigorRechargeCharges(event, widget)
-	if not self.chargeSpellID or (canaccesssecrets and not canaccesssecrets()) then
+	if not self.chargeSpellID then
 		self:Show(false)
 		return
 	end
 
 	local charges, maxCharges, start, duration = IceHUD.GetSpellCharges(self.chargeSpellID)
-	if not maxCharges or maxCharges == 0 then
+	if not IceHUD.CanAccessValue(maxCharges) or not maxCharges or maxCharges == 0 then
 		self:Show(false)
 		return
 	end

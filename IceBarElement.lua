@@ -1329,7 +1329,7 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 		end
 	end
 
-	if canaccesssecrets and not canaccesssecrets() then
+	if not IceHUD.CanAccessValue(scale) then
 		self.DesiredScale = scale
 	elseif self.DesiredScale ~= scale then
 		self.DesiredScale = scale

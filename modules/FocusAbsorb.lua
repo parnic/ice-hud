@@ -26,6 +26,6 @@ function FocusAbsorb.prototype:MyUnregisterCustomEvents()
 end
 
 -- Load us up
-if UnitGetTotalAbsorbs ~= nil and not canaccesssecrets then
+if UnitGetTotalAbsorbs ~= nil and not IceHUD.IsSecretEnv() then
 	IceHUD.FocusAbsorb = FocusAbsorb:new()
 end
