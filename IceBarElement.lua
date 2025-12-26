@@ -1067,7 +1067,11 @@ function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer,
 end
 
 function IceBarElement.prototype:GetMyBarTexture()
-	if self.moduleSettings.shouldUseOverride and self.moduleSettings.barTextureOverride then
+	if self.moduleSettings.shouldUseOverride then
+		if not self.moduleSettings.barTextureOverride then
+			return IceHUD.validBarList[1]
+		end
+
 		return self.moduleSettings.barTextureOverride
 	else
 		return self.settings.barTexture
