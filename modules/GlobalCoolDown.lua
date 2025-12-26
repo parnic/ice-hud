@@ -110,21 +110,23 @@ function GlobalCoolDown.prototype:GetOptions()
 	opts["lowThreshold"] = nil
 	opts["textSettings"] = nil
 
-	opts["showDuringCast"] = {
-		type = 'toggle',
-		name = L["Show during cast"],
-		desc = L["Whether to show this bar when a spellcast longer than the global cooldown is being cast."],
-		get = function()
-			return self.moduleSettings.showDuringCast
-		end,
-		set = function(info, v)
-			self.moduleSettings.showDuringCast = v
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 21,
-	}
+	if not IceHUD.IsSecretEnv() then
+		opts["showDuringCast"] = {
+			type = 'toggle',
+			name = L["Show during cast"],
+			desc = L["Whether to show this bar when a spellcast longer than the global cooldown is being cast."],
+			get = function()
+				return self.moduleSettings.showDuringCast
+			end,
+			set = function(info, v)
+				self.moduleSettings.showDuringCast = v
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 21,
+		}
+	end
 
 	opts["lagAlpha"] =
 	{
@@ -220,6 +222,17 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, castGuid, sp
 	-- Update the current spell ID for all events indicating a spellcast is starting
 	if event ~= "UNIT_SPELLCAST_SUCCEEDED" then
 		self.CurrSpellGuid = castGuid
+	end
+
+	if C_Spell and C_Spell.GetSpellCooldownDuration then
+		local dur = C_Spell.GetSpellCooldownDuration(self.CDSpellId)
+
+		if dur then
+			self.barFrame:SetTimerDuration(dur, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.RemainingTime)
+			self:Show(true)
+		end
+
+		return
 	end
 
 	local start, dur = GetSpellCooldown(self.CDSpellId)
