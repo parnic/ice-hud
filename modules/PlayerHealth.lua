@@ -312,9 +312,9 @@ function PlayerHealth.prototype:GetOptions()
 		end,
 		set = function(info, v)
 			if not v then
-				self.healFrame.bar:Hide()
+				self.healFrame:Hide()
 			else
-				self.healFrame.bar:Show()
+				self.healFrame:Show()
 			end
 
 			self.moduleSettings.showIncomingHeals = v
@@ -359,9 +359,9 @@ function PlayerHealth.prototype:GetOptions()
 		end,
 		set = function(info, v)
 			if not v then
-				self.absorbFrame.bar:Hide()
+				self.absorbFrame:Hide()
 			else
-				self.absorbFrame.bar:Show()
+				self.absorbFrame:Show()
 			end
 
 			self.moduleSettings.showAbsorbs = v
@@ -933,24 +933,24 @@ end
 function PlayerHealth.prototype:CreateHealBar()
 	self.healFrame = self:BarFactory(self.healFrame, "LOW","BACKGROUND", "Heal")
 
-	self.healFrame.bar:SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
+	self.healFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
 
 	self:UpdateBar(1, "undef")
 
 	if not self.moduleSettings.showIncomingHeals or (not IceHUD.SupportsHealPrediction and not HealComm) then
-		self.healFrame.bar:Hide()
+		self.healFrame:Hide()
 	end
 end
 
 function PlayerHealth.prototype:CreateAbsorbBar()
 	self.absorbFrame = self:BarFactory(self.absorbFrame, "LOW","BACKGROUND", "Absorb")
 
-	self.absorbFrame.bar:SetVertexColor(self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
+	self.absorbFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
 
 	self:UpdateBar(1, "undef")
 
 	if not self.moduleSettings.showAbsorbs or not UnitGetTotalAbsorbs then
-		self.absorbFrame.bar:Hide()
+		self.absorbFrame:Hide()
 	end
 end
 
@@ -1292,7 +1292,7 @@ function PlayerHealth.prototype:Update(unit)
 	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
 	if self.moduleSettings.showIncomingHeals
 		and self.healFrame
-		and self.healFrame.bar
+		-- and self.healFrame.bar
 		and incomingHealAmt
 		and IceHUD.CanAccessValue(incomingHealAmt) then
 		local percent
@@ -1314,7 +1314,7 @@ function PlayerHealth.prototype:Update(unit)
 
 	if self.moduleSettings.showAbsorbs
 		and self.absorbFrame
-		and self.absorbFrame.bar
+		-- and self.absorbFrame.bar
 		and self.absorbAmount
 		and IceHUD.CanAccessValue(self.absorbAmount) then
 		local percent
@@ -1537,11 +1537,11 @@ end
 function PlayerHealth.prototype:UpdateBar(scale, color, alpha)
 	PlayerHealth.super.prototype.UpdateBar(self, scale, color, alpha)
 
-	if self.healFrame and self.healFrame.bar then
-		self.healFrame.bar:SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
+	if self.healFrame --[[and self.healFrame.bar]] then
+		self.healFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
 	end
-	if self.absorbFrame and self.absorbFrame.bar then
-		self.absorbFrame.bar:SetVertexColor(self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
+	if self.absorbFrame --[[and self.absorbFrame.bar]] then
+		self.absorbFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
 	end
 --[[ seems to be causing taint. oh well
 	if self.frame.button then

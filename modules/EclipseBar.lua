@@ -115,8 +115,8 @@ function EclipseBar.prototype:CreateSolarBar()
 	self.solarBar = self:BarFactory(self.solarBar, "BACKGROUND", "ARTWORK", "Solar")
 	self:SetBarCoord(self.solarBar, 0.5, true)
 
-	self.solarBar.bar:SetVertexColor(self:GetColor("EclipseSolar", 1))
-	self.solarBar.bar:Show()
+	self.solarBar:GetStatusBarTexture():SetVertexColor(self:GetColor("EclipseSolar", 1))
+	self.solarBar:Show()
 end
 
 function EclipseBar.prototype:UpdateShown()
@@ -145,13 +145,13 @@ function EclipseBar.prototype:UpdateEclipseBuffs()
 
 	if hasSolar then
 		self.barUpdateColor = "EclipseSolarActive"
-		self.solarBar.bar:SetVertexColor(self:GetColor("EclipseSolarActive", 1))
+		self.solarBar:GetStatusBarTexture():SetVertexColor(self:GetColor("EclipseSolarActive", 1))
 	elseif hasLunar then
 		self.barUpdateColor = "EclipseLunarActive"
-		self.solarBar.bar:SetVertexColor(self:GetColor("EclipseLunarActive", 1))
+		self.solarBar:GetStatusBarTexture():SetVertexColor(self:GetColor("EclipseLunarActive", 1))
 	else
 		self.barUpdateColor = "EclipseLunar"
-		self.solarBar.bar:SetVertexColor(self:GetColor("EclipseSolar", 1))
+		self.solarBar:GetStatusBarTexture():SetVertexColor(self:GetColor("EclipseSolar", 1))
 	end
 end
 

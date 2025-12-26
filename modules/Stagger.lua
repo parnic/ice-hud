@@ -178,8 +178,8 @@ function StaggerBar.prototype:CreateTimerBar()
 
 	self.CurrScale = 0
 
-	self.timerFrame.bar:SetVertexColor(self:GetColor("StaggerTime", self.moduleSettings.timerAlpha))
-	self.timerFrame.bar:SetHeight(0)
+	self.timerFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("StaggerTime", self.moduleSettings.timerAlpha))
+	self.timerFrame:SetValue(0)
 
 	self:UpdateBar(1, "undef")
 	self:UpdateTimerFrame()
@@ -261,7 +261,7 @@ function StaggerBar.prototype:UpdateStaggerBar()
 	local scale = IceHUD:Clamp((self.amount / maxHealth) * (100 / self.moduleSettings.maxPercent), 0, 1)
 
 	if self.amount > 0 and (not self.duration or self.duration <= 10) then
-		-- self.timerFrame.bar:SetVertexColor(self:GetColor("StaggerTime", self.moduleSettings.timerAlpha))
+		-- self.timerFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("StaggerTime", self.moduleSettings.timerAlpha))
 		self:UpdateBar(scale or 0, "Stagger"..self.staggerLevel)
 		self:UpdateShown()
 		self:UpdateTimerFrame()

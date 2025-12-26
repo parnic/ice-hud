@@ -13,7 +13,7 @@ IceBarElement.prototype.CurrLerpTime = 0
 IceBarElement.prototype.LastScale = 1
 IceBarElement.prototype.DesiredScale = 1
 IceBarElement.prototype.CurrScale = 1
-IceBarElement.prototype.Markers = {}
+IceBarElement.prototype.Markers = {} -- todo:midnight: these need to continue to be the old bar system and _not_ StatusBars. right now they're StatusBars because they use BarFactory()
 IceBarElement.prototype.IsBarElement = true -- cheating to avoid crawling up the 'super' references looking for this class. see IceCore.lua
 IceBarElement.prototype.bTreatEmptyAsFull = false
 
@@ -1044,13 +1044,12 @@ function IceBarElement.prototype:CreateBar()
 	
 	self:SetBarCoord(self.barFrame)
 
-	self.barFrame.bar:SetBlendMode(self.settings.barBlendMode)
+	self.barFrame:GetStatusBarTexture():SetBlendMode(self.settings.barBlendMode)
 	self:SetScale(self.CurrScale, true)
 	self:UpdateBar(1, "undef")
 end
 
--- Returns a barFrame & barFrame.bar
--- Rokiyo: Currently keeping old behaviour of running through bar creation on every Redraw, but I'm not convinced we need to.
+-- Returns a barFrame
 function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer, nameSuffix)
 	if not (barFrame) then
 		barFrame = CreateFrame("StatusBar", "IceHUD_"..self.elementName.."_"..(nameSuffix or "Bar"), self.frame)
@@ -1063,13 +1062,6 @@ function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer,
 	barFrame:SetHeight(self.settings.barHeight)
 	barFrame:SetStatusBarTexture(IceElement.TexturePath .. self:GetMyBarTexture() .. (self.moduleSettings.side == IceCore.Side.Left and "-flipped" or ""))
 	self:SetBarFramePoints(barFrame)
-
-	if not barFrame.bar then
-		barFrame.bar = barFrame:CreateTexture(nil, (textureLayer and textureLayer or "ARTWORK"))
-	end
-
-	-- barFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	-- barFrame.bar:SetAllPoints(barFrame)
 
 	return barFrame
 end
@@ -1182,7 +1174,7 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 	scale = IceHUD:Clamp(scale, 0, 1)
 
 	if scale == 0 then
-		barFrame.bar:Hide()
+		barFrame:Hide()
 	else
 		barFrame:SetValue(scale)
 		local min_y, max_y
@@ -1229,7 +1221,7 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 
 		-- self:SetBarFramePoints(barFrame, 0, 0)
 		-- barFrame:SetHeight(self.settings.barHeight * scale)
-		-- barFrame.bar:Show()
+		barFrame:Show()
 	end
 end
 
@@ -1320,8 +1312,7 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	end
 
 	self.frame.bg:SetVertexColor(r, g, b, self.backgroundAlpha)
-	self.barFrame.bar:SetVertexColor(self:GetColor(color))
-	self.barFrame:SetStatusBarColor(self:GetColor(color))
+	self.barFrame:GetStatusBarTexture():SetVertexColor(self:GetColor(color))
 	if self.moduleSettings.markers then
 		for i=1, #self.Markers do
 			local color = self.moduleSettings.markers[i].color
@@ -1329,7 +1320,7 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 		end
 	end
 
-	if not IceHUD.CanAccessValue(scale) then
+	if not IceHUD.CanAccessValue(scale) or not IceHUD.CanAccessValue(self.DesiredScale) then
 		self.DesiredScale = scale
 	elseif self.DesiredScale ~= scale then
 		self.DesiredScale = scale

@@ -242,7 +242,7 @@ function IceThreat.prototype:CreateAggroBar()
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor("CastCasting")
 	end
-	self.aggroBar.bar:SetVertexColor(r, g, b, self.moduleSettings.aggroAlpha)
+	self.aggroBar:GetStatusBarTexture():SetVertexColor(r, g, b, self.moduleSettings.aggroAlpha)
 
 	self:SetBarCoord(self.aggroBar, 0 , true)
 end
@@ -250,7 +250,7 @@ end
 function IceThreat.prototype:CreateSecondThreatBar()
 	self.secondThreatBar = self:BarFactory(self.secondThreatBar, "MEDIUM", "OVERLAY", "SecondThreat")
 
-	self.secondThreatBar.bar:SetVertexColor(self:GetColor("ThreatSecondPlace", self.alpha * self.moduleSettings.secondPlaceThreatAlpha))
+	self.secondThreatBar:GetStatusBarTexture():SetVertexColor(self:GetColor("ThreatSecondPlace", self.alpha * self.moduleSettings.secondPlaceThreatAlpha))
 
 	self:SetBarCoord(self.secondThreatBar)
 end
@@ -413,7 +413,7 @@ function IceThreat.prototype:UpdateSecondHighestThreatBar(secondHighestThreat, t
 		if not self.lastSecondHighestThreat or self.lastSecondHighestThreat ~= secondPercent then
 			self.lastSecondHighestThreat = secondPercent
 
-			self.secondThreatBar.bar:SetVertexColor(self:GetColor("ThreatSecondPlace", self.alpha * self.moduleSettings.secondPlaceThreatAlpha))
+			self.secondThreatBar:GetStatusBarTexture():SetVertexColor(self:GetColor("ThreatSecondPlace", self.alpha * self.moduleSettings.secondPlaceThreatAlpha))
 
 			local pos = IceHUD:Clamp(secondPercent, 0, 1)
 			if self.moduleSettings.reverse then

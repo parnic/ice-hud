@@ -158,7 +158,7 @@ function ComboPointsBar.prototype:UpdateComboPoints(...)
 			self:SetScaledColor(color, (points - 1) / 4.0, self.settings.colors["ComboPointsBarMax"], self.settings.colors["ComboPointsBarMin"])
 		end
 		self:UpdateBar(points / UnitPowerMax("player", SPELL_POWER_COMBO_POINTS), "undef")
-		self.barFrame.bar:SetVertexColor(color.r, color.g, color.b, self.alpha)
+		self.barFrame:GetStatusBarTexture():SetVertexColor(color.r, color.g, color.b, self.alpha)
 	end
 
 	local pointsText = tostring(points or 0)

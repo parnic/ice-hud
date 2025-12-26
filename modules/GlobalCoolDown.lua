@@ -276,7 +276,7 @@ end
 function GlobalCoolDown.prototype:CreateFrame()
 	GlobalCoolDown.super.prototype.CreateFrame(self)
 
-	self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
+	self.barFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
 	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
 	self.frame.bg:SetVertexColor(r, g, b, 0.6)
 
@@ -291,8 +291,8 @@ function GlobalCoolDown.prototype:CreateLagBar()
 		r, g, b = self:GetColor("CastCasting")
 	end
 
-	self.lagBar.bar:SetVertexColor(r, g, b, self.moduleSettings.lagAlpha)
-	self.lagBar.bar:Hide()
+	self.lagBar:GetStatusBarTexture():SetVertexColor(r, g, b, self.moduleSettings.lagAlpha)
+	self.lagBar:Hide()
 end
 
 function GlobalCoolDown.prototype:GetSpellId()

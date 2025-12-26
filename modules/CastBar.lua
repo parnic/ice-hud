@@ -449,8 +449,8 @@ function CastBar.prototype:CreateLagBar()
 		r, g, b = self:GetColor("CastCasting")
 	end
 
-	self.lagBar.bar:SetVertexColor(r, g, b, self.moduleSettings.lagAlpha)
-	self.lagBar.bar:Hide()
+	self.lagBar:GetStatusBarTexture():SetVertexColor(r, g, b, self.moduleSettings.lagAlpha)
+	self.lagBar:Hide()
 end
 
 

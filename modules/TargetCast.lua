@@ -62,9 +62,9 @@ end
 function TargetCast.prototype:UpdateInterruptibleColor()
 	if self.moduleSettings.displayNonInterruptible then
 		if IceHUD.CanAccessValue(self.notInterruptible) and self.notInterruptible then
-			self.barFrame.bar:SetVertexColor(self:GetColor("CastNotInterruptible"))
+			self.barFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("CastNotInterruptible"))
 		else
-			self.barFrame.bar:SetVertexColor(self:GetColor(self:GetCurrentCastingColor()))
+			self.barFrame:GetStatusBarTexture():SetVertexColor(self:GetColor(self:GetCurrentCastingColor()))
 		end
 	end
 end

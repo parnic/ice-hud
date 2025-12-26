@@ -94,7 +94,7 @@ function PlayerAlternatePower.prototype:Update(unit)
 	self:UpdateBar(self.powerPercent)
 
 	local info = PowerBarColor[self.powerName];
-	self.barFrame.bar:SetVertexColor(info.r, info.g, info.b, self.alpha)
+	self.barFrame:GetStatusBarTexture():SetVertexColor(info.r, info.g, info.b, self.alpha)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		self:SetBottomText1(math.floor(self.powerPercent * 100))
