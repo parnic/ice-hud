@@ -52,7 +52,7 @@ function CastBar.prototype:GetDefaultSettings()
 	settings["hideAnimationSettings"] = true
 	settings["usesDogTagStrings"] = false
 	settings["rangeColor"] = true
-	settings["bAllowExpand"] = false
+	settings["bAllowExpand"] = true
 	settings["respectLagTolerance"] = true
 	settings["lockUpperTextAlpha"] = true
 	settings["lockLowerTextAlpha"] = true
