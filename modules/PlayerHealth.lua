@@ -1294,7 +1294,7 @@ function PlayerHealth.prototype:Update(unit)
 		and self.healFrame
 		and self.healFrame.bar
 		and incomingHealAmt
-		and (not issecretvalue or not issecretvalue(incomingHealAmt)) then
+		and IceHUD.CanAccessValue(incomingHealAmt) then
 		local percent
 
 		if incomingHealAmt > 0 then
@@ -1316,7 +1316,7 @@ function PlayerHealth.prototype:Update(unit)
 		and self.absorbFrame
 		and self.absorbFrame.bar
 		and self.absorbAmount
-		and (not issecretvalue or not issecretvalue(self.absorbAmount)) then
+		and IceHUD.CanAccessValue(self.absorbAmount) then
 		local percent
 
 		if self.absorbAmount > 0 then

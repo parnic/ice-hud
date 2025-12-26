@@ -47,7 +47,7 @@ end
 
 function TargetCast.prototype:UpdateInterruptibleColor()
 	if self.moduleSettings.displayNonInterruptible then
-		if (not issecretvalue or not issecretvalue(self.notInterruptible)) and self.notInterruptible then
+		if IceHUD.CanAccessValue(self.notInterruptible) and self.notInterruptible then
 			self.barFrame.bar:SetVertexColor(self:GetColor("CastNotInterruptible"))
 		else
 			self.barFrame.bar:SetVertexColor(self:GetColor(self:GetCurrentCastingColor()))
@@ -91,24 +91,28 @@ function TargetCast.prototype:TargetChanged(unit)
 
 	if UnitCastingInfo then
 		local spell = UnitCastingInfo(self.unit)
-		local notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 9 or 8, UnitCastingInfo(self.unit))
-		if spell and (not issecretvalue or not issecretvalue(notInterruptible)) then
-			self.notInterruptible = notInterruptibleCast
-		end
+		if spell then
+			local notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 9 or 8, UnitCastingInfo(self.unit))
+			if IceHUD.CanAccessValue(notInterruptible) then
+				self.notInterruptible = notInterruptible
+			end
 
-		self:StartBar(IceCastBar.Actions.Cast)
-		return
+			self:StartBar(IceCastBar.Actions.Cast)
+			return
+		end
 	end
 
 	if UnitChannelInfo then
 		local channel = UnitChannelInfo(self.unit)
-		notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 8 or 7, UnitChannelInfo(self.unit))
-		if channel and (not issecretvalue or not issecretvalue(notInterruptible)) then
-			self.notInterruptible = notInterruptibleChannel
-		end
+		if channel then
+			local notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 8 or 7, UnitChannelInfo(self.unit))
+			if channel and IceHUD.CanAccessValue(notInterruptible) then
+				self.notInterruptible = notInterruptible
+			end
 
-		self:StartBar(IceCastBar.Actions.Channel)
-		return
+			self:StartBar(IceCastBar.Actions.Channel)
+			return
+		end
 	end
 
 	self:StopBar()

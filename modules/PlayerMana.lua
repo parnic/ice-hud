@@ -370,7 +370,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 
 	self:ConditionalUpdateFlash()
 
-	if issecretvalue and not issecretvalue(self.manaPercentage) then
+	if IceHUD.CanAccessValue(self.manaPercentage) then
 		if (self.manaPercentage == 1 and not self:TreatEmptyAsFull())
 			or (self.manaPercentage == 0 and self:TreatEmptyAsFull()) then
 			self:SetupOnUpdate(false)

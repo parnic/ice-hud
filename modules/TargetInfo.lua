@@ -1331,7 +1331,7 @@ do
 			end
 
 			if type == "buff" then
-				if (not issecretvalue or not issecretvalue(frame.isStealable)) and frame.isStealable and self.playerClass == "MAGE" then
+				if IceHUD.CanAccessValue(frame.isStealable) and frame.isStealable and self.playerClass == "MAGE" then
 					frame.texture:SetVertexColor(1, 1, 1)
 					frame.texture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
 					icon:SetWidth(size-8)
@@ -1418,7 +1418,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 				---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
 				-- 1. in addition to other info, get the spellID for for the (de)buff
 				name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, _, spellID = IceHUD.UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
-				if (not issecretvalue or not issecretvalue(duration)) and duration == 0 and LibClassicDurations then
+				if IceHUD.CanAccessValue(duration) and duration == 0 and LibClassicDurations then
 					-- 2. if no duration defined for the (de)buff, look up the spell in LibClassicDurations
 					local classicDuration, classicExpirationTime = LibClassicDurations:GetAuraDurationByUnit(self.unit, spellID, caster)
 					-- 3. set the duration if we found one.
@@ -1429,7 +1429,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 				end
 				---- end change by Fulzamoth
 			end
-			local isFromMe = (not issecretvalue or not issecretvalue(unitCaster)) and (unitCaster == "player")
+			local isFromMe = IceHUD.CanAccessValue(unitCaster) and (unitCaster == "player")
 
 			if not icon and IceHUD.IceCore:IsInConfigMode() and UnitExists(self.unit) then
 				icon = [[Interface\Icons\Spell_Frost_Frost]]
@@ -1452,7 +1452,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 	end
 
 	if self.moduleSettings.auras[aura].sortByExpiration then
-		if buffData[aura] and buffData[aura][0] and (not issecretvalue or not issecretvalue(buffData[aura][0][5])) then
+		if buffData[aura] and buffData[aura][0] and IceHUD.CanAccessValue(buffData[aura][0][5]) then
 			table.sort(buffData[aura], BuffExpirationSort)
 		end
 		for k,v in pairs(buffData[aura]) do
@@ -1491,7 +1491,7 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 	end
 
 	-- cooldown frame
-	if not issecretvalue or not issecretvalue(duration) then
+	if IceHUD.CanAccessValue(duration) then
 		if (duration and duration > 0 and expirationTime and expirationTime > 0) then
 			local start = expirationTime - duration
 
@@ -1502,7 +1502,7 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 		end
 	end
 
-	if issecretvalue and issecretvalue(auraType) then
+	if not IceHUD.CanAccessValue(auraType) then
 		frame.type = auraType or aura
 	else
 		frame.type = ((auraType == "mh" or auraType == "oh") and auraType) or aura
@@ -1512,7 +1512,7 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 
 	frameIcon.texture:SetTexture(icon)
 	frameIcon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
-	if issecretvalue and issecretvalue(count) then
+	if not IceHUD.CanAccessValue(count) then
 		frameIcon.stack:SetText(count or nil)
 	else
 		frameIcon.stack:SetText((count and (count > 1)) and count or nil)
@@ -1783,7 +1783,7 @@ function IceTargetInfo.prototype:BuffOnEnter(this)
 	end
 
 	GameTooltip:SetOwner(this, "ANCHOR_BOTTOMRIGHT")
-	if (issecretvalue and issecretvalue(this.type)) or this.type == "buff" then
+	if not IceHUD.CanAccessValue(this.type) or this.type == "buff" then
 		GameTooltip:SetUnitBuff(self.unit, this.id)
 	elseif this.type == "mh" or this.type == "oh" then
 		GameTooltip:SetInventoryItem("player", this.type == "mh" and GetInventorySlotInfo("MainHandSlot") or GetInventorySlotInfo("SecondaryHandSlot"))

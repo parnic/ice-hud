@@ -270,7 +270,7 @@ function IceUnitBar.prototype:Update()
 	self.mana = UnitPower(self.unit, UnitPowerType(self.unit))
 	self.maxMana = UnitPowerMax(self.unit, UnitPowerType(self.unit))
 	local powerType = UnitPowerType(self.unit)
-	if not issecretvalue or not issecretvalue(self.mana) then
+	if IceHUD.CanAccessValue(self.mana) then
 		if (powerType == SPELL_POWER_RAGE and self.maxMana >= 1000)
 			or (powerType == SPELL_POWER_RUNIC_POWER and self.maxMana >= 1000) then
 			self.mana = IceHUD:MathRound(self.mana / 10)

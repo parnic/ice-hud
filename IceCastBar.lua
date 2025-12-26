@@ -348,7 +348,7 @@ function IceCastBar.prototype:PositionIcons()
 end
 
 function IceCastBar.prototype:GetRemainingCastTime()
-	if not issecretvalue or not issecretvalue(self.actionStartTime) then
+	if IceHUD.CanAccessValue(self.actionStartTime) then
 		return self.actionStartTime + self.actionDuration - GetTime()
 	end
 
@@ -373,7 +373,7 @@ function IceCastBar.prototype:MyOnUpdate()
 
 	-- handle casting and channeling
 	if (self.action == IceCastBar.Actions.Cast or self.action == IceCastBar.Actions.Channel or self.action == IceCastBar.Actions.ReverseChannel) then
-		if issecretvalue and issecretvalue(self.actionDuration) then
+		if not IceHUD.CanAccessValue(self.actionDuration) then
 			self:UpdateBar(1, self:GetCurrentCastingColor())
 			self:SetBottomText1(self.actionMessage)
 			return
@@ -535,7 +535,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 		spell, rank, icon = GetSpellInfo(spellId)
 	end
 
-	if issecretvalue and issecretvalue(numStages) then
+	if not IceHUD.CanAccessValue(numStages) then
 		self.NumStages = nil
 	else
 		local isChargeSpell = numStages and numStages > 0
@@ -578,7 +578,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 	self.actionMessage = message
 
 	if (startTime and endTime) then
-		if not issecretvalue or not issecretvalue(endTime) then
+		if IceHUD.CanAccessValue(endTime) then
 			self.actionDuration = (endTime - startTime) / 1000
 
 			-- set start time here in case we start to monitor a cast that is underway already
@@ -649,7 +649,7 @@ function IceCastBar.prototype:SpellCastStop(event, unit, castGuid, spellId)
 	IceHUD:Debug("SpellCastStop", unit, castGuid, spellId)
 
 	-- ignore if not coming from current spell
-	if (not issecretvalue or not issecretvalue(self.current)) and self.current and castGuid and self.current ~= castGuid then
+	if IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and castGuid and self.current ~= castGuid then
 		return
 	end
 
@@ -670,7 +670,7 @@ function IceCastBar.prototype:SpellCastFailed(event, unit, castGuid, spellId)
 	IceHUD:Debug("SpellCastFailed", unit, castGuid, spellId)
 
 	-- ignore if not coming from current spell
-	if (self.current and castGuid and self.current ~= castGuid) and (not issecretvalue or not issecretvalue(self.current)) then
+	if IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and castGuid and self.current ~= castGuid then
 		return
 	end
 
@@ -698,7 +698,7 @@ function IceCastBar.prototype:SpellCastInterrupted(event, unit, castGuid, spellI
 	IceHUD:Debug("SpellCastInterrupted", unit, castGuid, spellId)
 
 	-- ignore if not coming from current spell
-	if (not issecretvalue or not issecretvalue(self.current)) and self.current and castGuid and self.current ~= castGuid then
+	if IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and castGuid and self.current ~= castGuid then
 		return
 	end
 
@@ -713,7 +713,7 @@ function IceCastBar.prototype:SpellCastDelayed(event, unit, castGuid, spellId)
 
 	local endTime = select(IceHUD.SpellFunctionsReturnRank and 6 or 5, UnitCastingInfo(self.unit))
 
-	if (endTime and self.actionStartTime) and (not issecretvalue or not issecretvalue(endTime)) then
+	if IceHUD.CanAccessValue(endTime) and endTime and self.actionStartTime then
 		-- apparently this check is needed, got nils during a horrible lag spike
 		self.actionDuration = endTime/1000 - self.actionStartTime
 	end
@@ -730,7 +730,7 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 	end
 
 	-- ignore if not coming from current spell
-	if (not issecretvalue or not issecretvalue(self.current)) and self.current and self.current ~= castGuid then
+	if IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and self.current ~= castGuid then
 		return
 	end
 
@@ -785,7 +785,7 @@ function IceCastBar.prototype:SpellCastChannelUpdate(event, unit)
     if not spell then
         self.actionDuration = 0
     else
-		if not issecretvalue or not issecretvalue(endTime) then
+		if IceHUD.CanAccessValue(endTime) then
         	self.actionDuration = endTime/1000 - self.actionStartTime
 		end
     end

@@ -191,6 +191,18 @@ IceHUD.IsSecretEnv = function()
 	return issecretvalue
 end
 
+IceHUD.IsSecretValue = function(value)
+	return issecretvalue and issecretvalue(value)
+end
+
+IceHUD.CanAccessSecrets = function()
+	return not canaccesssecrets or canaccesssecrets()
+end
+
+IceHUD.CanAccessValue = function(value)
+	return not canaccessvalue or canaccessvalue(value)
+end
+
 --@debug@
 IceHUD.optionsLoaded = true
 --@end-debug@
@@ -672,7 +684,7 @@ do
 			name, texture, applications, _, _, _, _, _, _, auraID = IceHUD.UnitAura(unit, i, filter)
 		end
 
-		if issecretvalue and issecretvalue(auraID) then
+		if not IceHUD.CanAccessValue(auraID) then
 			return retval
 		end
 

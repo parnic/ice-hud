@@ -1173,7 +1173,7 @@ end
 
 -- Rokiyo: bar is the only required argument, scale & top are optional
 function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideReverse)
-	if issecretvalue and issecretvalue(scale) then
+	if not IceHUD.CanAccessValue(scale) then
 		barFrame:SetValue(scale)
 		return
 	end
@@ -1234,7 +1234,7 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 end
 
 function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
-	if issecretvalue and (issecretvalue(inScale) or issecretvalue(self.CurrScale)) then
+	if not IceHUD.CanAccessValue(inScale) or not IceHUD.CanAccessValue(self.CurrScale) then
 		self.CurrScale = inScale
 		self:SetBarCoord(self.barFrame, self.CurrScale)
 		return
@@ -1361,7 +1361,7 @@ function IceBarElement.prototype:UseTargetAlpha(scale)
 end
 
 function IceBarElement.prototype:IsFull(scale)
-	if issecretvalue and issecretvalue(scale) then
+	if not IceHUD.CanAccessValue(scale) then
 		return false
 	end
 
