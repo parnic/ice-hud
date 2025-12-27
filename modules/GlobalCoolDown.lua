@@ -228,9 +228,15 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, castGuid, sp
 		local dur = C_Spell.GetSpellCooldownDuration(self.CDSpellId)
 
 		if dur then
-			self.barFrame:SetTimerDuration(dur, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.RemainingTime)
+			self.barFrame:SetTimerDuration(
+				dur,
+				Enum.StatusBarInterpolation.Immediate,
+				self.moduleSettings.inverse == "INVERSE" and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
+			)
 			self:Show(true)
-			IceHUD.IceCore:RequestUpdates(self, nil)
+			self.startTime = GetTime()
+			self.duration = 1.5 -- we can't inspect the actual duration, so assume the worst
+			self:ConditionalSetupUpdate()
 		end
 
 		return
@@ -281,9 +287,11 @@ end
 function GlobalCoolDown.prototype:MyOnUpdate()
 	GlobalCoolDown.super.prototype.MyOnUpdate(self)
 
-	if self:IsVisible() and self.startTime ~= nil and self.duration ~= nil
-		and self.CurrScale <= 0.01 then
+	local scaleReachedZero = self.startTime ~= nil and self.duration ~= nil and self.CurrScale <= 0.01
+	local fallbackMaxDuration = self.startTime and self.duration and GetTime() >= self.startTime + self.duration
+	if self:IsVisible() and (scaleReachedZero or fallbackMaxDuration) then
 		self:Show(false)
+		IceHUD.IceCore:RequestUpdates(self, nil)
 	end
 end
 
