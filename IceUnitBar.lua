@@ -310,7 +310,9 @@ function IceUnitBar.prototype:Update()
 			self:SetScaledColor(self.colorInst, self.healthPercentage * 2, self.settings.colors["MidHealthColor"], self.settings.colors["MinHealthColor"])
 		end
 
-		self.settings.colors["ScaledHealthColor"] = self.colorInst
+		self.settings.colors["ScaledHealthColor"].r = self.colorInst.r
+		self.settings.colors["ScaledHealthColor"].g = self.colorInst.g
+		self.settings.colors["ScaledHealthColor"].b = self.colorInst.b
 	end
 
 	if self.mpColorCurve then
@@ -325,7 +327,9 @@ function IceUnitBar.prototype:Update()
 			self:SetScaledColor(self.colorInst, self.manaPercentage * 2, self.settings.colors["MidManaColor"], self.settings.colors["MinManaColor"])
 		end
 
-		self.settings.colors["ScaledManaColor"] = self.colorInst
+		self.settings.colors["ScaledManaColor"].r = self.colorInst.r
+		self.settings.colors["ScaledManaColor"].g = self.colorInst.g
+		self.settings.colors["ScaledManaColor"].b = self.colorInst.b
 	end
 
 	-- This looks slightly quirky. Basically the easiest way for me to achieve this is to have lowThresholdColor override
