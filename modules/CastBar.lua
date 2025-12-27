@@ -441,7 +441,7 @@ end
 
 function CastBar.prototype:CreateLagBar()
 	if self.lagBar == nil then
-		self.lagBar = self:BarFactory(self.lagBar, "LOW", "OVERLAY", "Lag")
+		self.lagBar = self:BarFactory(self.lagBar, "LOW", "OVERLAY", "Lag", true)
 	end
 
 	local r, g, b = self:GetColor("CastLag")
@@ -449,7 +449,7 @@ function CastBar.prototype:CreateLagBar()
 		r, g, b = self:GetColor("CastCasting")
 	end
 
-	self.lagBar:GetStatusBarTexture():SetVertexColor(r, g, b, self.moduleSettings.lagAlpha)
+	self:SetBarFrameColorRGBA(self.lagBar, r, g, b, self.moduleSettings.lagAlpha)
 	self.lagBar:Hide()
 end
 

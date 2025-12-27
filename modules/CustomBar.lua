@@ -454,7 +454,7 @@ function IceCustomBar.prototype:GetOptions()
 			self.moduleSettings.barColor.r = r
 			self.moduleSettings.barColor.g = g
 			self.moduleSettings.barColor.b = b
-			self.barFrame:GetStatusBarTexture():SetVertexColor(self:GetBarColor())
+			self:SetBarColorRGBA(self:GetBarColor())
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -884,7 +884,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 		self:SetBottomText2(self.moduleSettings.lowerText)
 	end
 
-	self.barFrame:GetStatusBarTexture():SetVertexColor(self:GetBarColor())
+	self:SetBarColorRGBA(self:GetBarColor())
 	if self.flashFrame and self.flashFrame.flash then
 		self.flashFrame.flash:SetVertexColor(self:GetBarColor())
 	end

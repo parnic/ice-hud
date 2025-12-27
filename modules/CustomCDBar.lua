@@ -387,7 +387,7 @@ function IceCustomCDBar.prototype:GetOptions()
 			self.moduleSettings.barColor.r = r
 			self.moduleSettings.barColor.g = g
 			self.moduleSettings.barColor.b = b
-			self.barFrame:GetStatusBarTexture():SetVertexColor(self:GetBarColor())
+			self:SetBarColorRGBA(self:GetBarColor())
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -835,7 +835,7 @@ function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
 
 	self:UpdateAlpha()
 
-	self.barFrame:GetStatusBarTexture():SetVertexColor(self:GetBarColor())
+	self:SetBarColorRGBA(self:GetBarColor())
 
 	self.coolingDown = remaining ~= nil and remaining > 0
 end

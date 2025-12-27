@@ -933,7 +933,7 @@ end
 function PlayerHealth.prototype:CreateHealBar()
 	self.healFrame = self:BarFactory(self.healFrame, "LOW","BACKGROUND", "Heal")
 
-	self.healFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
+	self:SetBarFrameColorRGBA(self.healFrame, self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
 
 	self:UpdateBar(1, "undef")
 
@@ -945,7 +945,7 @@ end
 function PlayerHealth.prototype:CreateAbsorbBar()
 	self.absorbFrame = self:BarFactory(self.absorbFrame, "LOW","BACKGROUND", "Absorb")
 
-	self.absorbFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
+	self:SetBarFrameColorRGBA(self.absorbFrame, self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
 
 	self:UpdateBar(1, "undef")
 
@@ -1538,10 +1538,10 @@ function PlayerHealth.prototype:UpdateBar(scale, color, alpha)
 	PlayerHealth.super.prototype.UpdateBar(self, scale, color, alpha)
 
 	if self.healFrame --[[and self.healFrame.bar]] then
-		self.healFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
+		self:SetBarFrameColorRGBA(self.healFrame, self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
 	end
 	if self.absorbFrame --[[and self.absorbFrame.bar]] then
-		self.absorbFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
+		self:SetBarFrameColorRGBA(self.absorbFrame, self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
 	end
 --[[ seems to be causing taint. oh well
 	if self.frame.button then

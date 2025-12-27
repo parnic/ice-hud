@@ -290,7 +290,7 @@ end
 function GlobalCoolDown.prototype:CreateFrame()
 	GlobalCoolDown.super.prototype.CreateFrame(self)
 
-	self.barFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
+	self:SetBarColorRGBA(self:GetColor("GlobalCoolDown", 0.8))
 	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
 	self.frame.bg:SetVertexColor(r, g, b, 0.6)
 
@@ -298,14 +298,14 @@ function GlobalCoolDown.prototype:CreateFrame()
 end
 
 function GlobalCoolDown.prototype:CreateLagBar()
-	self.lagBar = self:BarFactory(self.lagBar, "LOW", "OVERLAY", "Lag")
+	self.lagBar = self:BarFactory(self.lagBar, "LOW", "OVERLAY", "Lag", true)
 
 	local r, g, b = self:GetColor("CastLag")
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor("CastCasting")
 	end
 
-	self.lagBar:GetStatusBarTexture():SetVertexColor(r, g, b, self.moduleSettings.lagAlpha)
+	self:SetBarFrameColorRGBA(self.lagBar, r, g, b, self.moduleSettings.lagAlpha)
 	self.lagBar:Hide()
 end
 

@@ -352,7 +352,7 @@ function IceCustomCounterBar.prototype:UpdateCustomCount()
 		end
 
 		self:UpdateBar(percent, "undef")
-		self.barFrame:GetStatusBarTexture():SetVertexColor(self.currColor.r, self.currColor.g, self.currColor.b, self.alpha)
+		self:SetBarColorRGBA(self.currColor.r, self.currColor.g, self.currColor.b, self.alpha)
 	end
 
 	self:SetBottomText1(points or "0")

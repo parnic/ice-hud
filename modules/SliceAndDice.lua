@@ -236,7 +236,7 @@ function SliceAndDice.prototype:CreateDurationBar()
 	-- Rokiyo: Do we need to call this here?
 	self.CurrScale = 0
 
-	self.durationFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
+	self:SetBarFrameColorRGBA(self.durationFrame, self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
 	self.durationFrame:SetValue(0)
 
 	self:UpdateBar(1, "undef")
@@ -423,7 +423,7 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 			scale = 1 - scale
 		end
 
-		self.durationFrame:GetStatusBarTexture():SetVertexColor(self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
+		self:SetBarFrameColorRGBA(self.durationFrame, self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
 		self:SetBarCoord(self.durationFrame, scale)
 	end
 

@@ -1046,26 +1046,82 @@ end
 -- Creates the actual bar
 function IceBarElement.prototype:CreateBar()
 	self.barFrame = self:BarFactory(self.barFrame, "LOW", "ARTWORK", "Bar")
-	
+
 	self:SetBarCoord(self.barFrame)
 
-	self.barFrame:GetStatusBarTexture():SetBlendMode(self.settings.barBlendMode)
+	local texture = self:GetBarTexture()
+	if texture then
+		texture:SetBlendMode(self.settings.barBlendMode)
+	end
 	self:SetScale(self.CurrScale, true)
 	self:UpdateBar(1, "undef")
 end
 
+function IceBarElement.prototype:GetBarTexture()
+	return self:GetBarFrameTexture(self.barFrame)
+end
+
+function IceBarElement.prototype:GetBarFrameTexture(frame)
+	local texture
+	if not frame then
+		return texture
+	end
+
+	if frame.GetStatusBarTexture then
+		texture = frame:GetStatusBarTexture()
+	else
+		texture = frame.bar
+	end
+
+	return texture
+end
+
+function IceBarElement.prototype:SetBarColorRGBA(r, g, b, a)
+	self:SetBarFrameColorRGBA(self.barFrame, r, g, b, a)
+end
+
+function IceBarElement.prototype:SetBarFrameColorRGBA(frame, r, g, b, a)
+	local texture = self:GetBarFrameTexture(frame)
+	if not texture then
+		return
+	end
+
+	texture:SetVertexColor(r, g, b, a)
+end
+
 -- Returns a barFrame
-function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer, nameSuffix)
+function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer, nameSuffix, nonStatusFrameBar)
 	if not (barFrame) then
-		barFrame = CreateFrame("StatusBar", "IceHUD_"..self.elementName.."_"..(nameSuffix or "Bar"), self.frame)
-		barFrame:SetMinMaxValues(0, 1)
-		barFrame:SetOrientation("VERTICAL")
+		if nonStatusFrameBar then
+			barFrame = CreateFrame("Frame", "IceHUD_"..self.elementName.."_"..(nameSuffix or "Bar"), self.frame)
+		else
+			barFrame = CreateFrame("StatusBar", "IceHUD_"..self.elementName.."_"..(nameSuffix or "Bar"), self.frame)
+			barFrame.isStatusBar = true
+			barFrame:SetMinMaxValues(0, 1)
+			barFrame:SetOrientation("VERTICAL")
+		end
 	end
 
 	barFrame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(frameStrata and frameStrata or "LOW"))
-	barFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
-	barFrame:SetHeight(self.settings.barHeight)
-	barFrame:SetStatusBarTexture(IceElement.TexturePath .. self:GetMyBarTexture() .. (self.moduleSettings.side == IceCore.Side.Left and "-flipped" or ""))
+	local width = self.settings.barWidth + (self.moduleSettings.widthModifier or 0)
+	local height = self.settings.barHeight
+	if barFrame.rotated then
+		width, height = height, width
+	end
+	barFrame:SetWidth(width)
+	barFrame:SetHeight(height)
+
+	local barTexture = IceElement.TexturePath .. self:GetMyBarTexture()
+	if nonStatusFrameBar then
+		if not barFrame.bar then
+			barFrame.bar = barFrame:CreateTexture(nil, (textureLayer and textureLayer or "ARTWORK"))
+		end
+
+		barFrame.bar:SetTexture(barTexture)
+		barFrame.bar:SetAllPoints(barFrame)
+	else
+		barFrame:SetStatusBarTexture(barTexture .. (self.moduleSettings.side == IceCore.Side.Left and "-flipped" or ""))
+	end
 	self:SetBarFramePoints(barFrame)
 
 	return barFrame
@@ -1190,7 +1246,13 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 	if scale == 0 then
 		barFrame:Hide()
 	else
-		barFrame:SetValue(scale, interp)
+		barFrame:Show()
+
+		if barFrame.SetValue then
+			barFrame:SetValue(scale, interp)
+			return
+		end
+
 		local min_y, max_y
 		local offset_y = 0
 
@@ -1226,16 +1288,13 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 		end
 
 		if (self.moduleSettings.side == IceCore.Side.Left) then
-			-- barFrame.bar:SetTexCoord(1, 0, min_y, max_y)
-			-- barFrame:GetStatusBarTexture():SetTexCoord(1, 0, min_y, max_y)
+			barFrame.bar:SetTexCoord(1, 0, min_y, max_y)
 		else
-			-- barFrame.bar:SetTexCoord(0, 1, min_y, max_y)
-			-- barFrame:GetStatusBarTexture():SetTexCoord(0, 1, min_y, max_y)
+			barFrame.bar:SetTexCoord(0, 1, min_y, max_y)
 		end
 
-		-- self:SetBarFramePoints(barFrame, 0, 0)
-		-- barFrame:SetHeight(self.settings.barHeight * scale)
-		barFrame:Show()
+		self:SetBarFramePoints(barFrame, 0, offset_y)
+		barFrame:SetHeight(self.settings.barHeight * scale)
 	end
 end
 
@@ -1328,7 +1387,7 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	end
 
 	self.frame.bg:SetVertexColor(r, g, b, self.backgroundAlpha)
-	self.barFrame:GetStatusBarTexture():SetVertexColor(self:GetColor(color))
+	self:SetBarColorRGBA(self:GetColor(color))
 	if self.moduleSettings.markers then
 		for i=1, #self.Markers do
 			local color = self.moduleSettings.markers[i].color
@@ -1509,7 +1568,17 @@ function IceBarElement.prototype:MyOnUpdate()
 end
 
 function IceBarElement.prototype:RotateHorizontal()
-	self:RotateFrame(self.frame)
+	if self.barFrame.isStatusBar then
+		self:RotateFrame(self.frame.bg)
+
+		if not self.barFrame.rotated then
+			self.barFrame:SetRotatesTexture(true)
+			self.barFrame:SetOrientation("HORIZONTAL")
+			self.barFrame.rotated = true
+		end
+	else
+		self:RotateFrame(self.frame)
+	end
 end
 
 function IceBarElement.prototype:ResetRotation()
@@ -1521,6 +1590,12 @@ function IceBarElement.prototype:ResetRotation()
 	end
 	for i=1, #self.Markers do
 		self.Markers[i]:Show()
+	end
+
+	if self.barFrame.rotated then
+		self.barFrame:SetRotatesTexture(false)
+		self.barFrame:SetOrientation("VERTICAL")
+		self.barFrame.rotated = false
 	end
 end
 
