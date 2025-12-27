@@ -359,6 +359,10 @@ function IceCastBar.prototype:GetCurrentCastDurationMs()
 	return (GetTime() - (self.actionStartTime or GetTime())) * 1000
 end
 
+function IceCastBar.prototype:IsCastOrChannel(action)
+	return action == IceCastBar.Actions.Cast or action == IceCastBar.Actions.Channel or action == IceCastBar.Actions.ReverseChannel
+end
+
 -- OnUpdate handler
 function IceCastBar.prototype:MyOnUpdate()
 	-- safety catch
@@ -372,7 +376,7 @@ function IceCastBar.prototype:MyOnUpdate()
 	self:SetTextAlpha()
 
 	-- handle casting and channeling
-	if (self.action == IceCastBar.Actions.Cast or self.action == IceCastBar.Actions.Channel or self.action == IceCastBar.Actions.ReverseChannel) then
+	if self:IsCastOrChannel(self.action) then
 		if not IceHUD.CanAccessValue(self.actionDuration) then
 			return
 		end
@@ -585,14 +589,18 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 
 	local setupUpdates = true
 	if (startTime and endTime) then
-		if IceHUD.CanAccessValue(endTime) and not self.barFrame.SetTimerDuration then
-			self.actionDuration = (endTime - startTime) / 1000
+		if not IceHUD.CanAccessValue(startTime) then
+			startTime = GetTime()
+		end
+		self.actionStartTime = startTime / 1000
 
-			-- set start time here in case we start to monitor a cast that is underway already
-			self.actionStartTime = startTime / 1000
+		if IceHUD.CanAccessValue(endTime) then
+			self.actionDuration = (endTime - startTime) / 1000
 		else
 			self.actionDuration = endTime
+		end
 
+		if self.barFrame.SetTimerDuration then
 			local duration = origAction == IceCastBar.Actions.Channel and UnitChannelDuration(self.unit) or UnitCastingDuration(self.unit)
 			if not duration then
 				return
@@ -605,8 +613,10 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 			setupUpdates = false
 		end
 	else
-		if self.barFrame.SetToTargetValue then
-			self.barFrame:SetToTargetValue()
+		if C_DurationUtil and self.barFrame.SetTimerDuration then
+			local duration = C_DurationUtil.CreateDuration()
+			duration:SetTimeFromEnd(GetTime(), GetTime())
+			self.barFrame:SetTimerDuration(duration)
 		end
 
 		self.actionDuration = 1 -- instants/failures

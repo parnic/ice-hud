@@ -199,24 +199,26 @@ function TargetCast.prototype:GetOptions()
 	return opts
 end
 
-function TargetCast.prototype:StartBar(action, message)
-	local spell, notInterruptible
-	if UnitCastingInfo then
-		spell = UnitCastingInfo(self.unit)
-		notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 9 or 8, UnitCastingInfo(self.unit))
-	end
-	if UnitChannelInfo and not spell then
-		spell = UnitChannelInfo(self.unit)
-		notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 8 or 7, UnitChannelInfo(self.unit))
-
-		if not spell then
-			return
+function TargetCast.prototype:StartBar(action, message, spellId)
+	if self:IsCastOrChannel(action) then
+		local spell, notInterruptible
+		if UnitCastingInfo then
+			spell = UnitCastingInfo(self.unit)
+			notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 9 or 8, UnitCastingInfo(self.unit))
 		end
+		if UnitChannelInfo and not spell then
+			spell = UnitChannelInfo(self.unit)
+			notInterruptible = select(IceHUD.SpellFunctionsReturnRank and 8 or 7, UnitChannelInfo(self.unit))
+
+			if not spell then
+				return
+			end
+		end
+
+		self.notInterruptible = notInterruptible
 	end
 
-	self.notInterruptible = notInterruptible
-
-	TargetCast.super.prototype.StartBar(self, action, message)
+	TargetCast.super.prototype.StartBar(self, action, message, spellId)
 end
 
 -------------------------------------------------------------------------------
