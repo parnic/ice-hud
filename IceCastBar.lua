@@ -598,7 +598,8 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 				return
 			end
 
-			self.barFrame:SetTimerDuration(duration)
+			local direction = action == IceCastBar.Actions.ReverseChannel and Enum.StatusBarTimerDirection.RemainingTime or Enum.StatusBarTimerDirection.ElapsedTime
+			self.barFrame:SetTimerDuration(duration, Enum.StatusBarInterpolation.Immediate, direction)
 			self:UpdateBar(0, self:GetCurrentCastingColor())
 			self:SetBottomText1(self.actionMessage)
 			setupUpdates = false
