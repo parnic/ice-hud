@@ -247,7 +247,7 @@ function Totems.prototype:UpdateTotem(event, totem, ...)
 	end
 
 	local haveTotem, name, startTime, duration, icon = GetTotemInfo(totem);
-	if duration > 0 then
+ 	if IceHUD.CanAccessValue(duration) and duration > 0 then
 		self.frame.graphical[totem].totem:SetTexture(icon)
 		CooldownFrame_SetTimer(self.frame.graphical[totem].cd, startTime, duration, true)
 		self.frame.graphical[totem].cd:Show()
