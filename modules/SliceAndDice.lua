@@ -26,6 +26,7 @@ local CurrMaxSnDDuration = 0
 local PotentialSnDDuration = 0
 
 local sndBuffName = 132306
+local newSndSpellId = 315496
 if IceHUD.WowMain and IceHUD.WowVer < 80000 then
 	sndBuffName = "Ability_Rogue_SliceDice"
 end
@@ -89,6 +90,13 @@ end
 -- OVERRIDE
 function SliceAndDice.prototype:Enable(core)
 	SliceAndDice.super.prototype.Enable(self, core)
+
+	if C_Spell and C_Spell.GetSpellInfo then
+		local info = C_Spell.GetSpellInfo(newSndSpellId)
+		if info then
+			sndBuffName = info.name
+		end
+	end
 
 	self:RegisterEvent("UNIT_AURA", "UpdateSliceAndDice")
 	if IceHUD.EventExistsUnitComboPoints then
@@ -263,6 +271,16 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
+	if C_UnitAuras and C_UnitAuras.GetAuraDataBySpellName and C_UnitAuras.GetAuraDuration then
+		local info = C_UnitAuras.GetAuraDataBySpellName(unitName, buffName)
+		if not info or not info.auraInstanceID then
+			return nil, nil
+		end
+
+		local duration = C_UnitAuras.GetAuraDuration(unitName, info.auraInstanceID)
+		return duration, nil
+	end
+
 	local i = 1
 	local buff, _, texture, duration, endTime, remaining
 	if IceHUD.SpellFunctionsReturnRank then
@@ -324,6 +342,16 @@ end
 
 function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 	if unit and unit ~= self.unit then
+		return
+	end
+
+	if C_UnitAuras and C_UnitAuras.GetAuraDuration then
+		sndDuration, _ = self:GetBuffDuration(self.unit, sndBuffName)
+		self:UpdateBar(sndDuration and 1 or 0, "SliceAndDice")
+		if sndDuration then
+			self.barFrame:SetTimerDuration(sndDuration, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.RemainingTime)
+		end
+
 		return
 	end
 
