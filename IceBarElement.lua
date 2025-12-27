@@ -899,6 +899,14 @@ do
 	end
 end
 
+function IceBarElement.prototype:ShouldReverseFill()
+	if self.moduleSettings.reverse then
+		return self.moduleSettings.inverse == "NORMAL"
+	end
+
+	return self.moduleSettings.inverse == "INVERSE"
+end
+
 function IceBarElement.prototype:SetBarVisibility(visible)
 	if visible then
 		self.barFrame:Show()
