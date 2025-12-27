@@ -352,7 +352,11 @@ function RollTheBones.prototype:UpdateRollTheBones(event, unit)
     self:UpdateBar(rtbDuration and 1 or 0, "RollTheBones")
 		if rtbDuration then
       self:Show(true)
-			self.barFrame:SetTimerDuration(rtbDuration, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.RemainingTime)
+			self.barFrame:SetTimerDuration(
+        rtbDuration,
+        Enum.StatusBarInterpolation.Immediate,
+        self.moduleSettings.inverse == "INVERSE" and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
+      )
 		end
 
 		return

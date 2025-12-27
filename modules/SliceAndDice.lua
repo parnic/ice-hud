@@ -350,7 +350,11 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 		self:UpdateBar(sndDuration and 1 or 0, "SliceAndDice")
 		if sndDuration then
 			self:Show(true)
-			self.barFrame:SetTimerDuration(sndDuration, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.RemainingTime)
+			self.barFrame:SetTimerDuration(
+				sndDuration,
+				Enum.StatusBarInterpolation.Immediate,
+				self.moduleSettings.inverse == "INVERSE" and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
+			)
 		end
 
 		return

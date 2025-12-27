@@ -606,8 +606,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 				return
 			end
 
-			local direction = action == IceCastBar.Actions.ReverseChannel and Enum.StatusBarTimerDirection.RemainingTime or Enum.StatusBarTimerDirection.ElapsedTime
-			self.barFrame:SetTimerDuration(duration, Enum.StatusBarInterpolation.Immediate, direction)
+			self:SetTimerDuration(duration, action)
 			self:UpdateBar(0, self:GetCurrentCastingColor())
 			self:SetBottomText1(self.actionMessage)
 			setupUpdates = false
@@ -628,6 +627,10 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 	end
 end
 
+function IceCastBar.prototype:SetTimerDuration(duration, action)
+	local direction = action == IceCastBar.Actions.ReverseChannel and Enum.StatusBarTimerDirection.RemainingTime or Enum.StatusBarTimerDirection.ElapsedTime
+	self.barFrame:SetTimerDuration(duration, Enum.StatusBarInterpolation.Immediate, direction)
+end
 
 function IceCastBar.prototype:StopBar()
 	self.action = IceCastBar.Actions.None
@@ -744,7 +747,7 @@ function IceCastBar.prototype:SpellCastDelayed(event, unit, castGuid, spellId)
 	if UnitCastingDuration then
 		local duration = UnitCastingDuration(self.unit)
 		if duration then
-			self.barFrame:SetTimerDuration(duration)
+			self:SetTimerDuration(duration, self.action)
 		end
 		return
 	end
@@ -814,7 +817,7 @@ function IceCastBar.prototype:SpellCastChannelUpdate(event, unit)
 	if UnitChannelDuration then
 		local duration = UnitChannelDuration(self.unit)
 		if duration then
-			self.barFrame:SetTimerDuration(duration)
+			self:SetTimerDuration(duration, self.action)
 		end
 
 		return
