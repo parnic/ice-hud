@@ -126,46 +126,46 @@ function GlobalCoolDown.prototype:GetOptions()
 			end,
 			order = 21,
 		}
+
+		opts["lagAlpha"] =
+		{
+			type = 'range',
+			name = L["Lag Indicator alpha"],
+			desc = L["Lag indicator alpha (0 is disabled)"],
+			min = 0,
+			max = 1,
+			step = 0.1,
+			get = function()
+				return self.moduleSettings.lagAlpha
+			end,
+			set = function(info, value)
+				self.moduleSettings.lagAlpha = value
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 42
+		}
+
+		opts["respectLagTolerance"] =
+		{
+			type = 'toggle',
+			name = L["Respect lag tolerance"],
+			desc = L["When checked, if a 'Custom Lag Tolerance' is set in the game's Combat options, the lag indicator will always use that tolerance value. Otherwise, it uses the computed latency."],
+			get = function()
+				return self.moduleSettings.respectLagTolerance
+			end,
+			set = function(info, value)
+				self.moduleSettings.respectLagTolerance = value
+				self:CVarUpdate()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled or GetCVar("reducedLagTolerance") == "0"
+			end,
+			order = 42.1,
+		}
 	end
-
-	opts["lagAlpha"] =
-	{
-		type = 'range',
-		name = L["Lag Indicator alpha"],
-		desc = L["Lag indicator alpha (0 is disabled)"],
-		min = 0,
-		max = 1,
-		step = 0.1,
-		get = function()
-			return self.moduleSettings.lagAlpha
-		end,
-		set = function(info, value)
-			self.moduleSettings.lagAlpha = value
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 42
-	}
-
-	opts["respectLagTolerance"] =
-	{
-		type = 'toggle',
-		name = L["Respect lag tolerance"],
-		desc = L["When checked, if a 'Custom Lag Tolerance' is set in the game's Combat options, the lag indicator will always use that tolerance value. Otherwise, it uses the computed latency."],
-		get = function()
-			return self.moduleSettings.respectLagTolerance
-		end,
-		set = function(info, value)
-			self.moduleSettings.respectLagTolerance = value
-			self:CVarUpdate()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or GetCVar("reducedLagTolerance") == "0"
-		end,
-		order = 42.1,
-	}
 
 	return opts
 end
