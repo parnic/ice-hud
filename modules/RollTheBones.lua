@@ -15,7 +15,7 @@ local behaviorDependsOnComboPoints = IceHUD.WowVer < 90000
 local CurrMaxRtBDuration = 0
 local PotentialRtBDuration = 0
 
-local RtBBuffs = {199603, 193358, 193357, 193359, 199600, 193356}
+local RtBBuffs = {199603, 193358, 193357, 193359, 199600, 193356, 1214933, 1214934, 1214935, 1214937}
 local RtBSet = {}
 for _, v in ipairs(RtBBuffs) do
   RtBSet[v] = true
@@ -264,6 +264,20 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function RollTheBones.prototype:GetBuffDuration(unitName, ids)
+  if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDuration then
+    for i=1,#RtBBuffs do
+      local data = C_UnitAuras.GetUnitAuraBySpellID(unitName, RtBBuffs[i])
+      if data then
+        local duration = C_UnitAuras.GetAuraDuration(unitName, data.auraInstanceID)
+        if duration then
+          return duration, nil, 0
+        end
+      end
+    end
+
+    return nil, nil, 0
+  end
+
   local i = 1
   local buff, _, type, duration, endTime, spellId
   if IceHUD.SpellFunctionsReturnRank then
@@ -330,6 +344,18 @@ end
 function RollTheBones.prototype:UpdateRollTheBones(event, unit)
   if unit and unit ~= self.unit then
     return
+  end
+
+  if C_UnitAuras and C_UnitAuras.GetAuraDuration then
+    local _
+    rtbDuration, _, _ = self:GetBuffDuration(self.unit)
+    self:UpdateBar(rtbDuration and 1 or 0, "RollTheBones")
+		if rtbDuration then
+      self:Show(true)
+			self.barFrame:SetTimerDuration(rtbDuration, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.RemainingTime)
+		end
+
+		return
   end
 
   local now = GetTime()
