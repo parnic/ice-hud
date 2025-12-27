@@ -1092,6 +1092,10 @@ end
 
 -- Returns a barFrame
 function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer, nameSuffix, nonStatusFrameBar)
+	if not IceHUD.IsSecretEnv() then
+		nonStatusFrameBar = true
+	end
+
 	if not (barFrame) then
 		if nonStatusFrameBar then
 			barFrame = CreateFrame("Frame", "IceHUD_"..self.elementName.."_"..(nameSuffix or "Bar"), self.frame)

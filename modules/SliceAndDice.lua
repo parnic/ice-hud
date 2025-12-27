@@ -25,10 +25,10 @@ local sixComboPointsTalentID = 19240
 local CurrMaxSnDDuration = 0
 local PotentialSnDDuration = 0
 
-local sndBuffName = 132306
+local sndTexture = 132306
 local newSndSpellId = 315496
 if IceHUD.WowMain and IceHUD.WowVer < 80000 then
-	sndBuffName = "Ability_Rogue_SliceDice"
+	sndTexture = "Ability_Rogue_SliceDice"
 end
 
 if IceHUD.WowVer >= 50000 then
@@ -90,13 +90,6 @@ end
 -- OVERRIDE
 function SliceAndDice.prototype:Enable(core)
 	SliceAndDice.super.prototype.Enable(self, core)
-
-	if C_Spell and C_Spell.GetSpellInfo then
-		local info = C_Spell.GetSpellInfo(newSndSpellId)
-		if info then
-			sndBuffName = info.name
-		end
-	end
 
 	self:RegisterEvent("UNIT_AURA", "UpdateSliceAndDice")
 	if IceHUD.EventExistsUnitComboPoints then
@@ -248,7 +241,11 @@ function SliceAndDice.prototype:CreateDurationBar()
 	self.CurrScale = 0
 
 	self:SetBarFrameColorRGBA(self.durationFrame, self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
-	self.durationFrame:SetValue(0)
+	if self.durationFrame.SetValue then
+		self.durationFrame:SetValue(0)
+	else
+		self.durationFrame.bar:SetHeight(0)
+	end
 
 	self:UpdateBar(1, "undef")
 
@@ -274,8 +271,8 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
-	if C_UnitAuras and C_UnitAuras.GetAuraDataBySpellName and C_UnitAuras.GetAuraDuration then
-		local info = C_UnitAuras.GetAuraDataBySpellName(unitName, buffName)
+	if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDuration then
+		local info = C_UnitAuras.GetUnitAuraBySpellID(unitName, buffName)
 		if not info or not info.auraInstanceID then
 			return nil, nil
 		end
@@ -349,7 +346,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 	end
 
 	if C_UnitAuras and C_UnitAuras.GetAuraDuration then
-		sndDuration, _ = self:GetBuffDuration(self.unit, sndBuffName)
+		sndDuration, _ = self:GetBuffDuration(self.unit, newSndSpellId)
 		self:UpdateBar(sndDuration and 1 or 0, "SliceAndDice")
 		if sndDuration then
 			self:Show(true)
@@ -364,7 +361,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 	local fromUpdate = event == "internal"
 
 	if not fromUpdate or IceHUD.WowVer < 30000 then
-		sndDuration, remaining = self:GetBuffDuration(self.unit, sndBuffName)
+		sndDuration, remaining = self:GetBuffDuration(self.unit, sndTexture)
 
 		if not remaining then
 			sndEndTime = 0
