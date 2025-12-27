@@ -102,7 +102,7 @@ function PlayerAltMana.prototype:Update()
 		end
 	end
 
-	self:UpdateBar(self.PlayerAltManaMax ~= 0 and self.PlayerAltMana / self.PlayerAltManaMax or 0, "PlayerAltMana")
+	self:UpdateBar(self.PlayerAltManaPercentage, "PlayerAltMana")
 end
 
 if (unitClass == "PRIEST" and IceHUD.WowVer >= 70000)
