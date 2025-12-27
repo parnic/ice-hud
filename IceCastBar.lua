@@ -348,7 +348,7 @@ function IceCastBar.prototype:PositionIcons()
 end
 
 function IceCastBar.prototype:GetRemainingCastTime()
-	if IceHUD.CanAccessValue(self.actionStartTime) then
+	if IceHUD.CanAccessValue(self.actionStartTime) and IceHUD.CanAccessValue(self.actionDuration) then
 		return self.actionStartTime + self.actionDuration - GetTime()
 	end
 
@@ -384,7 +384,9 @@ function IceCastBar.prototype:MyOnUpdate()
 			scale = self.actionDuration ~= 0 and remainingTime / self.actionDuration or 0
 		end
 
-		self:UpdateBar(IceHUD:Clamp(scale, 0, 1), self:GetCurrentCastingColor())
+		if not self.barFrame.SetTimerDuration then
+			self:UpdateBar(IceHUD:Clamp(scale, 0, 1), self:GetCurrentCastingColor())
+		end
 
 		if (remainingTime <= 0) then
 			self:StopBar()
@@ -583,7 +585,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 
 	local setupUpdates = true
 	if (startTime and endTime) then
-		if IceHUD.CanAccessValue(endTime) then
+		if IceHUD.CanAccessValue(endTime) and not self.barFrame.SetTimerDuration then
 			self.actionDuration = (endTime - startTime) / 1000
 
 			-- set start time here in case we start to monitor a cast that is underway already
@@ -602,7 +604,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 			setupUpdates = false
 		end
 	else
-		if not IceHUD.CanAccessValue(self.actionDuration) then
+		if self.barFrame.SetToTargetValue then
 			self.barFrame:SetToTargetValue()
 		end
 
@@ -728,17 +730,17 @@ function IceCastBar.prototype:SpellCastDelayed(event, unit, castGuid, spellId)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastDelayed", unit, UnitCastingInfo(unit))
 
-	local endTime = select(IceHUD.SpellFunctionsReturnRank and 6 or 5, UnitCastingInfo(self.unit))
-
-	if IceHUD.CanAccessValue(endTime) and endTime and self.actionStartTime then
-		-- apparently this check is needed, got nils during a horrible lag spike
-		self.actionDuration = endTime/1000 - self.actionStartTime
-	else
+	if UnitCastingDuration then
 		local duration = UnitCastingDuration(self.unit)
 		if duration then
 			self.barFrame:SetTimerDuration(duration)
 		end
+		return
 	end
+
+	local endTime = select(IceHUD.SpellFunctionsReturnRank and 6 or 5, UnitCastingInfo(self.unit))
+	-- apparently this check is needed, got nils during a horrible lag spike
+	self.actionDuration = endTime/1000 - self.actionStartTime
 end
 
 
@@ -798,6 +800,15 @@ function IceCastBar.prototype:SpellCastChannelUpdate(event, unit)
 	if (unit ~= self.unit or not self.actionStartTime) then return end
 	--IceHUD:Debug("SpellCastChannelUpdate", unit, UnitChannelInfo(unit))
 
+	if UnitChannelDuration then
+		local duration = UnitChannelDuration(self.unit)
+		if duration then
+			self.barFrame:SetTimerDuration(duration)
+		end
+
+		return
+	end
+
 	local spell, rank, displayName, icon, startTime, endTime
 	if IceHUD.SpellFunctionsReturnRank then
 		spell, rank, displayName, icon, startTime, endTime = UnitChannelInfo(unit)
@@ -807,14 +818,7 @@ function IceCastBar.prototype:SpellCastChannelUpdate(event, unit)
     if not spell then
         self.actionDuration = 0
     else
-		if IceHUD.CanAccessValue(endTime) then
-        	self.actionDuration = endTime/1000 - self.actionStartTime
-		else
-			local duration = UnitChannelDuration(self.unit)
-			if duration then
-				self.barFrame:SetTimerDuration(duration)
-			end
-		end
+		self.actionDuration = endTime/1000 - self.actionStartTime
     end
 end
 
