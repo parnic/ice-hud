@@ -185,7 +185,7 @@ do
 			["NORMAL"] = "Normal",
 			["INVERSE"] = "Inverse",
 		}
-		if self.moduleSettings.bAllowExpand then
+		if self.moduleSettings.bAllowExpand and IceHUD.SupportsExpandMode then
 			values["EXPAND"] = "Expanding"
 		end
 
@@ -366,7 +366,7 @@ do
 					self:Redraw()
 				end,
 				disabled = function()
-					return not self.moduleSettings.enabled
+					return not self.moduleSettings.enabled or self:ShouldReverseFill()
 				end,
 				order = 111
 			}
@@ -918,13 +918,17 @@ end
 function IceBarElement.prototype:SetBarFramePoints(frame, offset_x, offset_y)
 	local anchor
 
+	if frame.isStatusBar then
+		frame:SetReverseFill(self:ShouldReverseFill())
+	end
+
 	frame:ClearAllPoints()
 	if self.moduleSettings.inverse == "INVERSE" then
-		anchor = "TOPLEFT"
+		anchor = self.moduleSettings.reverse and "TOPLEFT" or "BOTTOMLEFT"
 	elseif self.moduleSettings.inverse == "EXPAND" then
 		anchor = "LEFT"
 	else
-		anchor = "BOTTOMLEFT"
+		anchor = self.moduleSettings.reverse and "TOPLEFT" or "BOTTOMLEFT"
 	end
 
 	if self.moduleSettings.rotateBar then
@@ -1076,7 +1080,11 @@ function IceBarElement.prototype:GetBarFrameTexture(frame)
 		return texture
 	end
 
-	if frame.GetStatusBarTexture then
+	if frame.texture then
+		return frame.texture
+	end
+
+	if frame.isStatusBar then
 		texture = frame:GetStatusBarTexture()
 	else
 		texture = frame.bar
@@ -1098,6 +1106,16 @@ function IceBarElement.prototype:SetBarFrameColorRGBA(frame, r, g, b, a)
 	texture:SetVertexColor(r, g, b, a)
 end
 
+function IceBarElement.prototype:OnUpdate()
+	if not self.barFrame or not self.barFrame.isStatusBar or not self:ShouldReverseFill() then
+		return
+	end
+
+	if self.barFrame:GetReverseFill() then
+		self:GetBarTexture():SetTexCoord(0, 1, 0, self.CurrScale)
+	end
+end
+
 -- Returns a barFrame
 function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer, nameSuffix, nonStatusFrameBar)
 	if not IceHUD.IsSecretEnv() then
@@ -1112,6 +1130,7 @@ function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer,
 			barFrame.isStatusBar = true
 			barFrame:SetMinMaxValues(0, 1)
 			barFrame:SetOrientation("VERTICAL")
+			barFrame:SetScript("OnUpdate", function() self:OnUpdate() end)
 		end
 	end
 
@@ -1125,15 +1144,15 @@ function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer,
 	barFrame:SetHeight(height)
 
 	local barTexture = IceElement.TexturePath .. self:GetMyBarTexture()
+	if not barFrame.texture then
+		barFrame.texture = barFrame:CreateTexture(nil, (textureLayer and textureLayer or "ARTWORK"))
+	end
 	if nonStatusFrameBar then
-		if not barFrame.bar then
-			barFrame.bar = barFrame:CreateTexture(nil, (textureLayer and textureLayer or "ARTWORK"))
-		end
-
-		barFrame.bar:SetTexture(barTexture)
-		barFrame.bar:SetAllPoints(barFrame)
+		barFrame.texture:SetTexture(barTexture)
+		barFrame.texture:SetAllPoints(barFrame)
 	else
-		barFrame:SetStatusBarTexture(barTexture .. (self.moduleSettings.side == IceCore.Side.Left and "-flipped" or ""))
+		barFrame.texture:SetTexture(barTexture .. (self.moduleSettings.side == IceCore.Side.Left and "-flipped" or ""))
+		barFrame:SetStatusBarTexture(barFrame.texture)
 	end
 	self:SetBarFramePoints(barFrame)
 
@@ -1241,7 +1260,7 @@ end
 function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideReverse)
 	local interp
 	if Enum and Enum.StatusBarInterpolation then
-		interp = self.moduleSettings.shouldAnimate and Enum.StatusBarInterpolation.ExponentialEaseOut or Enum.StatusBarInterpolation.Immediate
+		interp = (self.moduleSettings.shouldAnimate and not self:ShouldReverseFill()) and Enum.StatusBarInterpolation.ExponentialEaseOut or Enum.StatusBarInterpolation.Immediate
 	end
 
 	if not IceHUD.CanAccessValue(scale) then
@@ -1297,9 +1316,9 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 		end
 
 		if (self.moduleSettings.side == IceCore.Side.Left) then
-			barFrame.bar:SetTexCoord(1, 0, min_y, max_y)
+			self:GetBarFrameTexture(barFrame):SetTexCoord(1, 0, min_y, max_y)
 		else
-			barFrame.bar:SetTexCoord(0, 1, min_y, max_y)
+			self:GetBarFrameTexture(barFrame):SetTexCoord(0, 1, min_y, max_y)
 		end
 
 		self:SetBarFramePoints(barFrame, 0, offset_y)

@@ -203,6 +203,8 @@ IceHUD.CanAccessValue = function(value)
 	return not canaccessvalue or canaccessvalue(value)
 end
 
+IceHUD.SupportsExpandMode = not IceHUD.IsSecretEnv()
+
 --@debug@
 IceHUD.optionsLoaded = true
 --@end-debug@

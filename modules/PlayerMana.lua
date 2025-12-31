@@ -344,7 +344,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 		color = "Dead"
 	elseif (self.moduleSettings.scaleManaColor and (UnitPowerType(self.unit) == SPELL_POWER_MANA or self.moduleSettings.scaleManaColorForAll)) then
 		color = "ScaledManaColor"
-	elseif self.moduleSettings.lowThresholdColor and self.manaPercentage <= self.moduleSettings.lowThreshold then
+	elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.manaPercentage) and self.manaPercentage <= self.moduleSettings.lowThreshold then
 		color = "ScaledManaColor"
 	else
 		if (self.manaType == SPELL_POWER_RAGE) then
@@ -390,7 +390,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		-- extra hack for whiny rogues (are there other kind?)
-		local displayPercentage = self.manaPercentage
+		local displayPercentage = self.manaPercentage -- todo:midnight: make work
 		if self.manaType == SPELL_POWER_ENERGY or self.manaType == SPELL_POWER_FOCUS or self.manaType == SPELL_POWER_FURY then
 			displayPercentage = self.mana
 		else

@@ -130,7 +130,7 @@ function IceTargetMana.prototype:Update(unit)
 
 		if (self.moduleSettings.scaleManaColor) then
 			self.color = "ScaledManaColor"
-		elseif self.moduleSettings.lowThresholdColor and self.manaPercentage <= self.moduleSettings.lowThreshold then
+		elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.manaPercentage) and self.manaPercentage <= self.moduleSettings.lowThreshold then
 			self.color = "ScaledManaColor"
 		end
 
@@ -162,7 +162,7 @@ function IceTargetMana.prototype:Update(unit)
 	self:UpdateBar(self.manaPercentage, self.color)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self:SetBottomText1(math.floor(self.manaPercentage * 100))
+		self:SetBottomText1(math.floor(self.manaPercentage * 100)) -- todo:midnight: make work
 		self:SetBottomText2(self:GetFormattedText(self.mana, self.maxMana), self.color)
 	end
 end

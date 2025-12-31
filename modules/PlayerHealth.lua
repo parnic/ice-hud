@@ -1274,7 +1274,7 @@ function PlayerHealth.prototype:Update(unit)
 
 	if (self.moduleSettings.scaleHealthColor) then
 		color = "ScaledHealthColor"
-	elseif self.moduleSettings.lowThresholdColor and self.healthPercentage <= self.moduleSettings.lowThreshold then
+	elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.healthPercentage) and self.healthPercentage <= self.moduleSettings.lowThreshold then
 		color = "ScaledHealthColor"
 	end
 
@@ -1334,7 +1334,7 @@ function PlayerHealth.prototype:Update(unit)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self:SetBottomText1(math.floor(self.healthPercentage * 100))
+		self:SetBottomText1(math.floor(self.healthPercentage * 100)) -- todo:midnight: make work
 		self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), textColor)
 	end
 

@@ -83,7 +83,7 @@ function TargetTargetMana.prototype:Update(unit)
 
 	if (self.moduleSettings.scaleManaColor) then
 		self.color = "ScaledManaColor"
-	elseif self.moduleSettings.lowThresholdColor and self.manaPercentage and self.manaPercentage <= self.moduleSettings.lowThreshold then
+	elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.manaPercentage) and self.manaPercentage and self.manaPercentage <= self.moduleSettings.lowThreshold then
 		self.color = "ScaledManaColor"
 	end
 

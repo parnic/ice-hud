@@ -101,27 +101,30 @@ end
 function IceUnitBar.prototype:GetOptions()
 	local opts = IceUnitBar.super.prototype.GetOptions(self)
 
-	opts["lowThreshold"] =
-	{
-		type = 'range',
-		name = L["Low Threshold"],
-		desc = L["When the bar drops below this amount, it will start flashing (0 means never). For the 'mana' bar this only applies to mana and not rage/energy/focus/runic power."],
-		get = function()
-			return self.moduleSettings.lowThreshold
-		end,
-		set = function(info, value)
-			self.moduleSettings.lowThreshold = value
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or not (self.moduleSettings.lowThresholdFlash or self.moduleSettings.lowThresholdColor)
-		end,
-		min = 0,
-		max = 1,
-		step = 0.01,
-		isPercent = true,
-		order = 30.091
-	}
+	if not IceHUD.IsSecretEnv() then
+		opts["lowThreshold"] =
+		{
+			type = 'range',
+			name = L["Low Threshold"],
+			desc = L["When the bar drops below this amount, it will start flashing (0 means never). For the 'mana' bar this only applies to mana and not rage/energy/focus/runic power."],
+			get = function()
+				return self.moduleSettings.lowThreshold
+			end,
+			set = function(info, value)
+				self.moduleSettings.lowThreshold = value
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled or not (self.moduleSettings.lowThresholdFlash or self.moduleSettings.lowThresholdColor)
+			end,
+			min = 0,
+			max = 1,
+			step = 0.01,
+			isPercent = true,
+			order = 30.091
+		}
+	end
+
 	opts["lowThresholdFlash"] = {
 		type = 'toggle',
 		name = L["Flash bar below Low Threshold"],
@@ -264,7 +267,7 @@ function IceUnitBar.prototype:Update()
 
 	self.health = UnitHealth(self.unit)
 	self.maxHealth = UnitHealthMax(self.unit)
-	self.healthPercentage = UnitHealthPercent and UnitHealthPercent(self.unit) or self.maxHealth ~= 0 and (self.health/self.maxHealth) or 0
+	self.healthPercentage = UnitHealthPercent and UnitHealthPercent(self.unit, true, self:ShouldReverseFill() and CurveConstants.Reverse or CurveConstants.ZeroToOne) or self.maxHealth ~= 0 and (self.health/self.maxHealth) or 0
 
 	-- note that UnitPowerType returns 2 arguments and UnitPower[Max] accepts a third argument to get the values on a different scale
 	-- so this technically doesn't get us the answer we want most of the time. too risky to change at this point, though.
@@ -286,7 +289,7 @@ function IceUnitBar.prototype:Update()
 	-- account for cases where maxMana is 0, perhaps briefly (during certain spells, for example)
 	-- and properly handle it as full. this allows for proper alpha handling during these times.
 	if UnitPowerPercent then
-		self.manaPercentage = UnitPowerPercent(self.unit)
+		self.manaPercentage = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self:ShouldReverseFill() and CurveConstants.Reverse or CurveConstants.ZeroToOne)
 	else
 		if self.maxMana == self.mana then
 			self.manaPercentage = 1
@@ -334,7 +337,7 @@ function IceUnitBar.prototype:Update()
 
 	-- This looks slightly quirky. Basically the easiest way for me to achieve this is to have lowThresholdColor override
 	-- the scaled color. You'll need to switch them both on to get things to work.
-	if self.moduleSettings.lowThresholdColor then
+	if self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.healthPercentage) and IceHUD.CanAccessValue(self.manaPercentage) then
 		if( self.healthPercentage <= self.moduleSettings.lowThreshold ) then
 			self.settings.colors[ "ScaledHealthColor" ] = self.settings.colors[ "MinHealthColor" ]
 		elseif not self.moduleSettings.scaleHealthColor then

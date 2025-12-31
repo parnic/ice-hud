@@ -364,7 +364,7 @@ function FocusHealth.prototype:Update(unit)
 
 	if (self.moduleSettings.scaleHealthColor) then
 		self.color = "ScaledHealthColor"
-	elseif self.moduleSettings.lowThresholdColor and self.healthPercentage <= self.moduleSettings.lowThreshold then
+	elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.healthPercentage) and self.healthPercentage <= self.moduleSettings.lowThreshold then
 		self.color = "ScaledHealthColor"
 	end
 
@@ -375,7 +375,7 @@ function FocusHealth.prototype:Update(unit)
 	self:UpdateBar(self.healthPercentage, self.color)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self:SetBottomText1(math.floor(self.healthPercentage * 100))
+		self:SetBottomText1(math.floor(self.healthPercentage * 100)) -- todo:midnight: make work
 
 		if self.moduleSettings.abbreviateHealth then
 			self.health = self:Round(self.health)
