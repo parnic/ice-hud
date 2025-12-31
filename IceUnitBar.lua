@@ -123,44 +123,44 @@ function IceUnitBar.prototype:GetOptions()
 			isPercent = true,
 			order = 30.091
 		}
-	end
 
-	opts["lowThresholdFlash"] = {
-		type = 'toggle',
-		name = L["Flash bar below Low Threshold"],
-		desc = L["Flashes the bar when it is below the Low Threshold specified above"],
-		width = 'double',
-		get = function()
-			return self.moduleSettings.lowThresholdFlash
-		end,
-		set = function(info, v)
-			self.moduleSettings.lowThresholdFlash = v
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		hidden = function()
-			return self.noFlash
-		end,
-		order = 30.092
-	}
-	opts["lowThresholdColor"] = {
-		type = "toggle",
-		name = L["Low Threshold color"],
-		desc = L["Changes the color of this bar to be the minimum health or mana color when it's below the low threshold. See the 'MinHealthColor' and 'MinManaColor' colors in the 'Colors' option page.\n\nThis option only applies to health and mana bars."],
-		get = function()
-			return self.moduleSettings.lowThresholdColor
-		end,
-		set = function(info, value)
-			self.moduleSettings.lowThresholdColor = value
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 30.093
-	}
+		opts["lowThresholdFlash"] = {
+			type = 'toggle',
+			name = L["Flash bar below Low Threshold"],
+			desc = L["Flashes the bar when it is below the Low Threshold specified above"],
+			width = 'double',
+			get = function()
+				return self.moduleSettings.lowThresholdFlash
+			end,
+			set = function(info, v)
+				self.moduleSettings.lowThresholdFlash = v
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			hidden = function()
+				return self.noFlash
+			end,
+			order = 30.092
+		}
+		opts["lowThresholdColor"] = {
+			type = "toggle",
+			name = L["Low Threshold color"],
+			desc = L["Changes the color of this bar to be the minimum health or mana color when it's below the low threshold. See the 'MinHealthColor' and 'MinManaColor' colors in the 'Colors' option page.\n\nThis option only applies to health and mana bars."],
+			get = function()
+				return self.moduleSettings.lowThresholdColor
+			end,
+			set = function(info, value)
+				self.moduleSettings.lowThresholdColor = value
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 30.093
+		}
+	end
 
 	return opts
 end
@@ -375,10 +375,11 @@ function IceUnitBar.prototype:UpdateBar(scale, color, alpha)
 		return
 	end
 
-	if (self.moduleSettings.lowThreshold > 0 and
+	if IceHUD.CanAccessValue(scale) and
+		self.moduleSettings.lowThreshold > 0 and
 		self.moduleSettings.lowThresholdFlash and
 		self.moduleSettings.lowThreshold >= scale and self.alive and
-		not self.noFlash) then
+		not self.noFlash then
 			self.bUpdateFlash = true
 			self.flashFrame.flash:SetVertexColor(self:GetColor(color))
 	else
