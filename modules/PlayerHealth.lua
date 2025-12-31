@@ -1292,7 +1292,6 @@ function PlayerHealth.prototype:Update(unit)
 	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
 	if self.moduleSettings.showIncomingHeals
 		and self.healFrame
-		-- and self.healFrame.bar
 		and incomingHealAmt
 		and IceHUD.CanAccessValue(incomingHealAmt) then
 		local percent
@@ -1314,7 +1313,6 @@ function PlayerHealth.prototype:Update(unit)
 
 	if self.moduleSettings.showAbsorbs
 		and self.absorbFrame
-		-- and self.absorbFrame.bar
 		and self.absorbAmount
 		and IceHUD.CanAccessValue(self.absorbAmount) then
 		local percent
@@ -1537,10 +1535,10 @@ end
 function PlayerHealth.prototype:UpdateBar(scale, color, alpha)
 	PlayerHealth.super.prototype.UpdateBar(self, scale, color, alpha)
 
-	if self.healFrame --[[and self.healFrame.bar]] then
+	if self.healFrame then
 		self:SetBarFrameColorRGBA(self.healFrame, self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
 	end
-	if self.absorbFrame --[[and self.absorbFrame.bar]] then
+	if self.absorbFrame then
 		self:SetBarFrameColorRGBA(self.absorbFrame, self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
 	end
 --[[ seems to be causing taint. oh well
