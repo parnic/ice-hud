@@ -244,7 +244,7 @@ function SliceAndDice.prototype:CreateDurationBar()
 	if self.durationFrame.SetValue then
 		self.durationFrame:SetValue(0)
 	else
-		self.durationFrame.bar:SetHeight(0)
+		self.durationFrame.texture:SetHeight(0)
 	end
 
 	self:UpdateBar(1, "undef")
