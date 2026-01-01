@@ -274,7 +274,7 @@ end
 function StaggerBar.prototype:GetDebuffDuration(unitName, buffId)
 	local name, _, duration, endTime
 	if IceHUD.SpellFunctionsReturnRank then
-		name, _, _, _, _, duration, endTime = UnitDebuff(unitName, buffName)
+		name, _, _, _, _, duration, endTime = UnitDebuff(unitName, buffId)
 	else
 		for i = 1, IceCore.BuffLimit do
 			local id

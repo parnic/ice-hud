@@ -204,7 +204,7 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 			if not self.frame.buffFrame.iconFrames[startingNum]:IsVisible() or self.frame.buffFrame.iconFrames[startingNum].type ~= "mh" then
 				self:SetupAura("buff",
 					startingNum,
-					GetInventoryItemTexture(self.unit, GetInventorySlotInfo("MainHandSlot")),
+					GetInventoryItemTexture(self.unit, GetInventorySlotInfo("MAINHANDSLOT")),
 					self.mainHandEnchantEndTime,
 					CurrTime + (mainHandExpiration/1000),
 					true,
@@ -226,7 +226,7 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 			if not self.frame.buffFrame.iconFrames[startingNum]:IsVisible() or self.frame.buffFrame.iconFrames[startingNum].type ~= "oh" then
 				self:SetupAura("buff",
 					startingNum,
-					GetInventoryItemTexture(self.unit, GetInventorySlotInfo("SecondaryHandSlot")),
+					GetInventoryItemTexture(self.unit, GetInventorySlotInfo("SECONDARYHANDSLOT")),
 					self.offHandEnchantEndTime,
 					CurrTime + (offHandExpiration/1000),
 					true,

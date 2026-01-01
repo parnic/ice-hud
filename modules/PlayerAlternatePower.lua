@@ -98,7 +98,7 @@ function PlayerAlternatePower.prototype:Update(unit)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		self:SetBottomText1(math.floor(self.powerPercent * 100))
-		self:SetBottomText2(self:GetFormattedText(self.power, self.maxPower), color)
+		self:SetBottomText2(self:GetFormattedText(self.power, self.maxPower), self.color)
 	end
 end
 

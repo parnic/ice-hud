@@ -734,7 +734,7 @@ function IceCastBar.prototype:SpellCastFailed(event, unit, castGuid, spellId)
 		end
 	end
 
-	self:StartBar(IceCastBar.Actions.Failure, L["Failed"], nil, spellId)
+	self:StartBar(IceCastBar.Actions.Failure, L["Failed"], spellId)
 end
 
 function IceCastBar.prototype:SpellCastInterrupted(event, unit, castGuid, spellId)

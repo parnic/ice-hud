@@ -685,14 +685,14 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 				(self.auraDuration == nil or (mainHandExpiration/1000) > self.auraDuration) and (mainHandExpiration/1000)
 				or self.auraDuration
 
-			local slotId, mainHandTexture = GetInventorySlotInfo("MainHandSlot")
+			local slotId = GetInventorySlotInfo("MAINHANDSLOT")
 			return duration, mainHandExpiration/1000, mainHandCharges, GetInventoryItemTexture("player", slotId)
 		elseif unitName == "off hand weapon" and hasOffHandEnchant then
 			local duration =
 				(self.auraDuration == nil or (offHandExpiration/1000) > self.auraDuration) and (offHandExpiration/1000)
 				or self.auraDuration
 
-			local slotId, offHandTexture = GetInventorySlotInfo("SecondaryHandSlot")
+			local slotId = GetInventorySlotInfo("SECONDARYHANDSLOT")
 			return duration, offHandExpiration/1000, offHandCharges, GetInventoryItemTexture("player", slotId)
 		end
 

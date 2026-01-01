@@ -189,7 +189,7 @@ function IceUnitBar.prototype:Redraw()
 	self:SetColorCurve()
 
 	if (self.moduleSettings.enabled) then
-		self:Update(self.unit)
+		self:Update()
 	end
 end
 
@@ -356,13 +356,13 @@ function IceUnitBar.prototype:Alive()
 	-- instead of maintaining a state for 3 different things
 	-- (dead, dead/ghost, alive) just afford the extra function call here
 	self.alive = not UnitIsDeadOrGhost(self.unit)
-	self:Update(self.unit)
+	self:Update()
 end
 
 
 function IceUnitBar.prototype:Dead()
 	self.alive = false
-	self:Update(self.unit)
+	self:Update()
 end
 
 

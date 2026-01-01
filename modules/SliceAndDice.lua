@@ -566,7 +566,7 @@ function SliceAndDice.prototype:HasGlyphBonus()
 end
 
 function SliceAndDice.prototype:GetItemIdFromItemLink(linkStr)
-	local itemId
+	local itemId, itemId2
 	local _
 
 	if linkStr then

@@ -13,7 +13,7 @@ local internal = "internal"
 local ValidAnchors = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", "CENTER" }
 
 ---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
-local LibClassicDurations = LibStub("LibClassicDurations", 1)
+local LibClassicDurations = LibStub("LibClassicDurations", true)
 ---- end change by Fulzamoth
 
 IceTargetInfo.prototype.unit = "target"
@@ -1647,7 +1647,7 @@ function IceTargetInfo.prototype:TargetLevel(event, unit)
 end
 
 
-function IceTargetInfo.prototype:TargetReaction(unit)
+function IceTargetInfo.prototype:TargetReaction(event, unit)
 	if (unit == self.unit or unit == internal) then
 		self.reaction = UnitReaction(self.unit, "player")
 

@@ -195,7 +195,7 @@ function GlobalCoolDown.prototype:GetSpellCastTime(spell)
 		return nil, nil
 	end
 
-	local spellname, castTime, _
+	local spellName, castTime, _
 	if IceHUD.GetSpellInfoReturnsFunnel then
 		spellName, _, _, _, _, _, castTime = GetSpellInfo(spell)
 	else

@@ -503,7 +503,7 @@ function RollTheBones.prototype:GetMaxBuffTime(numComboPoints)
 end
 
 function RollTheBones.prototype:GetItemIdFromItemLink(linkStr)
-  local itemId
+  local itemId, itemId2
   local _
 
   if linkStr then

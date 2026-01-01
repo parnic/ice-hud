@@ -361,7 +361,7 @@ function Totems.prototype:CreateTotem(i, name)
 
 	if not self.graphicalOnEnter then
 		self.graphicalOnEnter = function(button)
-			GameTooltip:SetOwner(button)
+			GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
 			if IceHUD.WowClassic then
 				GameTooltip:SetText(button.name)
 			else

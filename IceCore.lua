@@ -150,12 +150,12 @@ function IceCore.prototype:SetupDefaults()
 
 	-- get default settings from the modules
 	self.defaults.profile.modules = {}
-	for i = 1, table.getn(self.elements) do
+	for i = 1, #self.elements do
 		local name = self.elements[i]:GetElementName()
 		self.defaults.profile.modules[name] = self.elements[i]:GetDefaultSettings()
 	end
 
-	if (table.getn(self.elements) > 0) then
+	if (#self.elements > 0) then
 		self.defaults.profile.colors = self.elements[1].defaultColors
 	end
 end
@@ -235,7 +235,7 @@ function IceCore.prototype:Enable(userToggle)
 
 	self:DrawFrame()
 
-	for i = 1, table.getn(self.elements) do
+	for i = 1, #self.elements do
 		-- make sure there are settings for this bar (might not if we make a new profile with existing custom bars)
 		if self.settings.modules[self.elements[i].elementName] then
 			self.elements[i]:Create(self.IceHUDFrame)
@@ -524,7 +524,7 @@ function IceCore.prototype:GetNumCustomModules(exceptMe, customBarType)
 	local num = 0
 	local foundNum = 0
 
-	for i=1,table.getn(self.elements) do
+	for i=1,#self.elements do
 		if (self.elements[i] and self.elements[i] ~= exceptMe and
 			customBarType == self.elements[i].moduleSettings.customBarType) then
 			local str = self.elements[i].elementName:match("MyCustom"..(customBarType).."%d+")
@@ -546,7 +546,7 @@ function IceCore.prototype:DeleteDynamicModule(module)
 	end
 
 	local ndx
-	for i = 1,table.getn(self.elements) do
+	for i = 1,#self.elements do
 		if (self.elements[i] == module) then
 			ndx = i
 			break
@@ -584,7 +584,7 @@ end
 
 
 function IceCore.prototype:SetModuleDatabases()
-	for i = 1, table.getn(self.elements) do
+	for i = 1, #self.elements do
 		self.elements[i]:SetDatabase(self.settings)
 	end
 end
@@ -643,7 +643,7 @@ end
 
 
 function IceCore.prototype:Redraw()
-	for i = 1, table.getn(self.elements) do
+	for i = 1, #self.elements do
 		self.elements[i]:Redraw()
 	end
 end
@@ -674,7 +674,7 @@ function IceCore.prototype:GetModuleOptions()
 		order = 2
 	}
 
-	for i = 1, table.getn(self.elements) do
+	for i = 1, #self.elements do
 		local modName = self.elements[i]:GetElementName()
 		local modDesc = self.elements[i]:GetElementDescription()
 		local opt = self.elements[i]:GetOptions()
@@ -1007,7 +1007,7 @@ function IceCore.prototype:ConfigModeToggle(bWantConfig)
 	self.bConfigMode = bWantConfig
 
 	if bWantConfig then
-		for i = 1, table.getn(self.elements) do
+		for i = 1, #self.elements do
 			if self.elements[i]:IsEnabled() then
 				self.elements[i].masterFrame:Show()
 				self.elements[i].frame:Show()
@@ -1018,7 +1018,7 @@ function IceCore.prototype:ConfigModeToggle(bWantConfig)
 			end
 		end
 	else
-		for i = 1, table.getn(self.elements) do
+		for i = 1, #self.elements do
 			if not self.elements[i]:IsVisible() then
 				self.elements[i].masterFrame:Hide()
 				self.elements[i].frame:Hide()

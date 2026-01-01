@@ -1562,4 +1562,4 @@ function PlayerHealth.prototype:OutCombat()
 end
 
 -- Load us up
-IceHUD.PlayerHealth = PlayerHealth.new()
+IceHUD.PlayerHealth = PlayerHealth:new()

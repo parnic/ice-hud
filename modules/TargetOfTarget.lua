@@ -380,7 +380,7 @@ function TargetOfTarget.prototype:CreateBarFrame()
 		self.frame.bar = CreateFrame("StatusBar", nil, self.frame)
 	end
 
-	self.frame.bg:SetTexture(0,0,0)
+	self.frame.bg:SetTexture(0)
 
 	self.frame.bar:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	if self.moduleSettings.sizeToGap then

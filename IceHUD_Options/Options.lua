@@ -2,7 +2,7 @@ local LibDualSpec = LibStub('LibDualSpec-1.0', true)
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local icon = LibStub("LibDBIcon-1.0", true)
 local AceGUI = LibStub("AceGUI-3.0")
-local AceSerializer = LibStub("AceSerializer-3.0", 1)
+local AceSerializer = LibStub("AceSerializer-3.0", true)
 local lastCustomModule = "Bar"
 
 IceHUD_Options = {}

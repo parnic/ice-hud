@@ -11,6 +11,21 @@ end
 local space_chars  = create_set(" ", "\t", "\r", "\n")
 local delim_chars  = create_set(" ", "\t", "\r", "\n", "]", "}", ",")
 local escape_chars = create_set("\\", "/", '"', "b", "f", "n", "r", "t", "u")
+local escape_char_map = {
+	["\\"] = "\\",
+	["\""] = "\"",
+	["\b"] = "b",
+	["\f"] = "f",
+	["\n"] = "n",
+	["\r"] = "r",
+	["\t"] = "t",
+}
+
+local escape_char_map_inv = { ["/"] = "/" }
+for k, v in pairs(escape_char_map) do
+	escape_char_map_inv[v] = k
+end
+
 local literals     = create_set("true", "false", "null")
 
 local literal_map = {
@@ -139,6 +154,9 @@ local function parse_array(str, i)
     while 1 do
         local x
         i = next_char(str, i, space_chars, true)
+        if i > #str then
+            return nil, -1, decode_error(str, i, "failed to extract next character from string")
+        end
         -- Empty / end of array?
         if str:sub(i, i) == "]" then
             i = i + 1
@@ -164,6 +182,9 @@ local function parse_object(str, i)
     while 1 do
         local key, val
         i = next_char(str, i, space_chars, true)
+        if i > #str then
+            return nil, -1, decode_error(str, i, "failed to extract next character from string")
+        end
         -- Empty / end of object?
         if str:sub(i, i) == "}" then
             i = i + 1
@@ -183,7 +204,9 @@ local function parse_object(str, i)
         -- Read value
         val, i = parse(str, i)
         -- Set
-        res[key] = val
+        if key ~= nil then
+            res[key] = val
+        end
         -- Next token
         i = next_char(str, i, space_chars, true)
         local chr = str:sub(i, i)
