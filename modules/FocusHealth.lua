@@ -270,7 +270,7 @@ function FocusHealth.prototype:CreateBackground()
 	self.frame.button:ClearAllPoints()
 	-- Parnic - kinda hacky, but in order to fit this region to multiple types of bars, we need to do this...
 	--          would be nice to define this somewhere in data, but for now...here we are
-	if self:GetMyBarTexture() == "HiBar" then
+	if self:GetMyBarTextureName() == "HiBar" then
 		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
 		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
 	else

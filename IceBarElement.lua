@@ -219,6 +219,7 @@ do
 				else
 					self.moduleSettings.side = IceCore.Side.Left
 				end
+				self:NotifyBarOverrideChanged()
 				self:Redraw()
 			end,
 			values = { "Left", "Right" },
@@ -1022,7 +1023,7 @@ function IceBarElement.prototype:CreateBackground()
 		self.frame.bg = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
 
-	self.frame.bg:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture() .."BG")
+	self.frame.bg:SetTexture(IceElement.TexturePath .. self:GetMyBarTextureName() .."BG")
 	self.frame.bg:SetBlendMode(self.settings.barBgBlendMode)
 
 	self.frame.bg:ClearAllPoints()
@@ -1143,15 +1144,13 @@ function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer,
 	barFrame:SetWidth(width)
 	barFrame:SetHeight(height)
 
-	local barTexture = IceElement.TexturePath .. self:GetMyBarTexture()
 	if not barFrame.texture then
 		barFrame.texture = barFrame:CreateTexture(nil, (textureLayer and textureLayer or "ARTWORK"))
 	end
+	barFrame.texture:SetTexture(self:GetBarTexturePath())
 	if nonStatusFrameBar then
-		barFrame.texture:SetTexture(barTexture)
 		barFrame.texture:SetAllPoints(barFrame)
 	else
-		barFrame.texture:SetTexture(barTexture .. (self.moduleSettings.side == IceCore.Side.Left and "-flipped" or ""))
 		barFrame:SetStatusBarTexture(barFrame.texture)
 	end
 	self:SetBarFramePoints(barFrame)
@@ -1159,7 +1158,11 @@ function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer,
 	return barFrame
 end
 
-function IceBarElement.prototype:GetMyBarTexture()
+function IceBarElement.prototype:GetBarTexturePath()
+	return IceElement.TexturePath .. self:GetMyBarTextureName() .. (self.moduleSettings.side == IceCore.Side.Left and "-flipped" or "")
+end
+
+function IceBarElement.prototype:GetMyBarTextureName()
 	if self.moduleSettings.shouldUseOverride and self.moduleSettings.barTextureOverride then
 		return self.moduleSettings.barTextureOverride
 	else
@@ -1315,12 +1318,7 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 			end
 		end
 
-		if (self.moduleSettings.side == IceCore.Side.Left) then
-			self:GetBarFrameTexture(barFrame):SetTexCoord(1, 0, min_y, max_y)
-		else
-			self:GetBarFrameTexture(barFrame):SetTexCoord(0, 1, min_y, max_y)
-		end
-
+		self:GetBarFrameTexture(barFrame):SetTexCoord(0, 1, min_y, max_y)
 		self:SetBarFramePoints(barFrame, 0, offset_y)
 		barFrame:SetHeight(self.settings.barHeight * scale)
 	end
@@ -1660,7 +1658,7 @@ end
 
 function IceBarElement.prototype:NotifyBarOverrideChanged()
 	for i=1, #self.Markers do
-		self.Markers[i].texture:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+		self.Markers[i].texture:SetTexture(self:GetBarTexturePath())
 	end
 end
 
@@ -1760,12 +1758,7 @@ function IceBarElement.prototype:PositionMarker(idx, pos)
 		max_y = IceHUD:Clamp(1-pos, 0, 1)
 	end
 
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.Markers[idx].texture:SetTexCoord(1, 0, min_y, max_y)
-	else
-		self.Markers[idx].texture:SetTexCoord(0, 1, min_y, max_y)
-	end
-
+	self.Markers[idx].texture:SetTexCoord(0, 1, min_y, max_y)
 	self:SetBarFramePoints(self.Markers[idx], 0, offset_y)
 	self.Markers[idx].texture:Show()
 end

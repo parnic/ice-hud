@@ -221,7 +221,7 @@ function IceUnitBar.prototype:CreateFlashFrame()
 		self.flashFrame.flash = self.flashFrame:CreateTexture(nil, "BACKGROUND")
 	end
 
-	self.flashFrame.flash:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+	self.flashFrame.flash:SetTexture(self:GetBarTexturePath())
 	self.flashFrame.flash:SetBlendMode("ADD")
 	self.flashFrame.flash:SetAllPoints(self.flashFrame)
 
@@ -231,11 +231,7 @@ function IceUnitBar.prototype:CreateFlashFrame()
 	self.flashFrame:ClearAllPoints()
 	self.flashFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
 
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.flashFrame.flash:SetTexCoord(1, 0, 0, 1)
-	else
-		self.flashFrame.flash:SetTexCoord(0, 1, 0, 1)
-	end
+	self.flashFrame.flash:SetTexCoord(0, 1, 0, 1)
 end
 
 function IceUnitBar.prototype:RotateHorizontal()

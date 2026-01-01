@@ -457,11 +457,7 @@ function PlayerMana.prototype:EnergyTick()
 	local pos = elapsed / 2
 	local y = pos * (self.settings.barHeight-2)
 
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.tickerFrame.spark:SetTexCoord(1, 0, 1-pos-0.01, 1-pos)
-	else
-		self.tickerFrame.spark:SetTexCoord(0, 1, 1-pos-0.01, 1-pos)
-	end
+	self.tickerFrame.spark:SetTexCoord(0, 1, 1-pos-0.01, 1-pos)
 	self.tickerFrame.spark:SetHeight(self.settings.barHeight * 0.01)
 
 	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", 0, y)
@@ -486,7 +482,7 @@ function PlayerMana.prototype:CreateTickerFrame()
 		self.tickerFrame:Hide()
 	end
 
-	self.tickerFrame.spark:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+	self.tickerFrame.spark:SetTexture(self:GetBarTexturePath())
 	self.tickerFrame.spark:SetBlendMode("ADD")
 	self.tickerFrame.spark:ClearAllPoints()
 	self.tickerFrame.spark:SetPoint("BOTTOMLEFT",self.tickerFrame,"BOTTOMLEFT")
