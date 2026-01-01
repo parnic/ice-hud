@@ -203,7 +203,7 @@ function PlayerHealth.prototype:GetOptions()
 			self:Update(self.unit)
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or self.moduleSettings.scaleHealthColor
 		end,
 		order = 40
 	}
