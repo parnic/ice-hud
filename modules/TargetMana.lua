@@ -55,7 +55,7 @@ function IceTargetMana.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 2
 	settings["upperText"] = "[PercentMP:Round]"
-	settings["lowerText"] = "[FractionalMP:Short:PowerColor]"
+	settings["lowerText"] = "[[[MP:Short:PowerColor] '/' [MaxMP:Short:PowerColor]]:Bracket]"
 	settings["onlyShowMana"] = false
 
 	return settings

@@ -35,7 +35,7 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["hideBlizz"] = false
 	settings["hideBlizzParty"] = false
 	settings["upperText"] = "[PercentHP:Round]"
-	settings["lowerText"] = "[FractionalHP:Short:HPColor:Bracket]"
+	settings["lowerText"] = "[[[HP:Short:HPColor] '/' [MaxHP:Short:HPColor]]:Bracket]"
 	settings["allowMouseInteraction"] = false
 	settings["allowMouseInteractionCombat"] = false
 	settings["healAlpha"] = 0.6

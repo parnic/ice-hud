@@ -57,7 +57,7 @@ function PlayerMana.prototype:GetDefaultSettings()
 	settings["tickerEnabled"] = true
 	settings["tickerAlpha"] = 0.5
 	settings["upperText"] = "[PercentMP:Round]"
-	settings["lowerText"] = "[FractionalMP:Short:PowerColor]"
+	settings["lowerText"] = "[[[MP:Short:PowerColor] '/' [MaxMP:Short:PowerColor]]:Bracket]"
 
 	return settings
 end

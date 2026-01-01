@@ -48,7 +48,7 @@ function IceTargetHealth.prototype:GetDefaultSettings()
 	settings["classColor"] = false
 	settings["hideBlizz"] = false
 	settings["upperText"] = "[PercentHP:Round]"
-	settings["lowerText"] = "[FractionalHP:Short:HPColor:Bracket]"
+	settings["lowerText"] = "[[[HP:Short:HPColor] '/' [MaxHP:Short:HPColor]]:Bracket]"
 	settings["raidIconOnTop"] = true
 	settings["showRaidIcon"] = true
 	settings["raidIconXOffset"] = 12
