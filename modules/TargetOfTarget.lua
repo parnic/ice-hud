@@ -275,7 +275,7 @@ function TargetOfTarget.prototype:GetDefaultSettings()
 	defaults["sizeToGap"] = true
 	defaults["totWidth"] = 200
 	defaults["leftTag"] = "[Name]"
-	defaults["rightTag"] = "[PercentHP:Percent]"
+	defaults["rightTag"] = "[PercentHP:Round]"
 	defaults["moduleHeight"] = 15
 	return defaults
 end
