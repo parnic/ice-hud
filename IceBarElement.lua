@@ -1419,7 +1419,7 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	if self.moduleSettings.markers then
 		for i=1, #self.Markers do
 			local color = self.moduleSettings.markers[i].color
-			self.Markers[i].bar:SetVertexColor(color.r, color.g, color.b, self.alpha)
+			self.Markers[i].texture:SetVertexColor(color.r, color.g, color.b, self.alpha)
 		end
 	end
 
@@ -1660,7 +1660,7 @@ end
 
 function IceBarElement.prototype:NotifyBarOverrideChanged()
 	for i=1, #self.Markers do
-		self.Markers[i].bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+		self.Markers[i].texture:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
 	end
 end
 
@@ -1691,7 +1691,7 @@ function IceBarElement.prototype:AddNewMarker(inPosition, inColor, inHeight)
 end
 
 function IceBarElement.prototype:EditMarker(idx, inPosition, inColor, inHeight)
-	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
+	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].texture and #self.moduleSettings.markers >= idx,
 		"Bad marker passed to EditMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
 	self.moduleSettings.markers[idx] = {
 		position = inPosition,
@@ -1702,10 +1702,13 @@ function IceBarElement.prototype:EditMarker(idx, inPosition, inColor, inHeight)
 end
 
 function IceBarElement.prototype:RemoveMarker(idx, bSkipSettings)
-	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
+	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].texture and #self.moduleSettings.markers >= idx,
 		"Bad marker passed to RemoveMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
 	self.Markers[idx]:Hide()
 	table.remove(self.Markers, idx)
+	if lastEditMarkerConfig > #self.Markers then
+		lastEditMarkerConfig = math.max(#self.Markers, 1)
+	end
 	if not bSkipSettings then
 		table.remove(self.moduleSettings.markers, idx)
 	end
@@ -1714,28 +1717,28 @@ end
 function IceBarElement.prototype:CreateMarker(idx)
 	if self.Markers[idx] ~= nil then
 		self.Markers[idx]:Hide()
-		self.Markers[idx].bar = nil
+		self.Markers[idx].texture = nil
 		self.Markers[idx] = nil
 	end
 
 	self.Markers[idx] = self:BarFactory(self.Markers[idx], "MEDIUM", "OVERLAY", "Marker"..idx)
 
 	local color = self.moduleSettings.markers[idx].color
-	self.Markers[idx].bar:SetVertexColor(color.r, color.g, color.b, self.alpha)
+	self:SetBarFrameColorRGBA(self.Markers[idx], color.r, color.g, color.b, self.alpha)
 
 	self:UpdateMarker(idx)
 	self:PositionMarker(idx, self.moduleSettings.markers[idx].position)
 end
 
 function IceBarElement.prototype:UpdateMarker(idx)
-	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
+	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].texture and #self.moduleSettings.markers >= idx,
 		"Bad marker passed to UpdateMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
 	self.Markers[idx]:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.Markers[idx]:SetHeight(self.moduleSettings.markers[idx].height)
 end
 
 function IceBarElement.prototype:PositionMarker(idx, pos)
-	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
+	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].texture and #self.moduleSettings.markers >= idx,
 		"Bad marker passed to PositionMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
 
 	local min_y, max_y, offset_y
@@ -1758,13 +1761,13 @@ function IceBarElement.prototype:PositionMarker(idx, pos)
 	end
 
 	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.Markers[idx].bar:SetTexCoord(1, 0, min_y, max_y)
+		self.Markers[idx].texture:SetTexCoord(1, 0, min_y, max_y)
 	else
-		self.Markers[idx].bar:SetTexCoord(0, 1, min_y, max_y)
+		self.Markers[idx].texture:SetTexCoord(0, 1, min_y, max_y)
 	end
 
 	self:SetBarFramePoints(self.Markers[idx], 0, offset_y)
-	self.Markers[idx].bar:Show()
+	self.Markers[idx].texture:Show()
 end
 
 function IceBarElement.prototype:LoadMarkers()
