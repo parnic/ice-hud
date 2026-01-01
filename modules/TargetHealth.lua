@@ -856,7 +856,7 @@ function IceTargetHealth.prototype:Update(unit)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
-		self:SetBottomText1(string.format("%s", UnitHealthPercent and UnitHealthPercent(self.unit, true, CurveConstants.ScaleTo100) or math.floor(self.healthPercentage * 100)))
+		self:SetBottomText1(string.format("%.0f", UnitHealthPercent and UnitHealthPercent(self.unit, true, CurveConstants.ScaleTo100) or math.floor(self.healthPercentage * 100)))
 
 		if not IceHUD.CanAccessValue(self.maxHealth) or self.maxHealth ~= 100 then
 			if self.moduleSettings.abbreviateHealth then

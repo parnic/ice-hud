@@ -93,7 +93,7 @@ function PlayerAltMana.prototype:Update()
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
-		self:SetBottomText1(string.format("%s", UnitPowerPercent and UnitPowerPercent(self.unit, SPELL_POWER_MANA, true, CurveConstants.ScaleTo100) or math.floor(self.PlayerAltManaPercentage * 100)))
+		self:SetBottomText1(string.format("%.0f", UnitPowerPercent and UnitPowerPercent(self.unit, SPELL_POWER_MANA, true, CurveConstants.ScaleTo100) or math.floor(self.PlayerAltManaPercentage * 100)))
 
 		if not IceHUD.CanAccessValue(self.PlayerAltManaMax) or self.PlayerAltManaMax ~= 100 then
 			self:SetBottomText2(self:GetFormattedText(self:Round(self.PlayerAltMana), self:Round(self.PlayerAltManaMax)), "PlayerMana")

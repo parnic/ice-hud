@@ -101,7 +101,7 @@ function PlayerAlternatePower.prototype:Update(unit)
 	self:SetBarColorRGBA(info.r, info.g, info.b, self.alpha)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self:SetBottomText1(string.format("%s", UnitPowerPercent and UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, CurveConstants.ScaleTo100) or math.floor(self.powerPercent * 100)))
+		self:SetBottomText1(string.format("%.0f", UnitPowerPercent and UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, CurveConstants.ScaleTo100) or math.floor(self.powerPercent * 100)))
 		self:SetBottomText2(self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.power) or self.power, AbbreviateNumbers and AbbreviateNumbers(self.maxPower) or self.maxPower), self.color)
 	end
 end

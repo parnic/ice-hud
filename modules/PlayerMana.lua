@@ -395,7 +395,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 		else
 			displayPercentage = math.floor(displayPercentage * 100)
 		end
-		self:SetBottomText1(string.format("%s", displayPercentage))
+		self:SetBottomText1(string.format("%.0f", displayPercentage))
 
 
 		local amount = self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.mana) or self.mana, AbbreviateNumbers and AbbreviateNumbers(self.maxMana) or self.maxMana)
