@@ -106,7 +106,7 @@ function PetHealth.prototype:Update(unit)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
-		self:SetBottomText1(math.floor(self.healthPercentage * 100)) -- todo:midnight: make work
+		self:SetBottomText1(string.format("%s", UnitHealthPercent and UnitHealthPercent(self.unit, true, CurveConstants.ScaleTo100) or math.floor(self.healthPercentage * 100)))
 	end
 end
 

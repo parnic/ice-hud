@@ -389,21 +389,20 @@ function PlayerMana.prototype:Update(unit, powertype)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		-- extra hack for whiny rogues (are there other kind?)
-		local displayPercentage = self.manaPercentage -- todo:midnight: make work
-		if self.manaType == SPELL_POWER_ENERGY or self.manaType == SPELL_POWER_FOCUS or self.manaType == SPELL_POWER_FURY then
-			displayPercentage = self.mana
+		local displayPercentage = self.manaPercentage
+		if UnitPowerPercent then
+			displayPercentage = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, CurveConstants.ScaleTo100)
 		else
 			displayPercentage = math.floor(displayPercentage * 100)
 		end
-		self:SetBottomText1(displayPercentage)
+		self:SetBottomText1(string.format("%s", displayPercentage))
 
 
-		local amount = self:GetFormattedText(self.mana, self.maxMana)
+		local amount = self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.mana) or self.mana, AbbreviateNumbers and AbbreviateNumbers(self.maxMana) or self.maxMana)
 
 		-- druids get a little shorted string to make room for druid mana in forms
 		if (self.unitClass == "DRUID" and self.manaType ~= SPELL_POWER_MANA) then
-			amount = self:GetFormattedText(self.mana)
+			amount = self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.mana) or self.mana)
 		end
 		self:SetBottomText2(amount, color)
 	end

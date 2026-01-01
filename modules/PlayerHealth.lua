@@ -1332,8 +1332,8 @@ function PlayerHealth.prototype:Update(unit)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self:SetBottomText1(math.floor(self.healthPercentage * 100)) -- todo:midnight: make work
-		self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), textColor)
+		self:SetBottomText1(string.format("%s", UnitHealthPercent and UnitHealthPercent(self.unit, true, CurveConstants.ScaleTo100) or math.floor(self.healthPercentage * 100)))
+		self:SetBottomText2(self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.health) or self.health, AbbreviateNumbers and AbbreviateNumbers(self.maxHealth) or self.maxHealth), textColor)
 	end
 
 	--self:CheckPartyRole()

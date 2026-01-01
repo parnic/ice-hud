@@ -375,14 +375,19 @@ function FocusHealth.prototype:Update(unit)
 	self:UpdateBar(self.healthPercentage, self.color)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self:SetBottomText1(math.floor(self.healthPercentage * 100)) -- todo:midnight: make work
+		self:SetBottomText1(string.format("%s", UnitHealthPercent and UnitHealthPercent(self.unit, true, CurveConstants.ScaleTo100) or math.floor(self.healthPercentage * 100)))
 
 		if self.moduleSettings.abbreviateHealth then
-			self.health = self:Round(self.health)
-			self.maxHealth = self:Round(self.maxHealth)
+			if AbbreviateNumbers then
+				self.health = AbbreviateNumbers(self.health)
+				self.maxHealth = AbbreviateNumbers(self.maxHealth)
+			else
+				self.health = self:Round(self.health)
+				self.maxHealth = self:Round(self.maxHealth)
+			end
 		end
 
-		if (self.maxHealth ~= 100) then
+		if not IceHUD.CanAccessValue(self.maxHealth) or self.maxHealth ~= 100 then
 			self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
 		else
 			self:SetBottomText2()

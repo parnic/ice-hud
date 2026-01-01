@@ -13,7 +13,7 @@ IceBarElement.prototype.CurrLerpTime = 0
 IceBarElement.prototype.LastScale = 1
 IceBarElement.prototype.DesiredScale = 1
 IceBarElement.prototype.CurrScale = 1
-IceBarElement.prototype.Markers = {} -- todo:midnight: these need to continue to be the old bar system and _not_ StatusBars. right now they're StatusBars because they use BarFactory()
+IceBarElement.prototype.Markers = {}
 IceBarElement.prototype.IsBarElement = true -- cheating to avoid crawling up the 'super' references looking for this class. see IceCore.lua
 IceBarElement.prototype.bTreatEmptyAsFull = false
 

@@ -850,46 +850,31 @@ function IceTargetHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.healthPercentage, self.color)
 
-	if IsAddOnLoaded("RealMobHealth") then
-		if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
-			self:SetBottomText1(math.floor(self.healthPercentage * 100)) -- todo:midnight: make work
-
-			if self.moduleSettings.abbreviateHealth then
-				if RealMobHealth.UnitHasHealthData(unit) then
-					self.health, self.maxHealth = RealMobHealth.GetUnitHealth(unit)
-				end
-				self.health = self:Round(self.health)
-				self.maxHealth = self:Round(self.maxHealth)
-			end
-
-			if RealMobHealth.UnitHasHealthData(unit) or (self.maxHealth ~= 100) then
-				if RealMobHealth.UnitHasHealthData(unit) then
-					self.health, self.maxHealth = RealMobHealth.GetUnitHealth(unit)
-					self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
-				else
-					self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
-				end				
-			else
-				self:SetBottomText2()
-			end
-		end
-	else
-		if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
-			self:SetBottomText1(math.floor(self.healthPercentage * 100)) -- todo:midnight: make work
-
-			if self.moduleSettings.abbreviateHealth then
-				self.health = self:Round(self.health)
-				self.maxHealth = self:Round(self.maxHealth)
-			end
-
-			if (self.maxHealth ~= 100) then
-				self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
-			else
-				self:SetBottomText2()
-			end
-		end	
+	if IsAddOnLoaded("RealMobHealth") and RealMobHealth.UnitHasHealthData(unit) then
+		self.health, self.maxHealth = RealMobHealth.GetUnitHealth(unit)
+		self.healthPercentage = self.health / self.maxHealth
 	end
-	
+
+	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
+		self:SetBottomText1(string.format("%s", UnitHealthPercent and UnitHealthPercent(self.unit, true, CurveConstants.ScaleTo100) or math.floor(self.healthPercentage * 100)))
+
+		if not IceHUD.CanAccessValue(self.maxHealth) or self.maxHealth ~= 100 then
+			if self.moduleSettings.abbreviateHealth then
+				if AbbreviateNumbers then
+					self:SetBottomText2(self:GetFormattedText(AbbreviateNumbers(self.health), AbbreviateNumbers(self.maxHealth)), self.color)
+				else
+					self.health = self:Round(self.health)
+					self.maxHealth = self:Round(self.maxHealth)
+					self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
+				end
+			else
+				self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
+			end
+		else
+			self:SetBottomText2()
+		end
+	end
+
 	self:CheckPvP()
 	self:CheckPartyRole()
 	self:SetIconAlpha()

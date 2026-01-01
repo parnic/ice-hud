@@ -528,7 +528,7 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 
 	if IceHUD.WowVer >= 70000 then
 		local numMax = self:GetPowerMax()
-		-- todo: no idea how to handle numRunes changing at runtime in midnight...
+		-- todo:midnight: no idea how to handle numRunes changing at runtime in midnight...
 		-- will probably be left up to the individual child classes since we can't
 		-- realistically handle it in a cross-compatible way with secrets in the mix
 		if IceHUD.CanAccessValue(numMax) and numMax ~= self.numRunes then
@@ -570,7 +570,7 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 
 	if self:GetRuneMode() ~= "Numeric" then
 		for i=1, self.numRunes do
-			-- todo: this is stupid for secret vals and effectively disables this whole thing
+			-- todo:midnight: this is stupid for secret vals and effectively disables this whole thing
 			if IceHUD.CanAccessValue(percentReady) and i <= self.round(percentReady) then
 				if self:GetRuneMode() == "Graphical" then
 					self:SetRuneGraphicalTexture(i)
