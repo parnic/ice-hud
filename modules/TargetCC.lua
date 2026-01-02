@@ -372,12 +372,12 @@ function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 	else
 		debuff, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = IceHUD.UnitAura(unitName, i, "HARMFUL")
 	end
-	local isMine = unitCaster == "player"
+	local isMine = not IceHUD.CanAccessValue(unitCaster) or unitCaster == "player"
 	local result = {nil, nil, nil}
 	local remaining
 
 	while debuff do
-		remaining = endTime - GetTime()
+		remaining = endTime - GetTime() -- todo:midnight: can't do this. need to return a DurationObject instead
 
 		if (debuffNames[spellId] or debuffNames[debuff]) and (not self.moduleSettings.onlyShowForMyDebuffs or isMine) then
 			if result[0] then

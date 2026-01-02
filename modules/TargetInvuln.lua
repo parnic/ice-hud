@@ -171,12 +171,12 @@ function TargetInvuln.prototype:GetMaxbuffDuration(unitName, buffNames)
 	else
 		buff, texture, count, buffType, duration, endTime, unitCaster = IceHUD.UnitAura(unitName, i, "HELPFUL")
 	end
-	local isMine = unitCaster == "player"
+	local isMine = not IceHUD.CanAccessValue(unitCaster) or unitCaster == "player"
 	local result = {nil, nil, nil}
 	local remaining
 
 	while buff do
-		remaining = endTime - GetTime()
+		remaining = endTime - GetTime() -- todo:midnight: can't do this. need to return a DurationObject instead
 
 
 		if (duration == 0) and (remaining<0) then

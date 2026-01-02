@@ -272,7 +272,7 @@ end
 
 function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
 	if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDuration then
-		local info = C_UnitAuras.GetUnitAuraBySpellID(unitName, buffName)
+		local info = C_UnitAuras.GetUnitAuraBySpellID(unitName, buffName) -- todo:midnight: this doesn't work in combat
 		if not info or not info.auraInstanceID then
 			return nil, nil
 		end

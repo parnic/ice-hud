@@ -266,7 +266,7 @@ end
 function RollTheBones.prototype:GetBuffDuration(unitName, ids)
   if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDuration then
     for i=1,#RtBBuffs do
-      local data = C_UnitAuras.GetUnitAuraBySpellID(unitName, RtBBuffs[i])
+      local data = C_UnitAuras.GetUnitAuraBySpellID(unitName, RtBBuffs[i]) -- todo:midnight: this doesn't work in combat
       if data then
         local duration = C_UnitAuras.GetAuraDuration(unitName, data.auraInstanceID)
         if duration then
