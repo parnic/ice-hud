@@ -22,6 +22,10 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
 * /icehud - opens the configuration UI to tweak any setting
 * /icehudCL - command-line access to tweak IceHUD settings (for use with macros, etc.)
 
+## **A Note on WoW Midnight**
+
+The 12.0 patch, for the Midnight expansion, made significant, sweeping changes to how addons work in the game. As a result, many features previously available are no longer allowed by the game. If IceHUD is no longer doing something it used to do, the most likely reason is that it's not possible (or much more difficult) in the new patch. Feel free to create a GitHub issue for any errors you find; it's expected that there will be some errors for a while due to the extent of changes required.
+
 ## **Frequently Asked Questions**
 
 1. **How do I hide the default Blizzard player, target unit frames and party unit frames?**
@@ -84,4 +88,4 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
 1. **Why do buff/debuff timers not work in Classic?**
    The Classic game client doesn't provide this information to addons because it wasn't a feature when the game first released. You can install the LibClassicDurations addon to enable support, but it's a best guess and not completely accurate.
 
-See [here](https://www.wowace.com/projects/ice-hud/issues/113) for a user-created guide to creating new IceHUD textures.
+See [here](https://github.com/parnic/ice-hud/discussions/47) for a user-created guide to creating new IceHUD textures.
