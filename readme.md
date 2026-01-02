@@ -26,6 +26,8 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
 
 The 12.0 patch, for the Midnight expansion, made significant, sweeping changes to how addons work in the game. As a result, many features previously available are no longer allowed by the game. If IceHUD is no longer doing something it used to do, the most likely reason is that it's not possible (or much more difficult) in the new patch. Feel free to create a GitHub issue for any errors you find; it's expected that there will be some errors for a while due to the extent of changes required.
 
+If you have any custom DogTags using `Fractional*:Short`, they will no longer work in Midnight - use something like `[[HP:Short] '/' [MaxHP:Short]]` instead. Many other enemy-HP-or-buff-dependent features, such as Low Threshold flashing or in-combat buff/debuff tracking, are no longer allowed by the game.
+
 ## **Frequently Asked Questions**
 
 1. **How do I hide the default Blizzard player, target unit frames and party unit frames?**

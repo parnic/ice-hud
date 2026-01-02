@@ -35,6 +35,8 @@ local options =
 |cff9999ffA Note on WoW Midnight|r
 The 12.0 patch, for the Midnight expansion, made significant, sweeping changes to how addons work in the game. As a result, many features previously available are no longer allowed by the game. If IceHUD is no longer doing something it used to do, the most likely reason is that it's not possible (or much more difficult) in the new patch. Feel free to create a GitHub issue for any errors you find; it's expected that there will be some errors for a while due to the extent of changes required.
 
+If you have any custom |cff42ffffDogTags|r using |cff42ffffFractional:Short|r, they will no longer work in Midnight. Many other enemy-HP-or-buff-dependent features, such as Low Threshold flashing or in-combat buff/debuff tracking, are no longer allowed by the game.
+
 |cff9999ff1. How do I hide the default Blizzard player and target unit frames?|r
 Expand the "|cffffdc42Module Settings|r" section, click "PlayerHealth" or "TargetHealth," and check "Hide Blizzard Frame"
 
