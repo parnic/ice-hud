@@ -84,7 +84,6 @@ do
 		else
 			local _, idx = IceHUD:GetBuffCount(self.unit, spellName, true, true)
 			if idx then
-				-- todo:midnight: IceHUD.UnitAura doesn't return 17 values right now due to secrets.
 				self.current = select(17, IceHUD.UnitAura(self.unit, idx))
 			else
 				self.current = 0
