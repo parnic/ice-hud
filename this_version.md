@@ -1,5 +1,9 @@
 # Changelog
 
+v1.16.0:
+
+- Add initial compatibility with WoW 12.x / Midnight. Please see readme/in-game FAQ page for details about this significant change.
+
 v1.15.23:
 
 - Fix Vigor display for 11.2.7.
