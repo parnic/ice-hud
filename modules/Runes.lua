@@ -235,6 +235,24 @@ function Runes.prototype:GetOptions()
 		order = 38,
 	}
 
+	opts["forceHideCooldownNumbers"] = {
+		type = 'toggle',
+		name = L['Force hide cooldown numbers'],
+		desc = L['Whether to force buff and debuff frames to hide their cooldown numbers even if enabled in the game settings or not.'],
+		get = function()
+			return self.moduleSettings.forceHideCooldownNumbers
+		end,
+		set = function(info, v)
+			self.moduleSettings.forceHideCooldownNumbers = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		width = 'double',
+		order = 39,
+	}
+
 	return opts
 end
 
@@ -255,6 +273,7 @@ function Runes.prototype:GetDefaultSettings()
 	defaults["runeMode"] = RUNEMODE_DEFAULT
 	defaults["runeGap"] = 0
 	defaults["showWhenNotFull"] = false
+	defaults["forceHideCooldownNumbers"] = false
 
 	return defaults
 end
@@ -519,6 +538,9 @@ function Runes.prototype:CreateRune(i, type, name)
 	self.frame.graphical[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	self.frame.graphical[i]:SetWidth(self.runeSize)
 	self.frame.graphical[i]:SetHeight(self.runeSize)
+	if self.frame.graphical[i].cd.SetHideCountdownNumbers then
+		self.frame.graphical[i].cd:SetHideCountdownNumbers(self.moduleSettings.forceHideCooldownNumbers)
+	end
 
 	-- hax for blizzard's swapping the unholy and frost rune placement on the default ui...
 	local runeSwapI = i
