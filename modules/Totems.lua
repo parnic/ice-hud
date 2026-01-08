@@ -384,8 +384,8 @@ function Totems.prototype:CreateTotem(i, name)
 	self.frame.graphical[i].cd:SetFrameLevel(self.frame.graphical[i]:GetFrameLevel()+1)
 	self.frame.graphical[i].cd:ClearAllPoints()
 	self.frame.graphical[i].cd:SetAllPoints(self.frame.graphical[i])
-	if duration > 0 then
-		CooldownFrame_SetTimer(self.frame.graphical[i].cd, startTime, duration, true)
+	if not IceHUD.CanAccessValue(haveTotem) or (haveTotem and duration) then
+		self.frame.graphical[i].cd:SetCooldown(startTime, duration)
 		self.frame.graphical[i].cd:Show()
 		self.frame.graphical[i]:Show()
 	end
