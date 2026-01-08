@@ -23,6 +23,6 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 -- Load us up
-if FocusUnit then
+if FocusUnit and not IceHUD.IsSecretEnv() then
 	IceHUD.FocusCC = FocusCC:new()
 end

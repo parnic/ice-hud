@@ -23,4 +23,6 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 -- Load us up
-IceHUD.PlayerCC = PlayerCC:new()
+if not IceHUD.IsSecretEnv() then
+	IceHUD.PlayerCC = PlayerCC:new()
+end

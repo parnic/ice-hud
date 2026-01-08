@@ -467,4 +467,6 @@ function TargetCC.prototype:UpdateTargetDebuffs(event, unit)
 end
 
 -- Load us up
-IceHUD.TargetCC = TargetCC:new()
+if not IceHUD.IsSecretEnv() then
+	IceHUD.TargetCC = TargetCC:new()
+end

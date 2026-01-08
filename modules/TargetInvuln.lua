@@ -276,4 +276,6 @@ function TargetInvuln.prototype:UpdateTargetBuffs(event, unit)
 end
 
 -- Load us up
-IceHUD.TargetInvuln = TargetInvuln:new()
+if not IceHUD.IsSecretEnv() then
+	IceHUD.TargetInvuln = TargetInvuln:new()
+end

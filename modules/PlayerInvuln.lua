@@ -23,4 +23,6 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 -- Load us up
-IceHUD.PlayerInvuln = PlayerInvuln:new()
+if not IceHUD.IsSecretEnv() then
+	IceHUD.PlayerInvuln = PlayerInvuln:new()
+end
