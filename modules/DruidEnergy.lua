@@ -115,7 +115,7 @@ function DruidEnergy.prototype:Update()
 		self:SetBottomText2(self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.DruidEnergy) or self:Round(self.DruidEnergy), AbbreviateNumbers and AbbreviateNumbers(self.DruidEnergyMax) or self:Round(self.DruidEnergyMax)), "DruidEnergy")
 	end
 
-	self:UpdateBar(self.DruidEnergyMax ~= 0 and self.DruidEnergy / self.DruidEnergyMax or 0, "DruidEnergy")
+	self:UpdateBar(self.DruidEnergyPercentage, "DruidEnergy")
 end
 
 if unitClass == "DRUID" then
