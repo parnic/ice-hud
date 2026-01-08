@@ -990,6 +990,24 @@ function IceTargetInfo.prototype:GetOptions()
 		order = 37.02,
 	}
 
+	opts["forceHideCooldownNumbers"] = {
+		type = 'toggle',
+		name = L['Force hide cooldown numbers'],
+		desc = L['Whether to force buff and debuff frames to hide their cooldown numbers even if enabled in the game settings or not.'],
+		get = function()
+			return self.moduleSettings.forceHideCooldownNumbers
+		end,
+		set = function(info, v)
+			self.moduleSettings.forceHideCooldownNumbers = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		width = 'double',
+		order = 37.03,
+	}
+
 	return opts
 end
 
@@ -1017,6 +1035,7 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 	defaults["displayTargetName"] = true
 	defaults["displayTargetDetails"] = true
 	defaults["displayTargetGuild"] = true
+	defaults["forceHideCooldownNumbers"] = false
 	defaults["auras"] = {
 		["buff"] = {
 			["size"] = 20,
@@ -1317,6 +1336,11 @@ do
 				cooldown:SetReverse(true)
 				iconFrames[i].cd = cooldown
 			end
+
+			if iconFrames[i].cd.SetHideCountdownNumbers then
+				iconFrames[i].cd:SetHideCountdownNumbers(self.moduleSettings.forceHideCooldownNumbers)
+			end
+
 			-- Rokiyo: Can't locally buffering these until I'm sure they exist :(
 			local frame = iconFrames[i]
 			local icon = frame.icon
