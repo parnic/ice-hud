@@ -65,7 +65,7 @@ function IceCastBar.prototype:init(name)
 	IceCastBar.super.prototype.init(self, name)
 
 	self:SetDefaultColor("CastCasting", 242, 242, 10)
-	if IceHUD.IsSecretEnv then
+	if IceHUD.IsSecretEnv() then
 		self:SetDefaultColor("CastChanneling", 242, 104, 238)
 	else
 		self:SetDefaultColor("CastChanneling", 242, 242, 10)
@@ -395,6 +395,8 @@ function IceCastBar.prototype:MyOnUpdate()
 
 		if not self.barFrame.SetTimerDuration then
 			self:UpdateBar(IceHUD:Clamp(scale, 0, 1), self:GetCurrentCastingColor())
+		elseif self.NumStages then
+			self:SetBarColorRGBA(self:GetColor(self:GetCurrentCastingColor()))
 		end
 
 		if (remainingTime <= 0) then
@@ -526,6 +528,7 @@ end
 
 
 function IceCastBar.prototype:StartBar(action, message, spellId)
+	local isChannel
 	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill, numStages
 	if IceHUD.SpellFunctionsReturnRank then
 		spell, rank, displayName, icon, startTime, endTime, isTradeSkill = UnitCastingInfo(self.unit)
@@ -533,6 +536,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 		spell, displayName, icon, startTime, endTime, isTradeSkill = UnitCastingInfo(self.unit)
 	end
 	if not (spell) then
+		isChannel = true
 		if IceHUD.SpellFunctionsReturnRank then
 			spell, rank, displayName, icon, startTime, endTime = UnitChannelInfo(self.unit)
 		else
@@ -544,20 +548,13 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 		spell, rank, icon = GetSpellInfo(spellId)
 	end
 
-	if not IceHUD.CanAccessValue(numStages) then
-		self.NumStages = nil
+	if numStages and numStages > 0 then
+		self.NumStages = numStages
+		endTime = endTime + GetUnitEmpowerHoldAtMaxTime(self.unit)
+		action = IceCastBar.Actions.ReverseChannel
 	else
-		local isChargeSpell = numStages and numStages > 0
-		if isChargeSpell then
-			self.NumStages = numStages
-			endTime = endTime + GetUnitEmpowerHoldAtMaxTime(self.unit)
-			action = IceCastBar.Actions.ReverseChannel
-		else
-			self.NumStages = nil
-		end
+		self.NumStages = nil
 	end
-
-	local origAction = action
 
 	if self.moduleSettings.reverseChannel then
 		if action == IceCastBar.Actions.Channel then
@@ -593,7 +590,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 	end
 
 	local setupUpdates = true
-	if (startTime and endTime) then
+	if startTime and endTime then
 		if not IceHUD.CanAccessValue(startTime) then
 			startTime = GetTime()
 		end
@@ -606,7 +603,14 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 		end
 
 		if self.barFrame.SetTimerDuration then
-			local duration = origAction == IceCastBar.Actions.Channel and UnitChannelDuration(self.unit) or UnitCastingDuration(self.unit)
+			local duration
+			if self.NumStages then
+				duration = C_DurationUtil.CreateDuration()
+				duration:SetTimeSpan(startTime / 1000, endTime / 1000)
+			else
+				duration = isChannel and UnitChannelDuration(self.unit) or UnitCastingDuration(self.unit)
+			end
+
 			if not duration then
 				return
 			end
@@ -614,7 +618,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 			self:SetTimerDuration(duration, action)
 			self:UpdateBar(0, self:GetCurrentCastingColor())
 			self:SetBottomText1(self.actionMessage)
-			setupUpdates = false
+			setupUpdates = self.NumStages
 		end
 	else
 		if C_DurationUtil and self.barFrame.SetTimerDuration then
