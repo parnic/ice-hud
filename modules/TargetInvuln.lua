@@ -176,7 +176,7 @@ function TargetInvuln.prototype:GetMaxbuffDuration(unitName, buffNames)
 	local remaining
 
 	while buff do
-		remaining = endTime - GetTime() -- todo:midnight: can't do this. need to return a DurationObject instead
+		remaining = endTime - GetTime()
 
 
 		if (duration == 0) and (remaining<0) then

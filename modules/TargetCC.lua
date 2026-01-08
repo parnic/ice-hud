@@ -377,7 +377,7 @@ function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 	local remaining
 
 	while debuff do
-		remaining = endTime - GetTime() -- todo:midnight: can't do this. need to return a DurationObject instead
+		remaining = endTime - GetTime()
 
 		if (debuffNames[spellId] or debuffNames[debuff]) and (not self.moduleSettings.onlyShowForMyDebuffs or isMine) then
 			if result[0] then
