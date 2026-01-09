@@ -1540,7 +1540,7 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 	frameIcon.texture:SetTexture(icon)
 	frameIcon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
 	frameIcon.stack:SetText((count and (count > 1)) and count or nil)
-	
+
 	frame:Show()
 end
 
