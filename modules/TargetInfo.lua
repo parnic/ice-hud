@@ -567,7 +567,7 @@ function IceTargetInfo.prototype:GetOptions()
 					return not self.moduleSettings.enabled or not self.moduleSettings.auras["buff"].show
 				end,
 				order = 37.5
-			}
+			},
 		}
 	}
 
@@ -1333,7 +1333,6 @@ do
 
 			-- Frame creation --
 			if (not iconFrames[i]) then
-				print("no iconframes")
 				iconFrames[i] = FrameFactory("Frame", parent)
 
 				iconFrames[i].icon = FrameFactory("Frame",iconFrames[i])
@@ -1541,6 +1540,7 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 	frameIcon.texture:SetTexture(icon)
 	frameIcon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
 	frameIcon.stack:SetText((count and (count > 1)) and count or nil)
+	
 	frame:Show()
 end
 
