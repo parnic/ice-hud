@@ -418,6 +418,22 @@ function IceTargetInfo.prototype:GetOptions()
 				end,
 				order = 32.2
 			},
+			showTimer = {
+				type = 'toggle',
+				name = L["Show buff timers"],
+				desc = L["Toggles whether to show buff countdown timers (note that this may obscure icons for buffs depending on icon sizes)"],
+				get = function()
+					return self.moduleSettings.auras["buff"].showTimer
+				end,
+				set = function(info, v)
+					self.moduleSettings.auras["buff"].showTimer = v
+					self:RedrawBuffs()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				order = 32.3
+			},
 			header = {
 				type = 'header',
 				name = L["Size and Placement"],
@@ -551,7 +567,7 @@ function IceTargetInfo.prototype:GetOptions()
 					return not self.moduleSettings.enabled or not self.moduleSettings.auras["buff"].show
 				end,
 				order = 37.5
-			},
+			}
 		}
 	}
 
@@ -608,6 +624,22 @@ function IceTargetInfo.prototype:GetOptions()
 					return not self.moduleSettings.enabled
 				end,
 				order = 32.2
+			},
+			showTimer = {
+				type = 'toggle',
+				name = L["Show debuff timers"],
+				desc = L["Toggles whether to show debuff countdown timers (note that this may obscure icons for debuffs depending on icon sizes)"],
+				get = function()
+					return self.moduleSettings.auras["debuff"].showTimer
+				end,
+				set = function(info, v)
+					self.moduleSettings.auras["debuff"].showTimer = v
+					self:RedrawBuffs()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				order = 32.3
 			},
 			header = {
 				type = 'header',
@@ -1018,6 +1050,7 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 			["growDirection"] = "Left",
 			["filter"] = "Never",
 			["show"] = true,
+			["showTimer"] = false,
 			["perRow"] = 10,
 			["sortByExpiration"] = true,
 		},
@@ -1030,6 +1063,7 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 			["growDirection"] = "Right",
 			["filter"] = "Never",
 			["show"] = true,
+			["showTimer"] = false,
 			["perRow"] = 10,
 			["sortByExpiration"] = true,
 		}
@@ -1268,8 +1302,10 @@ do
 			-- Setup --
 			local anchor, spaceOffset
 			local perRow = self.moduleSettings.auras.buff.perRow
+			local showTimer = self.moduleSettings.auras.buff.showTimer
 			if type == "debuff" then
 				perRow = self.moduleSettings.auras.debuff.perRow
+				showTimer = self.moduleSettings.auras.debuff.showTimer
 			end
 			local newRow = ((i % perRow) == 1 or perRow == 1)
 
@@ -1297,6 +1333,7 @@ do
 
 			-- Frame creation --
 			if (not iconFrames[i]) then
+				print("no iconframes")
 				iconFrames[i] = FrameFactory("Frame", parent)
 
 				iconFrames[i].icon = FrameFactory("Frame",iconFrames[i])
@@ -1314,6 +1351,7 @@ do
 
 			frame:ClearAllPoints()
 			frame:SetPoint(anchor, offset_x, offset_y)
+			frame.cd:SetHideCountdownNumbers(not showTimer)
 
 			-- Frame resizing --
 			local size = frame.fromPlayer and self.moduleSettings.auras[type].ownSize or self.moduleSettings.auras[type].size
@@ -1503,7 +1541,6 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 	frameIcon.texture:SetTexture(icon)
 	frameIcon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
 	frameIcon.stack:SetText((count and (count > 1)) and count or nil)
-
 	frame:Show()
 end
 
