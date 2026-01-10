@@ -177,6 +177,7 @@ function MirrorBarHandler.prototype:GetDefaultSettings()
 	settings["myTagVersion"] = 2
 	settings["usesDogTagStrings"] = false
 	settings["barVerticalOffset"] = 0
+	settings["hideBlizz"] = true
 
 	return settings
 end
@@ -290,29 +291,52 @@ function MirrorBarHandler.prototype:GetOptions()
 	}
 
 	opts["barRotate"] =
+	{
+		type = 'toggle',
+		name = L["Rotate 90 degrees"],
+		desc = L["This will rotate this module by 90 degrees to give a horizontal orientation.\n\nWARNING: This feature is brand new and a bit rough around the edges. You will need to greatly adjust the vertical and horizontal offset of this bar plus move the text around in order for it to look correct.\n\nAnd I mean greatly."],
+		get = function(info)
+			return self.moduleSettings.rotateBar
+		end,
+		set = function(info, v)
+			self.moduleSettings.rotateBar = v
+			for i = 1, #self.bars do
+				if v then
+					self.bars[i]:RotateHorizontal()
+				else
+					self.bars[i]:ResetRotation()
+				end
+			end
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self:IsEnabled()
+		end,
+		order = 35
+	}
+
+	if MirrorTimerContainer then
+		opts["hideBlizz"] =
 		{
 			type = 'toggle',
-			name = L["Rotate 90 degrees"],
-			desc = L["This will rotate this module by 90 degrees to give a horizontal orientation.\n\nWARNING: This feature is brand new and a bit rough around the edges. You will need to greatly adjust the vertical and horizontal offset of this bar plus move the text around in order for it to look correct.\n\nAnd I mean greatly."],
-			get = function(info)
-				return self.moduleSettings.rotateBar
+			name = L["Hide default mirror bar"],
+			desc = L["Whether or not to show the default mirror bar."],
+			get = function()
+				return self.moduleSettings.hideBlizz
 			end,
-			set = function(info, v)
-				self.moduleSettings.rotateBar = v
-				for i = 1, #self.bars do
-					if v then
-						self.bars[i]:RotateHorizontal()
-					else
-						self.bars[i]:ResetRotation()
-					end
+			set = function(info, value)
+				self.moduleSettings.hideBlizz = value
+				self:ToggleBlizz(not self.moduleSettings.hideBlizz)
+				if not self.moduleSettings.hideBlizz then
+					StaticPopup_Show("ICEHUD_CHANGED_DOGTAG")
 				end
-				self:Redraw()
 			end,
 			disabled = function()
-				return not self:IsEnabled()
+				return not self.moduleSettings.enabled
 			end,
-			order = 35
+			order = 36
 		}
+	end
 
 	opts["textSettings"] =
 	{
@@ -444,15 +468,18 @@ function MirrorBarHandler.prototype:Enable(core)
 	self:RegisterEvent("MIRROR_TIMER_STOP", "MirrorStop")
 	self:RegisterEvent("MIRROR_TIMER_PAUSE", "MirrorPause")
 
-	-- hide blizz mirror bar
-	UIParent:UnregisterEvent("MIRROR_TIMER_START");
+	if self.moduleSettings.hideBlizz then
+		self:ToggleBlizz(false)
+	end
 end
 
 
 function MirrorBarHandler.prototype:Disable(core)
 	MirrorBarHandler.super.prototype.Disable(self, core)
 
-	UIParent:RegisterEvent("MIRROR_TIMER_START");
+	if self.moduleSettings.hideBlizz then
+		self:ToggleBlizz(true)
+	end
 end
 
 
@@ -539,6 +566,19 @@ function MirrorBarHandler.prototype:SetSettings(bar)
 end
 
 
+function MirrorBarHandler.prototype:ToggleBlizz(on)
+	if not MirrorTimerContainer then
+		return
+	end
+
+	if on then
+		-- seems to be causing an infinite loop
+		-- MirrorTimerContainer:GetScript("OnLoad")(MirrorTimerContainer)
+	else
+		MirrorTimerContainer:UnregisterAllEvents()
+		MirrorTimerContainer:Hide()
+	end
+end
 
 
 -- Load us up
