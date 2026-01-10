@@ -21,21 +21,6 @@ function TargetCast.prototype:Enable(core)
 	end
 end
 
-function TargetCast.prototype:SpellCastStart(event, unit, castGuid, spellId)
-	TargetCast.super.prototype.SpellCastStart(self, event, unit, castGuid, spellId)
-	if (unit ~= self.unit) then return end
-
-	self.notInterruptible = false
-end
-
-function TargetCast.prototype:SpellCastChannelStart(event, unit)
-	TargetCast.super.prototype.	SpellCastChannelStart(self, event, unit)
-	if (unit ~= self.unit) then return end
-
-	self.notInterruptible = false
-end
-
-
 function TargetCast.prototype:SpellCastInterruptible(event, unit)
 	if unit and unit ~= self.unit then
 		return
@@ -200,6 +185,8 @@ function TargetCast.prototype:GetOptions()
 end
 
 function TargetCast.prototype:StartBar(action, message, spellId)
+	self.notInterruptible = false
+
 	if self:IsCastOrChannel(action) then
 		local spell, notInterruptible
 		if UnitCastingInfo then
@@ -219,6 +206,8 @@ function TargetCast.prototype:StartBar(action, message, spellId)
 	end
 
 	TargetCast.super.prototype.StartBar(self, action, message, spellId)
+
+	self:UpdateInterruptibleColor()
 end
 
 -------------------------------------------------------------------------------
