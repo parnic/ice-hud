@@ -238,9 +238,9 @@ function RollTheBones.prototype:CreateDurationBar()
   self:SetBarFrameColorRGBA(self.durationFrame, self:GetColor("RollTheBonesPotential", self.moduleSettings.durationAlpha))
   if self.durationFrame.SetValue then
     self.durationFrame:SetValue(0)
-	else
+  else
     self.durationFrame.texture:SetHeight(0)
-	end
+  end
 
   self:UpdateBar(1, "undef")
 
