@@ -236,7 +236,11 @@ function RollTheBones.prototype:CreateDurationBar()
   self.CurrScale = 0
 
   self:SetBarFrameColorRGBA(self.durationFrame, self:GetColor("RollTheBonesPotential", self.moduleSettings.durationAlpha))
-  self.durationFrame:SetValue(0)
+  if self.durationFrame.SetValue then
+    self.durationFrame:SetValue(0)
+	else
+    self.durationFrame.texture:SetHeight(0)
+	end
 
   self:UpdateBar(1, "undef")
 

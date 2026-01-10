@@ -179,7 +179,11 @@ function StaggerBar.prototype:CreateTimerBar()
 	self.CurrScale = 0
 
 	self:SetBarFrameColorRGBA(self.timerFrame, self:GetColor("StaggerTime", self.moduleSettings.timerAlpha))
-	self.timerFrame:SetValue(0)
+	if self.timerFrame.SetValue then
+		self.timerFrame:SetValue(0)
+	else
+		self.timerFrame.texture:SetHeight(0)
+	end
 
 	self:UpdateBar(1, "undef")
 	self:UpdateTimerFrame()
