@@ -1,6 +1,9 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local DragonridingVigor = IceCore_CreateClass(IceClassPowerCounter)
 
+local DRUID_FLIGHT_FORM_ID = 27
+local DRUID_SWIFT_FLIGHT_FORM_ID = 29
+
 -- Old Vigor widget (pre-11.2.7)
 local vigorWidgetSetID = 283
 local vigorWidgetType = 24
@@ -58,7 +61,9 @@ end
 function DragonridingVigor.prototype:ShouldShowCharges()
 	-- Show when the player is mounted AND the skyriding charge spell exists.
 	-- (Avoid showing in cities/ground when not skyriding.)
-	if not IsMounted or not IsMounted() then
+	local usingFlyingMount = IsMounted and IsMounted()
+	local inDruidTravelForm = GetShapeshiftFormID and (GetShapeshiftFormID() == DRUID_FLIGHT_FORM_ID or GetShapeshiftFormID() == DRUID_SWIFT_FLIGHT_FORM_ID)
+	if not usingFlyingMount and not inDruidTravelForm then
 		return false
 	end
 
@@ -135,6 +140,7 @@ function DragonridingVigor.prototype:Enable(core)
 		self:EnsureRuneCount(maxCharges or 6)
 
 		self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED", "CheckShouldShow")
+		self:RegisterEvent("UPDATE_SHAPESHIFT_FORM", "CheckShouldShow")
 		self:RegisterEvent("SPELL_UPDATE_CHARGES", "UpdateVigorRecharge")
 		self:RegisterEvent("SPELL_UPDATE_COOLDOWN", "UpdateVigorRecharge")
 		self:RegisterEvent("UNIT_POWER_UPDATE", "UpdateRunePower")
