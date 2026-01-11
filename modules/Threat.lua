@@ -416,7 +416,7 @@ function IceThreat.prototype:UpdateSecondHighestThreatBar(secondHighestThreat, t
 			self:SetBarFrameColorRGBA(self.secondThreatBar, self:GetColor("ThreatSecondPlace", self.alpha * self.moduleSettings.secondPlaceThreatAlpha))
 
 			local pos = IceHUD:Clamp(secondPercent, 0, 1)
-			if self:ShouldReverseFill() then
+			if self:BarFillReverse() then
 				pos = 1-pos
 			end
 

@@ -480,7 +480,7 @@ function RollTheBones.prototype:UpdateDurationBar(event, unit)
     local scale = IceHUD:Clamp(PotentialRtBDuration / CurrMaxRtBDuration, 0, 1)
 
     -- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
-    if self:ShouldReverseFill() then
+    if self:BarFillReverse() then
       scale = 1 - scale
     end
 

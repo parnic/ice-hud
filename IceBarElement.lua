@@ -150,6 +150,12 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 1
 	settings["scale"] = 1
+	-- Notes for myself and future maintainers to help explain the difference between "inverse" and "reverse"
+	--   (the tooltips probably should be updated to help clarify, but since 12.0 killed this, maybe not):
+	-- Normal  no Reverse: bar fills from bottom to top
+	-- Normal  w/ Reverse: bar empties from bottom to top
+	-- Inverse no Reverse: bar fills from top to bottom
+	-- Inverse w/ Reverse: bar empties from top to bottom
 	settings["inverse"] = "NORMAL"
 	settings["reverse"] = false
 	settings["barFontSize"] = 12
@@ -931,11 +937,11 @@ function IceBarElement.prototype:SetBarFramePoints(frame, offset_x, offset_y)
 
 	frame:ClearAllPoints()
 	if self:BarFillInverse() then
-		anchor = self:BarFillReverse() and "TOPLEFT" or "BOTTOMLEFT"
+		anchor = "TOPLEFT"
 	elseif self:BarFillExpand() then
 		anchor = "LEFT"
 	else
-		anchor = self:BarFillReverse() and "TOPLEFT" or "BOTTOMLEFT"
+		anchor = "BOTTOMLEFT"
 	end
 
 	if self.moduleSettings.rotateBar then
@@ -1380,7 +1386,7 @@ function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
 
 	if force or oldScale ~= self.CurrScale then
 		local scale = self.CurrScale
-		if self:ShouldReverseFill() then
+		if self:BarFillReverse() then
 			scale = 1 - scale
 		end
 
