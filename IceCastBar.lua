@@ -548,7 +548,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 		spell, rank, icon = GetSpellInfo(spellId)
 	end
 
-	if numStages and numStages > 0 then
+	if IceHUD.CanAccessValue(numStages) and numStages and numStages > 0 then
 		self.NumStages = numStages
 		endTime = endTime + GetUnitEmpowerHoldAtMaxTime(self.unit)
 		action = IceCastBar.Actions.ReverseChannel
