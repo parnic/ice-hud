@@ -441,7 +441,6 @@ function IceHUD:OnInitialize()
 				DEFAULT_CHAT_FRAME:AddMessage(L["|cff8888ffIceHUD|r: Combat lockdown restriction. Leave combat and try again."])
 			end
 		end)
-	self:RegisterChatCommand("rl", function() ReloadUI() end)
 
 	-- hack to allow /icehudcl to continue to function by loading the LoD options module and then re-calling the command
 	--[===[@non-debug@
