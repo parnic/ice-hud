@@ -289,6 +289,9 @@ do
 			disabled = function()
 				return not self.moduleSettings.enabled
 			end,
+			hidden = function()
+				return IceHUD.IsSecretEnv()
+			end,
 			order = 30.03
 		}
 
@@ -307,6 +310,9 @@ do
 			end,
 			disabled = function()
 				return not self.moduleSettings.enabled
+			end,
+			hidden = function()
+				return IceHUD.IsSecretEnv()
 			end,
 			order = 30.04
 		}
@@ -901,11 +907,11 @@ do
 end
 
 function IceBarElement.prototype:ShouldReverseFill()
-	if self.moduleSettings.reverse then
-		return self.moduleSettings.inverse == "NORMAL"
+	if self:BarFillReverse() then
+		return self:BarFillNormal()
 	end
 
-	return self.moduleSettings.inverse == "INVERSE"
+	return self:BarFillInverse()
 end
 
 function IceBarElement.prototype:SetBarVisibility(visible)
@@ -924,12 +930,12 @@ function IceBarElement.prototype:SetBarFramePoints(frame, offset_x, offset_y)
 	end
 
 	frame:ClearAllPoints()
-	if self.moduleSettings.inverse == "INVERSE" then
-		anchor = self.moduleSettings.reverse and "TOPLEFT" or "BOTTOMLEFT"
-	elseif self.moduleSettings.inverse == "EXPAND" then
+	if self:BarFillInverse() then
+		anchor = self:BarFillReverse() and "TOPLEFT" or "BOTTOMLEFT"
+	elseif self:BarFillExpand() then
 		anchor = "LEFT"
 	else
-		anchor = self.moduleSettings.reverse and "TOPLEFT" or "BOTTOMLEFT"
+		anchor = self:BarFillReverse() and "TOPLEFT" or "BOTTOMLEFT"
 	end
 
 	if self.moduleSettings.rotateBar then
@@ -1259,6 +1265,38 @@ function IceBarElement.prototype:Flip(side)
 	end
 end
 
+function IceBarElement.prototype:BarFillNormal()
+	if IceHUD.IsSecretEnv() then
+		return true
+	end
+
+	return self.moduleSettings.inverse == "NORMAL"
+end
+
+function IceBarElement.prototype:BarFillExpand()
+	if IceHUD.IsSecretEnv() then
+		return false
+	end
+
+	return self.moduleSettings.inverse == "EXPAND"
+end
+
+function IceBarElement.prototype:BarFillReverse()
+	if IceHUD.IsSecretEnv() then
+		return false
+	end
+
+	return self.moduleSettings.reverse
+end
+
+function IceBarElement.prototype:BarFillInverse()
+	if IceHUD.IsSecretEnv() then
+		return false
+	end
+
+	return self.moduleSettings.inverse == "INVERSE"
+end
+
 -- Rokiyo: bar is the only required argument, scale & top are optional
 function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideReverse)
 	local interp
@@ -1287,34 +1325,34 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 		local min_y, max_y
 		local offset_y = 0
 
-		local reverse = self.moduleSettings.reverse
+		local reverse = self:BarFillReverse()
 		if overrideReverse then
 			reverse = false
 		end
 
 		if IceHUD:xor(reverse, top) then
-			if self.moduleSettings.inverse == "INVERSE" then
+			if self:BarFillInverse() then
 				min_y = 1 - scale
 				max_y = 1
 				offset_y = 0 - (self.settings.barHeight * (1 - scale))
-			elseif self.moduleSettings.inverse == "EXPAND" then
-				min_y = 0.5 - (scale * 0.5);
-				max_y = 0.5 + (scale * 0.5);
+			elseif self:BarFillExpand() then
+				min_y = 0.5 - (scale * 0.5)
+				max_y = 0.5 + (scale * 0.5)
 			else
 				min_y = 0
 				max_y = scale
 				offset_y = (self.settings.barHeight * (1 - scale))
 			end
 		else
-			if self.moduleSettings.inverse == "INVERSE" then
-				min_y = 0;
-				max_y = scale;
-			elseif self.moduleSettings.inverse == "EXPAND" then
-				min_y = 0.5 - (scale * 0.5);
-				max_y = 0.5 + (scale * 0.5);
+			if self:BarFillInverse() then
+				min_y = 0
+				max_y = scale
+			elseif self:BarFillExpand() then
+				min_y = 0.5 - (scale * 0.5)
+				max_y = 0.5 + (scale * 0.5)
 			else
-				min_y = 1-scale;
-				max_y = 1;
+				min_y = 1-scale
+				max_y = 1
 			end
 		end
 
@@ -1342,7 +1380,7 @@ function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
 
 	if force or oldScale ~= self.CurrScale then
 		local scale = self.CurrScale
-		if self.moduleSettings.reverse then
+		if self:ShouldReverseFill() then
 			scale = 1 - scale
 		end
 
@@ -1643,9 +1681,9 @@ function IceBarElement.prototype:RotateFrame(frame)
 	end
 
 	local anchorPoint
-	if self.moduleSettings.inverse == "INVERSE" then
+	if self:BarFillInverse() then
 		anchorPoint = "TOPLEFT"
-	elseif self.moduleSettings.inverse == "EXPAND" then
+	elseif self:BarFillExpand() then
 		anchorPoint = "LEFT"
 	else
 		anchorPoint = "BOTTOMLEFT"
@@ -1742,11 +1780,11 @@ function IceBarElement.prototype:PositionMarker(idx, pos)
 	local min_y, max_y, offset_y
 	local heightScale = (self.moduleSettings.markers[idx].height / self.settings.barHeight)
 
-	if (self.moduleSettings.inverse == "INVERSE") then
+	if self:BarFillInverse() then
 		offset_y = 0 - (self.settings.barHeight * pos)
 		min_y = IceHUD:Clamp(pos, 0, 1)
 		max_y = IceHUD:Clamp(pos+heightScale, 0, 1)
-	elseif (self.moduleSettings.inverse == "EXPAND") then
+	elseif self:BarFillExpand() then
 		pos = pos + ((1-pos) * 0.5)
 		heightScale = heightScale * 0.5
 		offset_y = self.settings.barHeight * (pos - 0.5)

@@ -45,10 +45,6 @@ end
 function GlobalCoolDown.prototype:Enable(core)
 	GlobalCoolDown.super.prototype.Enable(self, core)
 
-	if self.moduleSettings.inverse == "EXPAND" then
-		self.moduleSettings.inverse = "NORMAL"
-	end
-
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", "SpellCastChanged")
 
 	--self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", "CooldownStateChanged")
@@ -231,7 +227,7 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, castGuid, sp
 			self.barFrame:SetTimerDuration(
 				dur,
 				Enum.StatusBarInterpolation.Immediate,
-				self.moduleSettings.inverse == "INVERSE" and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
+				self:ShouldReverseFill() and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
 			)
 			self:Show(true)
 			self.startTime = GetTime()

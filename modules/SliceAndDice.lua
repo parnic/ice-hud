@@ -353,7 +353,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 			self.barFrame:SetTimerDuration(
 				sndDuration,
 				Enum.StatusBarInterpolation.Immediate,
-				self.moduleSettings.inverse == "INVERSE" and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
+				self:ShouldReverseFill() and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
 			)
 		end
 
@@ -452,7 +452,7 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 		local scale = IceHUD:Clamp(PotentialSnDDuration / CurrMaxSnDDuration, 0, 1)
 
 		-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
-		if (self.moduleSettings.reverse) then
+		if self:ShouldReverseFill() then
 			scale = 1 - scale
 		end
 
