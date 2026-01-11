@@ -60,7 +60,7 @@ end
 
 
 function MirrorBar.prototype:OnUpdate(elapsed)
-	if (self.paused) then
+	if self.paused or not elapsed then
 		return
 	end
 
