@@ -514,13 +514,15 @@ function IceCastBar.prototype:FlashBar(color, alpha, text, textColor)
 		self.frame:SetAlpha(alpha)
 	end
 
-	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
-	if (self.settings.backgroundToggle) then
-		r, g, b = self:GetColor(color)
-	end
+	if not self.skipSetColorOnFlash then
+		local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
+		if (self.settings.backgroundToggle) then
+			r, g, b = self:GetColor(color)
+		end
 
-	self.frame.bg:SetVertexColor(r, g, b, 0.3)
-	self:SetBarColorRGBA(self:GetColor(color, 0.8))
+		self.frame.bg:SetVertexColor(r, g, b, 0.3)
+		self:SetBarColorRGBA(self:GetColor(color, 0.8))
+	end
 
 	self:SetScale(1)
 	self:SetBottomText1(text, textColor or "Text")
