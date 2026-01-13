@@ -18,10 +18,10 @@ IceBarElement.prototype.IsBarElement = true -- cheating to avoid crawling up the
 IceBarElement.prototype.bTreatEmptyAsFull = false
 
 if C_CurveUtil then
-	IceBarElement.prototype.oocNotFullCurve = C_CurveUtil.CreateCurve();
-	IceBarElement.prototype.oocNotFullCurve:SetType(Enum.LuaCurveType.Linear);
-	IceBarElement.prototype.oocNotFullCurveBg = C_CurveUtil.CreateCurve();
-	IceBarElement.prototype.oocNotFullCurveBg:SetType(Enum.LuaCurveType.Linear);
+	IceBarElement.prototype.oocNotFullCurve = C_CurveUtil.CreateCurve()
+	IceBarElement.prototype.oocNotFullCurve:SetType(Enum.LuaCurveType.Linear)
+	IceBarElement.prototype.oocNotFullCurveBg = C_CurveUtil.CreateCurve()
+	IceBarElement.prototype.oocNotFullCurveBg:SetType(Enum.LuaCurveType.Linear)
 end
 
 local lastMarkerPosConfig = 50
@@ -984,14 +984,14 @@ function IceBarElement.prototype:UpdateAlphaCurves()
 	end
 
 	self.oocNotFullCurve:ClearPoints()
-	self.oocNotFullCurve:AddPoint(0.0, self.settings.alphaNotFull);
-	self.oocNotFullCurve:AddPoint(0.9999999, self.settings.alphaNotFull);
-	self.oocNotFullCurve:AddPoint(1, self.settings.alphaooc);
+	self.oocNotFullCurve:AddPoint(0.0, self.settings.alphaNotFull)
+	self.oocNotFullCurve:AddPoint(0.9999999, self.settings.alphaNotFull)
+	self.oocNotFullCurve:AddPoint(1, self.settings.alphaooc)
 
 	self.oocNotFullCurveBg:ClearPoints()
-	self.oocNotFullCurveBg:AddPoint(0.0, self.settings.alphaNotFullbg);
-	self.oocNotFullCurveBg:AddPoint(0.9999999, self.settings.alphaNotFullbg);
-	self.oocNotFullCurveBg:AddPoint(1, self.settings.alphaoocbg);
+	self.oocNotFullCurveBg:AddPoint(0.0, self.settings.alphaNotFullbg)
+	self.oocNotFullCurveBg:AddPoint(0.9999999, self.settings.alphaNotFullbg)
+	self.oocNotFullCurveBg:AddPoint(1, self.settings.alphaoocbg)
 end
 
 
