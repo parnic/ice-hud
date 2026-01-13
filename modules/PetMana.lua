@@ -258,5 +258,9 @@ function PetMana.prototype:EnteringWorld()
 	end
 end
 
+function PetMana.prototype:IsPowerBar()
+	return true
+end
+
 -- Load us up
 IceHUD.PetMana = PetMana:new()

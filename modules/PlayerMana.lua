@@ -301,7 +301,7 @@ function PlayerMana.prototype:TreatEmptyAsFull()
 end
 
 function PlayerMana.prototype:IsFull(scale)
-	if IceHUD.WowVer >= 80000 and self.manaType == SPELL_POWER_LUNAR_POWER and IceHUD.IsPlayerSpell(202430) then
+	if IceHUD.WowVer >= 80000 and self.manaType == SPELL_POWER_LUNAR_POWER and IceHUD.IsPlayerSpell(202430) and IceHUD.CanAccessValue(scale) then
 		return scale - 0.5 >= 0
 	end
 
@@ -381,7 +381,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 
 	if useTicker then
 		-- hide ticker if rest of the bar is not visible
-		if (self.alpha == 0) then
+		if IceHUD.CanAccessValue(self.alpha) and self.alpha == 0 then
 	 		self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", 0))
 	 	else
 	 		self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
@@ -494,6 +494,9 @@ function PlayerMana.prototype:CreateTickerFrame()
 	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", 0, 0)
 end
 
+function PlayerMana.prototype:IsPowerBar()
+	return true
+end
 
 -- Load us up
 IceHUD.PlayerMana = PlayerMana:new()

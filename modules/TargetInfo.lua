@@ -1797,7 +1797,7 @@ function IceTargetInfo.prototype:AllowMouseBuffInteraction(id)
 		return false
 	end
 
-	if self.alpha == 0 then
+	if IceHUD.CanAccessValue(self.alpha) and self.alpha == 0 then
 		return false
 	end
 

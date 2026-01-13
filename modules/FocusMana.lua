@@ -141,6 +141,9 @@ function FocusMana.prototype:GetOptions()
 	return opts
 end
 
+function FocusMana.prototype:IsPowerBar()
+	return true
+end
 
 -- Load us up
 if FocusUnit then

@@ -477,6 +477,10 @@ function FocusHealth.prototype:HideBlizz()
 	FocusFrame:UnregisterAllEvents()
 end
 
+function FocusHealth.prototype:IsHealthBar()
+	return true
+end
+
 -- Load us up
 if FocusUnit then
 	IceHUD.FocusHealth = FocusHealth:new()

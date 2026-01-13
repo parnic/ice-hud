@@ -945,7 +945,7 @@ end
 function PlayerHealth.prototype:CreateHealBar()
 	self.healFrame = self:BarFactory(self.healFrame, "LOW","BACKGROUND", "Heal")
 
-	self:SetBarFrameColorRGBA(self.healFrame, self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
+	self:SetBarFrameColorRGBA(self.healFrame, self:GetColor("PlayerHealthHealAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.healAlpha))
 
 	self:UpdateBar(1, "undef")
 
@@ -957,7 +957,7 @@ end
 function PlayerHealth.prototype:CreateAbsorbBar()
 	self.absorbFrame = self:BarFactory(self.absorbFrame, "LOW","BACKGROUND", "Absorb")
 
-	self:SetBarFrameColorRGBA(self.absorbFrame, self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
+	self:SetBarFrameColorRGBA(self.absorbFrame, self:GetColor("PlayerHealthAbsorbAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.absorbAlpha))
 
 	self:UpdateBar(1, "undef")
 
@@ -1548,10 +1548,10 @@ function PlayerHealth.prototype:UpdateBar(scale, color, alpha)
 	PlayerHealth.super.prototype.UpdateBar(self, scale, color, alpha)
 
 	if self.healFrame then
-		self:SetBarFrameColorRGBA(self.healFrame, self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
+		self:SetBarFrameColorRGBA(self.healFrame, self:GetColor("PlayerHealthHealAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.healAlpha))
 	end
 	if self.absorbFrame then
-		self:SetBarFrameColorRGBA(self.absorbFrame, self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
+		self:SetBarFrameColorRGBA(self.absorbFrame, self:GetColor("PlayerHealthAbsorbAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.absorbAlpha))
 	end
 --[[ seems to be causing taint. oh well
 	if self.frame.button then
@@ -1571,6 +1571,10 @@ function PlayerHealth.prototype:OutCombat()
 		self.pendingBlizzardPartyHide = false
 		self:HideBlizzardParty()
 	end
+end
+
+function PlayerHealth.prototype:IsHealthBar()
+	return true
 end
 
 -- Load us up

@@ -239,5 +239,9 @@ function PetHealth.prototype:EnteringWorld()
 	end
 end
 
+function PetHealth.prototype:IsHealthBar()
+	return true
+end
+
 -- Load us up
 IceHUD.PetHealth = PetHealth:new()

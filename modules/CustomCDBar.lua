@@ -924,5 +924,5 @@ function IceCustomCDBar.prototype:UseTargetAlpha(scale)
 		return false
 	end
 
-	return IceCustomCDBar.super.prototype:UseTargetAlpha(self, scale)
+	return not self:IsFull(scale)
 end

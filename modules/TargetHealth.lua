@@ -1043,7 +1043,13 @@ function IceTargetHealth.prototype:SetIconAlpha()
 		self.frame.PartyRoleIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
 	end
 	if self.barFrame.classIcon and self.moduleSettings.showClassificationIcon then
-		self.barFrame.classIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha == 0 and 0 or math.min(1, self.alpha + 0.2))
+		local alpha
+		if IceHUD.CanAccessValue(self.alpha) then
+			alpha = self.alpha == 0 and 0 or math.min(1, self.alpha + 0.2)
+		else
+			alpha = self.alpha
+		end
+		self.barFrame.classIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or alpha)
 	end
 end
 
@@ -1144,6 +1150,10 @@ function IceTargetHealth.prototype:CheckPartyRole()
 	else
 		self.frame.PartyRoleIcon = self:DestroyTexFrame(self.frame.PartyRoleIcon)
 	end
+end
+
+function IceTargetHealth.prototype:IsHealthBar()
+	return true
 end
 
 -- Load us up

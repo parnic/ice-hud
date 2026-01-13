@@ -272,7 +272,7 @@ function IceElement.prototype:UpdateAlpha()
 		self.backgroundAlpha = self.settings.alphaoocbg
 	end
 
-	if self.alpha ~= 0 then
+	if IceHUD.CanAccessValue(self.alpha) and self.alpha ~= 0 then
 		self.alpha = math.min(1, self.alpha + self:GetAlphaAdd())
 	end
 

@@ -17,6 +17,13 @@ IceBarElement.prototype.Markers = {}
 IceBarElement.prototype.IsBarElement = true -- cheating to avoid crawling up the 'super' references looking for this class. see IceCore.lua
 IceBarElement.prototype.bTreatEmptyAsFull = false
 
+if C_CurveUtil then
+	IceBarElement.prototype.oocNotFullCurve = C_CurveUtil.CreateCurve();
+	IceBarElement.prototype.oocNotFullCurve:SetType(Enum.LuaCurveType.Linear);
+	IceBarElement.prototype.oocNotFullCurveBg = C_CurveUtil.CreateCurve();
+	IceBarElement.prototype.oocNotFullCurveBg:SetType(Enum.LuaCurveType.Linear);
+end
+
 local lastMarkerPosConfig = 50
 local lastMarkerColorConfig = {r=1, b=0, g=0, a=1}
 local lastMarkerHeightConfig = 6
@@ -966,8 +973,26 @@ function IceBarElement.prototype:Redraw()
 	self.frame:SetAlpha(self.alpha)
 
 	self:RepositionMarkers()
+
+	self:UpdateAlphaCurves()
 end
 
+
+function IceBarElement.prototype:UpdateAlphaCurves()
+	if not self.oocNotFullCurve then
+		return
+	end
+
+	self.oocNotFullCurve:ClearPoints()
+	self.oocNotFullCurve:AddPoint(0.0, self.settings.alphaNotFull);
+	self.oocNotFullCurve:AddPoint(0.9999999, self.settings.alphaNotFull);
+	self.oocNotFullCurve:AddPoint(1, self.settings.alphaooc);
+
+	self.oocNotFullCurveBg:ClearPoints()
+	self.oocNotFullCurveBg:AddPoint(0.0, self.settings.alphaNotFullbg);
+	self.oocNotFullCurveBg:AddPoint(0.9999999, self.settings.alphaNotFullbg);
+	self.oocNotFullCurveBg:AddPoint(1, self.settings.alphaoocbg);
+end
 
 
 function IceBarElement.prototype:SetPosition(side, offset)
@@ -1427,6 +1452,13 @@ function IceBarElement.prototype:LerpScale(scale)
 	return scale
 end
 
+function IceBarElement.prototype:IsHealthBar()
+	return false
+end
+
+function IceBarElement.prototype:IsPowerBar()
+	return false
+end
 
 function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	alpha = alpha or 1
@@ -1437,13 +1469,33 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 		r, g, b = self:GetColor(color)
 	end
 
-	if (self.combat) then
+	local useTargetAlpha = self.target and not self:AlphaPassThroughTarget()
+	local useNotFullAlpha = self:UseTargetAlpha(scale)
+	if self.combat then
 		self.alpha = self.settings.alphaic
 		self.backgroundAlpha = self.settings.alphaicbg
-	elseif (self.target and not self:AlphaPassThroughTarget()) then
+	elseif useTargetAlpha then
 		self.alpha = self.settings.alphaTarget
 		self.backgroundAlpha = self.settings.alphaTargetbg
-	elseif (self:UseTargetAlpha(scale)) then
+	elseif useNotFullAlpha == nil and self.unit and self.oocNotFullCurve then
+		local curveAlpha, curveBgalpha
+
+		if self:IsHealthBar() and UnitHealthPercent then
+			curveAlpha = UnitHealthPercent(self.unit, true, self.oocNotFullCurve)
+			curveBgalpha = UnitHealthPercent(self.unit, true, self.oocNotFullCurveBg)
+		end
+		if self:IsPowerBar() and UnitPowerPercent then
+			curveAlpha = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.oocNotFullCurve)
+			curveBgalpha = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.oocNotFullCurveBg)
+		end
+
+		if curveAlpha then
+			self.alpha = curveAlpha
+		end
+		if curveBgalpha then
+			self.backgroundAlpha = curveBgalpha
+		end
+	elseif useNotFullAlpha then
 		self.alpha = self.settings.alphaNotFull
 		self.backgroundAlpha = self.settings.alphaNotFullbg
 	else
@@ -1493,6 +1545,10 @@ end
 
 
 function IceBarElement.prototype:UseTargetAlpha(scale)
+	if not IceHUD.CanAccessValue(scale) then
+		return nil
+	end
+
 	return not self:IsFull(scale)
 end
 
@@ -1525,7 +1581,7 @@ function IceBarElement.prototype:SetBottomText1(text, color)
 
 	local alpha = self.alpha
 
-	if (self.alpha > 0) then
+	if IceHUD.CanAccessValue(self.alpha) and self.alpha > 0 then
 		-- boost text alpha a bit to make it easier to see
 		alpha = self.alpha + 0.1
 
@@ -1534,7 +1590,7 @@ function IceBarElement.prototype:SetBottomText1(text, color)
 		end
 	end
 
-	if (self.moduleSettings.lockUpperTextAlpha and (self.alpha > 0)) then
+	if self.moduleSettings.lockUpperTextAlpha and (not IceHUD.CanAccessValue(self.alpha) or self.alpha > 0) then
 		alpha = 1
 	end
 
@@ -1557,7 +1613,7 @@ function IceBarElement.prototype:SetBottomText2(text, color, alpha)
 	end
 	if not (alpha) then
 		-- boost text alpha a bit to make it easier to see
-		if (self.alpha > 0) then
+		if IceHUD.CanAccessValue(self.alpha) and self.alpha > 0 then
 			alpha = self.alpha + 0.1
 
 			if (alpha > 1) then
@@ -1566,7 +1622,7 @@ function IceBarElement.prototype:SetBottomText2(text, color, alpha)
 		end
 	end
 
-	if (self.moduleSettings.lockLowerTextAlpha and (self.alpha > 0)) then
+	if self.moduleSettings.lockLowerTextAlpha and (not IceHUD.CanAccessValue(self.alpha) or self.alpha > 0) then
 		alpha = 1
 	end
 
@@ -1586,11 +1642,18 @@ function IceBarElement.prototype:SetCustomTextColor(fontInstance, colorTable)
 end
 
 function IceBarElement.prototype:SetTextAlpha()
+	local textAlpha
+	if IceHUD.CanAccessValue(self.alpha) then
+		textAlpha = math.min(self.alpha > 0 and self.alpha + 0.1 or 0, 1)
+	else
+		textAlpha = self.alpha
+	end
+
 	if self.frame.bottomUpperText then
-		self.frame.bottomUpperText:SetAlpha(self.moduleSettings.lockUpperTextAlpha and 1 or math.min(self.alpha > 0 and self.alpha + 0.1 or 0, 1))
+		self.frame.bottomUpperText:SetAlpha(self.moduleSettings.lockUpperTextAlpha and 1 or textAlpha)
 	end
 	if self.frame.bottomLowerText then
-		self.frame.bottomLowerText:SetAlpha(self.moduleSettings.lockLowerTextAlpha and 1 or math.min(self.alpha > 0 and self.alpha + 0.1 or 0, 1))
+		self.frame.bottomLowerText:SetAlpha(self.moduleSettings.lockLowerTextAlpha and 1 or textAlpha)
 	end
 end
 

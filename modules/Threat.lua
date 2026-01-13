@@ -250,7 +250,7 @@ end
 function IceThreat.prototype:CreateSecondThreatBar()
 	self.secondThreatBar = self:BarFactory(self.secondThreatBar, "MEDIUM", "OVERLAY", "SecondThreat")
 
-	self:SetBarFrameColorRGBA(self.secondThreatBar, self:GetColor("ThreatSecondPlace", self.alpha * self.moduleSettings.secondPlaceThreatAlpha))
+	self:SetBarFrameColorRGBA(self.secondThreatBar, self:GetColor("ThreatSecondPlace", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.secondPlaceThreatAlpha))
 
 	self:SetBarCoord(self.secondThreatBar)
 end
@@ -413,7 +413,7 @@ function IceThreat.prototype:UpdateSecondHighestThreatBar(secondHighestThreat, t
 		if not self.lastSecondHighestThreat or self.lastSecondHighestThreat ~= secondPercent then
 			self.lastSecondHighestThreat = secondPercent
 
-			self:SetBarFrameColorRGBA(self.secondThreatBar, self:GetColor("ThreatSecondPlace", self.alpha * self.moduleSettings.secondPlaceThreatAlpha))
+			self:SetBarFrameColorRGBA(self.secondThreatBar, self:GetColor("ThreatSecondPlace", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.secondPlaceThreatAlpha))
 
 			local pos = IceHUD:Clamp(secondPercent, 0, 1)
 			if self:BarFillReverse() then

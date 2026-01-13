@@ -214,6 +214,9 @@ function IceTargetMana.prototype:GetOptions()
 	return opts
 end
 
+function IceTargetMana.prototype:IsPowerBar()
+	return true
+end
 
 -- Load us up
 IceHUD.TargetMana = IceTargetMana:new()
