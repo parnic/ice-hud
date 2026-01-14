@@ -681,20 +681,28 @@ function IceCastBar.prototype:SpellCastChanged(event, cancelled)
 	IceHUD:Debug("SpellCastChanged", cancelled)
 end
 
-function IceCastBar.prototype:SpellCastStart(event, unit, castGuid, spellId)
+function IceCastBar.prototype:SpellCastStart(event, unit, castGuid, spellId, castBarId)
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastStart", unit, castGuid, spellId)
 	--UnitCastingInfo(unit)
 
 	self:StartBar(IceCastBar.Actions.Cast, nil, spellId)
-	self.current = castGuid
+	if castBarId then
+		self.current = castBarId
+	else
+		self.current = castGuid
+	end
 end
 
-function IceCastBar.prototype:SpellCastStop(event, unit, castGuid, spellId)
+function IceCastBar.prototype:SpellCastStop(event, unit, castGuid, spellId, castBarId)
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastStop", unit, castGuid, spellId)
 
 	-- ignore if not coming from current spell
+	if castBarId and IceHUD.CanAccessValue(self.current) and self.current ~= castBarId then
+		return
+	end
+	-- fall back to pre-Midnight guid check
 	if IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and castGuid and self.current ~= castGuid then
 		return
 	end
@@ -711,11 +719,15 @@ function IceCastBar.prototype:SpellCastStop(event, unit, castGuid, spellId)
 end
 
 
-function IceCastBar.prototype:SpellCastFailed(event, unit, castGuid, spellId)
+function IceCastBar.prototype:SpellCastFailed(event, unit, castGuid, spellId, castBarId)
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastFailed", unit, castGuid, spellId)
 
 	-- ignore if not coming from current spell
+	if castBarId and IceHUD.CanAccessValue(self.current) and self.current ~= castBarId then
+		return
+	end
+	-- fall back to pre-Midnight guid check
 	if IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and castGuid and self.current ~= castGuid then
 		return
 	end
@@ -739,11 +751,15 @@ function IceCastBar.prototype:SpellCastFailed(event, unit, castGuid, spellId)
 	self:StartBar(IceCastBar.Actions.Failure, L["Failed"], spellId)
 end
 
-function IceCastBar.prototype:SpellCastInterrupted(event, unit, castGuid, spellId)
+function IceCastBar.prototype:SpellCastInterrupted(event, unit, castGuid, spellId, interruptedBy, castBarId)
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastInterrupted", unit, castGuid, spellId)
 
 	-- ignore if not coming from current spell
+	if castBarId and IceHUD.CanAccessValue(self.current) and self.current ~= castBarId then
+		return
+	end
+	-- fall back to pre-Midnight guid check
 	if IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and castGuid and self.current ~= castGuid then
 		return
 	end
@@ -771,7 +787,7 @@ function IceCastBar.prototype:SpellCastDelayed(event, unit, castGuid, spellId)
 end
 
 
-function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
+function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId, castBarId)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastSucceeded", unit, castGuid, spellId)
 
@@ -781,6 +797,10 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 	end
 
 	-- ignore if not coming from current spell
+	if castBarId and IceHUD.CanAccessValue(self.current) and self.current ~= castBarId then
+		return
+	end
+	-- fall back to pre-Midnight guid check
 	if IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and self.current ~= castGuid then
 		return
 	end
@@ -816,7 +836,7 @@ end
 -- CHANNELING SPELLS                                                         --
 -------------------------------------------------------------------------------
 
-function IceCastBar.prototype:SpellCastChannelStart(event, unit)
+function IceCastBar.prototype:SpellCastChannelStart(event, unit, castGuid, spellId, castBarId)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastChannelStart", unit)
 
@@ -849,7 +869,7 @@ function IceCastBar.prototype:SpellCastChannelUpdate(event, unit)
     end
 end
 
-function IceCastBar.prototype:SpellCastChannelStop(event, unit)
+function IceCastBar.prototype:SpellCastChannelStop(event, unit, castGuid, spellId, interruptedBy, castBarId)
 	if (unit ~= self.unit) then return end
 	--IceHUD:Debug("SpellCastChannelStop", unit)
 
