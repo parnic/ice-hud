@@ -65,11 +65,7 @@ function IceCastBar.prototype:init(name)
 	IceCastBar.super.prototype.init(self, name)
 
 	self:SetDefaultColor("CastCasting", 242, 242, 10)
-	if IceHUD.IsSecretEnv() then
-		self:SetDefaultColor("CastChanneling", 242, 104, 238)
-	else
-		self:SetDefaultColor("CastChanneling", 242, 242, 10)
-	end
+	self:SetDefaultColor("CastChanneling", 242, 242, 10)
 	self:SetDefaultColor("CastSuccess", 242, 242, 70)
 	self:SetDefaultColor("CastFail", 1, 0, 0)
 	if GetUnitEmpowerMinHoldTime then
