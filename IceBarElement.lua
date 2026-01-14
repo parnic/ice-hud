@@ -1204,7 +1204,11 @@ function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer,
 			barFrame.isStatusBar = true
 			barFrame:SetMinMaxValues(0, 1)
 			barFrame:SetOrientation("VERTICAL")
-			barFrame:SetScript("OnUpdate", function() self:OnUpdate() end)
+			-- removed; this was a shim to try and patch up reverse-fill bugs with StatusBars in Midnight.
+			-- ultimately i chose to disable the reverse/inverse features and reported the game client bug
+			-- to Blizzard, so if they fix it, we can take advantage of the fix. until then, no need to
+			-- sacrifice the perf for a fix that wasn't 100% anyway.
+			-- barFrame:SetScript("OnUpdate", function() self:OnUpdate() end)
 		end
 	end
 
