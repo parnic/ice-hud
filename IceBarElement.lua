@@ -1046,45 +1046,81 @@ function IceBarElement.prototype:ConditionalSetupUpdate()
 	end
 end
 
+-- pulled from https://warcraft.wiki.gg/wiki/Applying_affine_transformations_using_SetTexCoord#Simple_rotation_of_square_textures_around_the_center
+local s2 = sqrt(2);
+local cos, sin, rad = math.cos, math.sin, math.rad;
+local function CalculateCorner(angle)
+	local r = rad(angle);
+	return 0.5 + cos(r) / s2, 0.5 + sin(r) / s2;
+end
+local function RotateTexture(texture, angle)
+	local LRx, LRy = CalculateCorner(angle + 45);
+	local LLx, LLy = CalculateCorner(angle + 135);
+	local ULx, ULy = CalculateCorner(angle + 225);
+	local URx, URy = CalculateCorner(angle - 45);
+
+	texture:SetTexCoord(ULx, ULy, LLx, LLy, URx, URy, LRx, LRy);
+end
+
 -- Creates background for the bar
 function IceBarElement.prototype:CreateBackground()
-	if not (self.frame) then
+	if not self.frame then
 		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.masterFrame)
 	end
 
-	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
-	self.frame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
-	self.frame:SetHeight(self.settings.barHeight)
+	local rotated = self.barFrame and self.barFrame.rotated
 
-	if not (self.frame.bg) then
+	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+	local width = self.settings.barWidth + (self.moduleSettings.widthModifier or 0)
+	local height = self.settings.barHeight
+	if rotated then
+		width, height = height, width
+	end
+	self.frame:SetWidth(width)
+	self.frame:SetHeight(height)
+
+	if not self.frame.bg then
 		self.frame.bg = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
 
 	self.frame.bg:SetTexture(IceElement.TexturePath .. self:GetMyBarTextureName() .."BG")
 	self.frame.bg:SetBlendMode(self.settings.barBgBlendMode)
 
-	self.frame.bg:ClearAllPoints()
-	self.frame.bg:SetPoint("BOTTOMLEFT",self.frame,"BOTTOMLEFT")
-	self.frame.bg:SetPoint("BOTTOMRIGHT",self.frame,"BOTTOMRIGHT")
-	self.frame.bg:SetHeight(self.settings.barHeight)
-
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.frame.bg:SetTexCoord(1, 0, 0, 1)
+	if rotated then
+		self.frame.bg:SetAllPoints(self.frame)
+		self.frame.bg:SetWidth(self.settings.barHeight)
 	else
-		self.frame.bg:SetTexCoord(0, 1, 0, 1)
+		self.frame.bg:ClearAllPoints()
+		self.frame.bg:SetPoint("BOTTOMLEFT",self.frame,"BOTTOMLEFT")
+		self.frame.bg:SetPoint("BOTTOMRIGHT",self.frame,"BOTTOMRIGHT")
+		self.frame.bg:SetHeight(self.settings.barHeight)
+	end
+
+	if self.moduleSettings.side == IceCore.Side.Left then
+		if rotated then
+			RotateTexture(self.frame.bg, 90)
+		else
+			self.frame.bg:SetTexCoord(1, 0, 0, 1)
+		end
+	else
+		if rotated then
+			RotateTexture(self.frame.bg, -90)
+		else
+			self.frame.bg:SetTexCoord(0, 1, 0, 1)
+		end
 	end
 
 	self.frame.bg:SetVertexColor(self:GetColor("undef", self.settings.alphabg))
 
 	local ownPoint = "LEFT"
-	if (self.moduleSettings.side == ownPoint) then
+	if self.moduleSettings.side == ownPoint then
 		ownPoint = "RIGHT"
 	end
 
 	-- ofxx = (bar width) + (extra space in between the bars)
 	local offx = (self.settings.barProportion * self.settings.barWidth * self.moduleSettings.offset)
 		+ (self.moduleSettings.offset * self.settings.barSpace)
-	if (self.moduleSettings.side == IceCore.Side.Left) then
+	if self.moduleSettings.side == IceCore.Side.Left then
 		offx = offx * -1
 	end
 	offx = offx + (self.moduleSettings.barHorizontalOffset or 0)
@@ -1702,8 +1738,6 @@ end
 
 function IceBarElement.prototype:RotateHorizontal()
 	if self.barFrame.isStatusBar then
-		self:RotateFrame(self.frame.bg)
-
 		if not self.barFrame.rotated then
 			self.barFrame:SetRotatesTexture(true)
 			self.barFrame:SetOrientation("HORIZONTAL")
