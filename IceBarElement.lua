@@ -1689,11 +1689,14 @@ function IceBarElement.prototype:SetTextAlpha()
 		textAlpha = self.alpha
 	end
 
+	local forceUpperFullAlpha = self.moduleSettings.lockUpperTextAlpha and (not IceHUD.CanAccessValue(textAlpha) or textAlpha > 0)
+	local forceLowerFullAlpha = self.moduleSettings.lockLowerTextAlpha and (not IceHUD.CanAccessValue(textAlpha) or textAlpha > 0)
+
 	if self.frame.bottomUpperText then
-		self.frame.bottomUpperText:SetAlpha(self.moduleSettings.lockUpperTextAlpha and 1 or textAlpha)
+		self.frame.bottomUpperText:SetAlpha(forceUpperFullAlpha and 1 or textAlpha)
 	end
 	if self.frame.bottomLowerText then
-		self.frame.bottomLowerText:SetAlpha(self.moduleSettings.lockLowerTextAlpha and 1 or textAlpha)
+		self.frame.bottomLowerText:SetAlpha(forceLowerFullAlpha and 1 or textAlpha)
 	end
 end
 
