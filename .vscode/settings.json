@@ -70,6 +70,7 @@
         "MAX_POWER_PER_EMBER",
         "MAX_RAID_MEMBERS",
         "MAX_TOTEMS",
+        "MirrorTimerContainer",
         "MonkHarmonyBar",
         "MonkHarmonyBarFrame",
         "MOONKIN_FORM",
@@ -150,6 +151,7 @@
         "UnitCastingDuration",
         "UnitChannelDuration",
         "UnitDebuff",
+        "UnitEmpoweredStageDurations",
         "UnitFrame_OnEnter",
         "UnitFrame_OnLeave",
         "UnitHealthPercent",
@@ -166,7 +168,7 @@
         "WOW_PROJECT_ID",
         "WOW_PROJECT_MAINLINE",
         "WOW_PROJECT_MISTS_CLASSIC",
-        "YES",
+        "YES"
     ],
     "Lua.runtime.version": "Lua 5.1",
     "Lua.runtime.builtin": {
