@@ -48,33 +48,63 @@ function IceUnitBar.prototype:init(name, unit)
 end
 
 function IceUnitBar.prototype:SetColorCurve()
-	if not C_ColorUtil or not C_CurveUtil or not C_CurveUtil.CreateColorCurve then
+	if not C_ColorUtil or not C_CurveUtil or not C_CurveUtil.CreateCurve then
 		return
 	end
 
 	local minHP = self.settings.colors["MinHealthColor"]
 	local midHP = self.settings.colors["MidHealthColor"]
 	local maxHP = self.settings.colors["MaxHealthColor"]
-	if not self.hpColorCurve then
-		self.hpColorCurve = C_CurveUtil.CreateColorCurve()
-		self.hpColorCurve:SetType(Enum.LuaCurveType.Linear)
+	-- have to split these up into components to avoid perf impact and massive garbage generation
+	-- when trying to pass in a color
+	if not self.hpColorCurveR then
+		self.hpColorCurveR = C_CurveUtil.CreateCurve()
+		self.hpColorCurveR:SetType(Enum.LuaCurveType.Linear)
+		self.hpColorCurveG = C_CurveUtil.CreateCurve()
+		self.hpColorCurveG:SetType(Enum.LuaCurveType.Linear)
+		self.hpColorCurveB = C_CurveUtil.CreateCurve()
+		self.hpColorCurveB:SetType(Enum.LuaCurveType.Linear)
 	end
-	self.hpColorCurve:ClearPoints()
-	self.hpColorCurve:AddPoint(0, CreateColor(minHP.r, minHP.g, minHP.b))
-	self.hpColorCurve:AddPoint(0.5, CreateColor(midHP.r, midHP.g, midHP.b))
-	self.hpColorCurve:AddPoint(1, CreateColor(maxHP.r, maxHP.g, maxHP.b))
+	self.hpColorCurveR:ClearPoints()
+	self.hpColorCurveR:AddPoint(0, minHP.r)
+	self.hpColorCurveR:AddPoint(0.5, midHP.r)
+	self.hpColorCurveR:AddPoint(1, maxHP.r)
+
+	self.hpColorCurveG:ClearPoints()
+	self.hpColorCurveG:AddPoint(0, minHP.g)
+	self.hpColorCurveG:AddPoint(0.5, midHP.g)
+	self.hpColorCurveG:AddPoint(1, maxHP.g)
+
+	self.hpColorCurveB:ClearPoints()
+	self.hpColorCurveB:AddPoint(0, minHP.b)
+	self.hpColorCurveB:AddPoint(0.5, midHP.b)
+	self.hpColorCurveB:AddPoint(1, maxHP.b)
 
 	local minMP = self.settings.colors["MinManaColor"]
 	local midMP = self.settings.colors["MidManaColor"]
 	local maxMP = self.settings.colors["MaxManaColor"]
-	if not self.mpColorCurve then
-		self.mpColorCurve = C_CurveUtil.CreateColorCurve()
-		self.mpColorCurve:SetType(Enum.LuaCurveType.Linear)
+	if not self.mpColorCurveR then
+		self.mpColorCurveR = C_CurveUtil.CreateCurve()
+		self.mpColorCurveR:SetType(Enum.LuaCurveType.Linear)
+		self.mpColorCurveG = C_CurveUtil.CreateCurve()
+		self.mpColorCurveG:SetType(Enum.LuaCurveType.Linear)
+		self.mpColorCurveB = C_CurveUtil.CreateCurve()
+		self.mpColorCurveB:SetType(Enum.LuaCurveType.Linear)
 	end
-	self.mpColorCurve:ClearPoints()
-	self.mpColorCurve:AddPoint(0, CreateColor(minMP.r, minMP.g, minMP.b))
-	self.mpColorCurve:AddPoint(0.5, CreateColor(midMP.r, midMP.g, midMP.b))
-	self.mpColorCurve:AddPoint(1, CreateColor(maxMP.r, maxMP.g, maxMP.b))
+	self.mpColorCurveR:ClearPoints()
+	self.mpColorCurveR:AddPoint(0, minMP.r)
+	self.mpColorCurveR:AddPoint(0.5, midMP.r)
+	self.mpColorCurveR:AddPoint(1, maxMP.r)
+
+	self.mpColorCurveG:ClearPoints()
+	self.mpColorCurveG:AddPoint(0, minMP.g)
+	self.mpColorCurveG:AddPoint(0.5, midMP.g)
+	self.mpColorCurveG:AddPoint(1, maxMP.g)
+
+	self.mpColorCurveB:ClearPoints()
+	self.mpColorCurveB:AddPoint(0, minMP.b)
+	self.mpColorCurveB:AddPoint(0.5, midMP.b)
+	self.mpColorCurveB:AddPoint(1, maxMP.b)
 end
 
 function IceUnitBar.prototype:SetUnit(unit)
@@ -297,11 +327,13 @@ function IceUnitBar.prototype:Update()
 	local _
 	_, self.unitClass = UnitClass(self.unit)
 
-	if self.hpColorCurve then
-		local curve = UnitHealthPercent(self.unit, true, self.hpColorCurve)
-		self.settings.colors["ScaledHealthColor"].r = curve.r
-		self.settings.colors["ScaledHealthColor"].g = curve.g
-		self.settings.colors["ScaledHealthColor"].b = curve.b
+	if self.hpColorCurveR then
+		local r = UnitHealthPercent(self.unit, true, self.hpColorCurveR)
+		local g = UnitHealthPercent(self.unit, true, self.hpColorCurveG)
+		local b = UnitHealthPercent(self.unit, true, self.hpColorCurveB)
+		self.settings.colors["ScaledHealthColor"].r = r
+		self.settings.colors["ScaledHealthColor"].g = g
+		self.settings.colors["ScaledHealthColor"].b = b
 	else
 		if self.healthPercentage > 0.5 then
 			self:SetScaledColor(self.colorInst, self.healthPercentage * 2 - 1, self.settings.colors["MaxHealthColor"], self.settings.colors["MidHealthColor"])
@@ -314,11 +346,13 @@ function IceUnitBar.prototype:Update()
 		self.settings.colors["ScaledHealthColor"].b = self.colorInst.b
 	end
 
-	if self.mpColorCurve then
-		local curve = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.mpColorCurve)
-		self.settings.colors["ScaledManaColor"].r = curve.r
-		self.settings.colors["ScaledManaColor"].g = curve.g
-		self.settings.colors["ScaledManaColor"].b = curve.b
+	if self.mpColorCurveR then
+		local r = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.mpColorCurveR)
+		local g = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.mpColorCurveG)
+		local b = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.mpColorCurveB)
+		self.settings.colors["ScaledManaColor"].r = r
+		self.settings.colors["ScaledManaColor"].g = g
+		self.settings.colors["ScaledManaColor"].b = b
 	else
 		if self.manaPercentage > 0.5 then
 			self:SetScaledColor(self.colorInst, self.manaPercentage * 2 - 1, self.settings.colors["MaxManaColor"], self.settings.colors["MidManaColor"])
