@@ -1718,6 +1718,9 @@ function IceBarElement.prototype:ResetRotation()
 	if self.frame.anim then
 		self.frame.anim:Stop()
 	end
+	if self.frame.bg.anim then
+		self.frame.bg.anim:Stop()
+	end
 	if self.barFrame.anim then
 		self.barFrame.anim:Stop()
 	end
