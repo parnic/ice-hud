@@ -646,7 +646,7 @@ end
 
 function Runes.prototype:UseTargetAlpha(scale)
 	if not self.moduleSettings.showWhenNotFull then
-		return not self:IsFull(scale)
+		return Runes.super.prototype.UseTargetAlpha(scale)
 	else
 		return self:GetNumRunesAvailable() ~= self.numRunes
 	end
