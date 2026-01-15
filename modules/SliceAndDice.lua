@@ -10,6 +10,15 @@ local NetherbladeEquipLocList = {1, 3, 5, 7, 10} --"HeadSlot", "ShoulderSlot", "
 
 local GlyphSpellId = 56810
 
+local CutToTheChaseSpellId = 51667
+local CutToTheChaseActivationSpellIds = {
+	[196819] = true, -- Eviscerate
+	[2098] = true, -- Dispatch
+	[32645] = true, -- Envenom
+}
+local LastKnownComboPoints = 0
+local BonusSecondsPerCutToTheChaseComboPoints = 3
+
 local baseTime = 9
 local gapPerComboPoint = 3
 local netherbladeBonus = 3
@@ -26,7 +35,7 @@ local CurrMaxSnDDuration = 0
 local PotentialSnDDuration = 0
 local LastValidPotentialSnDDuration = 0
 local CurrSndDuration = 0
-local SnDEndTime
+local CalculatedSnDEndTime = 0
 
 local sndTexture = 132306
 local newSndSpellId = 315496
@@ -126,20 +135,66 @@ function SliceAndDice.prototype:Enable(core)
 end
 
 function SliceAndDice.prototype:SpellcastSucceeded(event, unit, castGuid, spellId)
-	-- todo: in 11.0+, when casting your spec's main finisher (Assassination: Envenom / Outlaw: Dispatch / Subtlety: Eviscerate) via Cut to the Chase passive (id 51667),
-	-- SnD gets +3 sec / combo point. so we ideally would be watching for
-	-- a) player casts one of the known finishers
-	-- b) player is in combat
-	-- c) player knows 51667
-	-- d) SnD is active (SnDEndTime > GetTime())
-	-- to then determine, using player's last-known number of combo points that are already spent now, how many seconds we just added to SnD
-	-- and add that to SnDEndTime / CurrSndDuration
-	if unit ~= self.unit or spellId ~= newSndSpellId then
+	if unit ~= self.unit then
 		return
 	end
 
-	SnDEndTime = GetTime() + LastValidPotentialSnDDuration
-	CurrSndDuration = LastValidPotentialSnDDuration
+	if spellId == newSndSpellId then
+		-- note that there seem to be some cases where the applied duration is different from our calculations here
+		-- but the difference only seems to apply when overriding an existing SnD (with or without CttC bonus) with
+		-- a more "powerful" version (e.g. initially activated with 1 combo point, re-activating with 3).
+		-- I can't fully determine what the game is using to decide the duration, so this is just going to be a
+		-- "best effort" thing and the duration will eventually sort itself out when the player leaves combat.
+		-- worst case, the player re-applies SnD when they didn't necessarily need to, but ¯\_(ツ)_/¯
+		CalculatedSnDEndTime = GetTime() + LastValidPotentialSnDDuration
+		CurrSndDuration = LastValidPotentialSnDDuration
+		self.bUpdateSnd = true
+		return
+	end
+
+	-- in 11.0+, casting your spec's main finisher adds +3 sec / combo point if the player knows Cut To The Chase
+	-- up to a maximum of whatever SnD would be at max combo points + 1 (or maybe it always uses 8? not sure, would
+	-- need a lower-level rogue to test with)
+	if CutToTheChaseActivationSpellIds[spellId] then
+		-- it probably isn't possible to cast a finisher without being in combat, but this ensures that if we
+		-- can use the Duration utilities (due to being out of combat/non-secret) then we will prefer those.
+		if not InCombatLockdown() then
+			return
+		end
+
+		if not C_SpellBook.IsSpellKnown(CutToTheChaseSpellId) then
+			return
+		end
+
+		local bonusTimeSeconds = BonusSecondsPerCutToTheChaseComboPoints * LastKnownComboPoints
+
+		-- casting a finisher without SnD active will activate it lasting only for the bonus time
+		if CalculatedSnDEndTime < GetTime() then
+			CurrSndDuration = bonusTimeSeconds
+			CalculatedSnDEndTime = GetTime() + CurrSndDuration
+			self.bUpdateSnd = true
+			return
+		end
+
+		local maxDuration = self:GetMaxBuffTime(maxComboPoints, true)
+
+		-- note: the game logic for extending the SnD duration appears to be more complicated than this.
+		-- the game is seemingly tracking your CttC bonus separately from your SnD base duration such that
+		-- sometimes your finisher doesn't just add onto your current base time. this only seems to be the
+		-- case when your original SnD was activated with a low number of combo points. so there's a chance
+		-- that this math doesn't match the game's buff, but this is as "best effort" as we can get, and
+		-- realistically the vast majority of fights will sort themselves out as the player continues using
+		-- finishers and refreshing the SnD time as the fight goes on.
+		if CurrSndDuration + bonusTimeSeconds > maxDuration then
+			CurrSndDuration = maxDuration
+			CalculatedSnDEndTime = GetTime() + CurrSndDuration
+		else
+			CalculatedSnDEndTime = CalculatedSnDEndTime + bonusTimeSeconds
+			CurrSndDuration = CurrSndDuration + bonusTimeSeconds
+		end
+
+		self.bUpdateSnd = true
+	end
 end
 
 function SliceAndDice.prototype:CheckMaxComboPoints()
@@ -300,8 +355,8 @@ function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
 	local t = GetTime()
 
 	if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDuration then
-		if InCombatLockdown() and SnDEndTime and SnDEndTime > t then
-			return CurrSndDuration, SnDEndTime - t
+		if InCombatLockdown() and CalculatedSnDEndTime > t then
+			return CurrSndDuration, CalculatedSnDEndTime - t
 		end
 
 		local info = C_UnitAuras.GetUnitAuraBySpellID(unitName, buffName)
@@ -314,9 +369,8 @@ function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
 			return nil, nil
 		end
 
-		-- something is causing SnD to be refreshed sometimes, so accept the actual data as gospel whenever we have it available
 		CurrSndDuration = auraData.duration
-		SnDEndTime = auraData.expirationTime
+		CalculatedSnDEndTime = auraData.expirationTime
 		return auraData.duration, auraData.expirationTime and (auraData.expirationTime - t) or nil
 	end
 
@@ -477,6 +531,7 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 		PotentialSnDDuration = self:GetMaxBuffTime(points)
 		if PotentialSnDDuration ~= 0 then
 			LastValidPotentialSnDDuration = PotentialSnDDuration
+			LastKnownComboPoints = points
 		end
 
 		-- compute the scale from the current number of combo points
@@ -497,9 +552,13 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 	end
 end
 
-function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints)
+function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints, withCutToTheChaseExtension)
 	if numComboPoints == 0 then
 		return 0
+	end
+
+	if withCutToTheChaseExtension then
+		numComboPoints = numComboPoints + 1
 	end
 
 	local maxduration = baseTime + ((numComboPoints - 1) * gapPerComboPoint)
