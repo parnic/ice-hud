@@ -97,6 +97,7 @@ function RangeCheck.prototype:GetOptions()
 			return self.moduleSettings.rangeString
 		end,
 		set = function(info, v)
+			---@diagnostic disable-next-line: need-check-nil, undefined-field
 			v = DogTag:CleanCode(v)
 			self.moduleSettings.rangeString = v
 			self:RegisterFontStrings()
