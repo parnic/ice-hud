@@ -314,7 +314,7 @@ function StaggerBar.prototype:UpdateTimerFrame(event, unit, fromUpdate)
 	local remaining = nil
 
 	if not fromUpdate then
-		for i = 1, 3 do
+		for i = 1, #staggerIds do
 			self.StaggerDuration, remaining = self:GetDebuffDuration(self.unit, staggerIds[i])
 
 			if remaining then
@@ -353,6 +353,6 @@ function StaggerBar.prototype:UpdateTimerFrame(event, unit, fromUpdate)
 end
 
 local _, unitClass = UnitClass("player")
-if unitClass == "MONK" then
+if unitClass == "MONK" and not IceHUD.IsSecretEnv() then
 	IceHUD.StaggerBar = StaggerBar:new()
 end
