@@ -598,6 +598,6 @@ end
 
 local _, unitClass = UnitClass("player")
 -- Load us up
-if unitClass == "ROGUE" then
+if unitClass == "ROGUE" and not IceHUD.IsSecretEnv() then
 	IceHUD.SliceAndDice = SliceAndDice:new()
 end

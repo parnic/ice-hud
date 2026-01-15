@@ -539,6 +539,6 @@ end
 
 local _, unitClass = UnitClass("player")
 -- Load us up
-if unitClass == "ROGUE" and IceHUD.WowVer >= 70000 then
+if unitClass == "ROGUE" and IceHUD.WowVer >= 70000 and not IceHUD.IsSecretEnv() then
   IceHUD.RollTheBones = RollTheBones:new()
 end
