@@ -50,7 +50,7 @@ if not UnitDebuff and C_UnitAuras and AuraUtil then
 			return nil
 		end
 
-		return AuraUtil.UnpackAuraData(auraData)
+		return IceHUD.UnpackAuraData(auraData)
 	end
 end
 
@@ -178,8 +178,12 @@ function StaggerBar.prototype:CreateTimerBar()
 
 	self.CurrScale = 0
 
-	self.timerFrame.bar:SetVertexColor(self:GetColor("StaggerTime", self.moduleSettings.timerAlpha))
-	self.timerFrame.bar:SetHeight(0)
+	self:SetBarFrameColorRGBA(self.timerFrame, self:GetColor("StaggerTime", self.moduleSettings.timerAlpha))
+	if self.timerFrame.SetValue then
+		self.timerFrame:SetValue(0)
+	else
+		self.timerFrame.texture:SetHeight(0)
+	end
 
 	self:UpdateBar(1, "undef")
 	self:UpdateTimerFrame()
@@ -261,7 +265,7 @@ function StaggerBar.prototype:UpdateStaggerBar()
 	local scale = IceHUD:Clamp((self.amount / maxHealth) * (100 / self.moduleSettings.maxPercent), 0, 1)
 
 	if self.amount > 0 and (not self.duration or self.duration <= 10) then
-		-- self.timerFrame.bar:SetVertexColor(self:GetColor("StaggerTime", self.moduleSettings.timerAlpha))
+		-- self:SetBarFrameColorRGBA(self.timerFrame, self:GetColor("StaggerTime", self.moduleSettings.timerAlpha))
 		self:UpdateBar(scale or 0, "Stagger"..self.staggerLevel)
 		self:UpdateShown()
 		self:UpdateTimerFrame()
@@ -274,7 +278,7 @@ end
 function StaggerBar.prototype:GetDebuffDuration(unitName, buffId)
 	local name, _, duration, endTime
 	if IceHUD.SpellFunctionsReturnRank then
-		name, _, _, _, _, duration, endTime = UnitDebuff(unitName, buffName)
+		name, _, _, _, _, duration, endTime = UnitDebuff(unitName, buffId)
 	else
 		for i = 1, IceCore.BuffLimit do
 			local id
@@ -310,7 +314,7 @@ function StaggerBar.prototype:UpdateTimerFrame(event, unit, fromUpdate)
 	local remaining = nil
 
 	if not fromUpdate then
-		for i = 1, 3 do
+		for i = 1, #staggerIds do
 			self.StaggerDuration, remaining = self:GetDebuffDuration(self.unit, staggerIds[i])
 
 			if remaining then
@@ -349,6 +353,6 @@ function StaggerBar.prototype:UpdateTimerFrame(event, unit, fromUpdate)
 end
 
 local _, unitClass = UnitClass("player")
-if unitClass == "MONK" then
+if unitClass == "MONK" and not IceHUD.IsSecretEnv() then
 	IceHUD.StaggerBar = StaggerBar:new()
 end

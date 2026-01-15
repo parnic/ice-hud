@@ -30,9 +30,16 @@ if not UnitGroupRolesAssigned then
 	end
 end
 
+---@diagnostic disable-next-line: deprecated
 local GetItemInfo = GetItemInfo
 if not GetItemInfo and C_Item then
 	GetItemInfo = C_Item.GetItemInfo
+end
+
+---@diagnostic disable-next-line: deprecated
+local IsItemInRange = IsItemInRange
+if C_Item and C_Item.IsItemInRange then
+	IsItemInRange = C_Item.IsItemInRange
 end
 
 local MAX_NUM_RAID_MEMBERS = 40
@@ -242,7 +249,7 @@ function IceThreat.prototype:CreateAggroBar()
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor("CastCasting")
 	end
-	self.aggroBar.bar:SetVertexColor(r, g, b, self.moduleSettings.aggroAlpha)
+	self:SetBarFrameColorRGBA(self.aggroBar, r, g, b, self.moduleSettings.aggroAlpha)
 
 	self:SetBarCoord(self.aggroBar, 0 , true)
 end
@@ -250,7 +257,7 @@ end
 function IceThreat.prototype:CreateSecondThreatBar()
 	self.secondThreatBar = self:BarFactory(self.secondThreatBar, "MEDIUM", "OVERLAY", "SecondThreat")
 
-	self.secondThreatBar.bar:SetVertexColor(self:GetColor("ThreatSecondPlace", self.alpha * self.moduleSettings.secondPlaceThreatAlpha))
+	self:SetBarFrameColorRGBA(self.secondThreatBar, self:GetColor("ThreatSecondPlace", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.secondPlaceThreatAlpha))
 
 	self:SetBarCoord(self.secondThreatBar)
 end
@@ -413,10 +420,10 @@ function IceThreat.prototype:UpdateSecondHighestThreatBar(secondHighestThreat, t
 		if not self.lastSecondHighestThreat or self.lastSecondHighestThreat ~= secondPercent then
 			self.lastSecondHighestThreat = secondPercent
 
-			self.secondThreatBar.bar:SetVertexColor(self:GetColor("ThreatSecondPlace", self.alpha * self.moduleSettings.secondPlaceThreatAlpha))
+			self:SetBarFrameColorRGBA(self.secondThreatBar, self:GetColor("ThreatSecondPlace", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.secondPlaceThreatAlpha))
 
 			local pos = IceHUD:Clamp(secondPercent, 0, 1)
-			if self.moduleSettings.reverse then
+			if self:BarFillReverse() then
 				pos = 1-pos
 			end
 

@@ -15,7 +15,7 @@ local behaviorDependsOnComboPoints = IceHUD.WowVer < 90000
 local CurrMaxRtBDuration = 0
 local PotentialRtBDuration = 0
 
-local RtBBuffs = {199603, 193358, 193357, 193359, 199600, 193356}
+local RtBBuffs = {199603, 193358, 193357, 193359, 199600, 193356, 1214933, 1214934, 1214935, 1214937}
 local RtBSet = {}
 for _, v in ipairs(RtBBuffs) do
   RtBSet[v] = true
@@ -53,7 +53,7 @@ if not UnitBuff and C_UnitAuras and AuraUtil then
       return nil
     end
 
-    return AuraUtil.UnpackAuraData(auraData)
+    return IceHUD.UnpackAuraData(auraData)
   end
 end
 
@@ -235,8 +235,12 @@ function RollTheBones.prototype:CreateDurationBar()
   -- Rokiyo: Do we need to call this here?
   self.CurrScale = 0
 
-  self.durationFrame.bar:SetVertexColor(self:GetColor("RollTheBonesPotential", self.moduleSettings.durationAlpha))
-  self.durationFrame.bar:SetHeight(0)
+  self:SetBarFrameColorRGBA(self.durationFrame, self:GetColor("RollTheBonesPotential", self.moduleSettings.durationAlpha))
+  if self.durationFrame.SetValue then
+    self.durationFrame:SetValue(0)
+  else
+    self.durationFrame.texture:SetHeight(0)
+  end
 
   self:UpdateBar(1, "undef")
 
@@ -264,6 +268,20 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function RollTheBones.prototype:GetBuffDuration(unitName, ids)
+  if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDuration then
+    for i=1,#RtBBuffs do
+      local data = C_UnitAuras.GetUnitAuraBySpellID(unitName, RtBBuffs[i])
+      if data then
+        local duration = C_UnitAuras.GetAuraDuration(unitName, data.auraInstanceID)
+        if duration then
+          return duration, nil, 0
+        end
+      end
+    end
+
+    return nil, nil, 0
+  end
+
   local i = 1
   local buff, _, type, duration, endTime, spellId
   if IceHUD.SpellFunctionsReturnRank then
@@ -330,6 +348,22 @@ end
 function RollTheBones.prototype:UpdateRollTheBones(event, unit)
   if unit and unit ~= self.unit then
     return
+  end
+
+  if C_UnitAuras and C_UnitAuras.GetAuraDuration then
+    local _
+    rtbDuration, _, _ = self:GetBuffDuration(self.unit)
+    self:UpdateBar(rtbDuration and 1 or 0, "RollTheBones")
+		if rtbDuration then
+      self:Show(true)
+			self.barFrame:SetTimerDuration(
+        rtbDuration,
+        Enum.StatusBarInterpolation.Immediate,
+        self:ShouldReverseFill() and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
+      )
+		end
+
+		return
   end
 
   local now = GetTime()
@@ -446,11 +480,11 @@ function RollTheBones.prototype:UpdateDurationBar(event, unit)
     local scale = IceHUD:Clamp(PotentialRtBDuration / CurrMaxRtBDuration, 0, 1)
 
     -- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
-    if (self.moduleSettings.reverse) then
+    if self:BarFillReverse() then
       scale = 1 - scale
     end
 
-    self.durationFrame.bar:SetVertexColor(self:GetColor("RollTheBonesPotential", self.moduleSettings.durationAlpha))
+    self:SetBarFrameColorRGBA(self.durationFrame, self:GetColor("RollTheBonesPotential", self.moduleSettings.durationAlpha))
     self:SetBarCoord(self.durationFrame, scale)
   end
 
@@ -473,7 +507,7 @@ function RollTheBones.prototype:GetMaxBuffTime(numComboPoints)
 end
 
 function RollTheBones.prototype:GetItemIdFromItemLink(linkStr)
-  local itemId
+  local itemId, itemId2
   local _
 
   if linkStr then
@@ -505,6 +539,8 @@ end
 
 local _, unitClass = UnitClass("player")
 -- Load us up
-if unitClass == "ROGUE" and IceHUD.WowVer >= 70000 then
+-- 12.0 note: RtB now provides a flat 30 second benefit on a 45 second cooldown, so there's no more
+-- micro-managing to worry about, so the module feels pretty useless now.
+if unitClass == "ROGUE" and IceHUD.WowVer >= 70000 and IceHUD.WowVer < 120000 then
   IceHUD.RollTheBones = RollTheBones:new()
 end

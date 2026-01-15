@@ -54,7 +54,7 @@ function FocusHealth.prototype:GetOptions()
 			self:Update(self.unit)
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or self.moduleSettings.scaleHealthColor
 		end,
 		order = 41
 	}
@@ -270,7 +270,7 @@ function FocusHealth.prototype:CreateBackground()
 	self.frame.button:ClearAllPoints()
 	-- Parnic - kinda hacky, but in order to fit this region to multiple types of bars, we need to do this...
 	--          would be nice to define this somewhere in data, but for now...here we are
-	if self:GetMyBarTexture() == "HiBar" then
+	if self:GetMyBarTextureName() == "HiBar" then
 		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
 		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
 	else
@@ -364,7 +364,7 @@ function FocusHealth.prototype:Update(unit)
 
 	if (self.moduleSettings.scaleHealthColor) then
 		self.color = "ScaledHealthColor"
-	elseif self.moduleSettings.lowThresholdColor and self.healthPercentage <= self.moduleSettings.lowThreshold then
+	elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.healthPercentage) and self.healthPercentage <= self.moduleSettings.lowThreshold then
 		self.color = "ScaledHealthColor"
 	end
 
@@ -375,14 +375,19 @@ function FocusHealth.prototype:Update(unit)
 	self:UpdateBar(self.healthPercentage, self.color)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self:SetBottomText1(math.floor(self.healthPercentage * 100))
+		self:SetBottomText1(string.format("%.0f", UnitHealthPercent and UnitHealthPercent(self.unit, true, CurveConstants.ScaleTo100) or math.floor(self.healthPercentage * 100)))
 
 		if self.moduleSettings.abbreviateHealth then
-			self.health = self:Round(self.health)
-			self.maxHealth = self:Round(self.maxHealth)
+			if AbbreviateNumbers then
+				self.health = AbbreviateNumbers(self.health)
+				self.maxHealth = AbbreviateNumbers(self.maxHealth)
+			else
+				self.health = self:Round(self.health)
+				self.maxHealth = self:Round(self.maxHealth)
+			end
 		end
 
-		if (self.maxHealth ~= 100) then
+		if not IceHUD.CanAccessValue(self.maxHealth) or self.maxHealth ~= 100 then
 			self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
 		else
 			self:SetBottomText2()
@@ -470,6 +475,10 @@ function FocusHealth.prototype:HideBlizz()
 	FocusFrame:Hide()
 
 	FocusFrame:UnregisterAllEvents()
+end
+
+function FocusHealth.prototype:IsHealthBar()
+	return true
 end
 
 -- Load us up

@@ -171,7 +171,7 @@ function TargetInvuln.prototype:GetMaxbuffDuration(unitName, buffNames)
 	else
 		buff, texture, count, buffType, duration, endTime, unitCaster = IceHUD.UnitAura(unitName, i, "HELPFUL")
 	end
-	local isMine = unitCaster == "player"
+	local isMine = not IceHUD.CanAccessValue(unitCaster) or unitCaster == "player"
 	local result = {nil, nil, nil}
 	local remaining
 
@@ -276,4 +276,6 @@ function TargetInvuln.prototype:UpdateTargetBuffs(event, unit)
 end
 
 -- Load us up
-IceHUD.TargetInvuln = TargetInvuln:new()
+if not IceHUD.IsSecretEnv() then
+	IceHUD.TargetInvuln = TargetInvuln:new()
+end

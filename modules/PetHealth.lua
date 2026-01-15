@@ -93,7 +93,7 @@ function PetHealth.prototype:Update(unit)
 
 	if (self.moduleSettings.scaleHealthColor) then
 		color = "ScaledHealthColor"
-	elseif self.moduleSettings.lowThresholdColor and self.healthPercentage <= self.moduleSettings.lowThreshold then
+	elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.healthPercentage) and self.healthPercentage <= self.moduleSettings.lowThreshold then
 		color = "ScaledHealthColor"
 	end
 
@@ -106,7 +106,7 @@ function PetHealth.prototype:Update(unit)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
-		self:SetBottomText1(math.floor(self.healthPercentage * 100))
+		self:SetBottomText1(string.format("%.0f", UnitHealthPercent and UnitHealthPercent(self.unit, true, CurveConstants.ScaleTo100) or math.floor(self.healthPercentage * 100)))
 	end
 end
 
@@ -162,7 +162,7 @@ function PetHealth.prototype:CreateBackground()
 	self.frame.button:ClearAllPoints()
 	-- Parnic - kinda hacky, but in order to fit this region to multiple types of bars, we need to do this...
 	--          would be nice to define this somewhere in data, but for now...here we are
-	if self:GetMyBarTexture() == "HiBar" then
+	if self:GetMyBarTextureName() == "HiBar" then
 		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
 		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
 	else
@@ -237,6 +237,10 @@ function PetHealth.prototype:EnteringWorld()
 			self:ExitingVehicle(nil, "player")
 		end
 	end
+end
+
+function PetHealth.prototype:IsHealthBar()
+	return true
 end
 
 -- Load us up

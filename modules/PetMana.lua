@@ -163,17 +163,19 @@ function PetMana.prototype:Update(unit)
 		self:Show(true)
 	end
 
-	if (self.manaPercentage == 1 and self.manaType ~= SPELL_POWER_RAGE and self.manaType ~= SPELL_POWER_RUNIC_POWER)
-		or (self.manaPercentage == 0 and (self.manaType == SPELL_POWER_RAGE or self.manaType == SPELL_POWER_RUNIC_POWER)) then
-		self:SetupOnUpdate(false)
-	else
-		self:SetupOnUpdate(true)
+	if IceHUD.CanAccessValue(self.manaPercentage) then
+		if (self.manaPercentage == 1 and self.manaType ~= SPELL_POWER_RAGE and self.manaType ~= SPELL_POWER_RUNIC_POWER)
+			or (self.manaPercentage == 0 and (self.manaType == SPELL_POWER_RAGE or self.manaType == SPELL_POWER_RUNIC_POWER)) then
+			self:SetupOnUpdate(false)
+		else
+			self:SetupOnUpdate(true)
+		end
 	end
 
 	local color = "PetMana"
 	if (self.moduleSettings.scaleManaColor) then
 		color = "ScaledManaColor"
-	elseif self.moduleSettings.lowThresholdColor and self.manaPercentage <= self.moduleSettings.lowThreshold then
+	elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.manaPercentage) and self.manaPercentage <= self.moduleSettings.lowThreshold then
 		color = "ScaledManaColor"
 	end
 	if not (self.alive) then
@@ -188,12 +190,12 @@ function PetMana.prototype:Update(unit)
 		end
 	end
 
-	if self.maxMana > 0 then
+	if IceHUD.CanAccessValue(self.maxMana) and self.maxMana > 0 then
 		self:UpdateBar(self.manaPercentage, color)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self:SetBottomText1(math.floor(self.manaPercentage * 100))
+		self:SetBottomText1(string.format("%.0f", UnitPowerPercent and UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, CurveConstants.ScaleTo100) or math.floor(self.manaPercentage * 100)))
 	end
 end
 
@@ -254,6 +256,10 @@ function PetMana.prototype:EnteringWorld()
 			self:ExitingVehicle(nil, "player")
 		end
 	end
+end
+
+function PetMana.prototype:IsPowerBar()
+	return true
 end
 
 -- Load us up

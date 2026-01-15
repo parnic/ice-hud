@@ -85,20 +85,24 @@ function PlayerAlternatePower.prototype:Update(unit)
 
 	self.maxPower = UnitPowerMax(self.unit, self.powerIndex)
 	self.power = UnitPower(self.unit, self.powerIndex)
-	if self.maxPower > 0 then
-		self.powerPercent = self.power / self.maxPower
+	if UnitPowerPercent then
+		self.powerPercent = UnitPowerPercent(self.unit, self.powerIndex, true, CurveConstants.ScaleTo100)
 	else
-		self.powerPercent = 0
+		if self.maxPower > 0 then
+			self.powerPercent = self.power / self.maxPower
+		else
+			self.powerPercent = 0
+		end
 	end
 
 	self:UpdateBar(self.powerPercent)
 
 	local info = PowerBarColor[self.powerName];
-	self.barFrame.bar:SetVertexColor(info.r, info.g, info.b, self.alpha)
+	self:SetBarColorRGBA(info.r, info.g, info.b, self.alpha)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self:SetBottomText1(math.floor(self.powerPercent * 100))
-		self:SetBottomText2(self:GetFormattedText(self.power, self.maxPower), color)
+		self:SetBottomText1(string.format("%.0f", UnitPowerPercent and UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, CurveConstants.ScaleTo100) or math.floor(self.powerPercent * 100)))
+		self:SetBottomText2(self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.power) or self.power, AbbreviateNumbers and AbbreviateNumbers(self.maxPower) or self.maxPower), self.color)
 	end
 end
 

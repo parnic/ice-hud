@@ -21,7 +21,7 @@ function TargetTargetMana.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 11
 	settings["upperText"] = "[PercentMP:Round]"
-	settings["lowerText"] = "[FractionalMP:Short:PowerColor]"
+	settings["lowerText"] = "[[[MP:Short:PowerColor] '/' [MaxMP:Short:PowerColor]]:Bracket]"
 	settings["barVerticalOffset"] = 35
 	settings["scale"] = 0.7
 	settings["enabled"] = false
@@ -83,7 +83,7 @@ function TargetTargetMana.prototype:Update(unit)
 
 	if (self.moduleSettings.scaleManaColor) then
 		self.color = "ScaledManaColor"
-	elseif self.moduleSettings.lowThresholdColor and self.manaPercentage and self.manaPercentage <= self.moduleSettings.lowThreshold then
+	elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.manaPercentage) and self.manaPercentage and self.manaPercentage <= self.moduleSettings.lowThreshold then
 		self.color = "ScaledManaColor"
 	end
 

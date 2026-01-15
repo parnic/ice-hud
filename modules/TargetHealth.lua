@@ -48,7 +48,7 @@ function IceTargetHealth.prototype:GetDefaultSettings()
 	settings["classColor"] = false
 	settings["hideBlizz"] = false
 	settings["upperText"] = "[PercentHP:Round]"
-	settings["lowerText"] = "[FractionalHP:Short:HPColor:Bracket]"
+	settings["lowerText"] = "[[[HP:Short:HPColor] '/' [MaxHP:Short:HPColor]]:Bracket]"
 	settings["raidIconOnTop"] = true
 	settings["showRaidIcon"] = true
 	settings["raidIconXOffset"] = 12
@@ -693,10 +693,10 @@ function IceTargetHealth.prototype:CreateBackground(redraw)
 		self.frame.button:ClearAllPoints()
 		-- Parnic - kinda hacky, but in order to fit this region to multiple types of bars, we need to do this...
 		--          would be nice to define this somewhere in data, but for now...here we are
-		if self:GetMyBarTexture() == "HiBar" then
+		if self:GetMyBarTextureName() == "HiBar" then
 			self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
 			self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
-		elseif self:GetMyBarTexture() == "ArcHUD" then
+		elseif self:GetMyBarTextureName() == "ArcHUD" then
 			if self.moduleSettings.side == IceCore.Side.Left then
 				self.frame.button:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
 				self.frame.button:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMLEFT", self.frame:GetWidth() / 3, 0)
@@ -839,7 +839,7 @@ function IceTargetHealth.prototype:Update(unit)
 
 		if (self.moduleSettings.scaleHealthColor) then
 			self.color = "ScaledHealthColor"
-		elseif self.moduleSettings.lowThresholdColor and self.healthPercentage <= self.moduleSettings.lowThreshold then
+		elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.healthPercentage) and self.healthPercentage <= self.moduleSettings.lowThreshold then
 			self.color = "ScaledHealthColor"
 		end
 
@@ -850,46 +850,31 @@ function IceTargetHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.healthPercentage, self.color)
 
-	if IsAddOnLoaded("RealMobHealth") then
-		if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
-			self:SetBottomText1(math.floor(self.healthPercentage * 100))
-
-			if self.moduleSettings.abbreviateHealth then
-				if RealMobHealth.UnitHasHealthData(unit) then
-					self.health, self.maxHealth = RealMobHealth.GetUnitHealth(unit)
-				end
-				self.health = self:Round(self.health)
-				self.maxHealth = self:Round(self.maxHealth)
-			end
-
-			if RealMobHealth.UnitHasHealthData(unit) or (self.maxHealth ~= 100) then
-				if RealMobHealth.UnitHasHealthData(unit) then
-					self.health, self.maxHealth = RealMobHealth.GetUnitHealth(unit)
-					self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
-				else
-					self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
-				end				
-			else
-				self:SetBottomText2()
-			end
-		end
-	else
-		if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
-			self:SetBottomText1(math.floor(self.healthPercentage * 100))
-
-			if self.moduleSettings.abbreviateHealth then
-				self.health = self:Round(self.health)
-				self.maxHealth = self:Round(self.maxHealth)
-			end
-
-			if (self.maxHealth ~= 100) then
-				self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
-			else
-				self:SetBottomText2()
-			end
-		end	
+	if IsAddOnLoaded("RealMobHealth") and RealMobHealth.UnitHasHealthData(unit) then
+		self.health, self.maxHealth = RealMobHealth.GetUnitHealth(unit)
+		self.healthPercentage = self.health / self.maxHealth
 	end
-	
+
+	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
+		self:SetBottomText1(string.format("%.0f", UnitHealthPercent and UnitHealthPercent(self.unit, true, CurveConstants.ScaleTo100) or math.floor(self.healthPercentage * 100)))
+
+		if not IceHUD.CanAccessValue(self.maxHealth) or self.maxHealth ~= 100 then
+			if self.moduleSettings.abbreviateHealth then
+				if AbbreviateNumbers then
+					self:SetBottomText2(self:GetFormattedText(AbbreviateNumbers(self.health), AbbreviateNumbers(self.maxHealth)), self.color)
+				else
+					self.health = self:Round(self.health)
+					self.maxHealth = self:Round(self.maxHealth)
+					self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
+				end
+			else
+				self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
+			end
+		else
+			self:SetBottomText2()
+		end
+	end
+
 	self:CheckPvP()
 	self:CheckPartyRole()
 	self:SetIconAlpha()
@@ -1058,7 +1043,13 @@ function IceTargetHealth.prototype:SetIconAlpha()
 		self.frame.PartyRoleIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha)
 	end
 	if self.barFrame.classIcon and self.moduleSettings.showClassificationIcon then
-		self.barFrame.classIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or self.alpha == 0 and 0 or math.min(1, self.alpha + 0.2))
+		local alpha
+		if IceHUD.CanAccessValue(self.alpha) then
+			alpha = self.alpha == 0 and 0 or math.min(1, self.alpha + 0.2)
+		else
+			alpha = self.alpha
+		end
+		self.barFrame.classIcon:SetAlpha(self.moduleSettings.lockIconAlpha and 1 or alpha)
 	end
 end
 
@@ -1159,6 +1150,10 @@ function IceTargetHealth.prototype:CheckPartyRole()
 	else
 		self.frame.PartyRoleIcon = self:DestroyTexFrame(self.frame.PartyRoleIcon)
 	end
+end
+
+function IceTargetHealth.prototype:IsHealthBar()
+	return true
 end
 
 -- Load us up

@@ -25,6 +25,7 @@ if not GetSpellCooldown and C_Spell then
 	GetSpellCooldown = function(spellID)
 		local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID)
 		if spellCooldownInfo then
+			---@diagnostic disable-next-line: redundant-return-value
 			return spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate
 		end
 	end
@@ -44,10 +45,6 @@ end
 -- OVERRIDE
 function GlobalCoolDown.prototype:Enable(core)
 	GlobalCoolDown.super.prototype.Enable(self, core)
-
-	if self.moduleSettings.inverse == "EXPAND" then
-		self.moduleSettings.inverse = "NORMAL"
-	end
 
 	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", "SpellCastChanged")
 
@@ -110,60 +107,62 @@ function GlobalCoolDown.prototype:GetOptions()
 	opts["lowThreshold"] = nil
 	opts["textSettings"] = nil
 
-	opts["showDuringCast"] = {
-		type = 'toggle',
-		name = L["Show during cast"],
-		desc = L["Whether to show this bar when a spellcast longer than the global cooldown is being cast."],
-		get = function()
-			return self.moduleSettings.showDuringCast
-		end,
-		set = function(info, v)
-			self.moduleSettings.showDuringCast = v
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 21,
-	}
+	if not IceHUD.IsSecretEnv() then
+		opts["showDuringCast"] = {
+			type = 'toggle',
+			name = L["Show during cast"],
+			desc = L["Whether to show this bar when a spellcast longer than the global cooldown is being cast."],
+			get = function()
+				return self.moduleSettings.showDuringCast
+			end,
+			set = function(info, v)
+				self.moduleSettings.showDuringCast = v
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 21,
+		}
 
-	opts["lagAlpha"] =
-	{
-		type = 'range',
-		name = L["Lag Indicator alpha"],
-		desc = L["Lag indicator alpha (0 is disabled)"],
-		min = 0,
-		max = 1,
-		step = 0.1,
-		get = function()
-			return self.moduleSettings.lagAlpha
-		end,
-		set = function(info, value)
-			self.moduleSettings.lagAlpha = value
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 42
-	}
+		opts["lagAlpha"] =
+		{
+			type = 'range',
+			name = L["Lag Indicator alpha"],
+			desc = L["Lag indicator alpha (0 is disabled)"],
+			min = 0,
+			max = 1,
+			step = 0.1,
+			get = function()
+				return self.moduleSettings.lagAlpha
+			end,
+			set = function(info, value)
+				self.moduleSettings.lagAlpha = value
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 42
+		}
 
-	opts["respectLagTolerance"] =
-	{
-		type = 'toggle',
-		name = L["Respect lag tolerance"],
-		desc = L["When checked, if a 'Custom Lag Tolerance' is set in the game's Combat options, the lag indicator will always use that tolerance value. Otherwise, it uses the computed latency."],
-		get = function()
-			return self.moduleSettings.respectLagTolerance
-		end,
-		set = function(info, value)
-			self.moduleSettings.respectLagTolerance = value
-			self:CVarUpdate()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or GetCVar("reducedLagTolerance") == "0"
-		end,
-		order = 42.1,
-	}
+		opts["respectLagTolerance"] =
+		{
+			type = 'toggle',
+			name = L["Respect lag tolerance"],
+			desc = L["When checked, if a 'Custom Lag Tolerance' is set in the game's Combat options, the lag indicator will always use that tolerance value. Otherwise, it uses the computed latency."],
+			get = function()
+				return self.moduleSettings.respectLagTolerance
+			end,
+			set = function(info, value)
+				self.moduleSettings.respectLagTolerance = value
+				self:CVarUpdate()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled or GetCVar("reducedLagTolerance") == "0"
+			end,
+			order = 42.1,
+		}
+	end
 
 	return opts
 end
@@ -193,7 +192,7 @@ function GlobalCoolDown.prototype:GetSpellCastTime(spell)
 		return nil, nil
 	end
 
-	local spellname, castTime, _
+	local spellName, castTime, _
 	if IceHUD.GetSpellInfoReturnsFunnel then
 		spellName, _, _, _, _, _, castTime = GetSpellInfo(spell)
 	else
@@ -220,6 +219,24 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, castGuid, sp
 	-- Update the current spell ID for all events indicating a spellcast is starting
 	if event ~= "UNIT_SPELLCAST_SUCCEEDED" then
 		self.CurrSpellGuid = castGuid
+	end
+
+	if C_Spell and C_Spell.GetSpellCooldownDuration then
+		local dur = C_Spell.GetSpellCooldownDuration(self.CDSpellId)
+
+		if dur then
+			self.barFrame:SetTimerDuration(
+				dur,
+				Enum.StatusBarInterpolation.Immediate,
+				self:ShouldReverseFill() and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
+			)
+			self:Show(true)
+			self.startTime = GetTime()
+			self.duration = 1.5 -- we can't inspect the actual duration, so assume the worst
+			self:ConditionalSetupUpdate()
+		end
+
+		return
 	end
 
 	local start, dur = GetSpellCooldown(self.CDSpellId)
@@ -267,16 +284,18 @@ end
 function GlobalCoolDown.prototype:MyOnUpdate()
 	GlobalCoolDown.super.prototype.MyOnUpdate(self)
 
-	if self:IsVisible() and self.startTime ~= nil and self.duration ~= nil
-		and self.CurrScale <= 0.01 then
+	local scaleReachedZero = self.startTime ~= nil and self.duration ~= nil and self.CurrScale <= 0.01
+	local fallbackMaxDuration = self.startTime and self.duration and GetTime() >= self.startTime + self.duration
+	if self:IsVisible() and (scaleReachedZero or fallbackMaxDuration) then
 		self:Show(false)
+		IceHUD.IceCore:RequestUpdates(self, nil)
 	end
 end
 
 function GlobalCoolDown.prototype:CreateFrame()
 	GlobalCoolDown.super.prototype.CreateFrame(self)
 
-	self.barFrame.bar:SetVertexColor(self:GetColor("GlobalCoolDown", 0.8))
+	self:SetBarColorRGBA(self:GetColor("GlobalCoolDown", 0.8))
 	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
 	self.frame.bg:SetVertexColor(r, g, b, 0.6)
 
@@ -284,15 +303,15 @@ function GlobalCoolDown.prototype:CreateFrame()
 end
 
 function GlobalCoolDown.prototype:CreateLagBar()
-	self.lagBar = self:BarFactory(self.lagBar, "LOW", "OVERLAY", "Lag")
+	self.lagBar = self:BarFactory(self.lagBar, "LOW", "OVERLAY", "Lag", true)
 
 	local r, g, b = self:GetColor("CastLag")
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor("CastCasting")
 	end
 
-	self.lagBar.bar:SetVertexColor(r, g, b, self.moduleSettings.lagAlpha)
-	self.lagBar.bar:Hide()
+	self:SetBarFrameColorRGBA(self.lagBar, r, g, b, self.moduleSettings.lagAlpha)
+	self.lagBar:Hide()
 end
 
 function GlobalCoolDown.prototype:GetSpellId()

@@ -247,7 +247,7 @@ function Totems.prototype:UpdateTotem(event, totem, ...)
 	end
 
 	local haveTotem, name, startTime, duration, icon = GetTotemInfo(totem);
-	if duration > 0 then
+ 	if IceHUD.CanAccessValue(duration) and duration > 0 then
 		self.frame.graphical[totem].totem:SetTexture(icon)
 		CooldownFrame_SetTimer(self.frame.graphical[totem].cd, startTime, duration, true)
 		self.frame.graphical[totem].cd:Show()
@@ -361,7 +361,7 @@ function Totems.prototype:CreateTotem(i, name)
 
 	if not self.graphicalOnEnter then
 		self.graphicalOnEnter = function(button)
-			GameTooltip:SetOwner(button)
+			GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
 			if IceHUD.WowClassic then
 				GameTooltip:SetText(button.name)
 			else
@@ -384,8 +384,8 @@ function Totems.prototype:CreateTotem(i, name)
 	self.frame.graphical[i].cd:SetFrameLevel(self.frame.graphical[i]:GetFrameLevel()+1)
 	self.frame.graphical[i].cd:ClearAllPoints()
 	self.frame.graphical[i].cd:SetAllPoints(self.frame.graphical[i])
-	if duration > 0 then
-		CooldownFrame_SetTimer(self.frame.graphical[i].cd, startTime, duration, true)
+	if not IceHUD.CanAccessValue(haveTotem) or (haveTotem and duration) then
+		self.frame.graphical[i].cd:SetCooldown(startTime, duration)
 		self.frame.graphical[i].cd:Show()
 		self.frame.graphical[i]:Show()
 	end

@@ -75,7 +75,12 @@ function FocusMana.prototype:Update(unit)
 		return
 	end
 
-	if ((not UnitExists(unit)) or (self.maxMana == 0)) then
+	if not UnitExists(unit) then
+		self:Show(false)
+		return
+	end
+
+	if IceHUD.CanAccessValue(self.maxMana) and self.maxMana == 0 then
 		self:Show(false)
 		return
 	else
@@ -88,7 +93,7 @@ function FocusMana.prototype:Update(unit)
 	local color = "FocusMana"
 	if (self.moduleSettings.scaleManaColor) then
 		color = "ScaledManaColor"
-	elseif self.moduleSettings.lowThresholdColor and self.manaPercentage <= self.moduleSettings.lowThreshold then
+	elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.manaPercentage) and self.manaPercentage <= self.moduleSettings.lowThreshold then
 		color = "ScaledManaColor"
 	end
 	if (manaType == SPELL_POWER_RAGE) then
@@ -106,8 +111,8 @@ function FocusMana.prototype:Update(unit)
 	self:UpdateBar(self.manaPercentage, color)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self:SetBottomText1(math.floor(self.manaPercentage * 100))
-		self:SetBottomText2(self:GetFormattedText(self.mana, self.maxMana), color)
+		self:SetBottomText1(string.format("%.0f", UnitPowerPercent and UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, CurveConstants.ScaleTo100) or math.floor(self.manaPercentage * 100)))
+		self:SetBottomText2(self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.mana) or self.mana, AbbreviateNumbers and AbbreviateNumbers(self.maxMana) or self.maxMana), color)
 	end
 end
 
@@ -136,6 +141,9 @@ function FocusMana.prototype:GetOptions()
 	return opts
 end
 
+function FocusMana.prototype:IsPowerBar()
+	return true
+end
 
 -- Load us up
 if FocusUnit then

@@ -454,7 +454,7 @@ function IceCustomBar.prototype:GetOptions()
 			self.moduleSettings.barColor.r = r
 			self.moduleSettings.barColor.g = g
 			self.moduleSettings.barColor.b = b
-			self.barFrame.bar:SetVertexColor(self:GetBarColor())
+			self:SetBarColorRGBA(self:GetBarColor())
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -685,14 +685,14 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 				(self.auraDuration == nil or (mainHandExpiration/1000) > self.auraDuration) and (mainHandExpiration/1000)
 				or self.auraDuration
 
-			local slotId, mainHandTexture = GetInventorySlotInfo("MainHandSlot")
+			local slotId = GetInventorySlotInfo("MAINHANDSLOT")
 			return duration, mainHandExpiration/1000, mainHandCharges, GetInventoryItemTexture("player", slotId)
 		elseif unitName == "off hand weapon" and hasOffHandEnchant then
 			local duration =
 				(self.auraDuration == nil or (offHandExpiration/1000) > self.auraDuration) and (offHandExpiration/1000)
 				or self.auraDuration
 
-			local slotId, offHandTexture = GetInventorySlotInfo("SecondaryHandSlot")
+			local slotId = GetInventorySlotInfo("SECONDARYHANDSLOT")
 			return duration, offHandExpiration/1000, offHandCharges, GetInventoryItemTexture("player", slotId)
 		end
 
@@ -884,7 +884,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 		self:SetBottomText2(self.moduleSettings.lowerText)
 	end
 
-	self.barFrame.bar:SetVertexColor(self:GetBarColor())
+	self:SetBarColorRGBA(self:GetBarColor())
 	if self.flashFrame and self.flashFrame.flash then
 		self.flashFrame.flash:SetVertexColor(self:GetBarColor())
 	end

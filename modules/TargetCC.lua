@@ -372,7 +372,7 @@ function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 	else
 		debuff, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = IceHUD.UnitAura(unitName, i, "HARMFUL")
 	end
-	local isMine = unitCaster == "player"
+	local isMine = not IceHUD.CanAccessValue(unitCaster) or unitCaster == "player"
 	local result = {nil, nil, nil}
 	local remaining
 
@@ -467,4 +467,6 @@ function TargetCC.prototype:UpdateTargetDebuffs(event, unit)
 end
 
 -- Load us up
-IceHUD.TargetCC = TargetCC:new()
+if not IceHUD.IsSecretEnv() then
+	IceHUD.TargetCC = TargetCC:new()
+end

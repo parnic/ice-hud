@@ -235,6 +235,24 @@ function Runes.prototype:GetOptions()
 		order = 38,
 	}
 
+	opts["forceHideCooldownNumbers"] = {
+		type = 'toggle',
+		name = L['Force hide cooldown numbers'],
+		desc = L['Whether to force buff and debuff frames to hide their cooldown numbers even if enabled in the game settings or not.'],
+		get = function()
+			return self.moduleSettings.forceHideCooldownNumbers
+		end,
+		set = function(info, v)
+			self.moduleSettings.forceHideCooldownNumbers = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		width = 'double',
+		order = 39,
+	}
+
 	return opts
 end
 
@@ -255,6 +273,7 @@ function Runes.prototype:GetDefaultSettings()
 	defaults["runeMode"] = RUNEMODE_DEFAULT
 	defaults["runeGap"] = 0
 	defaults["showWhenNotFull"] = false
+	defaults["forceHideCooldownNumbers"] = false
 
 	return defaults
 end
@@ -403,16 +422,18 @@ function Runes.prototype:GetNumRunesAvailable()
 end
 
 function Runes.prototype:ShineFinished(rune)
-	UIFrameFadeOut(self.frame.graphical[rune].shine, 0.5);
+	UIFrameFadeOut(self.frame.graphical[rune].shine, 0.5, 1, 0);
 end
 
 function Runes.prototype:UpdateRuneType(event, rune)
+	---@diagnostic disable-next-line: redundant-parameter - earlier versions of the game had mixed rune types
 	IceHUD:Debug("Runes.prototype:UpdateRuneType: rune="..rune.." GetRuneType(rune)="..GetRuneType(rune));
 
 	if not rune or tonumber(rune) ~= rune or rune < 1 or rune > self.numRunes then
 		return
 	end
 
+	---@diagnostic disable-next-line: redundant-parameter - earlier versions of the game had mixed rune types
 	local thisRuneName = self.runeNames[GetRuneType(rune)]
 
 	-- i have no idea how this could happen but it's been reported, so...
@@ -489,6 +510,7 @@ function Runes.prototype:CreateRuneFrame()
 
 	local runeType
 	for i=1, self.numRunes do
+		---@diagnostic disable-next-line: redundant-parameter - earlier versions of the game had mixed rune types
 		runeType = GetRuneType(i)
 
 		-- Parnic debug stuff for arena rune problem
@@ -519,6 +541,9 @@ function Runes.prototype:CreateRune(i, type, name)
 	self.frame.graphical[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	self.frame.graphical[i]:SetWidth(self.runeSize)
 	self.frame.graphical[i]:SetHeight(self.runeSize)
+	if self.frame.graphical[i].cd.SetHideCountdownNumbers then
+		self.frame.graphical[i].cd:SetHideCountdownNumbers(self.moduleSettings.forceHideCooldownNumbers)
+	end
 
 	-- hax for blizzard's swapping the unholy and frost rune placement on the default ui...
 	local runeSwapI = i
@@ -580,6 +605,7 @@ local function hook_playerframe()
 			IceHUD.Runes:HideBlizz()
 		end
 	end)
+	---@diagnostic disable-next-line: cast-local-type
 	hook_playerframe = nil
 end
 

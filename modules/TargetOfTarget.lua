@@ -12,7 +12,7 @@ if not UnitDebuff and C_UnitAuras and AuraUtil then
 			return nil
 		end
 
-		return AuraUtil.UnpackAuraData(auraData)
+		return IceHUD.UnpackAuraData(auraData)
 	end
 end
 
@@ -275,7 +275,7 @@ function TargetOfTarget.prototype:GetDefaultSettings()
 	defaults["sizeToGap"] = true
 	defaults["totWidth"] = 200
 	defaults["leftTag"] = "[Name]"
-	defaults["rightTag"] = "[PercentHP:Percent]"
+	defaults["rightTag"] = "[PercentHP:Round]"
 	defaults["moduleHeight"] = 15
 	return defaults
 end
@@ -380,7 +380,7 @@ function TargetOfTarget.prototype:CreateBarFrame()
 		self.frame.bar = CreateFrame("StatusBar", nil, self.frame)
 	end
 
-	self.frame.bg:SetTexture(0,0,0)
+	self.frame.bg:SetTexture(0)
 
 	self.frame.bar:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	if self.moduleSettings.sizeToGap then
@@ -415,7 +415,9 @@ function TargetOfTarget.prototype:CreateBarFrame()
 	self.frame.bar.highLight:Hide()
 
 
-	self.frame.bar:Show()
+	if not InCombatLockdown() then
+		self.frame.bar:Show()
+	end
 end
 
 
@@ -497,7 +499,7 @@ end
 function TargetOfTarget.prototype:UpdateBuffs()
 	local debuffs = 0
 
-	if (self.moduleSettings.showDebuffs) then
+	if (self.moduleSettings.showDebuffs) and IceHUD.CanAccessSecrets() then
 		for i = 1, IceCore.BuffLimit do
 			local buffName, buffRank, buffTexture, buffApplications
 			if IceHUD.SpellFunctionsReturnRank then

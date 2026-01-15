@@ -482,7 +482,7 @@ function IceCustomCount.prototype:UpdateCustomCount()
 	else
 		self.frame.numeric:SetText()
 
-		for i = 1, table.getn(self.frame.graphical) do
+		for i = 1, #self.frame.graphical do
 			if (points ~= nil) then
 				self.frame.graphicalBG[i]:Show()
 			else

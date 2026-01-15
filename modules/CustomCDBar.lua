@@ -46,11 +46,13 @@ if not GetSpellCooldown and C_Spell then
 	GetSpellCooldown = function(spellID)
 		local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID)
 		if spellCooldownInfo then
+			---@diagnostic disable-next-line: redundant-return-value
 			return spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate
 		end
 	end
 end
 
+---@diagnostic disable-next-line: deprecated
 local GetItemInfo = GetItemInfo
 if not GetItemInfo and C_Item then
 	GetItemInfo = C_Item.GetItemInfo
@@ -387,7 +389,7 @@ function IceCustomCDBar.prototype:GetOptions()
 			self.moduleSettings.barColor.r = r
 			self.moduleSettings.barColor.g = g
 			self.moduleSettings.barColor.b = b
-			self.barFrame.bar:SetVertexColor(self:GetBarColor())
+			self:SetBarColorRGBA(self:GetBarColor())
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -835,7 +837,7 @@ function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
 
 	self:UpdateAlpha()
 
-	self.barFrame.bar:SetVertexColor(self:GetBarColor())
+	self:SetBarColorRGBA(self:GetBarColor())
 
 	self.coolingDown = remaining ~= nil and remaining > 0
 end
@@ -924,5 +926,5 @@ function IceCustomCDBar.prototype:UseTargetAlpha(scale)
 		return false
 	end
 
-	return IceCustomCDBar.super.prototype:UseTargetAlpha(self, scale)
+	return not self:IsFull(scale)
 end

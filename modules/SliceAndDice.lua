@@ -10,6 +10,15 @@ local NetherbladeEquipLocList = {1, 3, 5, 7, 10} --"HeadSlot", "ShoulderSlot", "
 
 local GlyphSpellId = 56810
 
+local CutToTheChaseSpellId = 51667
+local CutToTheChaseActivationSpellIds = {
+	[196819] = true, -- Eviscerate
+	[2098] = true, -- Dispatch
+	[32645] = true, -- Envenom
+}
+local LastKnownComboPoints = 0
+local BonusSecondsPerCutToTheChaseComboPoints = 3
+
 local baseTime = 9
 local gapPerComboPoint = 3
 local netherbladeBonus = 3
@@ -24,10 +33,15 @@ local sixComboPointsTalentID = 19240
 
 local CurrMaxSnDDuration = 0
 local PotentialSnDDuration = 0
+local LastValidPotentialSnDDuration = 0
+local CurrSndDuration = 0
+local CalculatedSnDEndTime = 0
 
-local sndBuffName = 132306
+local sndTexture = 132306
+local newSndSpellId = 315496
 if IceHUD.WowMain and IceHUD.WowVer < 80000 then
-	sndBuffName = "Ability_Rogue_SliceDice"
+	---@diagnostic disable-next-line: cast-local-type
+	sndTexture = "Ability_Rogue_SliceDice"
 end
 
 if IceHUD.WowVer >= 50000 then
@@ -61,7 +75,7 @@ if not UnitBuff and C_UnitAuras and AuraUtil then
       return nil
     end
 
-    return AuraUtil.UnpackAuraData(auraData)
+    return IceHUD.UnpackAuraData(auraData)
   end
 end
 
@@ -106,6 +120,12 @@ function SliceAndDice.prototype:Enable(core)
 		self:RegisterEvent("UNIT_MAXPOWER", "CheckMaxComboPoints")
 	end
 
+	-- in a Secrets world (at least in 12.0), we need to infer the cast time during combat since the normal aura data is hidden
+	if IceHUD.IsSecretEnv() then
+		self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "SpellcastSucceeded")
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateSliceAndDice")
+	end
+
 	if not self.moduleSettings.alwaysFullAlpha then
 		self:Show(false)
 	else
@@ -113,6 +133,69 @@ function SliceAndDice.prototype:Enable(core)
 	end
 
 	self:SetBottomText1("")
+end
+
+function SliceAndDice.prototype:SpellcastSucceeded(event, unit, castGuid, spellId)
+	if unit ~= self.unit then
+		return
+	end
+
+	if spellId == newSndSpellId then
+		-- note that there seem to be some cases where the applied duration is different from our calculations here
+		-- but the difference only seems to apply when overriding an existing SnD (with or without CttC bonus) with
+		-- a more "powerful" version (e.g. initially activated with 1 combo point, re-activating with 3).
+		-- I can't fully determine what the game is using to decide the duration, so this is just going to be a
+		-- "best effort" thing and the duration will eventually sort itself out when the player leaves combat.
+		-- worst case, the player re-applies SnD when they didn't necessarily need to, but ¯\_(ツ)_/¯
+		CalculatedSnDEndTime = GetTime() + LastValidPotentialSnDDuration
+		CurrSndDuration = LastValidPotentialSnDDuration
+		self.bUpdateSnd = true
+		return
+	end
+
+	-- in 11.0+, casting your spec's main finisher adds +3 sec / combo point if the player knows Cut To The Chase
+	-- up to a maximum of whatever SnD would be at max combo points + 1 (or maybe it always uses 8? not sure, would
+	-- need a lower-level rogue to test with)
+	if CutToTheChaseActivationSpellIds[spellId] then
+		-- it probably isn't possible to cast a finisher without being in combat, but this ensures that if we
+		-- can use the Duration utilities (due to being out of combat/non-secret) then we will prefer those.
+		if not InCombatLockdown() then
+			return
+		end
+
+		if not C_SpellBook.IsSpellKnown(CutToTheChaseSpellId) then
+			return
+		end
+
+		local bonusTimeSeconds = BonusSecondsPerCutToTheChaseComboPoints * LastKnownComboPoints
+
+		-- casting a finisher without SnD active will activate it lasting only for the bonus time
+		if CalculatedSnDEndTime < GetTime() then
+			CurrSndDuration = bonusTimeSeconds
+			CalculatedSnDEndTime = GetTime() + CurrSndDuration
+			self.bUpdateSnd = true
+			return
+		end
+
+		local maxDuration = self:GetMaxBuffTime(maxComboPoints, true)
+
+		-- note: the game logic for extending the SnD duration appears to be more complicated than this.
+		-- the game is seemingly tracking your CttC bonus separately from your SnD base duration such that
+		-- sometimes your finisher doesn't just add onto your current base time. this only seems to be the
+		-- case when your original SnD was activated with a low number of combo points. so there's a chance
+		-- that this math doesn't match the game's buff, but this is as "best effort" as we can get, and
+		-- realistically the vast majority of fights will sort themselves out as the player continues using
+		-- finishers and refreshing the SnD time as the fight goes on.
+		if CurrSndDuration + bonusTimeSeconds > maxDuration then
+			CurrSndDuration = maxDuration
+			CalculatedSnDEndTime = GetTime() + CurrSndDuration
+		else
+			CalculatedSnDEndTime = CalculatedSnDEndTime + bonusTimeSeconds
+			CurrSndDuration = CurrSndDuration + bonusTimeSeconds
+		end
+
+		self.bUpdateSnd = true
+	end
 end
 
 function SliceAndDice.prototype:CheckMaxComboPoints()
@@ -228,6 +311,9 @@ function SliceAndDice.prototype:CreateFrame()
 	SliceAndDice.super.prototype.CreateFrame(self)
 
 	self:CreateDurationBar()
+	if self.barFrame.SetValue then
+		self.barFrame:SetValue(0)
+	end
 end
 
 function SliceAndDice.prototype:CreateDurationBar()
@@ -236,8 +322,12 @@ function SliceAndDice.prototype:CreateDurationBar()
 	-- Rokiyo: Do we need to call this here?
 	self.CurrScale = 0
 
-	self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
-	self.durationFrame.bar:SetHeight(0)
+	self:SetBarFrameColorRGBA(self.durationFrame, self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
+	if self.durationFrame.SetValue then
+		self.durationFrame:SetValue(0)
+	else
+		self.durationFrame.texture:SetHeight(0)
+	end
 
 	self:UpdateBar(1, "undef")
 
@@ -263,6 +353,28 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
+	local t = GetTime()
+
+	if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDuration then
+		if InCombatLockdown() and CalculatedSnDEndTime > t then
+			return CurrSndDuration, CalculatedSnDEndTime - t
+		end
+
+		local info = C_UnitAuras.GetUnitAuraBySpellID(unitName, buffName)
+		if not info or not info.auraInstanceID then
+			return nil, nil
+		end
+
+		local auraData = C_UnitAuras.GetAuraDataByAuraInstanceID(unitName, info.auraInstanceID)
+		if auraData == nil or auraData.expirationTime == nil then
+			return nil, nil
+		end
+
+		CurrSndDuration = auraData.duration
+		CalculatedSnDEndTime = auraData.expirationTime
+		return auraData.duration, auraData.expirationTime and (auraData.expirationTime - t) or nil
+	end
+
 	local i = 1
 	local buff, _, texture, duration, endTime, remaining
 	if IceHUD.SpellFunctionsReturnRank then
@@ -274,12 +386,12 @@ function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
 	while buff do
 		if (texture and (type(buffName) == 'string' and string.match(texture, buffName) or texture == buffName)) then
 			if endTime and not remaining then
-				remaining = endTime - GetTime()
+				remaining = endTime - t
 			end
 			return duration, remaining
 		end
 
-		i = i + 1;
+		i = i + 1
 
 		if IceHUD.SpellFunctionsReturnRank then
 			buff, _, texture, _, _, duration, endTime = UnitBuff(unitName, i)
@@ -307,6 +419,7 @@ local function SNDGetComboPoints(unit)
 	elseif IceHUD.WowVer >= 60000 then
 		return UnitPower(unit, SPELL_POWER_COMBO_POINTS)
 	else
+		---@diagnostic disable-next-line: missing-parameter - the Classic version of this function accepts no arguments
 		return GetComboPoints()
 	end
 end
@@ -316,7 +429,7 @@ local function ShouldHide()
 		return false
 	end
 
-	return --[[(IceHUD.WowVer < 70000 or not IsSpellKnown(193316)) and]] not IsPlayerSpell(5171) -- IsSpellKnown returns incorrect info for SnD in 7.0
+	return --[[(IceHUD.WowVer < 70000 or not IsSpellKnown(193316)) and]] not IceHUD.IsPlayerSpell(5171) -- IsSpellKnown returns incorrect info for SnD in 7.0
 	-- commented code is here in case we decide we'd like to use this module for Roll the Bones.
 	-- if we do, though, the "active" check gets way more complicated since it can activate any number of 6 different abilities
 	-- with different durations
@@ -331,8 +444,12 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 	local remaining = nil
 	local fromUpdate = event == "internal"
 
-	if not fromUpdate or IceHUD.WowVer < 30000 then
-		sndDuration, remaining = self:GetBuffDuration(self.unit, sndBuffName)
+	if not fromUpdate then
+		if C_UnitAuras and C_UnitAuras.GetAuraDuration then
+			sndDuration, remaining = self:GetBuffDuration(self.unit, newSndSpellId)
+		elseif IceHUD.WowVer < 30000 then
+			sndDuration, remaining = self:GetBuffDuration(self.unit, sndTexture)
+		end
 
 		if not remaining then
 			sndEndTime = 0
@@ -414,16 +531,20 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 
 	if self.moduleSettings.durationAlpha > 0 then
 		PotentialSnDDuration = self:GetMaxBuffTime(points)
+		if PotentialSnDDuration ~= 0 then
+			LastValidPotentialSnDDuration = PotentialSnDDuration
+			LastKnownComboPoints = points
+		end
 
 		-- compute the scale from the current number of combo points
 		local scale = IceHUD:Clamp(PotentialSnDDuration / CurrMaxSnDDuration, 0, 1)
 
 		-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
-		if (self.moduleSettings.reverse) then
+		if self:BarFillReverse() then
 			scale = 1 - scale
 		end
 
-		self.durationFrame.bar:SetVertexColor(self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
+		self:SetBarFrameColorRGBA(self.durationFrame, self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
 		self:SetBarCoord(self.durationFrame, scale)
 	end
 
@@ -433,9 +554,13 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 	end
 end
 
-function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints)
+function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints, withCutToTheChaseExtension)
 	if numComboPoints == 0 then
 		return 0
+	end
+
+	if withCutToTheChaseExtension then
+		numComboPoints = numComboPoints + 1
 	end
 
 	local maxduration = baseTime + ((numComboPoints - 1) * gapPerComboPoint)
@@ -456,6 +581,7 @@ function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints)
 		local rank = 0
 		if GetTalentInfo then
 			local _
+			---@diagnostic disable-next-line: cast-local-type - in WoW < 5.0, argument 5 is rank which is a number
 			_, _, _, _, rank = GetTalentInfo(impSndTalentPage, impSndTalentIdx)
 		end
 
@@ -533,7 +659,7 @@ function SliceAndDice.prototype:HasGlyphBonus()
 end
 
 function SliceAndDice.prototype:GetItemIdFromItemLink(linkStr)
-	local itemId
+	local itemId, itemId2
 	local _
 
 	if linkStr then

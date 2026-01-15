@@ -2,7 +2,7 @@ local LibDualSpec = LibStub('LibDualSpec-1.0', true)
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local icon = LibStub("LibDBIcon-1.0", true)
 local AceGUI = LibStub("AceGUI-3.0")
-local AceSerializer = LibStub("AceSerializer-3.0", 1)
+local AceSerializer = LibStub("AceSerializer-3.0", true)
 local lastCustomModule = "Bar"
 
 IceHUD_Options = {}
@@ -30,8 +30,12 @@ local options =
 				test = {
 					type = 'description',
 					fontSize = "medium",
-					name = [[Thanks for using |cff9999ffIceHUD|r! Below you will find answers to all of the most commonly-asked questions. Be sure to check the addon's page on |cff33ff99curse.com|r and |cff33ff99wowinterface.com|r as well for more discussion and updates! You can also email |cff33ff99icehud@parnic.com|r directly if you prefer.
+					name = [[Thanks for using |cff9999ffIceHUD|r! Below you will find answers to all of the most commonly-asked questions. Be sure to check the addon's page on |cff33ff99GitHub|r and |cff33ff99curseforge.com|r as well for more discussion and updates! You can also email |cff33ff99icehud@parnic.com|r directly if you prefer.
 
+|cff9999ffA Note on WoW Midnight|r
+The 12.0 patch, for the Midnight expansion, made significant, sweeping changes to how addons work in the game. As a result, many features previously available are no longer allowed by the game. If IceHUD is no longer doing something it used to do, the most likely reason is that it's not possible (or much more difficult) in the new patch. Feel free to create a GitHub issue for any errors you find; it's expected that there will be some errors for a while due to the extent of changes required.
+
+If you have any custom |cff42ffffDogTags|r using |cff42ffffFractional:Short|r, they will no longer work in Midnight. Many other enemy-HP-or-buff-dependent features, such as Low Threshold flashing or in-combat buff/debuff tracking, are no longer allowed by the game.
 
 |cff9999ff1. How do I hide the default Blizzard player and target unit frames?|r
 Expand the "|cffffdc42Module Settings|r" section, click "PlayerHealth" or "TargetHealth," and check "Hide Blizzard Frame"
@@ -79,7 +83,7 @@ Prior to |cff9999ffIceHUD|r v1.11.2, this module was called |cffdcff42HarmonyPow
 If you have |cff42ffffDogTags|r enabled, you can open the Text Settings for the module in question and add SeparateDigits() around the tag you're trying to split up. To display Health/MaxHealth with commas, use: [(SeparateDigits(HP):HPColor "/" SeparateDigits(MaxHP):HPColor):Bracket]. To use periods instead of commas, use: [(SeparateDigits(HP, "."):HPColor "/" SeparateDigits(MaxHP, "."):HPColor):Bracket]. Use the /dog help menu to build your own similar tags for Mana, etc.
 
 |cff9999ff16. The countdown timers on buffs and debuffs completely obscure the icon. How do I disable the timer text?|r
-|cff9999ffIceHUD|r is not responsible for this countdown text and cannot control it. The 6.0 patch added an option in the game client to display counts on top of cooldowns. Look at the Action Bars menu under the game's Interface options. You can turn the text on or off there. Mods like |cff42ffffOmniCC|r or |cff42ffffCooldownCount|r will generally give you the same feature but allow you to control when, where, and how the text shows up.
+|cff9999ffIceHUD|r is not responsible for this countdown text, but there is an option on the TargetInfo settings to force-disable the numbers. The 6.0 patch added an option in the game client to display counts on top of cooldowns. Look at the Action Bars menu under the game's Interface options. You can turn the text on or off there. Mods like |cff42ffffOmniCC|r or |cff42ffffCooldownCount|r will generally give you the same feature but allow you to control when, where, and how the text shows up.
 
 |cff9999ff17. When I rotate some modules 90 degrees, such as the castbar, the bar appears to wiggle up and down as it fills or empties. How do I fix this?|r
 This is a side effect of the animation API that I'm co-opting to force a rotation without having to provide duplicates of every bar texture in the mod. Any bar moving sufficiently quickly and updating rapidly will cause this. |cff9999ffIceHUD|r is intended to be a vertically-oriented mod, so the rotation feature is there for people who are willing to accept the side effects that come with it. My suggestion is to use one of the many horizontally-oriented bar mods out there if you're wanting horizontal bars. |cff42ffffQuartz|r is a good castbar replacement that you can use and disable |cff9999ffIceHUD|r's built-in castbar, for example.

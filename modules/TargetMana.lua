@@ -55,7 +55,7 @@ function IceTargetMana.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Right
 	settings["offset"] = 2
 	settings["upperText"] = "[PercentMP:Round]"
-	settings["lowerText"] = "[FractionalMP:Short:PowerColor]"
+	settings["lowerText"] = "[[[MP:Short:PowerColor] '/' [MaxMP:Short:PowerColor]]:Bracket]"
 	settings["onlyShowMana"] = false
 
 	return settings
@@ -106,7 +106,12 @@ function IceTargetMana.prototype:Update(unit)
 		return
 	end
 
-	if ((not UnitExists(self.unit)) or (self.maxMana == 0)) then
+	if not UnitExists(self.unit) then
+		self:Show(false)
+		return
+	end
+
+	if IceHUD.CanAccessValue(self.maxMana) and self.maxMana == 0 then
 		self:Show(false)
 		return
 	else
@@ -125,7 +130,7 @@ function IceTargetMana.prototype:Update(unit)
 
 		if (self.moduleSettings.scaleManaColor) then
 			self.color = "ScaledManaColor"
-		elseif self.moduleSettings.lowThresholdColor and self.manaPercentage <= self.moduleSettings.lowThreshold then
+		elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.manaPercentage) and self.manaPercentage <= self.moduleSettings.lowThreshold then
 			self.color = "ScaledManaColor"
 		end
 
@@ -157,8 +162,8 @@ function IceTargetMana.prototype:Update(unit)
 	self:UpdateBar(self.manaPercentage, self.color)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self:SetBottomText1(math.floor(self.manaPercentage * 100))
-		self:SetBottomText2(self:GetFormattedText(self.mana, self.maxMana), self.color)
+		self:SetBottomText1(string.format("%.0f", UnitPowerPercent and UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, CurveConstants.ScaleTo100) or math.floor(self.manaPercentage * 100)))
+		self:SetBottomText2(self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.mana) or self.mana, AbbreviateNumbers and AbbreviateNumbers(self.maxMana) or self.maxMana), self.color)
 	end
 end
 
@@ -209,6 +214,9 @@ function IceTargetMana.prototype:GetOptions()
 	return opts
 end
 
+function IceTargetMana.prototype:IsPowerBar()
+	return true
+end
 
 -- Load us up
 IceHUD.TargetMana = IceTargetMana:new()

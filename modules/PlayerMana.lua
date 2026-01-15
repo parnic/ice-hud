@@ -57,7 +57,7 @@ function PlayerMana.prototype:GetDefaultSettings()
 	settings["tickerEnabled"] = true
 	settings["tickerAlpha"] = 0.5
 	settings["upperText"] = "[PercentMP:Round]"
-	settings["lowerText"] = "[FractionalMP:Short:PowerColor]"
+	settings["lowerText"] = "[[[MP:Short:PowerColor] '/' [MaxMP:Short:PowerColor]]:Bracket]"
 
 	return settings
 end
@@ -301,7 +301,7 @@ function PlayerMana.prototype:TreatEmptyAsFull()
 end
 
 function PlayerMana.prototype:IsFull(scale)
-	if IceHUD.WowVer >= 80000 and self.manaType == SPELL_POWER_LUNAR_POWER and IceHUD.IsPlayerSpell(202430) then
+	if IceHUD.WowVer >= 80000 and self.manaType == SPELL_POWER_LUNAR_POWER and IceHUD.IsPlayerSpell(202430) and IceHUD.CanAccessValue(scale) then
 		return scale - 0.5 >= 0
 	end
 
@@ -344,7 +344,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 		color = "Dead"
 	elseif (self.moduleSettings.scaleManaColor and (UnitPowerType(self.unit) == SPELL_POWER_MANA or self.moduleSettings.scaleManaColorForAll)) then
 		color = "ScaledManaColor"
-	elseif self.moduleSettings.lowThresholdColor and self.manaPercentage <= self.moduleSettings.lowThreshold then
+	elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.manaPercentage) and self.manaPercentage <= self.moduleSettings.lowThreshold then
 		color = "ScaledManaColor"
 	else
 		if (self.manaType == SPELL_POWER_RAGE) then
@@ -370,16 +370,18 @@ function PlayerMana.prototype:Update(unit, powertype)
 
 	self:ConditionalUpdateFlash()
 
-	if (self.manaPercentage == 1 and not self:TreatEmptyAsFull())
-		or (self.manaPercentage == 0 and self:TreatEmptyAsFull()) then
-		self:SetupOnUpdate(false)
-	else
-		self:SetupOnUpdate(true)
+	if IceHUD.CanAccessValue(self.manaPercentage) then
+		if (self.manaPercentage == 1 and not self:TreatEmptyAsFull())
+			or (self.manaPercentage == 0 and self:TreatEmptyAsFull()) then
+			self:SetupOnUpdate(false)
+		else
+			self:SetupOnUpdate(true)
+		end
 	end
 
 	if useTicker then
 		-- hide ticker if rest of the bar is not visible
-		if (self.alpha == 0) then
+		if IceHUD.CanAccessValue(self.alpha) and self.alpha == 0 then
 	 		self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", 0))
 	 	else
 	 		self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
@@ -387,21 +389,20 @@ function PlayerMana.prototype:Update(unit, powertype)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		-- extra hack for whiny rogues (are there other kind?)
 		local displayPercentage = self.manaPercentage
-		if self.manaType == SPELL_POWER_ENERGY or self.manaType == SPELL_POWER_FOCUS or self.manaType == SPELL_POWER_FURY then
-			displayPercentage = self.mana
+		if UnitPowerPercent then
+			displayPercentage = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, CurveConstants.ScaleTo100)
 		else
 			displayPercentage = math.floor(displayPercentage * 100)
 		end
-		self:SetBottomText1(displayPercentage)
+		self:SetBottomText1(string.format("%.0f", displayPercentage))
 
 
-		local amount = self:GetFormattedText(self.mana, self.maxMana)
+		local amount = self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.mana) or self.mana, AbbreviateNumbers and AbbreviateNumbers(self.maxMana) or self.maxMana)
 
 		-- druids get a little shorted string to make room for druid mana in forms
 		if (self.unitClass == "DRUID" and self.manaType ~= SPELL_POWER_MANA) then
-			amount = self:GetFormattedText(self.mana)
+			amount = self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.mana) or self.mana)
 		end
 		self:SetBottomText2(amount, color)
 	end
@@ -455,11 +456,7 @@ function PlayerMana.prototype:EnergyTick()
 	local pos = elapsed / 2
 	local y = pos * (self.settings.barHeight-2)
 
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.tickerFrame.spark:SetTexCoord(1, 0, 1-pos-0.01, 1-pos)
-	else
-		self.tickerFrame.spark:SetTexCoord(0, 1, 1-pos-0.01, 1-pos)
-	end
+	self.tickerFrame.spark:SetTexCoord(0, 1, 1-pos-0.01, 1-pos)
 	self.tickerFrame.spark:SetHeight(self.settings.barHeight * 0.01)
 
 	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", 0, y)
@@ -484,7 +481,7 @@ function PlayerMana.prototype:CreateTickerFrame()
 		self.tickerFrame:Hide()
 	end
 
-	self.tickerFrame.spark:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+	self.tickerFrame.spark:SetTexture(self:GetBarTexturePath())
 	self.tickerFrame.spark:SetBlendMode("ADD")
 	self.tickerFrame.spark:ClearAllPoints()
 	self.tickerFrame.spark:SetPoint("BOTTOMLEFT",self.tickerFrame,"BOTTOMLEFT")
@@ -497,6 +494,9 @@ function PlayerMana.prototype:CreateTickerFrame()
 	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", 0, 0)
 end
 
+function PlayerMana.prototype:IsPowerBar()
+	return true
+end
 
 -- Load us up
 IceHUD.PlayerMana = PlayerMana:new()

@@ -60,7 +60,7 @@ end
 
 
 function MirrorBar.prototype:OnUpdate(elapsed)
-	if (self.paused) then
+	if self.paused or not elapsed then
 		return
 	end
 
@@ -68,7 +68,7 @@ function MirrorBar.prototype:OnUpdate(elapsed)
 
 	self.value = self.value + (self.timerScale * elapsed * 1000)
 
-	scale = self.maxValue ~= 0 and self.value / self.maxValue or 0
+	local scale = self.maxValue ~= 0 and self.value / self.maxValue or 0
 
 	if (scale < 0) then -- lag compensation
 		scale = 0
@@ -78,15 +78,8 @@ function MirrorBar.prototype:OnUpdate(elapsed)
 	end
 
 
-	local timeRemaining = (self.value) / 1000
+	local timeRemaining = IceHUD:Clamp(self.value / 1000, 0, self.maxValue / 1000)
 	local remaining = string.format("%.1f", timeRemaining)
-
-	if (timeRemaining < 0) then -- lag compensation
-		remaining = 0
-	end
-	if (timeRemaining > self.maxValue/1000) then
-		remaining = self.maxValue/1000
-	end
 
 	self:UpdateBar(scale, self.timer)
 
@@ -184,6 +177,7 @@ function MirrorBarHandler.prototype:GetDefaultSettings()
 	settings["myTagVersion"] = 2
 	settings["usesDogTagStrings"] = false
 	settings["barVerticalOffset"] = 0
+	settings["hideBlizz"] = true
 
 	return settings
 end
@@ -297,29 +291,52 @@ function MirrorBarHandler.prototype:GetOptions()
 	}
 
 	opts["barRotate"] =
+	{
+		type = 'toggle',
+		name = L["Rotate 90 degrees"],
+		desc = L["This will rotate this module by 90 degrees to give a horizontal orientation.\n\nWARNING: This feature is brand new and a bit rough around the edges. You will need to greatly adjust the vertical and horizontal offset of this bar plus move the text around in order for it to look correct.\n\nAnd I mean greatly."],
+		get = function(info)
+			return self.moduleSettings.rotateBar
+		end,
+		set = function(info, v)
+			self.moduleSettings.rotateBar = v
+			for i = 1, #self.bars do
+				if v then
+					self.bars[i]:RotateHorizontal()
+				else
+					self.bars[i]:ResetRotation()
+				end
+			end
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self:IsEnabled()
+		end,
+		order = 35
+	}
+
+	if MirrorTimerContainer then
+		opts["hideBlizz"] =
 		{
 			type = 'toggle',
-			name = L["Rotate 90 degrees"],
-			desc = L["This will rotate this module by 90 degrees to give a horizontal orientation.\n\nWARNING: This feature is brand new and a bit rough around the edges. You will need to greatly adjust the vertical and horizontal offset of this bar plus move the text around in order for it to look correct.\n\nAnd I mean greatly."],
-			get = function(info)
-				return self.moduleSettings.rotateBar
+			name = L["Hide default mirror bar"],
+			desc = L["Whether or not to show the default mirror bar."],
+			get = function()
+				return self.moduleSettings.hideBlizz
 			end,
-			set = function(info, v)
-				self.moduleSettings.rotateBar = v
-				for i = 1, table.getn(self.bars) do
-					if v then
-						self.bars[i]:RotateHorizontal()
-					else
-						self.bars[i]:ResetRotation()
-					end
+			set = function(info, value)
+				self.moduleSettings.hideBlizz = value
+				self:ToggleBlizz(not self.moduleSettings.hideBlizz)
+				if not self.moduleSettings.hideBlizz then
+					StaticPopup_Show("ICEHUD_CHANGED_DOGTAG")
 				end
-				self:Redraw()
 			end,
 			disabled = function()
-				return not self:IsEnabled()
+				return not self.moduleSettings.enabled
 			end,
-			order = 35
+			order = 36
 		}
+	end
 
 	opts["textSettings"] =
 	{
@@ -451,15 +468,18 @@ function MirrorBarHandler.prototype:Enable(core)
 	self:RegisterEvent("MIRROR_TIMER_STOP", "MirrorStop")
 	self:RegisterEvent("MIRROR_TIMER_PAUSE", "MirrorPause")
 
-	-- hide blizz mirror bar
-	UIParent:UnregisterEvent("MIRROR_TIMER_START");
+	if self.moduleSettings.hideBlizz then
+		self:ToggleBlizz(false)
+	end
 end
 
 
 function MirrorBarHandler.prototype:Disable(core)
 	MirrorBarHandler.super.prototype.Disable(self, core)
 
-	UIParent:RegisterEvent("MIRROR_TIMER_START");
+	if self.moduleSettings.hideBlizz then
+		self:ToggleBlizz(true)
+	end
 end
 
 
@@ -470,7 +490,7 @@ function MirrorBarHandler.prototype:Redraw()
 		return
 	end
 
-	for i = 1, table.getn(self.bars) do
+	for i = 1, #self.bars do
 		self:SetSettings(self.bars[i])
 		self.bars[i]:UpdatePosition(self.moduleSettings.side, self.moduleSettings.offset + (i-1))
 		self.bars[i]:Create(self.parent)
@@ -482,7 +502,7 @@ function MirrorBarHandler.prototype:MirrorStart(event, timer, value, maxValue, s
 	local done = nil
 
 	-- check if we can find an already running timer to reverse it
-	for i = 1, table.getn(self.bars) do
+	for i = 1, #self.bars do
 		if (self.bars[i].timer == timer) then
 			done = true
 			self.bars[i]:MirrorStart(timer, value, maxValue, scale, paused, label)
@@ -491,7 +511,7 @@ function MirrorBarHandler.prototype:MirrorStart(event, timer, value, maxValue, s
 
 	-- check if there's a free instance in case we didn't find an already running bar
 	if not (done) then
-		for i = 1, table.getn(self.bars) do
+		for i = 1, #self.bars do
 			if not (self.bars[i].timer) and not (done) then
 				done = true
 				self.bars[i]:MirrorStart(timer, value, maxValue, scale, paused, label)
@@ -501,7 +521,7 @@ function MirrorBarHandler.prototype:MirrorStart(event, timer, value, maxValue, s
 
 	-- finally create a new instance if no available ones were found
 	if not (done) then
-		local count = table.getn(self.bars)
+		local count = #self.bars
 		self.bars[count + 1] = MirrorBar:new(self.moduleSettings.side, self.moduleSettings.offset + count, "MirrorBar" .. tostring(count+1), self.settings)
 		self:SetSettings(self.bars[count+1])
 		self.bars[count + 1]:Create(self.parent)
@@ -512,7 +532,7 @@ end
 
 
 function MirrorBarHandler.prototype:MirrorStop(event, timer)
-	for i = 1, table.getn(self.bars) do
+	for i = 1, #self.bars do
 		if (self.bars[i].timer == timer) then
 			self.bars[i]:MirrorStop()
 		end
@@ -521,7 +541,7 @@ end
 
 
 function MirrorBarHandler.prototype:MirrorPause(event, paused)
-	for i = 1, table.getn(self.bars) do
+	for i = 1, #self.bars do
 		if (self.bars[i].timer ~= nil) then
 			self.bars[i]:MirrorPause(paused > 0)
 		end
@@ -546,6 +566,19 @@ function MirrorBarHandler.prototype:SetSettings(bar)
 end
 
 
+function MirrorBarHandler.prototype:ToggleBlizz(on)
+	if not MirrorTimerContainer then
+		return
+	end
+
+	if on then
+		-- seems to be causing an infinite loop
+		-- MirrorTimerContainer:GetScript("OnLoad")(MirrorTimerContainer)
+	else
+		MirrorTimerContainer:UnregisterAllEvents()
+		MirrorTimerContainer:Hide()
+	end
+end
 
 
 -- Load us up

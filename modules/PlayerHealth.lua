@@ -35,7 +35,7 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["hideBlizz"] = false
 	settings["hideBlizzParty"] = false
 	settings["upperText"] = "[PercentHP:Round]"
-	settings["lowerText"] = "[FractionalHP:Short:HPColor:Bracket]"
+	settings["lowerText"] = "[[[HP:Short:HPColor] '/' [MaxHP:Short:HPColor]]:Bracket]"
 	settings["allowMouseInteraction"] = false
 	settings["allowMouseInteractionCombat"] = false
 	settings["healAlpha"] = 0.6
@@ -203,7 +203,7 @@ function PlayerHealth.prototype:GetOptions()
 			self:Update(self.unit)
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or self.moduleSettings.scaleHealthColor
 		end,
 		order = 40
 	}
@@ -312,15 +312,18 @@ function PlayerHealth.prototype:GetOptions()
 		end,
 		set = function(info, v)
 			if not v then
-				self.healFrame.bar:Hide()
+				self.healFrame:Hide()
 			else
-				self.healFrame.bar:Show()
+				self.healFrame:Show()
 			end
 
 			self.moduleSettings.showIncomingHeals = v
 
 			incomingHealAmt = 0
 			self:Update()
+		end,
+		hidden = function()
+			return IceHUD.IsSecretEnv()
 		end,
 		disabled = function()
 			return not (self.moduleSettings.enabled and (IceHUD.SupportsHealPrediction or HealComm))
@@ -343,6 +346,9 @@ function PlayerHealth.prototype:GetOptions()
 			self.moduleSettings.healAlpha = v / 100.0
 			self:Redraw()
 		end,
+		hidden = function()
+			return IceHUD.IsSecretEnv()
+		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.showIncomingHeals
 		end,
@@ -359,14 +365,17 @@ function PlayerHealth.prototype:GetOptions()
 		end,
 		set = function(info, v)
 			if not v then
-				self.absorbFrame.bar:Hide()
+				self.absorbFrame:Hide()
 			else
-				self.absorbFrame.bar:Show()
+				self.absorbFrame:Show()
 			end
 
 			self.moduleSettings.showAbsorbs = v
 
 			self:Update()
+		end,
+		hidden = function()
+			return IceHUD.IsSecretEnv()
 		end,
 		disabled = function()
 			return not (self.moduleSettings.enabled and UnitGetTotalAbsorbs)
@@ -388,6 +397,9 @@ function PlayerHealth.prototype:GetOptions()
 		set = function(info, v)
 			self.moduleSettings.absorbAlpha = v / 100.0
 			self:Redraw()
+		end,
+		hidden = function()
+			return IceHUD.IsSecretEnv()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled or not self.moduleSettings.showAbsorbs
@@ -906,10 +918,10 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 	self.frame.button:ClearAllPoints()
 	-- Parnic - kinda hacky, but in order to fit this region to multiple types of bars, we need to do this...
 	--          would be nice to define this somewhere in data, but for now...here we are
-	if self:GetMyBarTexture() == "HiBar" then
+	if self:GetMyBarTextureName() == "HiBar" then
 		self.frame.button:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, 0)
 		self.frame.button:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMRIGHT", -1 * self.frame:GetWidth(), 0)
-	elseif self:GetMyBarTexture() == "ArcHUD" then
+	elseif self:GetMyBarTextureName() == "ArcHUD" then
 		if self.moduleSettings.side == IceCore.Side.Left then
 			self.frame.button:SetPoint("TOPLEFT", self.frame, "TOPLEFT")
 			self.frame.button:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMLEFT", self.frame:GetWidth() / 3, 0)
@@ -933,24 +945,24 @@ end
 function PlayerHealth.prototype:CreateHealBar()
 	self.healFrame = self:BarFactory(self.healFrame, "LOW","BACKGROUND", "Heal")
 
-	self.healFrame.bar:SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
+	self:SetBarFrameColorRGBA(self.healFrame, self:GetColor("PlayerHealthHealAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.healAlpha))
 
 	self:UpdateBar(1, "undef")
 
 	if not self.moduleSettings.showIncomingHeals or (not IceHUD.SupportsHealPrediction and not HealComm) then
-		self.healFrame.bar:Hide()
+		self.healFrame:Hide()
 	end
 end
 
 function PlayerHealth.prototype:CreateAbsorbBar()
 	self.absorbFrame = self:BarFactory(self.absorbFrame, "LOW","BACKGROUND", "Absorb")
 
-	self.absorbFrame.bar:SetVertexColor(self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
+	self:SetBarFrameColorRGBA(self.absorbFrame, self:GetColor("PlayerHealthAbsorbAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.absorbAlpha))
 
 	self:UpdateBar(1, "undef")
 
 	if not self.moduleSettings.showAbsorbs or not UnitGetTotalAbsorbs then
-		self.absorbFrame.bar:Hide()
+		self.absorbFrame:Hide()
 	end
 end
 
@@ -1274,7 +1286,7 @@ function PlayerHealth.prototype:Update(unit)
 
 	if (self.moduleSettings.scaleHealthColor) then
 		color = "ScaledHealthColor"
-	elseif self.moduleSettings.lowThresholdColor and self.healthPercentage <= self.moduleSettings.lowThreshold then
+	elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.healthPercentage) and self.healthPercentage <= self.moduleSettings.lowThreshold then
 		color = "ScaledHealthColor"
 	end
 
@@ -1290,12 +1302,15 @@ function PlayerHealth.prototype:Update(unit)
 	self:UpdateBar(self.healthPercentage, color)
 
 	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
-	if self.moduleSettings.showIncomingHeals and self.healFrame and self.healFrame.bar and incomingHealAmt then
+	if self.moduleSettings.showIncomingHeals
+		and self.healFrame
+		and incomingHealAmt
+		and IceHUD.CanAccessValue(incomingHealAmt) then
 		local percent
 
 		if incomingHealAmt > 0 then
 			percent = self.maxHealth ~= 0 and ((self.health + (self.absorbAmount or 0) + incomingHealAmt) / self.maxHealth) or 0
-			if self.moduleSettings.reverse then
+			if self:BarFillReverse() then
 				percent = 1 - percent
 				-- Rokiyo: I'm thinking the frama strata should also to be set to medium if we're in reverse.
 			end
@@ -1308,12 +1323,15 @@ function PlayerHealth.prototype:Update(unit)
 		self:SetBarCoord(self.healFrame, percent)
 	end
 
-	if self.moduleSettings.showAbsorbs and self.absorbFrame and self.absorbFrame.bar and self.absorbAmount then
+	if self.moduleSettings.showAbsorbs
+		and self.absorbFrame
+		and self.absorbAmount
+		and IceHUD.CanAccessValue(self.absorbAmount) then
 		local percent
 
 		if self.absorbAmount > 0 then
 			percent = self.maxHealth ~= 0 and ((self.health + self.absorbAmount) / self.maxHealth) or 0
-			if self.moduleSettings.reverse then
+			if self:BarFillReverse() then
 				percent = 1 - percent
 			end
 		else
@@ -1326,8 +1344,8 @@ function PlayerHealth.prototype:Update(unit)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self:SetBottomText1(math.floor(self.healthPercentage * 100))
-		self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), textColor)
+		self:SetBottomText1(string.format("%.0f", UnitHealthPercent and UnitHealthPercent(self.unit, true, CurveConstants.ScaleTo100) or math.floor(self.healthPercentage * 100)))
+		self:SetBottomText2(self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.health) or self.health, AbbreviateNumbers and AbbreviateNumbers(self.maxHealth) or self.maxHealth), textColor)
 	end
 
 	--self:CheckPartyRole()
@@ -1529,11 +1547,11 @@ end
 function PlayerHealth.prototype:UpdateBar(scale, color, alpha)
 	PlayerHealth.super.prototype.UpdateBar(self, scale, color, alpha)
 
-	if self.healFrame and self.healFrame.bar then
-		self.healFrame.bar:SetVertexColor(self:GetColor("PlayerHealthHealAmount", self.alpha * self.moduleSettings.healAlpha))
+	if self.healFrame then
+		self:SetBarFrameColorRGBA(self.healFrame, self:GetColor("PlayerHealthHealAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.healAlpha))
 	end
-	if self.absorbFrame and self.absorbFrame.bar then
-		self.absorbFrame.bar:SetVertexColor(self:GetColor("PlayerHealthAbsorbAmount", self.alpha * self.moduleSettings.absorbAlpha))
+	if self.absorbFrame then
+		self:SetBarFrameColorRGBA(self.absorbFrame, self:GetColor("PlayerHealthAbsorbAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.absorbAlpha))
 	end
 --[[ seems to be causing taint. oh well
 	if self.frame.button then
@@ -1555,5 +1573,9 @@ function PlayerHealth.prototype:OutCombat()
 	end
 end
 
+function PlayerHealth.prototype:IsHealthBar()
+	return true
+end
+
 -- Load us up
-IceHUD.PlayerHealth = PlayerHealth.new()
+IceHUD.PlayerHealth = PlayerHealth:new()

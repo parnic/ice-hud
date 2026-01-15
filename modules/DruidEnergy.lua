@@ -101,7 +101,7 @@ function DruidEnergy.prototype:Update()
 
 	self.DruidEnergy = UnitPower(self.unit, SPELL_POWER_ENERGY)
 	self.DruidEnergyMax = UnitPowerMax(self.unit, SPELL_POWER_ENERGY)
-	self.DruidEnergyPercentage = self.DruidEnergyMax ~= 0 and (self.DruidEnergy/self.DruidEnergyMax) or 0
+	self.DruidEnergyPercentage = UnitPowerPercent and UnitPowerPercent(self.unit, SPELL_POWER_ENERGY) or self.DruidEnergyMax ~= 0 and (self.DruidEnergy/self.DruidEnergyMax) or 0
 
 	if (not self.alive or not self:ShouldShow(self.unit) or not self.DruidEnergy or not self.DruidEnergyMax or self.DruidEnergyMax == 0) then
 		self:Show(false)
@@ -111,11 +111,11 @@ function DruidEnergy.prototype:Update()
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
-		self:SetBottomText1(math.floor(self.DruidEnergyPercentage * 100))
-		self:SetBottomText2(self:GetFormattedText(self:Round(self.DruidEnergy), self:Round(self.DruidEnergyMax)), "DruidEnergy")
+		self:SetBottomText1(string.format("%.0f", UnitPowerPercent and UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, CurveConstants.ScaleTo100) or math.floor(self.DruidEnergyPercentage * 100)))
+		self:SetBottomText2(self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.DruidEnergy) or self:Round(self.DruidEnergy), AbbreviateNumbers and AbbreviateNumbers(self.DruidEnergyMax) or self:Round(self.DruidEnergyMax)), "DruidEnergy")
 	end
 
-	self:UpdateBar(self.DruidEnergyMax ~= 0 and self.DruidEnergy / self.DruidEnergyMax or 0, "DruidEnergy")
+	self:UpdateBar(self.DruidEnergyPercentage, "DruidEnergy")
 end
 
 if unitClass == "DRUID" then

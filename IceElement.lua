@@ -110,7 +110,7 @@ function IceElement.prototype:Disable(core)
 	if (not core) then
 		self.moduleSettings.enabled = false
 	end
-	self:Show(false, true)
+	self:Show(false)
 	self:UnregisterAllEvents()
 end
 
@@ -209,7 +209,7 @@ function IceElement.prototype:GetOptions()
 		end,
 		set = function(info, value)
 			self.moduleSettings.alwaysFullAlpha = value
-			self:Update(self.unit)
+			self:Update()
 			self:Redraw()
 		end,
 		disabled = function()
@@ -264,7 +264,7 @@ function IceElement.prototype:UpdateAlpha()
 	elseif (self.target and not self:AlphaPassThroughTarget()) then
 		self.alpha = self.settings.alphaTarget
 		self.backgroundAlpha = self.settings.alphaTargetbg
-	elseif (self:UseTargetAlpha(scale)) then
+	elseif (self:UseTargetAlpha(self.CurrScale)) then
 		self.alpha = self.settings.alphaNotFull
 		self.backgroundAlpha = self.settings.alphaNotFullbg
 	else
@@ -272,7 +272,7 @@ function IceElement.prototype:UpdateAlpha()
 		self.backgroundAlpha = self.settings.alphaoocbg
 	end
 
-	if self.alpha ~= 0 then
+	if IceHUD.CanAccessValue(self.alpha) and self.alpha ~= 0 then
 		self.alpha = math.min(1, self.alpha + self:GetAlphaAdd())
 	end
 
@@ -349,6 +349,7 @@ end
 
 function IceElement.prototype:GetClassColor(class)
 	if type(class) == "table" then
+		---@diagnostic disable-next-line: unbalanced-assignments
 		local r,g,b = class
 		if r and g and b then
 			return r, g, b
@@ -448,26 +449,26 @@ end
 
 function IceElement.prototype:InCombat()
 	self.combat = true
-	self:Update(self.unit)
+	self:Update()
 end
 
 
 function IceElement.prototype:OutCombat()
 	self.combat = false
-	self:Update(self.unit)
+	self:Update()
 end
 
 
 function IceElement.prototype:CheckCombat()
 	self.combat = UnitAffectingCombat("player")
 	self.target = UnitExists("target")
-	self:Update(self.unit)
+	self:Update()
 end
 
 
 function IceElement.prototype:TargetChanged()
 	self.target = UnitExists("target")
-	self:Update(self.unit)
+	self:Update()
 end
 
 

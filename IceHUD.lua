@@ -13,6 +13,29 @@ local bReadyToRegisterModules = false
 
 local LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or LoadAddOn
 
+IceHUD.UnpackAuraData = function(auraData)
+	if not auraData then
+		return nil
+	end
+
+	return auraData.name,
+		auraData.icon,
+		auraData.applications,
+		auraData.dispelName,
+		auraData.duration,
+		auraData.expirationTime,
+		auraData.sourceUnit,
+		auraData.isStealable,
+		auraData.nameplateShowPersonal,
+		auraData.spellId,
+		auraData.canApplyAura,
+		auraData.isBossAura,
+		auraData.isFromPlayerOrPlayerPet,
+		auraData.nameplateShowAll,
+		auraData.timeMod,
+		IceHUD.CanAccessValue(auraData.points) and unpack(auraData.points) or auraData.points
+end
+
 IceHUD.UnitAura = UnitAura
 if not IceHUD.UnitAura then
 	IceHUD.UnitAura = function(unitToken, index, filter)
@@ -21,7 +44,7 @@ if not IceHUD.UnitAura then
 			return nil
 		end
 
-		return AuraUtil.UnpackAuraData(auraData)
+		return IceHUD.UnpackAuraData(auraData)
 	end
 end
 
@@ -115,20 +138,39 @@ IceHUD.HasCataloging = GetSpellName(366290)
 
 IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 
-IceHUD.validBarList = { "Bar", "HiBar", "RoundBar", "ColorBar", "RivetBar", "RivetBar2", "CleanCurves", "GlowArc",
-	"BloodGlaives", "ArcHUD", "FangRune", "DHUD", "CleanCurvesOut", "CleanTank", "PillTank", "GemTank" }
+IceHUD.validBarList = {
+	"ArcHUD",
+	"Bar",
+	"BloodGlaives",
+	"CleanCurves",
+	"CleanCurvesOut",
+	"CleanTank",
+	"ColorBar",
+	"DHUD",
+	"FangRune",
+	"GemTank",
+	"GlowArc",
+	"HiBar",
+	"PillTank",
+	"RivetBar",
+	"RivetBar2",
+	"RoundBar",
+}
 IceHUD.validCustomModules = {Bar="Buff/Debuff watcher", Counter="Buff/Debuff stack counter", CD="Cooldown bar", Health="Health bar", Mana="Mana bar", CounterBar="Stack count bar"}
 
+---@diagnostic disable-next-line: deprecated
 IceHUD.IsPlayerSpell = IsPlayerSpell
 if not IceHUD.IsPlayerSpell and C_SpellBook then
 	IceHUD.IsPlayerSpell = C_SpellBook.IsSpellKnown
 end
 
+---@diagnostic disable-next-line: deprecated
 IceHUD.IsSpellKnown = IsSpellKnown
 if not IceHUD.IsSpellKnown and C_SpellBook then
 	IceHUD.IsSpellKnown = C_SpellBook.IsSpellInSpellBook
 end
 
+---@diagnostic disable-next-line: deprecated
 IceHUD.SendChatMessage = SendChatMessage
 if not IceHUD.SendChatMessage and C_ChatInfo then
 	IceHUD.SendChatMessage = C_ChatInfo.SendChatMessage
@@ -148,6 +190,24 @@ if not IceHUD.GetSpellCharges and C_Spell then
 		end
 	end
 end
+
+IceHUD.IsSecretEnv = function()
+	return issecretvalue
+end
+
+IceHUD.IsSecretValue = function(value)
+	return issecretvalue and issecretvalue(value)
+end
+
+IceHUD.CanAccessSecrets = function()
+	return not canaccesssecrets or canaccesssecrets()
+end
+
+IceHUD.CanAccessValue = function(value)
+	return not canaccessvalue or canaccessvalue(value)
+end
+
+IceHUD.SupportsExpandMode = not IceHUD.IsSecretEnv()
 
 --@debug@
 IceHUD.optionsLoaded = true
@@ -384,7 +444,6 @@ function IceHUD:OnInitialize()
 				DEFAULT_CHAT_FRAME:AddMessage(L["|cff8888ffIceHUD|r: Combat lockdown restriction. Leave combat and try again."])
 			end
 		end)
-	self:RegisterChatCommand("rl", function() ReloadUI() end)
 
 	-- hack to allow /icehudcl to continue to function by loading the LoD options module and then re-calling the command
 	--[===[@non-debug@
@@ -475,7 +534,9 @@ function IceHUD:InitLDB()
 
 		if ldbButton then
 			function ldbButton:OnTooltipShow()
+				---@diagnostic disable-next-line: undefined-field
 				self:AddLine(L["IceHUD"] .. " @project-version@")
+				---@diagnostic disable-next-line: undefined-field
 				self:AddLine(L["Click to open IceHUD options."], 1, 1, 1)
 			end
 		end
@@ -597,7 +658,7 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 	else
 		name, texture, applications = IceHUD.UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
 	end
-	while name do
+	while name and texture do
 		if (not matchByName and string.match(texture:upper(), ability:upper()))
 			or (matchByName and string.match(name:upper(), ability:upper())) then
 			return applications, i
@@ -629,6 +690,11 @@ do
 		else
 			name, texture, applications, _, _, _, _, _, _, auraID = IceHUD.UnitAura(unit, i, filter)
 		end
+
+		if not IceHUD.CanAccessValue(auraID) then
+			return retval
+		end
+
 		while name do
 			for i=1, #spellIDs do
 				if spellIDs[i] == auraID then

@@ -17,6 +17,13 @@ IceBarElement.prototype.Markers = {}
 IceBarElement.prototype.IsBarElement = true -- cheating to avoid crawling up the 'super' references looking for this class. see IceCore.lua
 IceBarElement.prototype.bTreatEmptyAsFull = false
 
+if C_CurveUtil then
+	IceBarElement.prototype.oocNotFullCurve = C_CurveUtil.CreateCurve()
+	IceBarElement.prototype.oocNotFullCurve:SetType(Enum.LuaCurveType.Linear)
+	IceBarElement.prototype.oocNotFullCurveBg = C_CurveUtil.CreateCurve()
+	IceBarElement.prototype.oocNotFullCurveBg:SetType(Enum.LuaCurveType.Linear)
+end
+
 local lastMarkerPosConfig = 50
 local lastMarkerColorConfig = {r=1, b=0, g=0, a=1}
 local lastMarkerHeightConfig = 6
@@ -35,7 +42,9 @@ end
 function IceBarElement.prototype:Enable()
 	IceBarElement.super.prototype.Enable(self)
 
-	self:ConditionalSetupUpdate()
+	if IceHUD.CanAccessValue(self.CurrScale) then
+		self:ConditionalSetupUpdate()
+	end
 
 	if IceHUD.IceCore:ShouldUseDogTags() then
 		DogTag = LibStub("LibDogTag-3.0", true)
@@ -115,7 +124,7 @@ function IceBarElement.prototype:OnHide()
 end
 
 function IceBarElement.prototype:OnShow()
-	if not self:IsFull(self.CurrScale) then
+	if IceHUD.CanAccessValue(self.CurrScale) and not self:IsFull(self.CurrScale) then
 		self:ConditionalSetupUpdate()
 	end
 end
@@ -148,6 +157,12 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["side"] = IceCore.Side.Left
 	settings["offset"] = 1
 	settings["scale"] = 1
+	-- Notes for myself and future maintainers to help explain the difference between "inverse" and "reverse"
+	--   (the tooltips probably should be updated to help clarify, but since 12.0 killed this, maybe not):
+	-- Normal  no Reverse: bar fills from bottom to top
+	-- Normal  w/ Reverse: bar empties from bottom to top
+	-- Inverse no Reverse: bar fills from top to bottom
+	-- Inverse w/ Reverse: bar empties from top to bottom
 	settings["inverse"] = "NORMAL"
 	settings["reverse"] = false
 	settings["barFontSize"] = 12
@@ -172,6 +187,7 @@ function IceBarElement.prototype:GetDefaultSettings()
 	settings["markers"] = {}
 	settings["bAllowExpand"] = true
 	settings["textVerticalGap"] = 0
+	settings["barTextureOverride"] = IceHUD.validBarList[1]
 
 	return settings
 end
@@ -182,7 +198,7 @@ do
 			["NORMAL"] = "Normal",
 			["INVERSE"] = "Inverse",
 		}
-		if self.moduleSettings.bAllowExpand then
+		if self.moduleSettings.bAllowExpand and IceHUD.SupportsExpandMode then
 			values["EXPAND"] = "Expanding"
 		end
 
@@ -216,6 +232,7 @@ do
 				else
 					self.moduleSettings.side = IceCore.Side.Left
 				end
+				self:NotifyBarOverrideChanged()
 				self:Redraw()
 			end,
 			values = { "Left", "Right" },
@@ -285,6 +302,9 @@ do
 			disabled = function()
 				return not self.moduleSettings.enabled
 			end,
+			hidden = function()
+				return IceHUD.IsSecretEnv()
+			end,
 			order = 30.03
 		}
 
@@ -303,6 +323,9 @@ do
 			end,
 			disabled = function()
 				return not self.moduleSettings.enabled
+			end,
+			hidden = function()
+				return IceHUD.IsSecretEnv()
 			end,
 			order = 30.04
 		}
@@ -363,30 +386,33 @@ do
 					self:Redraw()
 				end,
 				disabled = function()
-					return not self.moduleSettings.enabled
+					return not self.moduleSettings.enabled or self:ShouldReverseFill()
 				end,
 				order = 111
 			}
 
-			opts["desiredLerpTime"] =
-			{
-				type = 'range',
-				name = L["Animation Duration"],
-				desc = L["How long the animation should take to play"],
-				min = 0,
-				max = 2,
-				step = 0.05,
-				get = function()
-					return self.moduleSettings.desiredLerpTime
-				end,
-				set = function(info, value)
-					self.moduleSettings.desiredLerpTime = value
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled or not self.moduleSettings.shouldAnimate
-				end,
-				order = 112
-			}
+			-- in environments where status bars can be smoothly interpolated by the game client, we have no control over the speed
+			if not Enum or not Enum.StatusBarInterpolation then
+				opts["desiredLerpTime"] =
+				{
+					type = 'range',
+					name = L["Animation Duration"],
+					desc = L["How long the animation should take to play"],
+					min = 0,
+					max = 2,
+					step = 0.05,
+					get = function()
+						return self.moduleSettings.desiredLerpTime
+					end,
+					set = function(info, value)
+						self.moduleSettings.desiredLerpTime = value
+					end,
+					disabled = function()
+						return not self.moduleSettings.enabled or not self.moduleSettings.shouldAnimate
+					end,
+					order = 112
+				}
+			end
 		end
 
 		opts["widthModifier"] =
@@ -893,6 +919,14 @@ do
 	end
 end
 
+function IceBarElement.prototype:ShouldReverseFill()
+	if self:BarFillReverse() then
+		return self:BarFillNormal()
+	end
+
+	return self:BarFillInverse()
+end
+
 function IceBarElement.prototype:SetBarVisibility(visible)
 	if visible then
 		self.barFrame:Show()
@@ -904,10 +938,14 @@ end
 function IceBarElement.prototype:SetBarFramePoints(frame, offset_x, offset_y)
 	local anchor
 
+	if frame.isStatusBar then
+		frame:SetReverseFill(self:ShouldReverseFill())
+	end
+
 	frame:ClearAllPoints()
-	if self.moduleSettings.inverse == "INVERSE" then
+	if self:BarFillInverse() then
 		anchor = "TOPLEFT"
-	elseif self.moduleSettings.inverse == "EXPAND" then
+	elseif self:BarFillExpand() then
 		anchor = "LEFT"
 	else
 		anchor = "BOTTOMLEFT"
@@ -935,8 +973,26 @@ function IceBarElement.prototype:Redraw()
 	self.frame:SetAlpha(self.alpha)
 
 	self:RepositionMarkers()
+
+	self:UpdateAlphaCurves()
 end
 
+
+function IceBarElement.prototype:UpdateAlphaCurves()
+	if not self.oocNotFullCurve then
+		return
+	end
+
+	self.oocNotFullCurve:ClearPoints()
+	self.oocNotFullCurve:AddPoint(0.0, self.settings.alphaNotFull)
+	self.oocNotFullCurve:AddPoint(0.9999999, self.settings.alphaNotFull)
+	self.oocNotFullCurve:AddPoint(1, self.settings.alphaooc)
+
+	self.oocNotFullCurveBg:ClearPoints()
+	self.oocNotFullCurveBg:AddPoint(0.0, self.settings.alphaNotFullbg)
+	self.oocNotFullCurveBg:AddPoint(0.9999999, self.settings.alphaNotFullbg)
+	self.oocNotFullCurveBg:AddPoint(1, self.settings.alphaoocbg)
+end
 
 
 function IceBarElement.prototype:SetPosition(side, offset)
@@ -990,45 +1046,81 @@ function IceBarElement.prototype:ConditionalSetupUpdate()
 	end
 end
 
+-- pulled from https://warcraft.wiki.gg/wiki/Applying_affine_transformations_using_SetTexCoord#Simple_rotation_of_square_textures_around_the_center
+local s2 = sqrt(2);
+local cos, sin, rad = math.cos, math.sin, math.rad;
+local function CalculateCorner(angle)
+	local r = rad(angle);
+	return 0.5 + cos(r) / s2, 0.5 + sin(r) / s2;
+end
+local function RotateTexture(texture, angle)
+	local LRx, LRy = CalculateCorner(angle + 45);
+	local LLx, LLy = CalculateCorner(angle + 135);
+	local ULx, ULy = CalculateCorner(angle + 225);
+	local URx, URy = CalculateCorner(angle - 45);
+
+	texture:SetTexCoord(ULx, ULy, LLx, LLy, URx, URy, LRx, LRy);
+end
+
 -- Creates background for the bar
 function IceBarElement.prototype:CreateBackground()
-	if not (self.frame) then
+	if not self.frame then
 		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.masterFrame)
 	end
 
-	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
-	self.frame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
-	self.frame:SetHeight(self.settings.barHeight)
+	local rotated = self.barFrame and self.barFrame.rotated
 
-	if not (self.frame.bg) then
+	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+	local width = self.settings.barWidth + (self.moduleSettings.widthModifier or 0)
+	local height = self.settings.barHeight
+	if rotated then
+		width, height = height, width
+	end
+	self.frame:SetWidth(width)
+	self.frame:SetHeight(height)
+
+	if not self.frame.bg then
 		self.frame.bg = self.frame:CreateTexture(nil, "BACKGROUND")
 	end
 
-	self.frame.bg:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture() .."BG")
+	self.frame.bg:SetTexture(IceElement.TexturePath .. self:GetMyBarTextureName() .."BG")
 	self.frame.bg:SetBlendMode(self.settings.barBgBlendMode)
 
-	self.frame.bg:ClearAllPoints()
-	self.frame.bg:SetPoint("BOTTOMLEFT",self.frame,"BOTTOMLEFT")
-	self.frame.bg:SetPoint("BOTTOMRIGHT",self.frame,"BOTTOMRIGHT")
-	self.frame.bg:SetHeight(self.settings.barHeight)
-
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.frame.bg:SetTexCoord(1, 0, 0, 1)
+	if rotated then
+		self.frame.bg:SetAllPoints(self.frame)
+		self.frame.bg:SetWidth(self.settings.barHeight)
 	else
-		self.frame.bg:SetTexCoord(0, 1, 0, 1)
+		self.frame.bg:ClearAllPoints()
+		self.frame.bg:SetPoint("BOTTOMLEFT",self.frame,"BOTTOMLEFT")
+		self.frame.bg:SetPoint("BOTTOMRIGHT",self.frame,"BOTTOMRIGHT")
+		self.frame.bg:SetHeight(self.settings.barHeight)
+	end
+
+	if self.moduleSettings.side == IceCore.Side.Left then
+		if rotated then
+			RotateTexture(self.frame.bg, 90)
+		else
+			self.frame.bg:SetTexCoord(1, 0, 0, 1)
+		end
+	else
+		if rotated then
+			RotateTexture(self.frame.bg, -90)
+		else
+			self.frame.bg:SetTexCoord(0, 1, 0, 1)
+		end
 	end
 
 	self.frame.bg:SetVertexColor(self:GetColor("undef", self.settings.alphabg))
 
 	local ownPoint = "LEFT"
-	if (self.moduleSettings.side == ownPoint) then
+	if self.moduleSettings.side == ownPoint then
 		ownPoint = "RIGHT"
 	end
 
 	-- ofxx = (bar width) + (extra space in between the bars)
 	local offx = (self.settings.barProportion * self.settings.barWidth * self.moduleSettings.offset)
 		+ (self.moduleSettings.offset * self.settings.barSpace)
-	if (self.moduleSettings.side == IceCore.Side.Left) then
+	if self.moduleSettings.side == IceCore.Side.Left then
 		offx = offx * -1
 	end
 	offx = offx + (self.moduleSettings.barHorizontalOffset or 0)
@@ -1041,37 +1133,113 @@ end
 -- Creates the actual bar
 function IceBarElement.prototype:CreateBar()
 	self.barFrame = self:BarFactory(self.barFrame, "LOW", "ARTWORK", "Bar")
-	
+
 	self:SetBarCoord(self.barFrame)
 
-	self.barFrame.bar:SetBlendMode(self.settings.barBlendMode)
+	local texture = self:GetBarTexture()
+	if texture then
+		texture:SetBlendMode(self.settings.barBlendMode)
+	end
 	self:SetScale(self.CurrScale, true)
 	self:UpdateBar(1, "undef")
 end
 
--- Returns a barFrame & barFrame.bar
--- Rokiyo: Currently keeping old behaviour of running through bar creation on every Redraw, but I'm not convinced we need to.
-function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer, nameSuffix)
+function IceBarElement.prototype:GetBarTexture()
+	return self:GetBarFrameTexture(self.barFrame)
+end
+
+function IceBarElement.prototype:GetBarFrameTexture(frame)
+	local texture
+	if not frame then
+		return texture
+	end
+
+	if frame.texture then
+		return frame.texture
+	end
+
+	if frame.isStatusBar then
+		texture = frame:GetStatusBarTexture()
+	else
+		texture = frame.bar
+	end
+
+	return texture
+end
+
+function IceBarElement.prototype:SetBarColorRGBA(r, g, b, a)
+	self:SetBarFrameColorRGBA(self.barFrame, r, g, b, a)
+end
+
+function IceBarElement.prototype:SetBarFrameColorRGBA(frame, r, g, b, a)
+	local texture = self:GetBarFrameTexture(frame)
+	if not texture then
+		return
+	end
+
+	texture:SetVertexColor(r, g, b, a)
+end
+
+function IceBarElement.prototype:OnUpdate()
+	if not self.barFrame or not self.barFrame.isStatusBar or not self:ShouldReverseFill() then
+		return
+	end
+
+	if self.barFrame:GetReverseFill() then
+		self:GetBarTexture():SetTexCoord(0, 1, 0, self.CurrScale)
+	end
+end
+
+-- Returns a barFrame
+function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer, nameSuffix, nonStatusFrameBar)
+	if not IceHUD.IsSecretEnv() then
+		nonStatusFrameBar = true
+	end
+
 	if not (barFrame) then
-		barFrame = CreateFrame("Frame", "IceHUD_"..self.elementName.."_"..(nameSuffix or "Bar"), self.frame)
+		if nonStatusFrameBar then
+			barFrame = CreateFrame("Frame", "IceHUD_"..self.elementName.."_"..(nameSuffix or "Bar"), self.frame)
+		else
+			barFrame = CreateFrame("StatusBar", "IceHUD_"..self.elementName.."_"..(nameSuffix or "Bar"), self.frame)
+			barFrame.isStatusBar = true
+			barFrame:SetMinMaxValues(0, 1)
+			barFrame:SetOrientation("VERTICAL")
+			-- removed; this was a shim to try and patch up reverse-fill bugs with StatusBars in Midnight.
+			-- ultimately i chose to disable the reverse/inverse features and reported the game client bug
+			-- to Blizzard, so if they fix it, we can take advantage of the fix. until then, no need to
+			-- sacrifice the perf for a fix that wasn't 100% anyway.
+			-- barFrame:SetScript("OnUpdate", function() self:OnUpdate() end)
+		end
 	end
 
 	barFrame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(frameStrata and frameStrata or "LOW"))
-	barFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
-	barFrame:SetHeight(self.settings.barHeight)
-	self:SetBarFramePoints(barFrame)
-
-	if not barFrame.bar then
-		barFrame.bar = barFrame:CreateTexture(nil, (textureLayer and textureLayer or "ARTWORK"))
+	local width = self.settings.barWidth + (self.moduleSettings.widthModifier or 0)
+	local height = self.settings.barHeight
+	if barFrame.rotated then
+		width, height = height, width
 	end
+	barFrame:SetWidth(width)
+	barFrame:SetHeight(height)
 
-	barFrame.bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
-	barFrame.bar:SetAllPoints(barFrame)
+	if not barFrame.texture then
+		barFrame.texture = barFrame:CreateTexture(nil, (textureLayer and textureLayer or "ARTWORK"))
+	end
+	barFrame.texture:SetTexture(self:GetBarTexturePath())
+	if nonStatusFrameBar then
+		barFrame.texture:SetAllPoints(barFrame)
+	else
+		barFrame:SetStatusBarTexture(barFrame.texture)
+	end
+	self:SetBarFramePoints(barFrame)
 
 	return barFrame
 end
 
-function IceBarElement.prototype:GetMyBarTexture()
+function IceBarElement.prototype:GetBarTexturePath()
+	return IceElement.TexturePath .. self:GetMyBarTextureName() .. (self.moduleSettings.side == IceCore.Side.Left and "-flipped" or "")
+end
+
+function IceBarElement.prototype:GetMyBarTextureName()
 	if self.moduleSettings.shouldUseOverride and self.moduleSettings.barTextureOverride then
 		return self.moduleSettings.barTextureOverride
 	else
@@ -1168,63 +1336,111 @@ function IceBarElement.prototype:Flip(side)
 	end
 end
 
+function IceBarElement.prototype:BarFillNormal()
+	if IceHUD.IsSecretEnv() then
+		return true
+	end
+
+	return self.moduleSettings.inverse == "NORMAL"
+end
+
+function IceBarElement.prototype:BarFillExpand()
+	if IceHUD.IsSecretEnv() then
+		return false
+	end
+
+	return self.moduleSettings.inverse == "EXPAND"
+end
+
+function IceBarElement.prototype:BarFillReverse()
+	if IceHUD.IsSecretEnv() then
+		return false
+	end
+
+	return self.moduleSettings.reverse
+end
+
+function IceBarElement.prototype:BarFillInverse()
+	if IceHUD.IsSecretEnv() then
+		return false
+	end
+
+	return self.moduleSettings.inverse == "INVERSE"
+end
+
 -- Rokiyo: bar is the only required argument, scale & top are optional
 function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideReverse)
+	local interp
+	if Enum and Enum.StatusBarInterpolation then
+		interp = (self.moduleSettings.shouldAnimate and not self:ShouldReverseFill()) and Enum.StatusBarInterpolation.ExponentialEaseOut or Enum.StatusBarInterpolation.Immediate
+	end
+
+	if not IceHUD.CanAccessValue(scale) then
+		barFrame:SetValue(scale, interp)
+		return
+	end
+
 	if not scale then scale = 0 end
 	scale = IceHUD:Clamp(scale, 0, 1)
 
 	if scale == 0 then
-		barFrame.bar:Hide()
+		barFrame:Hide()
 	else
+		barFrame:Show()
+
+		if barFrame.SetValue then
+			barFrame:SetValue(scale, interp)
+			return
+		end
+
 		local min_y, max_y
 		local offset_y = 0
 
-		local reverse = self.moduleSettings.reverse
+		local reverse = self:BarFillReverse()
 		if overrideReverse then
 			reverse = false
 		end
 
 		if IceHUD:xor(reverse, top) then
-			if self.moduleSettings.inverse == "INVERSE" then
+			if self:BarFillInverse() then
 				min_y = 1 - scale
 				max_y = 1
 				offset_y = 0 - (self.settings.barHeight * (1 - scale))
-			elseif self.moduleSettings.inverse == "EXPAND" then
-				min_y = 0.5 - (scale * 0.5);
-				max_y = 0.5 + (scale * 0.5);
+			elseif self:BarFillExpand() then
+				min_y = 0.5 - (scale * 0.5)
+				max_y = 0.5 + (scale * 0.5)
 			else
 				min_y = 0
 				max_y = scale
 				offset_y = (self.settings.barHeight * (1 - scale))
 			end
 		else
-			if self.moduleSettings.inverse == "INVERSE" then
-				min_y = 0;
-				max_y = scale;
-			elseif self.moduleSettings.inverse == "EXPAND" then
-				min_y = 0.5 - (scale * 0.5);
-				max_y = 0.5 + (scale * 0.5);
+			if self:BarFillInverse() then
+				min_y = 0
+				max_y = scale
+			elseif self:BarFillExpand() then
+				min_y = 0.5 - (scale * 0.5)
+				max_y = 0.5 + (scale * 0.5)
 			else
-				min_y = 1-scale;
-				max_y = 1;
+				min_y = 1-scale
+				max_y = 1
 			end
 		end
 
-		if (self.moduleSettings.side == IceCore.Side.Left) then
-			barFrame.bar:SetTexCoord(1, 0, min_y, max_y)
-		else
-			barFrame.bar:SetTexCoord(0, 1, min_y, max_y)
-		end
-
+		self:GetBarFrameTexture(barFrame):SetTexCoord(0, 1, min_y, max_y)
 		self:SetBarFramePoints(barFrame, 0, offset_y)
 		barFrame:SetHeight(self.settings.barHeight * scale)
-		barFrame.bar:Show()
 	end
 end
 
 function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
+	if not IceHUD.CanAccessValue(inScale) or not IceHUD.CanAccessValue(self.CurrScale) then
+		self.CurrScale = inScale
+		self:SetBarCoord(self.barFrame, self.CurrScale)
+		return
+	end
+
 	local oldScale = self.CurrScale
-	local min_y, max_y;
 
 	if not skipLerp then
 		self.CurrScale = self:LerpScale(inScale)
@@ -1235,18 +1451,20 @@ function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
 
 	if force or oldScale ~= self.CurrScale then
 		local scale = self.CurrScale
-		if self.moduleSettings.reverse then
+		if self:BarFillReverse() then
 			scale = 1 - scale
 		end
 
 		self:SetBarCoord(self.barFrame, scale)
 	end
 
-	if not self:IsFull(self.CurrScale) or not self:IsFull(inScale) then
-		self:ConditionalSetupUpdate()
-	else
-		if self.CurrScale == self.DesiredScale then
-			IceHUD.IceCore:RequestUpdates(self, nil)
+	if IceHUD.CanAccessValue(self.CurrScale) and IceHUD.CanAccessValue(inScale) then
+		if not self:IsFull(self.CurrScale) or not self:IsFull(inScale) then
+			self:ConditionalSetupUpdate()
+		else
+			if self.CurrScale == self.DesiredScale then
+				IceHUD.IceCore:RequestUpdates(self, nil)
+			end
 		end
 	end
 end
@@ -1274,6 +1492,13 @@ function IceBarElement.prototype:LerpScale(scale)
 	return scale
 end
 
+function IceBarElement.prototype:IsHealthBar()
+	return false
+end
+
+function IceBarElement.prototype:IsPowerBar()
+	return false
+end
 
 function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	alpha = alpha or 1
@@ -1284,13 +1509,33 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 		r, g, b = self:GetColor(color)
 	end
 
-	if (self.combat) then
+	local useTargetAlpha = self.target and not self:AlphaPassThroughTarget()
+	local useNotFullAlpha = self:UseTargetAlpha(scale)
+	if self.combat then
 		self.alpha = self.settings.alphaic
 		self.backgroundAlpha = self.settings.alphaicbg
-	elseif (self.target and not self:AlphaPassThroughTarget()) then
+	elseif useTargetAlpha then
 		self.alpha = self.settings.alphaTarget
 		self.backgroundAlpha = self.settings.alphaTargetbg
-	elseif (self:UseTargetAlpha(scale)) then
+	elseif useNotFullAlpha == nil and self.unit and self.oocNotFullCurve then
+		local curveAlpha, curveBgalpha
+
+		if self:IsHealthBar() and UnitHealthPercent then
+			curveAlpha = UnitHealthPercent(self.unit, true, self.oocNotFullCurve)
+			curveBgalpha = UnitHealthPercent(self.unit, true, self.oocNotFullCurveBg)
+		end
+		if self:IsPowerBar() and UnitPowerPercent then
+			curveAlpha = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.oocNotFullCurve)
+			curveBgalpha = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.oocNotFullCurveBg)
+		end
+
+		if curveAlpha then
+			self.alpha = curveAlpha
+		end
+		if curveBgalpha then
+			self.backgroundAlpha = curveBgalpha
+		end
+	elseif useNotFullAlpha then
 		self.alpha = self.settings.alphaNotFull
 		self.backgroundAlpha = self.settings.alphaNotFullbg
 	else
@@ -1304,15 +1549,17 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	end
 
 	self.frame.bg:SetVertexColor(r, g, b, self.backgroundAlpha)
-	self.barFrame.bar:SetVertexColor(self:GetColor(color))
+	self:SetBarColorRGBA(self:GetColor(color))
 	if self.moduleSettings.markers then
 		for i=1, #self.Markers do
 			local color = self.moduleSettings.markers[i].color
-			self.Markers[i].bar:SetVertexColor(color.r, color.g, color.b, self.alpha)
+			self.Markers[i].texture:SetVertexColor(color.r, color.g, color.b, self.alpha)
 		end
 	end
 
-	if self.DesiredScale ~= scale then
+	if not IceHUD.CanAccessValue(scale) or not IceHUD.CanAccessValue(self.DesiredScale) then
+		self.DesiredScale = scale
+	elseif self.DesiredScale ~= scale then
 		self.DesiredScale = scale
 		self.CurrLerpTime = 0
 		self.lastLerpTime = GetTime()
@@ -1338,10 +1585,18 @@ end
 
 
 function IceBarElement.prototype:UseTargetAlpha(scale)
+	if not IceHUD.CanAccessValue(scale) then
+		return nil
+	end
+
 	return not self:IsFull(scale)
 end
 
 function IceBarElement.prototype:IsFull(scale)
+	if not IceHUD.CanAccessValue(scale) then
+		return false
+	end
+
 	if self.reverse then
 		scale = 1 - scale
 	end
@@ -1366,7 +1621,7 @@ function IceBarElement.prototype:SetBottomText1(text, color)
 
 	local alpha = self.alpha
 
-	if (self.alpha > 0) then
+	if IceHUD.CanAccessValue(self.alpha) and self.alpha > 0 then
 		-- boost text alpha a bit to make it easier to see
 		alpha = self.alpha + 0.1
 
@@ -1375,7 +1630,7 @@ function IceBarElement.prototype:SetBottomText1(text, color)
 		end
 	end
 
-	if (self.moduleSettings.lockUpperTextAlpha and (self.alpha > 0)) then
+	if self.moduleSettings.lockUpperTextAlpha and (not IceHUD.CanAccessValue(self.alpha) or self.alpha > 0) then
 		alpha = 1
 	end
 
@@ -1398,7 +1653,7 @@ function IceBarElement.prototype:SetBottomText2(text, color, alpha)
 	end
 	if not (alpha) then
 		-- boost text alpha a bit to make it easier to see
-		if (self.alpha > 0) then
+		if IceHUD.CanAccessValue(self.alpha) and self.alpha > 0 then
 			alpha = self.alpha + 0.1
 
 			if (alpha > 1) then
@@ -1407,7 +1662,7 @@ function IceBarElement.prototype:SetBottomText2(text, color, alpha)
 		end
 	end
 
-	if (self.moduleSettings.lockLowerTextAlpha and (self.alpha > 0)) then
+	if self.moduleSettings.lockLowerTextAlpha and (not IceHUD.CanAccessValue(self.alpha) or self.alpha > 0) then
 		alpha = 1
 	end
 
@@ -1427,11 +1682,21 @@ function IceBarElement.prototype:SetCustomTextColor(fontInstance, colorTable)
 end
 
 function IceBarElement.prototype:SetTextAlpha()
+	local textAlpha
+	if IceHUD.CanAccessValue(self.alpha) then
+		textAlpha = math.min(self.alpha > 0 and self.alpha + 0.1 or 0, 1)
+	else
+		textAlpha = self.alpha
+	end
+
+	local forceUpperFullAlpha = self.moduleSettings.lockUpperTextAlpha and (not IceHUD.CanAccessValue(textAlpha) or textAlpha > 0)
+	local forceLowerFullAlpha = self.moduleSettings.lockLowerTextAlpha and (not IceHUD.CanAccessValue(textAlpha) or textAlpha > 0)
+
 	if self.frame.bottomUpperText then
-		self.frame.bottomUpperText:SetAlpha(self.moduleSettings.lockUpperTextAlpha and 1 or math.min(self.alpha > 0 and self.alpha + 0.1 or 0, 1))
+		self.frame.bottomUpperText:SetAlpha(forceUpperFullAlpha and 1 or textAlpha)
 	end
 	if self.frame.bottomLowerText then
-		self.frame.bottomLowerText:SetAlpha(self.moduleSettings.lockLowerTextAlpha and 1 or math.min(self.alpha > 0 and self.alpha + 0.1 or 0, 1))
+		self.frame.bottomLowerText:SetAlpha(forceLowerFullAlpha and 1 or textAlpha)
 	end
 end
 
@@ -1479,18 +1744,37 @@ function IceBarElement.prototype:MyOnUpdate()
 end
 
 function IceBarElement.prototype:RotateHorizontal()
-	self:RotateFrame(self.frame)
+	if self.barFrame.isStatusBar then
+		if not self.barFrame.rotated then
+			self.barFrame:SetRotatesTexture(true)
+			self.barFrame:SetOrientation("HORIZONTAL")
+			self.barFrame.rotated = true
+		end
+	else
+		self:RotateFrame(self.frame)
+	end
 end
 
 function IceBarElement.prototype:ResetRotation()
 	if self.frame.anim then
 		self.frame.anim:Stop()
 	end
+	---@diagnostic disable-next-line: undefined-field
+	if self.frame.bg.anim then
+		---@diagnostic disable-next-line: undefined-field
+		self.frame.bg.anim:Stop()
+	end
 	if self.barFrame.anim then
 		self.barFrame.anim:Stop()
 	end
 	for i=1, #self.Markers do
 		self.Markers[i]:Show()
+	end
+
+	if self.barFrame.rotated then
+		self.barFrame:SetRotatesTexture(false)
+		self.barFrame:SetOrientation("VERTICAL")
+		self.barFrame.rotated = false
 	end
 end
 
@@ -1512,9 +1796,9 @@ function IceBarElement.prototype:RotateFrame(frame)
 	end
 
 	local anchorPoint
-	if self.moduleSettings.inverse == "INVERSE" then
+	if self:BarFillInverse() then
 		anchorPoint = "TOPLEFT"
-	elseif self.moduleSettings.inverse == "EXPAND" then
+	elseif self:BarFillExpand() then
 		anchorPoint = "LEFT"
 	else
 		anchorPoint = "BOTTOMLEFT"
@@ -1527,7 +1811,7 @@ end
 
 function IceBarElement.prototype:NotifyBarOverrideChanged()
 	for i=1, #self.Markers do
-		self.Markers[i].bar:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+		self.Markers[i].texture:SetTexture(self:GetBarTexturePath())
 	end
 end
 
@@ -1558,7 +1842,7 @@ function IceBarElement.prototype:AddNewMarker(inPosition, inColor, inHeight)
 end
 
 function IceBarElement.prototype:EditMarker(idx, inPosition, inColor, inHeight)
-	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
+	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].texture and #self.moduleSettings.markers >= idx,
 		"Bad marker passed to EditMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
 	self.moduleSettings.markers[idx] = {
 		position = inPosition,
@@ -1569,10 +1853,13 @@ function IceBarElement.prototype:EditMarker(idx, inPosition, inColor, inHeight)
 end
 
 function IceBarElement.prototype:RemoveMarker(idx, bSkipSettings)
-	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
+	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].texture and #self.moduleSettings.markers >= idx,
 		"Bad marker passed to RemoveMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
 	self.Markers[idx]:Hide()
 	table.remove(self.Markers, idx)
+	if lastEditMarkerConfig > #self.Markers then
+		lastEditMarkerConfig = math.max(#self.Markers, 1)
+	end
 	if not bSkipSettings then
 		table.remove(self.moduleSettings.markers, idx)
 	end
@@ -1581,38 +1868,38 @@ end
 function IceBarElement.prototype:CreateMarker(idx)
 	if self.Markers[idx] ~= nil then
 		self.Markers[idx]:Hide()
-		self.Markers[idx].bar = nil
+		self.Markers[idx].texture = nil
 		self.Markers[idx] = nil
 	end
 
 	self.Markers[idx] = self:BarFactory(self.Markers[idx], "MEDIUM", "OVERLAY", "Marker"..idx)
 
 	local color = self.moduleSettings.markers[idx].color
-	self.Markers[idx].bar:SetVertexColor(color.r, color.g, color.b, self.alpha)
+	self:SetBarFrameColorRGBA(self.Markers[idx], color.r, color.g, color.b, self.alpha)
 
 	self:UpdateMarker(idx)
 	self:PositionMarker(idx, self.moduleSettings.markers[idx].position)
 end
 
 function IceBarElement.prototype:UpdateMarker(idx)
-	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
+	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].texture and #self.moduleSettings.markers >= idx,
 		"Bad marker passed to UpdateMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
 	self.Markers[idx]:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.Markers[idx]:SetHeight(self.moduleSettings.markers[idx].height)
 end
 
 function IceBarElement.prototype:PositionMarker(idx, pos)
-	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].bar and #self.moduleSettings.markers >= idx,
+	assert(idx > 0 and #self.Markers >= idx and self.Markers[idx] and self.Markers[idx].texture and #self.moduleSettings.markers >= idx,
 		"Bad marker passed to PositionMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
 
 	local min_y, max_y, offset_y
 	local heightScale = (self.moduleSettings.markers[idx].height / self.settings.barHeight)
 
-	if (self.moduleSettings.inverse == "INVERSE") then
+	if self:BarFillInverse() then
 		offset_y = 0 - (self.settings.barHeight * pos)
 		min_y = IceHUD:Clamp(pos, 0, 1)
 		max_y = IceHUD:Clamp(pos+heightScale, 0, 1)
-	elseif (self.moduleSettings.inverse == "EXPAND") then
+	elseif self:BarFillExpand() then
 		pos = pos + ((1-pos) * 0.5)
 		heightScale = heightScale * 0.5
 		offset_y = self.settings.barHeight * (pos - 0.5)
@@ -1624,14 +1911,9 @@ function IceBarElement.prototype:PositionMarker(idx, pos)
 		max_y = IceHUD:Clamp(1-pos, 0, 1)
 	end
 
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.Markers[idx].bar:SetTexCoord(1, 0, min_y, max_y)
-	else
-		self.Markers[idx].bar:SetTexCoord(0, 1, min_y, max_y)
-	end
-
+	self.Markers[idx].texture:SetTexCoord(0, 1, min_y, max_y)
 	self:SetBarFramePoints(self.Markers[idx], 0, offset_y)
-	self.Markers[idx].bar:Show()
+	self.Markers[idx].texture:Show()
 end
 
 function IceBarElement.prototype:LoadMarkers()

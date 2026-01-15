@@ -11,8 +11,8 @@ IceUnitBar.prototype.healthPercentage = nil
 IceUnitBar.prototype.mana = nil
 IceUnitBar.prototype.maxMana = nil
 IceUnitBar.prototype.manaPercentage = nil
-IceUnitBar.prototype.scaleHPColorInst = nil
-IceUnitBar.prototype.scaleMPColorInst = nil
+IceUnitBar.prototype.scaleHPColorInst = {r = 0, g = 0, b = 0, a = 0}
+IceUnitBar.prototype.scaleMPColorInst = {r = 0, g = 0, b = 0, a = 0}
 
 IceUnitBar.prototype.unitClass = nil
 IceUnitBar.prototype.hasPet = nil
@@ -37,18 +37,73 @@ function IceUnitBar.prototype:init(name, unit)
 	self:SetDefaultColor("Dead", 0.5, 0.5, 0.5)
 	self:SetDefaultColor("Tapped", 0.8, 0.8, 0.8)
 
-	self:SetDefaultColor("ScaledHealthColor", 0, 1, 0)
 	self:SetDefaultColor("MaxHealthColor", 0, 255, 0)
 	self:SetDefaultColor("MidHealthColor", 255, 255, 0)
 	self:SetDefaultColor("MinHealthColor", 255, 0, 0)
 
-	self:SetDefaultColor("ScaledManaColor", 0, 0, 1)
 	self:SetDefaultColor("MaxManaColor", 0, 0, 255)
 	self:SetDefaultColor("MidManaColor", 125, 0, 255)
 	self:SetDefaultColor("MinManaColor", 255, 0, 255)
+end
 
-	self.scaleHPColorInst = { r = 0, g = 255, b = 0 }
-	self.scaleMPColorInst = { r = 0, g = 0, b = 255 }
+function IceUnitBar.prototype:SetColorCurve()
+	if not C_ColorUtil or not C_CurveUtil or not C_CurveUtil.CreateCurve then
+		return
+	end
+
+	local minHP = self.settings.colors["MinHealthColor"]
+	local midHP = self.settings.colors["MidHealthColor"]
+	local maxHP = self.settings.colors["MaxHealthColor"]
+	-- have to split these up into components to avoid perf impact and massive garbage generation
+	-- when trying to pass in a color
+	if not self.hpColorCurveR then
+		self.hpColorCurveR = C_CurveUtil.CreateCurve()
+		self.hpColorCurveR:SetType(Enum.LuaCurveType.Linear)
+		self.hpColorCurveG = C_CurveUtil.CreateCurve()
+		self.hpColorCurveG:SetType(Enum.LuaCurveType.Linear)
+		self.hpColorCurveB = C_CurveUtil.CreateCurve()
+		self.hpColorCurveB:SetType(Enum.LuaCurveType.Linear)
+	end
+	self.hpColorCurveR:ClearPoints()
+	self.hpColorCurveR:AddPoint(0, minHP.r)
+	self.hpColorCurveR:AddPoint(0.5, midHP.r)
+	self.hpColorCurveR:AddPoint(1, maxHP.r)
+
+	self.hpColorCurveG:ClearPoints()
+	self.hpColorCurveG:AddPoint(0, minHP.g)
+	self.hpColorCurveG:AddPoint(0.5, midHP.g)
+	self.hpColorCurveG:AddPoint(1, maxHP.g)
+
+	self.hpColorCurveB:ClearPoints()
+	self.hpColorCurveB:AddPoint(0, minHP.b)
+	self.hpColorCurveB:AddPoint(0.5, midHP.b)
+	self.hpColorCurveB:AddPoint(1, maxHP.b)
+
+	local minMP = self.settings.colors["MinManaColor"]
+	local midMP = self.settings.colors["MidManaColor"]
+	local maxMP = self.settings.colors["MaxManaColor"]
+	if not self.mpColorCurveR then
+		self.mpColorCurveR = C_CurveUtil.CreateCurve()
+		self.mpColorCurveR:SetType(Enum.LuaCurveType.Linear)
+		self.mpColorCurveG = C_CurveUtil.CreateCurve()
+		self.mpColorCurveG:SetType(Enum.LuaCurveType.Linear)
+		self.mpColorCurveB = C_CurveUtil.CreateCurve()
+		self.mpColorCurveB:SetType(Enum.LuaCurveType.Linear)
+	end
+	self.mpColorCurveR:ClearPoints()
+	self.mpColorCurveR:AddPoint(0, minMP.r)
+	self.mpColorCurveR:AddPoint(0.5, midMP.r)
+	self.mpColorCurveR:AddPoint(1, maxMP.r)
+
+	self.mpColorCurveG:ClearPoints()
+	self.mpColorCurveG:AddPoint(0, minMP.g)
+	self.mpColorCurveG:AddPoint(0.5, midMP.g)
+	self.mpColorCurveG:AddPoint(1, maxMP.g)
+
+	self.mpColorCurveB:ClearPoints()
+	self.mpColorCurveB:AddPoint(0, minMP.b)
+	self.mpColorCurveB:AddPoint(0.5, midMP.b)
+	self.mpColorCurveB:AddPoint(1, maxMP.b)
 end
 
 function IceUnitBar.prototype:SetUnit(unit)
@@ -75,63 +130,66 @@ end
 function IceUnitBar.prototype:GetOptions()
 	local opts = IceUnitBar.super.prototype.GetOptions(self)
 
-	opts["lowThreshold"] =
-	{
-		type = 'range',
-		name = L["Low Threshold"],
-		desc = L["When the bar drops below this amount, it will start flashing (0 means never). For the 'mana' bar this only applies to mana and not rage/energy/focus/runic power."],
-		get = function()
-			return self.moduleSettings.lowThreshold
-		end,
-		set = function(info, value)
-			self.moduleSettings.lowThreshold = value
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled or not (self.moduleSettings.lowThresholdFlash or self.moduleSettings.lowThresholdColor)
-		end,
-		min = 0,
-		max = 1,
-		step = 0.01,
-		isPercent = true,
-		order = 30.091
-	}
-	opts["lowThresholdFlash"] = {
-		type = 'toggle',
-		name = L["Flash bar below Low Threshold"],
-		desc = L["Flashes the bar when it is below the Low Threshold specified above"],
-		width = 'double',
-		get = function()
-			return self.moduleSettings.lowThresholdFlash
-		end,
-		set = function(info, v)
-			self.moduleSettings.lowThresholdFlash = v
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		hidden = function()
-			return self.noFlash
-		end,
-		order = 30.092
-	}
-	opts["lowThresholdColor"] = {
-		type = "toggle",
-		name = L["Low Threshold color"],
-		desc = L["Changes the color of this bar to be the minimum health or mana color when it's below the low threshold. See the 'MinHealthColor' and 'MinManaColor' colors in the 'Colors' option page.\n\nThis option only applies to health and mana bars."],
-		get = function()
-			return self.moduleSettings.lowThresholdColor
-		end,
-		set = function(info, value)
-			self.moduleSettings.lowThresholdColor = value
-			self:Redraw()
-		end,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
-		order = 30.093
-	}
+	if not IceHUD.IsSecretEnv() then
+		opts["lowThreshold"] =
+		{
+			type = 'range',
+			name = L["Low Threshold"],
+			desc = L["When the bar drops below this amount, it will start flashing (0 means never). For the 'mana' bar this only applies to mana and not rage/energy/focus/runic power."],
+			get = function()
+				return self.moduleSettings.lowThreshold
+			end,
+			set = function(info, value)
+				self.moduleSettings.lowThreshold = value
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled or not (self.moduleSettings.lowThresholdFlash or self.moduleSettings.lowThresholdColor)
+			end,
+			min = 0,
+			max = 1,
+			step = 0.01,
+			isPercent = true,
+			order = 30.091
+		}
+
+		opts["lowThresholdFlash"] = {
+			type = 'toggle',
+			name = L["Flash bar below Low Threshold"],
+			desc = L["Flashes the bar when it is below the Low Threshold specified above"],
+			width = 'double',
+			get = function()
+				return self.moduleSettings.lowThresholdFlash
+			end,
+			set = function(info, v)
+				self.moduleSettings.lowThresholdFlash = v
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			hidden = function()
+				return self.noFlash
+			end,
+			order = 30.092
+		}
+		opts["lowThresholdColor"] = {
+			type = "toggle",
+			name = L["Low Threshold color"],
+			desc = L["Changes the color of this bar to be the minimum health or mana color when it's below the low threshold. See the 'MinHealthColor' and 'MinManaColor' colors in the 'Colors' option page.\n\nThis option only applies to health and mana bars."],
+			get = function()
+				return self.moduleSettings.lowThresholdColor
+			end,
+			set = function(info, value)
+				self.moduleSettings.lowThresholdColor = value
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 30.093
+		}
+	end
 
 	return opts
 end
@@ -140,6 +198,8 @@ end
 -- 'Public' methods -----------------------------------------------------------
 
 function IceUnitBar.prototype:Enable()
+	self:SetColorCurve()
+
 	IceUnitBar.super.prototype.Enable(self)
 
 	self:RegisterEvent("PLAYER_UNGHOST", "Alive")
@@ -155,8 +215,10 @@ end
 function IceUnitBar.prototype:Redraw()
 	IceUnitBar.super.prototype.Redraw(self)
 
+	self:SetColorCurve()
+
 	if (self.moduleSettings.enabled) then
-		self:Update(self.unit)
+		self:Update()
 	end
 end
 
@@ -188,7 +250,7 @@ function IceUnitBar.prototype:CreateFlashFrame()
 		self.flashFrame.flash = self.flashFrame:CreateTexture(nil, "BACKGROUND")
 	end
 
-	self.flashFrame.flash:SetTexture(IceElement.TexturePath .. self:GetMyBarTexture())
+	self.flashFrame.flash:SetTexture(self:GetBarTexturePath())
 	self.flashFrame.flash:SetBlendMode("ADD")
 	self.flashFrame.flash:SetAllPoints(self.flashFrame)
 
@@ -198,11 +260,7 @@ function IceUnitBar.prototype:CreateFlashFrame()
 	self.flashFrame:ClearAllPoints()
 	self.flashFrame:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
 
-	if (self.moduleSettings.side == IceCore.Side.Left) then
-		self.flashFrame.flash:SetTexCoord(1, 0, 0, 1)
-	else
-		self.flashFrame.flash:SetTexCoord(0, 1, 0, 1)
-	end
+	self.flashFrame.flash:SetTexCoord(0, 1, 0, 1)
 end
 
 function IceUnitBar.prototype:RotateHorizontal()
@@ -234,66 +292,82 @@ function IceUnitBar.prototype:Update()
 
 	self.health = UnitHealth(self.unit)
 	self.maxHealth = UnitHealthMax(self.unit)
-	self.healthPercentage = self.maxHealth ~= 0 and (self.health/self.maxHealth) or 0
+	self.healthPercentage = UnitHealthPercent and UnitHealthPercent(self.unit, true, self:ShouldReverseFill() and CurveConstants.Reverse or CurveConstants.ZeroToOne) or self.maxHealth ~= 0 and (self.health/self.maxHealth) or 0
 
 	-- note that UnitPowerType returns 2 arguments and UnitPower[Max] accepts a third argument to get the values on a different scale
 	-- so this technically doesn't get us the answer we want most of the time. too risky to change at this point, though.
 	self.mana = UnitPower(self.unit, UnitPowerType(self.unit))
 	self.maxMana = UnitPowerMax(self.unit, UnitPowerType(self.unit))
 	local powerType = UnitPowerType(self.unit)
-	if (powerType == SPELL_POWER_RAGE and self.maxMana >= 1000)
-		or (powerType == SPELL_POWER_RUNIC_POWER and self.maxMana >= 1000) then
-		self.mana = IceHUD:MathRound(self.mana / 10)
-		self.maxMana = IceHUD:MathRound(self.maxMana / 10)
-	end
-	if IceHUD.WowVer >= 70300 and UnitPowerType(self.unit) == SPELL_POWER_INSANITY then
-		self.mana = IceHUD:MathRound(self.mana / 100)
-		self.maxMana = IceHUD:MathRound(self.maxMana / 100)
+	if IceHUD.CanAccessValue(self.mana) then
+		if (powerType == SPELL_POWER_RAGE and self.maxMana >= 1000)
+			or (powerType == SPELL_POWER_RUNIC_POWER and self.maxMana >= 1000) then
+			self.mana = IceHUD:MathRound(self.mana / 10)
+			self.maxMana = IceHUD:MathRound(self.maxMana / 10)
+		end
+		if IceHUD.WowVer >= 70300 and UnitPowerType(self.unit) == SPELL_POWER_INSANITY then
+			self.mana = IceHUD:MathRound(self.mana / 100)
+			self.maxMana = IceHUD:MathRound(self.maxMana / 100)
+		end
 	end
 
 	-- account for cases where maxMana is 0, perhaps briefly (during certain spells, for example)
 	-- and properly handle it as full. this allows for proper alpha handling during these times.
-	if self.maxMana == self.mana then
-		self.manaPercentage = 1
+	if UnitPowerPercent then
+		self.manaPercentage = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self:ShouldReverseFill() and CurveConstants.Reverse or CurveConstants.ZeroToOne)
 	else
-		self.manaPercentage = self.maxMana ~= 0 and (self.mana/self.maxMana) or 0
+		if self.maxMana == self.mana then
+			self.manaPercentage = 1
+		else
+			self.manaPercentage = self.maxMana ~= 0 and (self.mana/self.maxMana) or 0
+		end
 	end
 
-	local locClass
-	locClass, self.unitClass = UnitClass(self.unit)
+	local _
+	_, self.unitClass = UnitClass(self.unit)
 
-	if( self.moduleSettings.scaleHealthColor ) then
+	if self.hpColorCurveR then
+		local r = UnitHealthPercent(self.unit, true, self.hpColorCurveR)
+		local g = UnitHealthPercent(self.unit, true, self.hpColorCurveG)
+		local b = UnitHealthPercent(self.unit, true, self.hpColorCurveB)
+		self.scaleHPColorInst.r = r
+		self.scaleHPColorInst.g = g
+		self.scaleHPColorInst.b = b
+	else
 		if self.healthPercentage > 0.5 then
 			self:SetScaledColor(self.scaleHPColorInst, self.healthPercentage * 2 - 1, self.settings.colors["MaxHealthColor"], self.settings.colors["MidHealthColor"])
 		else
 			self:SetScaledColor(self.scaleHPColorInst, self.healthPercentage * 2, self.settings.colors["MidHealthColor"], self.settings.colors["MinHealthColor"])
 		end
-
-		self.settings.colors["ScaledHealthColor"] = self.scaleHPColorInst
 	end
 
-	if( self.moduleSettings.scaleManaColor ) then
+	if self.mpColorCurveR then
+		local r = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.mpColorCurveR)
+		local g = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.mpColorCurveG)
+		local b = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.mpColorCurveB)
+		self.scaleMPColorInst.r = r
+		self.scaleMPColorInst.g = g
+		self.scaleMPColorInst.b = b
+	else
 		if self.manaPercentage > 0.5 then
 			self:SetScaledColor(self.scaleMPColorInst, self.manaPercentage * 2 - 1, self.settings.colors["MaxManaColor"], self.settings.colors["MidManaColor"])
 		else
 			self:SetScaledColor(self.scaleMPColorInst, self.manaPercentage * 2, self.settings.colors["MidManaColor"], self.settings.colors["MinManaColor"])
 		end
-
-		self.settings.colors["ScaledManaColor"] = self.scaleMPColorInst
 	end
 
 	-- This looks slightly quirky. Basically the easiest way for me to achieve this is to have lowThresholdColor override
 	-- the scaled color. You'll need to switch them both on to get things to work.
-	if( self.moduleSettings.lowThresholdColor ) then
+	if self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.healthPercentage) and IceHUD.CanAccessValue(self.manaPercentage) then
 		if( self.healthPercentage <= self.moduleSettings.lowThreshold ) then
-			self.settings.colors[ "ScaledHealthColor" ] = self.settings.colors[ "MinHealthColor" ]
+			self.scaleHPColorInst.r, self.scaleHPColorInst.g, self.scaleHPColorInst.b = self.settings.colors[ "MinHealthColor" ].r, self.settings.colors[ "MinHealthColor" ].g, self.settings.colors[ "MinHealthColor" ].b
 		elseif not self.moduleSettings.scaleHealthColor then
-			self.settings.colors[ "ScaledHealthColor" ] = self.settings.colors[ "MaxHealthColor" ]
+			self.scaleHPColorInst.r, self.scaleHPColorInst.g, self.scaleHPColorInst.b = self.settings.colors[ "MaxHealthColor" ].r, self.settings.colors[ "MaxHealthColor" ].g, self.settings.colors[ "MaxHealthColor" ].b
 		end
 		if( self.manaPercentage <= self.moduleSettings.lowThreshold ) then
-			self.settings.colors[ "ScaledManaColor" ] = self.settings.colors[ "MinManaColor" ]
+			self.scaleMPColorInst.r, self.scaleMPColorInst.g, self.scaleMPColorInst.b = self.settings.colors[ "MinManaColor" ].r, self.settings.colors[ "MinManaColor" ].g, self.settings.colors[ "MinManaColor" ].b
 		elseif not self.moduleSettings.scaleManaColor then
-			self.settings.colors[ "ScaledManaColor" ] = self.settings.colors[ "MaxManaColor" ]
+			self.scaleMPColorInst.r, self.scaleMPColorInst.g, self.scaleMPColorInst.b = self.settings.colors[ "MaxManaColor" ].r, self.settings.colors[ "MaxManaColor" ].g, self.settings.colors[ "MaxManaColor" ].b
 		end
 	end
 end
@@ -303,13 +377,13 @@ function IceUnitBar.prototype:Alive()
 	-- instead of maintaining a state for 3 different things
 	-- (dead, dead/ghost, alive) just afford the extra function call here
 	self.alive = not UnitIsDeadOrGhost(self.unit)
-	self:Update(self.unit)
+	self:Update()
 end
 
 
 function IceUnitBar.prototype:Dead()
 	self.alive = false
-	self:Update(self.unit)
+	self:Update()
 end
 
 
@@ -322,10 +396,11 @@ function IceUnitBar.prototype:UpdateBar(scale, color, alpha)
 		return
 	end
 
-	if (self.moduleSettings.lowThreshold > 0 and
+	if IceHUD.CanAccessValue(scale) and
+		self.moduleSettings.lowThreshold > 0 and
 		self.moduleSettings.lowThresholdFlash and
 		self.moduleSettings.lowThreshold >= scale and self.alive and
-		not self.noFlash) then
+		not self.noFlash then
 			self.bUpdateFlash = true
 			self.flashFrame.flash:SetVertexColor(self:GetColor(color))
 	else
@@ -363,3 +438,12 @@ function IceUnitBar.prototype:SetScaleColorEnabled(enabled)
 end
 
 
+function IceUnitBar.prototype:GetColor(color, alpha)
+	if color == "ScaledHealthColor" then
+		return self.scaleHPColorInst.r, self.scaleHPColorInst.g, self.scaleHPColorInst.b, alpha or self.alpha
+	elseif color == "ScaledManaColor" then
+		return self.scaleMPColorInst.r, self.scaleMPColorInst.g, self.scaleMPColorInst.b, alpha or self.alpha
+	end
+
+	return IceUnitBar.super.prototype.GetColor(self, color, alpha)
+end

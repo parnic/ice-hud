@@ -24,7 +24,7 @@ function TargetTargetHealth.prototype:GetDefaultSettings()
 	settings["selfColor"] = { r = 0, g = 0, b = 1 }
 	settings["selfDisplayMode"] = "Color as SelfColor"
 	settings["upperText"] = "[PercentHP:Round]"
-	settings["lowerText"] = "[FractionalHP:Short:HPColor:Bracket]"
+	settings["lowerText"] = "[[[HP:Short:HPColor] '/' [MaxHP:Short:HPColor]]:Bracket]"
 	settings["barVerticalOffset"] = 35
 	settings["scale"] = 0.7
 	settings["enabled"] = false
@@ -136,7 +136,7 @@ function TargetTargetHealth.prototype:Update(unit)
 
 	if (self.moduleSettings.scaleHealthColor) then
 		self.color = "ScaledHealthColor"
-	elseif self.moduleSettings.lowThresholdColor and self.healthPercentage and self.healthPercentage <= self.moduleSettings.lowThreshold then
+	elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.healthPercentage) and self.healthPercentage and self.healthPercentage <= self.moduleSettings.lowThreshold then
 		self.color = "ScaledHealthColor"
 	end
 

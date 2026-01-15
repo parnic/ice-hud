@@ -13,7 +13,7 @@ local internal = "internal"
 local ValidAnchors = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", "CENTER" }
 
 ---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
-local LibClassicDurations = LibStub("LibClassicDurations", 1)
+local LibClassicDurations = LibStub("LibClassicDurations", true)
 ---- end change by Fulzamoth
 
 IceTargetInfo.prototype.unit = "target"
@@ -232,6 +232,10 @@ function IceTargetInfo.prototype:Disable(core)
 	self:UnregisterFontStrings()
 end
 
+function IceTargetInfo.prototype:CanSortBuffs()
+	return IceHUD.CanAccessSecrets()
+end
+
 
 -- OVERRIDE
 function IceTargetInfo.prototype:GetOptions()
@@ -401,22 +405,6 @@ function IceTargetInfo.prototype:GetOptions()
 				end,
 				values = { "Never", "In Combat", "Always" },
 				order = 32.1
-			},
-			sorted = {
-				type = 'toggle',
-				name = L["Sort by expiration"],
-				desc = L["Toggles whether or not to sort by expiration time (otherwise they're sorted how the game sorts them - by application time)"],
-				get = function()
-					return self.moduleSettings.auras["buff"].sortByExpiration
-				end,
-				set = function(info, v)
-					self.moduleSettings.auras["buff"].sortByExpiration = v
-					self:RedrawBuffs()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 32.2
 			},
 			header = {
 				type = 'header',
@@ -593,22 +581,6 @@ function IceTargetInfo.prototype:GetOptions()
 				values = { "Never", "In Combat", "Always" },
 				order = 32.1
 			},
-			sorted = {
-				type = 'toggle',
-				name = L["Sort by expiration"],
-				desc = L["Toggles whether or not to sort by expiration time (otherwise they're sorted how the game sorts them - by application time)"],
-				get = function()
-					return self.moduleSettings.auras["debuff"].sortByExpiration
-				end,
-				set = function(info, v)
-					self.moduleSettings.auras["debuff"].sortByExpiration = v
-					self:RedrawBuffs()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 32.2
-			},
 			header = {
 				type = 'header',
 				name = L["Size and Placement"],
@@ -745,6 +717,43 @@ function IceTargetInfo.prototype:GetOptions()
 			},
 		}
 	}
+
+		-- unable to sort buffs if we can't inspect their durations due to secret values
+	if self:CanSortBuffs() then
+		opts["buff"].args.sorted = {
+			type = 'toggle',
+			name = L["Sort by expiration"],
+			desc = L["Toggles whether or not to sort by expiration time (otherwise they're sorted how the game sorts them - by application time)"],
+			get = function()
+				return self.moduleSettings.auras["buff"].sortByExpiration
+			end,
+			set = function(info, v)
+				self.moduleSettings.auras["buff"].sortByExpiration = v
+				self:RedrawBuffs()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 32.2
+		}
+
+		opts["debuff"].args.sorted = {
+			type = 'toggle',
+			name = L["Sort by expiration"],
+			desc = L["Toggles whether or not to sort by expiration time (otherwise they're sorted how the game sorts them - by application time)"],
+			get = function()
+				return self.moduleSettings.auras["debuff"].sortByExpiration
+			end,
+			set = function(info, v)
+				self.moduleSettings.auras["debuff"].sortByExpiration = v
+				self:RedrawBuffs()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 32.2
+		}
+	end
 
 	opts["mouseHeader"] = {
 		type = 'header',
@@ -981,6 +990,24 @@ function IceTargetInfo.prototype:GetOptions()
 		order = 37.02,
 	}
 
+	opts["forceHideCooldownNumbers"] = {
+		type = 'toggle',
+		name = L['Force hide cooldown numbers'],
+		desc = L['Whether to force buff and debuff frames to hide their cooldown numbers even if enabled in the game settings or not.'],
+		get = function()
+			return self.moduleSettings.forceHideCooldownNumbers
+		end,
+		set = function(info, v)
+			self.moduleSettings.forceHideCooldownNumbers = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		width = 'double',
+		order = 37.03,
+	}
+
 	return opts
 end
 
@@ -1008,6 +1035,7 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 	defaults["displayTargetName"] = true
 	defaults["displayTargetDetails"] = true
 	defaults["displayTargetGuild"] = true
+	defaults["forceHideCooldownNumbers"] = false
 	defaults["auras"] = {
 		["buff"] = {
 			["size"] = 20,
@@ -1308,6 +1336,11 @@ do
 				cooldown:SetReverse(true)
 				iconFrames[i].cd = cooldown
 			end
+
+			if iconFrames[i].cd.SetHideCountdownNumbers then
+				iconFrames[i].cd:SetHideCountdownNumbers(self.moduleSettings.forceHideCooldownNumbers)
+			end
+
 			-- Rokiyo: Can't locally buffering these until I'm sure they exist :(
 			local frame = iconFrames[i]
 			local icon = frame.icon
@@ -1331,7 +1364,7 @@ do
 			end
 
 			if type == "buff" then
-				if frame.isStealable and self.playerClass == "MAGE" then
+				if IceHUD.CanAccessValue(frame.isStealable) and frame.isStealable and self.playerClass == "MAGE" then
 					frame.texture:SetVertexColor(1, 1, 1)
 					frame.texture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
 					icon:SetWidth(size-8)
@@ -1384,10 +1417,10 @@ buffData["buff"] = {}
 buffData["debuff"] = {}
 
 function IceTargetInfo.prototype:UpdateBuffType(aura)
-	local auraFrame, reaction
 	local filter = false
 	local auraFrame = aura.."Frame"
 
+	local reaction
 	if (aura == "buff") then
 		reaction = "HELPFUL"
 	elseif (aura == "debuff") then
@@ -1406,21 +1439,21 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 
 	if self.moduleSettings.auras[aura].show then
 		for i = 1, IceCore.BuffLimit do
-			local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable
+			local _, icon, count, duration, expirationTime, unitCaster, isStealable
 
 			---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
 			local spellID
 			---- end change by Fulzamoth
 
 			if IceHUD.SpellFunctionsReturnRank then
-				name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable = IceHUD.UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
+				_, _, icon, count, _, duration, expirationTime, unitCaster, isStealable = IceHUD.UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
 			else
 				---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
 				-- 1. in addition to other info, get the spellID for for the (de)buff
-				name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, _, spellID = IceHUD.UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
-				if duration == 0 and LibClassicDurations then
+				_, icon, count, _, duration, expirationTime, unitCaster, isStealable, _, spellID = IceHUD.UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
+				if IceHUD.CanAccessValue(duration) and duration == 0 and LibClassicDurations then
 					-- 2. if no duration defined for the (de)buff, look up the spell in LibClassicDurations
-					local classicDuration, classicExpirationTime = LibClassicDurations:GetAuraDurationByUnit(self.unit, spellID, caster)
+					local classicDuration, classicExpirationTime = LibClassicDurations:GetAuraDurationByUnit(self.unit, spellID, unitCaster)
 					-- 3. set the duration if we found one.
 					if classicDuration then
 						duration = classicDuration
@@ -1429,7 +1462,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 				end
 				---- end change by Fulzamoth
 			end
-			local isFromMe = (unitCaster == "player")
+			local isFromMe = IceHUD.CanAccessValue(unitCaster) and (unitCaster == "player")
 
 			if not icon and IceHUD.IceCore:IsInConfigMode() and UnitExists(self.unit) then
 				icon = [[Interface\Icons\Spell_Frost_Frost]]
@@ -1439,10 +1472,13 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 			end
 
 			if icon then
-				if self.moduleSettings.auras[aura].sortByExpiration then
-					buffData[aura][i] = {aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, debuffType}
+				if IceHUD.CanAccessValue(expirationTime) and self.moduleSettings.auras[aura].sortByExpiration then
+					buffData[aura][i] = {aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, aura}
 				else
-					self:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, debuffType)
+					if not IceHUD.CanAccessValue(count) then
+						count = nil
+					end
+					self:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, aura)
 				end
 			else
 				self.frame[auraFrame].iconFrames[i]:Hide()
@@ -1451,13 +1487,13 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 		end
 	end
 
-	if self.moduleSettings.auras[aura].sortByExpiration then
+	if self.moduleSettings.auras[aura].sortByExpiration and #buffData[aura] > 0 then
 		table.sort(buffData[aura], BuffExpirationSort)
 		for k,v in pairs(buffData[aura]) do
 			if v then
 				self:SetupAura(v[1], k, v[3], v[4], v[5], v[6], v[7], v[8], v[9])
 				-- pretty hacky, but hey...whaddya gonna do?
-				self.frame[aura.."Frame"].iconFrames[k].id = v[2]
+				self.frame[auraFrame].iconFrames[k].id = v[2]
 			end
 		end
 	end
@@ -1466,43 +1502,48 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 end
 
 function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, auraType)
-	local hostile = UnitCanAttack("player", self.unit)
 	local zoom = self.moduleSettings.zoom
 	local auraFrame = aura.."Frame"
 
-	-- Rokiyo: Locally buffering to reduce table lookups
-	local size = isFromMe and self.moduleSettings.auras[aura].ownSize or self.moduleSettings.auras[aura].size
 	local frame = self.frame[auraFrame].iconFrames[i]
 	local frameTexture = frame.texture
 	local frameIcon = frame.icon
 
 	if aura == "buff" then
 		frame.isStealable = isStealable
-	elseif aura == "debuff" and (not hostile or not filter or (filter and duration)) then
+	elseif aura == "debuff" then
 		local alpha = icon and 1 or 0
 		frameTexture:SetTexture(1, 1, 1, alpha)
 
-		local color = auraType and DebuffTypeColor[auraType] or DebuffTypeColor["none"]
-		frameTexture:SetVertexColor(color.r, color.g, color.b)
+		if DebuffTypeColor then
+			local color = auraType and DebuffTypeColor[auraType] or DebuffTypeColor["none"]
+			frameTexture:SetVertexColor(color.r, color.g, color.b)
+		end
 	end
 
 	-- cooldown frame
-	if (duration and duration > 0 and expirationTime and expirationTime > 0) then
-		local start = expirationTime - duration
+	if IceHUD.CanAccessValue(duration) then
+		if (duration and duration > 0 and expirationTime and expirationTime > 0) then
+			local start = expirationTime - duration
 
-		CooldownFrame_SetTimer(frame.cd, start, duration, true)
-		frame.cd:Show()
-	else
-		frame.cd:Hide()
+			CooldownFrame_SetTimer(frame.cd, start, duration, true)
+			frame.cd:Show()
+		else
+			frame.cd:Hide()
+		end
 	end
 
-	frame.type = ((auraType == "mh" or auraType == "oh") and auraType) or aura
+	frame.type = auraType
 	frame.fromPlayer = isFromMe
 	frame.id = i
 
 	frameIcon.texture:SetTexture(icon)
 	frameIcon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
-	frameIcon.stack:SetText((count and (count > 1)) and count or nil)
+	if not IceHUD.CanAccessValue(count) then
+		frameIcon.stack:SetText(count or nil)
+	else
+		frameIcon.stack:SetText((count and (count > 1)) and count or nil)
+	end
 
 	frame:Show()
 end
@@ -1630,7 +1671,7 @@ function IceTargetInfo.prototype:TargetLevel(event, unit)
 end
 
 
-function IceTargetInfo.prototype:TargetReaction(unit)
+function IceTargetInfo.prototype:TargetReaction(event, unit)
 	if (unit == self.unit or unit == internal) then
 		self.reaction = UnitReaction(self.unit, "player")
 
@@ -1756,7 +1797,7 @@ function IceTargetInfo.prototype:AllowMouseBuffInteraction(id)
 		return false
 	end
 
-	if self.alpha == 0 then
+	if IceHUD.CanAccessValue(self.alpha) and self.alpha == 0 then
 		return false
 	end
 
@@ -1764,7 +1805,7 @@ function IceTargetInfo.prototype:AllowMouseBuffInteraction(id)
 end
 
 function IceTargetInfo.prototype:BuffOnEnter(this)
-	if not self:AllowMouseBuffInteraction(this.id) then
+	if not self:AllowMouseBuffInteraction(this.id) or not IceHUD.CanAccessSecrets() then
 		return
 	end
 
@@ -1772,7 +1813,7 @@ function IceTargetInfo.prototype:BuffOnEnter(this)
 	if this.type == "buff" then
 		GameTooltip:SetUnitBuff(self.unit, this.id)
 	elseif this.type == "mh" or this.type == "oh" then
-		GameTooltip:SetInventoryItem("player", this.type == "mh" and GetInventorySlotInfo("MainHandSlot") or GetInventorySlotInfo("SecondaryHandSlot"))
+		GameTooltip:SetInventoryItem("player", this.type == "mh" and GetInventorySlotInfo("MAINHANDSLOT") or GetInventorySlotInfo("SECONDARYHANDSLOT"))
 	else
 		GameTooltip:SetUnitDebuff(self.unit, this.id)
 	end

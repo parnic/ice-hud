@@ -18,6 +18,7 @@ if not GetSpellCooldown and C_Spell then
 	GetSpellCooldown = function(spellID)
 		local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID)
 		if spellCooldownInfo then
+			---@diagnostic disable-next-line: redundant-return-value
 			return spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate
 		end
 	end
@@ -52,7 +53,7 @@ function CastBar.prototype:GetDefaultSettings()
 	settings["hideAnimationSettings"] = true
 	settings["usesDogTagStrings"] = false
 	settings["rangeColor"] = true
-	settings["bAllowExpand"] = false
+	settings["bAllowExpand"] = true
 	settings["respectLagTolerance"] = true
 	settings["lockUpperTextAlpha"] = true
 	settings["lockLowerTextAlpha"] = true
@@ -441,7 +442,7 @@ end
 
 function CastBar.prototype:CreateLagBar()
 	if self.lagBar == nil then
-		self.lagBar = self:BarFactory(self.lagBar, "LOW", "OVERLAY", "Lag")
+		self.lagBar = self:BarFactory(self.lagBar, "LOW", "OVERLAY", "Lag", true)
 	end
 
 	local r, g, b = self:GetColor("CastLag")
@@ -449,8 +450,8 @@ function CastBar.prototype:CreateLagBar()
 		r, g, b = self:GetColor("CastCasting")
 	end
 
-	self.lagBar.bar:SetVertexColor(r, g, b, self.moduleSettings.lagAlpha)
-	self.lagBar.bar:Hide()
+	self:SetBarFrameColorRGBA(self.lagBar, r, g, b, self.moduleSettings.lagAlpha)
+	self.lagBar:Hide()
 end
 
 
@@ -481,9 +482,13 @@ function CastBar.prototype:SpellCastStart(event, unit, castGuid, spellId)
 		return
 	end
 
-	self:UpdateLagBar()
-	if IceHUD.GlobalCoolDown then
-		self.nextLagUpdate = GetTime() + (select(2, GetSpellCooldown(IceHUD.GlobalCoolDown:GetSpellId())) / 2)
+	self:UpdateLagBar(false)
+
+	local cd = select(2, GetSpellCooldown(IceHUD.GlobalCoolDown:GetSpellId()))
+	if IceHUD.CanAccessValue(cd) then
+		if IceHUD.GlobalCoolDown then
+			self.nextLagUpdate = GetTime() + (cd / 2)
+		end
 	end
 end
 
@@ -508,9 +513,11 @@ function CastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
 		return
 	end
 
-	self:UpdateLagBar()
-	if IceHUD.GlobalCoolDown then
-		self.nextLagUpdate = GetTime() + (select(2, GetSpellCooldown(IceHUD.GlobalCoolDown:GetSpellId())) / 2)
+	local cd = select(2, GetSpellCooldown(IceHUD.GlobalCoolDown:GetSpellId()))
+	if IceHUD.CanAccessValue(cd) then
+		if IceHUD.GlobalCoolDown then
+			self.nextLagUpdate = GetTime() + (cd / 2)
+		end
 	end
 end
 

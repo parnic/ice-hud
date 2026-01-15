@@ -22,6 +22,12 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
 * /icehud - opens the configuration UI to tweak any setting
 * /icehudCL - command-line access to tweak IceHUD settings (for use with macros, etc.)
 
+## **A Note on WoW Midnight**
+
+The 12.0 patch, for the Midnight expansion, made significant, sweeping changes to how addons work in the game. As a result, many features previously available are no longer allowed by the game. If IceHUD is no longer doing something it used to do, the most likely reason is that it's not possible (or much more difficult) in the new patch. Feel free to create a GitHub issue for any errors you find; it's expected that there will be some errors for a while due to the extent of changes required.
+
+If you have any custom DogTags using `Fractional*:Short`, they will no longer work in Midnight - use something like `[[HP:Short] '/' [MaxHP:Short]]` instead. Many other enemy-HP-or-buff-dependent features, such as Low Threshold flashing or in-combat buff/debuff tracking, are no longer allowed by the game.
+
 ## **Frequently Asked Questions**
 
 1. **How do I hide the default Blizzard player, target unit frames and party unit frames?**
@@ -70,7 +76,7 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
    If you have DogTags enabled, you can open the Text Settings for the module in question and add SeparateDigits() around the tag you're trying to split up. To display Health/MaxHealth with commas, use: [(SeparateDigits(HP):HPColor "/" SeparateDigits(MaxHP):HPColor):Bracket]. To use periods instead of commas, use: [(SeparateDigits(HP, "."):HPColor "/" SeparateDigits(MaxHP, "."):HPColor):Bracket]. Use the /dog help menu to build your own similar tags for Mana, etc.
 
 1. **The countdown timers on buffs and debuffs completely obscure the icon. How do I disable or adjust the text?**
-   IceHUD is not responsible for this countdown text and cannot control it. The 6.0 patch added an option in the game client to display counts on top of cooldowns. Look at the Action Bars menu under the game's Interface options. You can turn the text on or off there. Mods like OmniCC or CooldownCount will generally give you the same feature but allow you to control when, where, and how the text shows up.
+   IceHUD is not responsible for this countdown text, but there is an option on the TargetInfo settings to force-disable the numbers. The 6.0 patch added an option in the game client to display counts on top of cooldowns. Look at the Action Bars menu under the game's Interface options. You can turn the text on or off there. Mods like OmniCC or CooldownCount will generally give you the same feature but allow you to control when, where, and how the text shows up.
 
 1. **When I rotate some modules 90 degrees, such as the castbar, the bar appears to wiggle up and down as it fills or empties. How do I fix this?**
    This is a side effect of the animation API that I'm co-opting to force a rotation without having to provide duplicates of every bar texture in the mod. Any bar moving sufficiently quickly and updating rapidly will cause this. IceHUD is intended to be a vertically-oriented mod, so the rotation feature is there for people who are willing to accept the side effects that come with it. My suggestion is to use one of the many horizontally-oriented bar mods out there if you're wanting horizontal bars. Quartz is a good castbar replacement that you can use and disable IceHUD's built-in castbar, for example.
@@ -84,4 +90,4 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
 1. **Why do buff/debuff timers not work in Classic?**
    The Classic game client doesn't provide this information to addons because it wasn't a feature when the game first released. You can install the LibClassicDurations addon to enable support, but it's a best guess and not completely accurate.
 
-See [here](https://www.wowace.com/projects/ice-hud/issues/113) for a user-created guide to creating new IceHUD textures.
+See [here](https://github.com/parnic/ice-hud/discussions/47) for a user-created guide to creating new IceHUD textures.
