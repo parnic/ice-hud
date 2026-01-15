@@ -24,6 +24,9 @@ local sixComboPointsTalentID = 19240
 
 local CurrMaxSnDDuration = 0
 local PotentialSnDDuration = 0
+local LastValidPotentialSnDDuration = 0
+local CurrSndDuration = 0
+local SnDEndTime
 
 local sndTexture = 132306
 local newSndSpellId = 315496
@@ -107,6 +110,12 @@ function SliceAndDice.prototype:Enable(core)
 		self:RegisterEvent("UNIT_MAXPOWER", "CheckMaxComboPoints")
 	end
 
+	-- in a Secrets world (at least in 12.0), we need to infer the cast time during combat since the normal aura data is hidden
+	if IceHUD.IsSecretEnv() then
+		self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "SpellcastSucceeded")
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateSliceAndDice")
+	end
+
 	if not self.moduleSettings.alwaysFullAlpha then
 		self:Show(false)
 	else
@@ -114,6 +123,23 @@ function SliceAndDice.prototype:Enable(core)
 	end
 
 	self:SetBottomText1("")
+end
+
+function SliceAndDice.prototype:SpellcastSucceeded(event, unit, castGuid, spellId)
+	-- todo: in 11.0+, when casting your spec's main finisher (Assassination: Envenom / Outlaw: Dispatch / Subtlety: Eviscerate) via Cut to the Chase passive (id 51667),
+	-- SnD gets +3 sec / combo point. so we ideally would be watching for
+	-- a) player casts one of the known finishers
+	-- b) player is in combat
+	-- c) player knows 51667
+	-- d) SnD is active (SnDEndTime > GetTime())
+	-- to then determine, using player's last-known number of combo points that are already spent now, how many seconds we just added to SnD
+	-- and add that to SnDEndTime / CurrSndDuration
+	if unit ~= self.unit or spellId ~= newSndSpellId then
+		return
+	end
+
+	SnDEndTime = GetTime() + LastValidPotentialSnDDuration
+	CurrSndDuration = LastValidPotentialSnDDuration
 end
 
 function SliceAndDice.prototype:CheckMaxComboPoints()
@@ -271,14 +297,27 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
+	local t = GetTime()
+
 	if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDuration then
-		local info = C_UnitAuras.GetUnitAuraBySpellID(unitName, buffName) -- todo:midnight: this doesn't work in combat
+		if InCombatLockdown() and SnDEndTime and SnDEndTime > t then
+			return CurrSndDuration, SnDEndTime - t
+		end
+
+		local info = C_UnitAuras.GetUnitAuraBySpellID(unitName, buffName)
 		if not info or not info.auraInstanceID then
 			return nil, nil
 		end
 
-		local duration = C_UnitAuras.GetAuraDuration(unitName, info.auraInstanceID)
-		return duration, nil
+		local auraData = C_UnitAuras.GetAuraDataByAuraInstanceID(unitName, info.auraInstanceID)
+		if auraData == nil or auraData.expirationTime == nil then
+			return nil, nil
+		end
+
+		-- something is causing SnD to be refreshed sometimes, so accept the actual data as gospel whenever we have it available
+		CurrSndDuration = auraData.duration
+		SnDEndTime = auraData.expirationTime
+		return auraData.duration, auraData.expirationTime and (auraData.expirationTime - t) or nil
 	end
 
 	local i = 1
@@ -292,12 +331,12 @@ function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
 	while buff do
 		if (texture and (type(buffName) == 'string' and string.match(texture, buffName) or texture == buffName)) then
 			if endTime and not remaining then
-				remaining = endTime - GetTime()
+				remaining = endTime - t
 			end
 			return duration, remaining
 		end
 
-		i = i + 1;
+		i = i + 1
 
 		if IceHUD.SpellFunctionsReturnRank then
 			buff, _, texture, _, _, duration, endTime = UnitBuff(unitName, i)
@@ -345,27 +384,16 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 		return
 	end
 
-	if C_UnitAuras and C_UnitAuras.GetAuraDuration then
-		sndDuration, _ = self:GetBuffDuration(self.unit, newSndSpellId)
-		self:UpdateBar(sndDuration and 1 or 0, "SliceAndDice")
-		if sndDuration then
-			self:Show(true)
-			self.barFrame:SetTimerDuration(
-				sndDuration,
-				Enum.StatusBarInterpolation.Immediate,
-				self:ShouldReverseFill() and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
-			)
-		end
-
-		return
-	end
-
 	local now = GetTime()
 	local remaining = nil
 	local fromUpdate = event == "internal"
 
-	if not fromUpdate or IceHUD.WowVer < 30000 then
-		sndDuration, remaining = self:GetBuffDuration(self.unit, sndTexture)
+	if not fromUpdate then
+		if C_UnitAuras and C_UnitAuras.GetAuraDuration then
+			sndDuration, remaining = self:GetBuffDuration(self.unit, newSndSpellId)
+		elseif IceHUD.WowVer < 30000 then
+			sndDuration, remaining = self:GetBuffDuration(self.unit, sndTexture)
+		end
 
 		if not remaining then
 			sndEndTime = 0
@@ -447,6 +475,9 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 
 	if self.moduleSettings.durationAlpha > 0 then
 		PotentialSnDDuration = self:GetMaxBuffTime(points)
+		if PotentialSnDDuration ~= 0 then
+			LastValidPotentialSnDDuration = PotentialSnDDuration
+		end
 
 		-- compute the scale from the current number of combo points
 		local scale = IceHUD:Clamp(PotentialSnDDuration / CurrMaxSnDDuration, 0, 1)
@@ -598,6 +629,6 @@ end
 
 local _, unitClass = UnitClass("player")
 -- Load us up
-if unitClass == "ROGUE" and not IceHUD.IsSecretEnv() then
+if unitClass == "ROGUE" then
 	IceHUD.SliceAndDice = SliceAndDice:new()
 end
