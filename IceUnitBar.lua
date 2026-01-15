@@ -11,7 +11,8 @@ IceUnitBar.prototype.healthPercentage = nil
 IceUnitBar.prototype.mana = nil
 IceUnitBar.prototype.maxMana = nil
 IceUnitBar.prototype.manaPercentage = nil
-IceUnitBar.prototype.colorInst = {r = 0, g = 0, b = 0}
+IceUnitBar.prototype.scaledHealthColor = {r = 0, g = 0, b = 0, a = 0}
+IceUnitBar.prototype.scaledManaColor = {r = 0, g = 0, b = 0, a = 0}
 
 IceUnitBar.prototype.unitClass = nil
 IceUnitBar.prototype.hasPet = nil
@@ -36,12 +37,10 @@ function IceUnitBar.prototype:init(name, unit)
 	self:SetDefaultColor("Dead", 0.5, 0.5, 0.5)
 	self:SetDefaultColor("Tapped", 0.8, 0.8, 0.8)
 
-	self:SetDefaultColor("ScaledHealthColor", 0, 1, 0)
 	self:SetDefaultColor("MaxHealthColor", 0, 255, 0)
 	self:SetDefaultColor("MidHealthColor", 255, 255, 0)
 	self:SetDefaultColor("MinHealthColor", 255, 0, 0)
 
-	self:SetDefaultColor("ScaledManaColor", 0, 0, 1)
 	self:SetDefaultColor("MaxManaColor", 0, 0, 255)
 	self:SetDefaultColor("MidManaColor", 125, 0, 255)
 	self:SetDefaultColor("MinManaColor", 255, 0, 255)
@@ -331,52 +330,44 @@ function IceUnitBar.prototype:Update()
 		local r = UnitHealthPercent(self.unit, true, self.hpColorCurveR)
 		local g = UnitHealthPercent(self.unit, true, self.hpColorCurveG)
 		local b = UnitHealthPercent(self.unit, true, self.hpColorCurveB)
-		self.settings.colors["ScaledHealthColor"].r = r
-		self.settings.colors["ScaledHealthColor"].g = g
-		self.settings.colors["ScaledHealthColor"].b = b
+		self.scaledHealthColor.r = r
+		self.scaledHealthColor.g = g
+		self.scaledHealthColor.b = b
 	else
 		if self.healthPercentage > 0.5 then
-			self:SetScaledColor(self.colorInst, self.healthPercentage * 2 - 1, self.settings.colors["MaxHealthColor"], self.settings.colors["MidHealthColor"])
+			self:SetScaledColor(self.scaledHealthColor, self.healthPercentage * 2 - 1, self.settings.colors["MaxHealthColor"], self.settings.colors["MidHealthColor"])
 		else
-			self:SetScaledColor(self.colorInst, self.healthPercentage * 2, self.settings.colors["MidHealthColor"], self.settings.colors["MinHealthColor"])
+			self:SetScaledColor(self.scaledHealthColor, self.healthPercentage * 2, self.settings.colors["MidHealthColor"], self.settings.colors["MinHealthColor"])
 		end
-
-		self.settings.colors["ScaledHealthColor"].r = self.colorInst.r
-		self.settings.colors["ScaledHealthColor"].g = self.colorInst.g
-		self.settings.colors["ScaledHealthColor"].b = self.colorInst.b
 	end
 
 	if self.mpColorCurveR then
 		local r = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.mpColorCurveR)
 		local g = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.mpColorCurveG)
 		local b = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.mpColorCurveB)
-		self.settings.colors["ScaledManaColor"].r = r
-		self.settings.colors["ScaledManaColor"].g = g
-		self.settings.colors["ScaledManaColor"].b = b
+		self.scaledManaColor.r = r
+		self.scaledManaColor.g = g
+		self.scaledManaColor.b = b
 	else
 		if self.manaPercentage > 0.5 then
-			self:SetScaledColor(self.colorInst, self.manaPercentage * 2 - 1, self.settings.colors["MaxManaColor"], self.settings.colors["MidManaColor"])
+			self:SetScaledColor(self.scaledManaColor, self.manaPercentage * 2 - 1, self.settings.colors["MaxManaColor"], self.settings.colors["MidManaColor"])
 		else
-			self:SetScaledColor(self.colorInst, self.manaPercentage * 2, self.settings.colors["MidManaColor"], self.settings.colors["MinManaColor"])
+			self:SetScaledColor(self.scaledManaColor, self.manaPercentage * 2, self.settings.colors["MidManaColor"], self.settings.colors["MinManaColor"])
 		end
-
-		self.settings.colors["ScaledManaColor"].r = self.colorInst.r
-		self.settings.colors["ScaledManaColor"].g = self.colorInst.g
-		self.settings.colors["ScaledManaColor"].b = self.colorInst.b
 	end
 
 	-- This looks slightly quirky. Basically the easiest way for me to achieve this is to have lowThresholdColor override
 	-- the scaled color. You'll need to switch them both on to get things to work.
 	if self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.healthPercentage) and IceHUD.CanAccessValue(self.manaPercentage) then
 		if( self.healthPercentage <= self.moduleSettings.lowThreshold ) then
-			self.settings.colors[ "ScaledHealthColor" ] = self.settings.colors[ "MinHealthColor" ]
+			self.scaledHealthColor.r, self.scaledHealthColor.g, self.scaledHealthColor.b = self.settings.colors[ "MinHealthColor" ].r, self.settings.colors[ "MinHealthColor" ].g, self.settings.colors[ "MinHealthColor" ].b
 		elseif not self.moduleSettings.scaleHealthColor then
-			self.settings.colors[ "ScaledHealthColor" ] = self.settings.colors[ "MaxHealthColor" ]
+			self.scaledHealthColor.r, self.scaledHealthColor.g, self.scaledHealthColor.b = self.settings.colors[ "MaxHealthColor" ].r, self.settings.colors[ "MaxHealthColor" ].g, self.settings.colors[ "MaxHealthColor" ].b
 		end
 		if( self.manaPercentage <= self.moduleSettings.lowThreshold ) then
-			self.settings.colors[ "ScaledManaColor" ] = self.settings.colors[ "MinManaColor" ]
+			self.scaledManaColor.r, self.scaledManaColor.g, self.scaledManaColor.b = self.settings.colors[ "MinManaColor" ].r, self.settings.colors[ "MinManaColor" ].g, self.settings.colors[ "MinManaColor" ].b
 		elseif not self.moduleSettings.scaleManaColor then
-			self.settings.colors[ "ScaledManaColor" ] = self.settings.colors[ "MaxManaColor" ]
+			self.scaledManaColor.r, self.scaledManaColor.g, self.scaledManaColor.b = self.settings.colors[ "MaxManaColor" ].r, self.settings.colors[ "MaxManaColor" ].g, self.settings.colors[ "MaxManaColor" ].b
 		end
 	end
 end
@@ -447,3 +438,12 @@ function IceUnitBar.prototype:SetScaleColorEnabled(enabled)
 end
 
 
+function IceUnitBar.prototype:GetColor(color, alpha)
+	if color == "ScaledHealthColor" then
+		return self.scaledHealthColor.r, self.scaledHealthColor.g, self.scaledHealthColor.b, alpha or self.alpha
+	elseif color == "ScaledManaColor" then
+		return self.scaledManaColor.r, self.scaledManaColor.g, self.scaledManaColor.b, alpha or self.alpha
+	end
+
+	return IceUnitBar.super.prototype.GetColor(self, color, alpha)
+end
