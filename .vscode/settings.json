@@ -159,7 +159,16 @@
         "WOW_PROJECT_ID",
         "WOW_PROJECT_MAINLINE",
         "WOW_PROJECT_MISTS_CLASSIC",
-        "YES"
+        "YES",
+        "GetSpellInfo",
+        "UnitBuff",
+        "UnitDebuff",
+        "IsAddOnLoaded",
+        "LoadAddOn",
+        "UnitAura",
+        "GetSpellCharges",
+        "GetSpellCount",
+        "IsUsableSpell"
     ],
     "Lua.runtime.version": "Lua 5.1",
     "Lua.runtime.builtin": {

@@ -307,7 +307,9 @@ function IceCore.prototype:Enable(userToggle)
 	end
 	self.IceHUDFrame:RegisterEvent("UNIT_AURA")
 	self.IceHUDFrame:RegisterEvent("UNIT_ENTERED_VEHICLE")
+	---@diagnostic disable-next-line: redundant-parameter
 	self.IceHUDFrame:RegisterEvent("PLAYER_REGEN_ENABLED", IceHUD.PLAYER_REGEN_ENABLED)
+	---@diagnostic disable-next-line: redundant-parameter
 	self.IceHUDFrame:RegisterEvent("PLAYER_REGEN_DISABLED", IceHUD.PLAYER_REGEN_DISABLED)
 	self.IceHUDFrame:SetScript("OnEvent", function(self, event, ...)
 		if (event == "PET_BATTLE_OPENING_START") then

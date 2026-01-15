@@ -422,16 +422,18 @@ function Runes.prototype:GetNumRunesAvailable()
 end
 
 function Runes.prototype:ShineFinished(rune)
-	UIFrameFadeOut(self.frame.graphical[rune].shine, 0.5);
+	UIFrameFadeOut(self.frame.graphical[rune].shine, 0.5, 1, 0);
 end
 
 function Runes.prototype:UpdateRuneType(event, rune)
+	---@diagnostic disable-next-line: redundant-parameter - earlier versions of the game had mixed rune types
 	IceHUD:Debug("Runes.prototype:UpdateRuneType: rune="..rune.." GetRuneType(rune)="..GetRuneType(rune));
 
 	if not rune or tonumber(rune) ~= rune or rune < 1 or rune > self.numRunes then
 		return
 	end
 
+	---@diagnostic disable-next-line: redundant-parameter - earlier versions of the game had mixed rune types
 	local thisRuneName = self.runeNames[GetRuneType(rune)]
 
 	-- i have no idea how this could happen but it's been reported, so...
@@ -508,6 +510,7 @@ function Runes.prototype:CreateRuneFrame()
 
 	local runeType
 	for i=1, self.numRunes do
+		---@diagnostic disable-next-line: redundant-parameter - earlier versions of the game had mixed rune types
 		runeType = GetRuneType(i)
 
 		-- Parnic debug stuff for arena rune problem
@@ -602,6 +605,7 @@ local function hook_playerframe()
 			IceHUD.Runes:HideBlizz()
 		end
 	end)
+	---@diagnostic disable-next-line: cast-local-type
 	hook_playerframe = nil
 end
 

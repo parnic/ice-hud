@@ -158,16 +158,19 @@ IceHUD.validBarList = {
 }
 IceHUD.validCustomModules = {Bar="Buff/Debuff watcher", Counter="Buff/Debuff stack counter", CD="Cooldown bar", Health="Health bar", Mana="Mana bar", CounterBar="Stack count bar"}
 
+---@diagnostic disable-next-line: deprecated
 IceHUD.IsPlayerSpell = IsPlayerSpell
 if not IceHUD.IsPlayerSpell and C_SpellBook then
 	IceHUD.IsPlayerSpell = C_SpellBook.IsSpellKnown
 end
 
+---@diagnostic disable-next-line: deprecated
 IceHUD.IsSpellKnown = IsSpellKnown
 if not IceHUD.IsSpellKnown and C_SpellBook then
 	IceHUD.IsSpellKnown = C_SpellBook.IsSpellInSpellBook
 end
 
+---@diagnostic disable-next-line: deprecated
 IceHUD.SendChatMessage = SendChatMessage
 if not IceHUD.SendChatMessage and C_ChatInfo then
 	IceHUD.SendChatMessage = C_ChatInfo.SendChatMessage
@@ -531,7 +534,9 @@ function IceHUD:InitLDB()
 
 		if ldbButton then
 			function ldbButton:OnTooltipShow()
+				---@diagnostic disable-next-line: undefined-field
 				self:AddLine(L["IceHUD"] .. " @project-version@")
+				---@diagnostic disable-next-line: undefined-field
 				self:AddLine(L["Click to open IceHUD options."], 1, 1, 1)
 			end
 		end
@@ -653,7 +658,7 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 	else
 		name, texture, applications = IceHUD.UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
 	end
-	while name do
+	while name and texture do
 		if (not matchByName and string.match(texture:upper(), ability:upper()))
 			or (matchByName and string.match(name:upper(), ability:upper())) then
 			return applications, i

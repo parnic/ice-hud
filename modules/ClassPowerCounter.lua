@@ -723,7 +723,7 @@ function IceClassPowerCounter.prototype:StopRunesFullAnimation()
 end
 
 function IceClassPowerCounter.prototype:ShineFinished(rune)
-	UIFrameFadeOut(self.frame.graphical[rune].shine, self.runeShineFadeSpeed);
+	UIFrameFadeOut(self.frame.graphical[rune].shine, self.runeShineFadeSpeed, 1, 0);
 end
 
 function IceClassPowerCounter.prototype:GetRuneTexture(rune)

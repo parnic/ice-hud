@@ -40,6 +40,7 @@ local CalculatedSnDEndTime = 0
 local sndTexture = 132306
 local newSndSpellId = 315496
 if IceHUD.WowMain and IceHUD.WowVer < 80000 then
+	---@diagnostic disable-next-line: cast-local-type
 	sndTexture = "Ability_Rogue_SliceDice"
 end
 
@@ -418,6 +419,7 @@ local function SNDGetComboPoints(unit)
 	elseif IceHUD.WowVer >= 60000 then
 		return UnitPower(unit, SPELL_POWER_COMBO_POINTS)
 	else
+		---@diagnostic disable-next-line: missing-parameter - the Classic version of this function accepts no arguments
 		return GetComboPoints()
 	end
 end
@@ -427,7 +429,7 @@ local function ShouldHide()
 		return false
 	end
 
-	return --[[(IceHUD.WowVer < 70000 or not IsSpellKnown(193316)) and]] not IsPlayerSpell(5171) -- IsSpellKnown returns incorrect info for SnD in 7.0
+	return --[[(IceHUD.WowVer < 70000 or not IsSpellKnown(193316)) and]] not IceHUD.IsPlayerSpell(5171) -- IsSpellKnown returns incorrect info for SnD in 7.0
 	-- commented code is here in case we decide we'd like to use this module for Roll the Bones.
 	-- if we do, though, the "active" check gets way more complicated since it can activate any number of 6 different abilities
 	-- with different durations
@@ -579,6 +581,7 @@ function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints, withCutToTheChase
 		local rank = 0
 		if GetTalentInfo then
 			local _
+			---@diagnostic disable-next-line: cast-local-type - in WoW < 5.0, argument 5 is rank which is a number
 			_, _, _, _, rank = GetTalentInfo(impSndTalentPage, impSndTalentIdx)
 		end
 

@@ -46,11 +46,13 @@ if not GetSpellCooldown and C_Spell then
 	GetSpellCooldown = function(spellID)
 		local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID)
 		if spellCooldownInfo then
+			---@diagnostic disable-next-line: redundant-return-value
 			return spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate
 		end
 	end
 end
 
+---@diagnostic disable-next-line: deprecated
 local GetItemInfo = GetItemInfo
 if not GetItemInfo and C_Item then
 	GetItemInfo = C_Item.GetItemInfo

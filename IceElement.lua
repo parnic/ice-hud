@@ -349,6 +349,7 @@ end
 
 function IceElement.prototype:GetClassColor(class)
 	if type(class) == "table" then
+		---@diagnostic disable-next-line: unbalanced-assignments
 		local r,g,b = class
 		if r and g and b then
 			return r, g, b

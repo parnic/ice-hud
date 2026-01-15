@@ -30,9 +30,16 @@ if not UnitGroupRolesAssigned then
 	end
 end
 
+---@diagnostic disable-next-line: deprecated
 local GetItemInfo = GetItemInfo
 if not GetItemInfo and C_Item then
 	GetItemInfo = C_Item.GetItemInfo
+end
+
+---@diagnostic disable-next-line: deprecated
+local IsItemInRange = IsItemInRange
+if C_Item and C_Item.IsItemInRange then
+	IsItemInRange = C_Item.IsItemInRange
 end
 
 local MAX_NUM_RAID_MEMBERS = 40
