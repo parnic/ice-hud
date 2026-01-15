@@ -1759,7 +1759,9 @@ function IceBarElement.prototype:ResetRotation()
 	if self.frame.anim then
 		self.frame.anim:Stop()
 	end
+	---@diagnostic disable-next-line: undefined-field
 	if self.frame.bg.anim then
+		---@diagnostic disable-next-line: undefined-field
 		self.frame.bg.anim:Stop()
 	end
 	if self.barFrame.anim then
