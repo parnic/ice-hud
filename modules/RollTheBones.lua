@@ -270,7 +270,7 @@ end
 function RollTheBones.prototype:GetBuffDuration(unitName, ids)
   if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDuration then
     for i=1,#RtBBuffs do
-      local data = C_UnitAuras.GetUnitAuraBySpellID(unitName, RtBBuffs[i]) -- todo:midnight: this doesn't work in combat
+      local data = C_UnitAuras.GetUnitAuraBySpellID(unitName, RtBBuffs[i])
       if data then
         local duration = C_UnitAuras.GetAuraDuration(unitName, data.auraInstanceID)
         if duration then
@@ -539,6 +539,8 @@ end
 
 local _, unitClass = UnitClass("player")
 -- Load us up
-if unitClass == "ROGUE" and IceHUD.WowVer >= 70000 and not IceHUD.IsSecretEnv() then
+-- 12.0 note: RtB now provides a flat 30 second benefit on a 45 second cooldown, so there's no more
+-- micro-managing to worry about, so the module feels pretty useless now.
+if unitClass == "ROGUE" and IceHUD.WowVer >= 70000 and IceHUD.WowVer < 120000 then
   IceHUD.RollTheBones = RollTheBones:new()
 end
