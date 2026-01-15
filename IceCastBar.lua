@@ -703,7 +703,7 @@ function IceCastBar.prototype:SpellCastStop(event, unit, castGuid, spellId, cast
 		return
 	end
 	-- fall back to pre-Midnight guid check
-	if IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and castGuid and self.current ~= castGuid then
+	if not castBarId and IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and castGuid and self.current ~= castGuid then
 		return
 	end
 
@@ -728,7 +728,7 @@ function IceCastBar.prototype:SpellCastFailed(event, unit, castGuid, spellId, ca
 		return
 	end
 	-- fall back to pre-Midnight guid check
-	if IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and castGuid and self.current ~= castGuid then
+	if not castBarId and IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and castGuid and self.current ~= castGuid then
 		return
 	end
 
@@ -760,7 +760,7 @@ function IceCastBar.prototype:SpellCastInterrupted(event, unit, castGuid, spellI
 		return
 	end
 	-- fall back to pre-Midnight guid check
-	if IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and castGuid and self.current ~= castGuid then
+	if not castBarId and IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and castGuid and self.current ~= castGuid then
 		return
 	end
 
@@ -801,7 +801,7 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId,
 		return
 	end
 	-- fall back to pre-Midnight guid check
-	if IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and self.current ~= castGuid then
+	if not castBarId and IceHUD.CanAccessValue(self.current) and IceHUD.CanAccessValue(castGuid) and self.current and castGuid and self.current ~= castGuid then
 		return
 	end
 
