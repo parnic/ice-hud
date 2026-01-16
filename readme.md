@@ -6,6 +6,8 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
 
 * Player and target health and mana bars, casting and mirror bars, pet health and mana bars, druid mana bar in forms, extensive target info, ToT display, and much more, in a vertically-oriented heads-up display.
 
+![preview](https://media.forgecdn.net/attachments/108/762/icehud_clean_priest.jpg)
+
 ## **Short feature list**
 
 * Lots of different bar shapes and patterns to make the HUD look like you want
