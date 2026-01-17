@@ -1,5 +1,9 @@
 # Changelog
 
+v1.16.1:
+
+- Add option for combo points to grow in reverse (right->left or bottom->top) by request.
+
 v1.16.0:
 
 - Add initial compatibility with WoW 12.x / Midnight. Please see readme/in-game FAQ page for details about this significant change.

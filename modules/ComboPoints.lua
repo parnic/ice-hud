@@ -166,6 +166,24 @@ function ComboPoints.prototype:GetOptions()
 		order = 33.1
 	}
 
+	opts["reverse"] =
+	{
+		type = 'toggle',
+		name = L["Reverse direction"],
+		desc = L["How combo points should grow. If layout is Horizontal, reversing will cause them to grow right to left. If layout is Vertical, reversing will cause them to grow bottom to top."],
+		get = function()
+			return self.moduleSettings.reverse
+		end,
+		set = function(info, value)
+			self.moduleSettings.reverse = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or self.moduleSettings.comboMode == "Numeric"
+		end,
+		order = 33.11
+	}
+
 	opts["comboGap"] = {
 		type = 'range',
 		name = L["Combo gap"],
@@ -458,7 +476,8 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 
 		local r, g, b = self:GetColor("ComboPoints")
 		if (self.moduleSettings.gradient) then
-			g = g - ((1 / maxComboPoints)*i)
+			local effectivei = self.moduleSettings.reverse and maxComboPoints - i + 1 or i
+			g = g - ((1 / maxComboPoints)*effectivei)
 		end
 
 		if self.moduleSettings.bShowCharged and self:IsChargedPoint(i) then
@@ -581,26 +600,28 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 	else
 		self.frame.numeric:SetText()
 
-		for i = 1, self:GetMaxComboPoints() do
+		local maxComboPoints = self:GetMaxComboPoints()
+		for i = 1, maxComboPoints do
 			local hideIfNoTarget = not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget
+			local effectivei = self.moduleSettings.reverse and maxComboPoints - i + 1 or i
 
 			if ((points > 0) or (anticipate > 0)) and not hideIfNoTarget then
-				self.frame.graphicalBG[i]:Show()
+				self.frame.graphicalBG[effectivei]:Show()
 			else
-				self.frame.graphicalBG[i]:Hide()
+				self.frame.graphicalBG[effectivei]:Hide()
 			end
 
 			if (i <= points) and not hideIfNoTarget then
-				self.frame.graphical[i]:Show()
+				self.frame.graphical[effectivei]:Show()
 			else
-				self.frame.graphical[i]:Hide()
+				self.frame.graphical[effectivei]:Hide()
 			end
 
 			if i <= #self.frame.graphicalAnt then
 				if (i <= anticipate) and not hideIfNoTarget then
-					self.frame.graphicalAnt[i]:Show()
+					self.frame.graphicalAnt[effectivei]:Show()
 				else
-					self.frame.graphicalAnt[i]:Hide()
+					self.frame.graphicalAnt[effectivei]:Hide()
 				end
 			end
 		end
