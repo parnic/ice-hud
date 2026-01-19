@@ -784,7 +784,9 @@ function IceCastBar.prototype:SpellCastDelayed(event, unit, castGuid, spellId)
 
 	local endTime = select(IceHUD.SpellFunctionsReturnRank and 6 or 5, UnitCastingInfo(self.unit))
 	-- apparently this check is needed, got nils during a horrible lag spike
-	self.actionDuration = endTime/1000 - self.actionStartTime
+	if endTime and self.actionStartTime then
+		self.actionDuration = endTime/1000 - self.actionStartTime
+	end
 end
 
 
