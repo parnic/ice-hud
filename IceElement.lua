@@ -241,15 +241,6 @@ end
 function IceElement.prototype:CreateFrame()
 	if not (self.frame) then
 		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.masterFrame)
-		self.moveHint = CreateFrame("Frame", "IceHUD_"..self.elementName.."_move", self.frame)
-
-		self.moveHint:SetAllPoints(self.frame)
-		self.moveHint.texture = self.moveHint:CreateTexture(nil, "ARTWORK")
-		self.moveHint.texture:SetAllPoints(self.moveHint)
-		self.moveHint.texture:SetTexture("Interface/Tooltips/UI-Tooltip-Background")
-		self.moveHint.texture:SetBlendMode("ADD")
-		self.moveHint.texture:SetVertexColor(0.2, 0.8, 0.2, 0.75)
-		self.moveHint:Hide()
 	end
 	self.masterFrame:SetAllPoints(self.frame)
 
@@ -313,7 +304,7 @@ function IceElement.prototype:AddDragMoveOption(opts, order)
 end
 
 function IceElement.prototype:IsInConfigMode()
-	return IceHUD.IceCore:IsInConfigMode() or self.moveHint:IsVisible()
+	return IceHUD.IceCore:IsInConfigMode() or (self.moveHint and self.moveHint:IsVisible())
 end
 
 function IceElement.prototype:MoveHintMouseDown()
@@ -411,8 +402,8 @@ function IceElement.prototype:ToggleMoveHint()
 		self.moveHint:Hide()
 		self:Redraw()
 	else
-		self:Redraw()
 		self.moveHint:Show()
+		self:Redraw()
 	end
 
 	return not wasVisible

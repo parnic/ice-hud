@@ -68,12 +68,14 @@ function ComboPoints.prototype:GetOptions()
 		order = 29.9
 	}
 
+	self:AddDragMoveOption(opts, 29.91)
+
 	opts["vpos"] = {
 		type = "range",
 		name = L["Vertical Position"],
 		desc = L["Vertical Position"],
 		get = function()
-			return self.moduleSettings.vpos
+			return IceHUD:MathRound(self.moduleSettings.vpos)
 		end,
 		set = function(info, v)
 			self.moduleSettings.vpos = v
@@ -93,7 +95,7 @@ function ComboPoints.prototype:GetOptions()
 		name = L["Horizontal Position"],
 		desc = L["Horizontal Position"],
 		get = function()
-			return self.moduleSettings.hpos
+			return IceHUD:MathRound(self.moduleSettings.hpos)
 		end,
 		set = function(info, v)
 			self.moduleSettings.hpos = v
@@ -379,10 +381,10 @@ function ComboPoints.prototype:CreateFrame()
 	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	if self.moduleSettings.graphicalLayout == "Horizontal" then
 		self.frame:SetWidth((self.comboSize - 5)*self:GetMaxComboPoints())
-		self.frame:SetHeight(1)
+		self.frame:SetHeight(28)
 	else
-		self.frame:SetWidth(1)
-		self.frame:SetHeight(self.comboSize*self:GetMaxComboPoints())
+		self.frame:SetWidth(28)
+		self.frame:SetHeight((self.comboSize - 5)*self:GetMaxComboPoints())
 	end
 	self.frame:ClearAllPoints()
 	self:SetFramePosition()
@@ -543,13 +545,17 @@ function ComboPoints.prototype:IsChargedPoint(point)
 	return false
 end
 
+function ComboPoints.prototype:ShouldShowWithNoTarget()
+	return self.moduleSettings.bShowWithNoTarget or self:IsInConfigMode()
+end
+
 function ComboPoints.prototype:UpdateComboPoints(...)
 	if select('#', ...) >= 3 and select(1, ...) == IceHUD.UnitPowerEvent and select(3, ...) ~= "COMBO_POINTS" then
 		return
 	end
 
 	local points, anticipate
-	if IceHUD.IceCore:IsInConfigMode() then
+	if self:IsInConfigMode() then
 		points = self:GetMaxComboPoints()
 	elseif UnitHasVehicleUI then
 		-- Parnic: apparently some fights have combo points while the player is in a vehicle?
@@ -592,7 +598,7 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 			pointsText = pointsText.."+"..tostring(anticipate)
 		end
 
-		if (points == 0 and anticipate == 0) or (not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget) then
+		if (points == 0 and anticipate == 0) or (not UnitExists("target") and not self:ShouldShowWithNoTarget()) then
 			self.frame.numeric:SetText(nil)
 		else
 			self.frame.numeric:SetText(pointsText)
@@ -602,7 +608,7 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 
 		local maxComboPoints = self:GetMaxComboPoints()
 		for i = 1, maxComboPoints do
-			local hideIfNoTarget = not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget
+			local hideIfNoTarget = not UnitExists("target") and not self:ShouldShowWithNoTarget()
 			local effectivei = self.moduleSettings.reverse and maxComboPoints - i + 1 or i
 
 			if ((points > 0) or (anticipate > 0)) and not hideIfNoTarget then
