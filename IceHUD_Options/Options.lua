@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field
 local LibDualSpec = LibStub('LibDualSpec-1.0', true)
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local icon = LibStub("LibDBIcon-1.0", true)
@@ -125,7 +126,7 @@ The Classic game client doesn't provide this information to addons because it wa
 				hpos = {
 					type = 'range',
 					name = L["Horizontal position"],
-					desc = L["Horizontal position (for you dual screen freaks)"],
+					desc = L["Horizontal position"],
 					get = function()
 						return IceHUD.IceCore:GetHorizontalPos()
 					end,
