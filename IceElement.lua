@@ -385,7 +385,10 @@ function IceElement.prototype:MoveHintEnter()
 end
 
 function IceElement.prototype:MoveHintGetTooltip()
-	return L["|cff9999ffLeft click|r and drag to move. Hold |cff9999ffShift|r to lock vertical position, hold |cff9999ffControl|r to lock horizontal position.\n\n|cff9999ffMiddle click|r to reset to previous position.\n\n|cff9999ffRight click|r to lock in place."]
+	if not self.moveHintTooltip then
+		self.moveHintTooltip = "|cffffffff"..self.elementName.."|r\n"..L["|cff9999ffLeft click|r and drag to move. Hold |cff9999ffShift|r to lock vertical position, hold |cff9999ffControl|r to lock horizontal position.\n\n|cff9999ffMiddle click|r to reset to previous position.\n\n|cff9999ffRight click|r to lock in place."]
+	end
+	return self.moveHintTooltip
 end
 
 function IceElement.prototype:MoveHintLeave()
