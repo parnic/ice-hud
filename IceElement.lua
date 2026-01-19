@@ -411,29 +411,28 @@ end
 
 
 function IceElement.prototype:UpdateAlpha()
-	if self.moduleSettings.alwaysFullAlpha then
+	if self:IsInConfigMode() or self.moduleSettings.alwaysFullAlpha then
 		self.alpha = 1
-		self.frame:SetAlpha(1)
-		return
-	end
-
-	self.alpha = self.settings.alphaooc
-	if (self.combat) then
-		self.alpha = self.settings.alphaic
-		self.backgroundAlpha = self.settings.alphaicbg
-	elseif (self.target and not self:AlphaPassThroughTarget()) then
-		self.alpha = self.settings.alphaTarget
-		self.backgroundAlpha = self.settings.alphaTargetbg
-	elseif (self:UseTargetAlpha(self.CurrScale)) then
-		self.alpha = self.settings.alphaNotFull
-		self.backgroundAlpha = self.settings.alphaNotFullbg
+		self.backgroundAlpha = 1
 	else
 		self.alpha = self.settings.alphaooc
-		self.backgroundAlpha = self.settings.alphaoocbg
-	end
+		if (self.combat) then
+			self.alpha = self.settings.alphaic
+			self.backgroundAlpha = self.settings.alphaicbg
+		elseif (self.target and not self:AlphaPassThroughTarget()) then
+			self.alpha = self.settings.alphaTarget
+			self.backgroundAlpha = self.settings.alphaTargetbg
+		elseif (self:UseTargetAlpha(self.CurrScale)) then
+			self.alpha = self.settings.alphaNotFull
+			self.backgroundAlpha = self.settings.alphaNotFullbg
+		else
+			self.alpha = self.settings.alphaooc
+			self.backgroundAlpha = self.settings.alphaoocbg
+		end
 
-	if IceHUD.CanAccessValue(self.alpha) and self.alpha ~= 0 then
-		self.alpha = math.min(1, self.alpha + self:GetAlphaAdd())
+		if IceHUD.CanAccessValue(self.alpha) and self.alpha ~= 0 then
+			self.alpha = math.min(1, self.alpha + self:GetAlphaAdd())
+		end
 	end
 
 	self.frame:SetAlpha(self.alpha)
