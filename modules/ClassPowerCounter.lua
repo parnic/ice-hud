@@ -60,12 +60,14 @@ end
 function IceClassPowerCounter.prototype:GetOptions()
 	local opts = IceClassPowerCounter.super.prototype.GetOptions(self)
 
+	self:AddDragMoveOption(opts, 30.91)
+
 	opts["vpos"] = {
 		type = "range",
 		name = L["Vertical Position"],
 		desc = L["Vertical Position"],
 		get = function()
-			return self.moduleSettings.vpos
+			return IceHUD:MathRound(self.moduleSettings.vpos)
 		end,
 		set = function(info, v)
 			self.moduleSettings.vpos = v
@@ -85,7 +87,7 @@ function IceClassPowerCounter.prototype:GetOptions()
 		name = L["Horizontal Position"],
 		desc = L["Horizontal Position"],
 		get = function()
-			return self.moduleSettings.hpos
+			return IceHUD:MathRound(self.moduleSettings.hpos)
 		end,
 		set = function(info, v)
 			self.moduleSettings.hpos = v
@@ -427,6 +429,7 @@ function IceClassPowerCounter.prototype:Redraw()
 
 	self:CreateFrame()
 	self:UpdateRunePower()
+	self:CheckValidLevel(nil, UnitLevel("player"))
 end
 
 function IceClassPowerCounter.prototype:GetCustomColor()
@@ -451,6 +454,11 @@ function IceClassPowerCounter.prototype:Enable(core)
 end
 
 function IceClassPowerCounter.prototype:CheckValidLevel(event, level)
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
+
 	if not level then
 		if event == "PLAYER_TALENT_UPDATE" then
 			level = UnitLevel("player")
@@ -468,6 +476,11 @@ function IceClassPowerCounter.prototype:CheckValidLevel(event, level)
 end
 
 function IceClassPowerCounter.prototype:CheckValidSpec()
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
+
 	if self.requiredSpec == nil then
 		self:DisplayCounter()
 		self:Show(true)
@@ -756,6 +769,8 @@ end
 
 function IceClassPowerCounter.prototype:CreateFrame()
 	IceClassPowerCounter.super.prototype.CreateFrame(self)
+
+	self:CreateMoveHintFrame()
 
 	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("LOW"))
 	self.frame:SetHeight(self.runeHeight)

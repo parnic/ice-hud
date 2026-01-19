@@ -161,7 +161,18 @@ function DragonridingVigor.prototype:EnteringWorld()
 	self:CheckShouldShow("PLAYER_ENTERING_WORLD", "player")
 end
 
+function DragonridingVigor.prototype:Redraw()
+	DragonridingVigor.super.prototype.Redraw(self)
+
+	self:CheckShouldShow()
+end
+
 function DragonridingVigor.prototype:CheckShouldShow(event, unit, info)
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
+
 	if unit and unit ~= "player" then
 		return
 	end
