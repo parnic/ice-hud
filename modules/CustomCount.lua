@@ -335,7 +335,7 @@ function IceCustomCount.prototype:CreateFrame()
 		self.frame:SetHeight((self.countSize + self.moduleSettings.countGap)*IceStackCounter_GetMaxCount(self))
 	end
 	self.frame:ClearAllPoints()
-	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
+	self:SetFramePosition()
 
 	self:Show(true)
 

@@ -1112,6 +1112,12 @@ function IceBarElement.prototype:CreateBackground()
 
 	self.frame.bg:SetVertexColor(self:GetColor("undef", self.settings.alphabg))
 
+	self.frame:ClearAllPoints()
+	self:SetFramePosition()
+end
+
+
+function IceBarElement.prototype:SetFramePosition()
 	local ownPoint = "LEFT"
 	if self.moduleSettings.side == ownPoint then
 		ownPoint = "RIGHT"
@@ -1125,7 +1131,6 @@ function IceBarElement.prototype:CreateBackground()
 	end
 	offx = offx + (self.moduleSettings.barHorizontalOffset or 0)
 
-	self.frame:ClearAllPoints()
 	self.frame:SetPoint("BOTTOM"..ownPoint, self.parent, "BOTTOM"..self.moduleSettings.side, offx, self.moduleSettings.barVerticalOffset)
 end
 

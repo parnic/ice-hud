@@ -335,7 +335,7 @@ function TargetOfTarget.prototype:CreateFrame()
 		self.frame:SetWidth(self.moduleSettings.totWidth)
 	end
 	self.frame:SetHeight(self.moduleSettings.moduleHeight)
-	self.frame:SetPoint("TOP", self.parent, "TOP", self.moduleSettings.hpos, self.moduleSettings.vpos)
+	self:SetFramePosition()
 	self.frame:SetScale(self.moduleSettings.scale)
 
 
@@ -369,6 +369,11 @@ function TargetOfTarget.prototype:CreateFrame()
 	self:CreateToTFrame()
 	self:CreateToTHPFrame()
 	self:CreateDebuffFrame()
+end
+
+
+function TargetOfTarget.prototype:SetFramePosition()
+	self.frame:SetPoint("TOP", self.parent, "TOP", self.moduleSettings.hpos, self.moduleSettings.vpos)
 end
 
 

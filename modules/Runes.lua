@@ -481,7 +481,7 @@ function Runes.prototype:CreateFrame()
 	self.frame:SetWidth(self.runeSize*self.numRunes)
 	self.frame:SetHeight(1)
 	self.frame:ClearAllPoints()
-	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
+	self:SetFramePosition()
 
 	self:CreateRuneFrame()
 end

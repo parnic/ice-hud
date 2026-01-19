@@ -385,7 +385,7 @@ function ComboPoints.prototype:CreateFrame()
 		self.frame:SetHeight(self.comboSize*self:GetMaxComboPoints())
 	end
 	self.frame:ClearAllPoints()
-	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
+	self:SetFramePosition()
 
 	self:Show(true)
 

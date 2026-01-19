@@ -131,7 +131,7 @@ function RangeCheck.prototype:CreateFrame(redraw)
 	self.frame:SetWidth(200)
 	self.frame:SetHeight(32)
 	self.frame:ClearAllPoints()
-	self.frame:SetPoint("TOP", self.parent, "TOP", self.moduleSettings.hpos, self.moduleSettings.vpos)
+	self:SetFramePosition()
 
 	self.frame.rangeFontString = self:FontFactory(--[[self.moduleSettings.fontSize+1]] 13, self.frame, self.frame.rangeFontString)
 	self.frame.rangeFontString:SetJustifyH("CENTER")

@@ -269,7 +269,7 @@ function Totems.prototype:CreateFrame()
 	self.frame:SetWidth(self.totemSize*self.numTotems)
 	self.frame:SetHeight(1)
 	self.frame:ClearAllPoints()
-	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
+	self:SetFramePosition()
 
 	self:CreateTotemFrame()
 end

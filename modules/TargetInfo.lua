@@ -247,12 +247,14 @@ function IceTargetInfo.prototype:GetOptions()
 		order = 30.9
 	}
 
+	self:AddDragMoveOption(opts, 30.91)
+
 	opts["vpos"] = {
 		type = "range",
 		name = L["Vertical Position"],
 		desc = L["Vertical Position"],
 		get = function()
-			return self.moduleSettings.vpos
+			return IceHUD:MathRound(self.moduleSettings.vpos)
 		end,
 		set = function(info, v)
 			self.moduleSettings.vpos = v
@@ -272,7 +274,7 @@ function IceTargetInfo.prototype:GetOptions()
 		name = L["Horizontal Position"],
 		desc = L["Horizontal Position"],
 		get = function()
-			return self.moduleSettings.hpos
+			return IceHUD:MathRound(self.moduleSettings.hpos)
 		end,
 		set = function(info, v)
 			self.moduleSettings.hpos = v
@@ -720,7 +722,7 @@ function IceTargetInfo.prototype:GetOptions()
 
 		-- unable to sort buffs if we can't inspect their durations due to secret values
 	if self:CanSortBuffs() then
-		opts["buff"].args.sorted = {
+		opts.buff.args.sorted = {
 			type = 'toggle',
 			name = L["Sort by expiration"],
 			desc = L["Toggles whether or not to sort by expiration time (otherwise they're sorted how the game sorts them - by application time)"],
@@ -737,7 +739,7 @@ function IceTargetInfo.prototype:GetOptions()
 			order = 32.2
 		}
 
-		opts["debuff"].args.sorted = {
+		opts.debuff.args.sorted = {
 			type = 'toggle',
 			name = L["Sort by expiration"],
 			desc = L["Toggles whether or not to sort by expiration time (otherwise they're sorted how the game sorts them - by application time)"],
@@ -826,6 +828,7 @@ function IceTargetInfo.prototype:GetOptions()
 			return self.moduleSettings.line1Tag
 		end,
 		set = function(info, v)
+			---@diagnostic disable-next-line: need-check-nil, undefined-field
 			v = DogTag:CleanCode(v)
 			self.moduleSettings.line1Tag = v
 			self:RegisterFontStrings()
@@ -849,6 +852,7 @@ function IceTargetInfo.prototype:GetOptions()
 			return self.moduleSettings.line2Tag
 		end,
 		set = function(info, v)
+			---@diagnostic disable-next-line: need-check-nil, undefined-field
 			v = DogTag:CleanCode(v)
 			self.moduleSettings.line2Tag = v
 			self:RegisterFontStrings()
@@ -872,6 +876,7 @@ function IceTargetInfo.prototype:GetOptions()
 			return self.moduleSettings.line3Tag
 		end,
 		set = function(info, v)
+			---@diagnostic disable-next-line: need-check-nil, undefined-field
 			v = DogTag:CleanCode(v)
 			self.moduleSettings.line3Tag = v
 			self:RegisterFontStrings()
@@ -895,6 +900,7 @@ function IceTargetInfo.prototype:GetOptions()
 			return self.moduleSettings.line4Tag
 		end,
 		set = function(info, v)
+			---@diagnostic disable-next-line: need-check-nil, undefined-field
 			v = DogTag:CleanCode(v)
 			self.moduleSettings.line4Tag = v
 			self:RegisterFontStrings()
@@ -1011,6 +1017,17 @@ function IceTargetInfo.prototype:GetOptions()
 	return opts
 end
 
+function IceTargetInfo.prototype:ToggleMoveHint()
+	if IceTargetInfo.super.prototype.ToggleMoveHint(self) then
+		self.origUnit = self.unit
+		self.unit = "player"
+	else
+		self.unit = self.origUnit
+		self:TargetChanged()
+	end
+
+	self:Redraw()
+end
 
 -- OVERRIDE
 function IceTargetInfo.prototype:GetDefaultSettings()
@@ -1071,8 +1088,10 @@ end
 do
 	local function SetFontString(self, textFrame, tag)
 		if textFrame and tag ~= '' then
+			---@diagnostic disable-next-line: need-check-nil, undefined-field
 			DogTag:AddFontString(textFrame, self.frame, tag, "Unit", { unit = self.unit })
 		else
+			---@diagnostic disable-next-line: need-check-nil, undefined-field
 			DogTag:RemoveFontString(textFrame)
 		end
 	end
@@ -1158,6 +1177,7 @@ do 	-- OVERRIDE: IceTargetInfo.prototype:CreateFrame(redraw)
 		if not (self.frame) then
 			self.frame = CreateFrame("Button", "IceHUD_"..self.elementName, self.parent, "SecureUnitButtonTemplate")
 		end
+		self:CreateMoveHintFrame()
 
 		-- Parnic - yes, 200 is fairly arbitrary. make a best effort for long names to fit
 		self.width = math.max(200, self.settings.gap + 50)
@@ -1168,7 +1188,7 @@ do 	-- OVERRIDE: IceTargetInfo.prototype:CreateFrame(redraw)
 		self.frame:SetWidth(self.width)
 		self.frame:SetHeight(32)
 		self.frame:ClearAllPoints()
-		self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
+		self:SetFramePosition()
 		self.frame:SetScale(self.moduleSettings.scale)
 
 		if (self.moduleSettings.mouseTarget) then
@@ -1464,7 +1484,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 			end
 			local isFromMe = IceHUD.CanAccessValue(unitCaster) and (unitCaster == "player")
 
-			if not icon and IceHUD.IceCore:IsInConfigMode() and UnitExists(self.unit) then
+			if not icon and self:IsInConfigMode() and UnitExists(self.unit) then
 				icon = [[Interface\Icons\Spell_Frost_Frost]]
 				duration = 60
 				expirationTime = GetTime() + 59

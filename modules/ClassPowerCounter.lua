@@ -760,7 +760,7 @@ function IceClassPowerCounter.prototype:CreateFrame()
 	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("LOW"))
 	self.frame:SetHeight(self.runeHeight)
 	self.frame:ClearAllPoints()
-	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
+	self:SetFramePosition()
 
 	self:CreateRuneFrame()
 

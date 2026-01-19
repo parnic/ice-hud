@@ -241,12 +241,181 @@ end
 function IceElement.prototype:CreateFrame()
 	if not (self.frame) then
 		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.masterFrame)
+		self.moveHint = CreateFrame("Frame", "IceHUD_"..self.elementName.."_move", self.frame)
+
+		self.moveHint:SetAllPoints(self.frame)
+		self.moveHint.texture = self.moveHint:CreateTexture(nil, "ARTWORK")
+		self.moveHint.texture:SetAllPoints(self.moveHint)
+		self.moveHint.texture:SetTexture("Interface/Tooltips/UI-Tooltip-Background")
+		self.moveHint.texture:SetBlendMode("ADD")
+		self.moveHint.texture:SetVertexColor(0.2, 0.8, 0.2, 0.75)
+		self.moveHint:Hide()
 	end
 	self.masterFrame:SetAllPoints(self.frame)
 
 	self.masterFrame:SetScale(self.moduleSettings.scale)
 
 	self:UpdateAlpha()
+end
+
+function IceElement.prototype:SetFramePosition()
+	self.frame:SetPoint("TOP", self.parent, "BOTTOM", self.moduleSettings.hpos, self.moduleSettings.vpos)
+end
+
+function IceElement.prototype:CreateMoveHintFrame()
+	if not self.frame then
+		self:CreateFrame()
+	end
+
+	self.frame:SetClampedToScreen(true)
+
+	if not self.moveHint then
+		self.moveHint = CreateFrame("Frame", "IceHUD_"..self.elementName.."_move", self.frame)
+
+		self.moveHint.texture = self.moveHint:CreateTexture(nil, "ARTWORK")
+		self.moveHint.texture:SetTexture("Interface/Tooltips/UI-Tooltip-Background")
+		self.moveHint.texture:SetBlendMode("ADD")
+		self.moveHint.texture:SetVertexColor(0.2, 0.8, 0.2, 0.75)
+		self.moveHint.texture:SetAllPoints(self.moveHint)
+
+		self.moveHint:SetScript("OnMouseDown", function() self:MoveHintMouseDown() end)
+		self.moveHint:SetScript("OnMouseUp", function() self:MoveHintMouseUp() end)
+		self.moveHint:SetScript("OnEnter", function() self:MoveHintEnter() end)
+		self.moveHint:SetScript("OnLeave", function() self:MoveHintLeave() end)
+		self.moveHint:Hide()
+	end
+
+	self.moveHint:SetAllPoints(self.frame)
+end
+
+function IceElement.prototype:AddDragMoveOption(opts, order)
+	opts.dragMove = {
+		type = "execute",
+		name = L["Toggle interactive placement mode"],
+		desc = L["Toggles the ability to drag this module to the desired location instead of adjusting Position sliders."],
+		width = "full",
+		func = function() self:ToggleMoveHint() end,
+		hidden =
+			--[===[@non-debug@
+			true
+			--@end-non-debug@]===]
+			--@debug@
+			false
+			--@end-debug@
+		,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = order,
+	}
+
+	return opts
+end
+
+function IceElement.prototype:IsInConfigMode()
+	return IceHUD.IceCore:IsInConfigMode() or self.moveHint:IsVisible()
+end
+
+function IceElement.prototype:MoveHintMouseDown()
+	if IsMouseButtonDown("RightButton") then
+		self:ToggleMoveHint()
+		self:MoveHintMouseUp()
+		return
+	elseif IsMouseButtonDown("MiddleButton") then
+		if self.moveHintOrigX and self.moveHintOrigY then
+			self:MoveHintMoveTo(self.moveHintOrigX, self.moveHintOrigY)
+		end
+
+		self:SetFramePosition()
+		IceHUD:NotifyOptionsChange()
+		return
+	elseif not IsMouseButtonDown("LeftButton") then
+		return
+	end
+
+	self.moveHintOrigX, self.moveHintOrigY = self:MoveHintGetOffsets()
+	self:SetMoveHintLast()
+	self.moveHintScale = UIParent:GetEffectiveScale()
+	self.moveHint:SetScript("OnUpdate", function() self:MoveHintUpdate() end)
+end
+
+function IceElement.prototype:SetMoveHintLast()
+	self.moveHintLastX, self.moveHintLastY = GetCursorPosition()
+	self.moveHintLastLeft, self.moveHintLastTop = self.frame:GetLeft(), self.frame:GetTop()
+end
+
+function IceElement.prototype:MoveHintUpdate()
+	local currLeft, currTop = self.frame:GetLeft(), self.frame:GetTop()
+	local lastX, lastY = self.moveHintLastX, self.moveHintLastY
+	local currX, currY = GetCursorPosition()
+	local dx, dy = (currX - lastX) / self.moveHintScale / IceHUD.IceCore:GetScale(), (currY - lastY) / self.moveHintScale / IceHUD.IceCore:GetScale()
+	if IsShiftKeyDown() then
+		dy = 0
+	end
+	if IsControlKeyDown() then
+		dx = 0
+	end
+
+	self:MoveHintMoveBy(dx, dy)
+
+	self:SetFramePosition()
+	IceHUD:NotifyOptionsChange()
+	self:SetMoveHintLast()
+
+	-- if the frame clamping caused the frame to not move in a given direction, un-apply our delta to respect the clamp
+	if not IsShiftKeyDown() and currTop == self.moveHintLastTop then
+		self:MoveHintMoveBy(0, -dy)
+	end
+	if not IsControlKeyDown() and currLeft == self.moveHintLastLeft then
+		self:MoveHintMoveBy(-dx, 0)
+	end
+end
+
+function IceElement.prototype:MoveHintGetOffsets()
+	return self.moduleSettings.hpos, self.moduleSettings.vpos
+end
+
+function IceElement.prototype:MoveHintMoveBy(dx, dy)
+	self:MoveHintMoveTo(self.moduleSettings.hpos + dx, self.moduleSettings.vpos + dy)
+end
+
+function IceElement.prototype:MoveHintMoveTo(x, y)
+	self.moduleSettings.hpos = x
+	self.moduleSettings.vpos = y
+end
+
+function IceElement.prototype:MoveHintMouseUp()
+	self.moveHint:SetScript("OnUpdate", nil)
+end
+
+function IceElement.prototype:MoveHintEnter()
+	GameTooltip:SetOwner(self.moveHint, "ANCHOR_TOPLEFT")
+	GameTooltip:SetText(self:MoveHintGetTooltip())
+end
+
+function IceElement.prototype:MoveHintGetTooltip()
+	return L["|cff9999ffLeft click|r and drag to move. Hold |cff9999ffShift|r to lock vertical position, hold |cff9999ffControl|r to lock horizontal position.\n\n|cff9999ffMiddle click|r to reset to previous position.\n\n|cff9999ffRight click|r to lock in place."]
+end
+
+function IceElement.prototype:MoveHintLeave()
+	GameTooltip:Hide()
+end
+
+function IceElement.prototype:ToggleMoveHint()
+	if not self.moveHint then
+		self:CreateMoveHintFrame()
+	end
+
+	local wasVisible = self.moveHint:IsVisible()
+	if wasVisible then
+		self.moveHint:Hide()
+		self:Redraw()
+	else
+		self:Redraw()
+		self.moveHint:Show()
+	end
+
+	return not wasVisible
 end
 
 
