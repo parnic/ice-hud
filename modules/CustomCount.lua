@@ -111,12 +111,14 @@ function IceCustomCount.prototype:GetOptions()
 		order = 31,
 	}
 
+	self:AddDragMoveOption(opts, 31.01)
+
 	opts["vpos"] = {
 		type = "range",
 		name = L["Vertical Position"],
 		desc = L["Vertical Position"],
 		get = function()
-			return self.moduleSettings.vpos
+			return IceHUD:MathRound(self.moduleSettings.vpos)
 		end,
 		set = function(info, v)
 			self.moduleSettings.vpos = v
@@ -136,7 +138,7 @@ function IceCustomCount.prototype:GetOptions()
 		name = L["Horizontal Position"],
 		desc = L["Horizontal Position"],
 		get = function()
-			return self.moduleSettings.hpos
+			return IceHUD:MathRound(self.moduleSettings.hpos)
 		end,
 		set = function(info, v)
 			self.moduleSettings.hpos = v
@@ -329,9 +331,9 @@ function IceCustomCount.prototype:CreateFrame()
 	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	if self.moduleSettings.graphicalLayout == "Horizontal" then
 		self.frame:SetWidth((self.countSize + self.moduleSettings.countGap)*IceStackCounter_GetMaxCount(self))
-		self.frame:SetHeight(1)
+		self.frame:SetHeight(28)
 	else
-		self.frame:SetWidth(1)
+		self.frame:SetWidth(28)
 		self.frame:SetHeight((self.countSize + self.moduleSettings.countGap)*IceStackCounter_GetMaxCount(self))
 	end
 	self.frame:ClearAllPoints()
