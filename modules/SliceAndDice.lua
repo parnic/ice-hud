@@ -211,8 +211,8 @@ function SliceAndDice.prototype:Disable(core)
 	SliceAndDice.super.prototype.Disable(self, core)
 end
 
-function SliceAndDice.prototype:ComboPointsChanged(...)
-	if select('#', ...) >= 3 and select(1, ...) == IceHUD.UnitPowerEvent and select(3, ...) ~= "COMBO_POINTS" then
+function SliceAndDice.prototype:ComboPointsChanged(event, unit, powerType)
+	if unit and unit ~= self.unit or powerType ~= "COMBO_POINTS" then
 		return
 	end
 
@@ -447,7 +447,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 	if not fromUpdate then
 		if C_UnitAuras and C_UnitAuras.GetAuraDuration then
 			sndDuration, remaining = self:GetBuffDuration(self.unit, newSndSpellId)
-		elseif IceHUD.WowVer < 30000 then
+		else
 			sndDuration, remaining = self:GetBuffDuration(self.unit, sndTexture)
 		end
 

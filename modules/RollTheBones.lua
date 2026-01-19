@@ -86,9 +86,7 @@ function RollTheBones.prototype:Enable(core)
 
   self:RegisterEvent("UNIT_AURA", "UpdateRollTheBones")
 
-  if behaviorDependsOnComboPoints then
-    self:RegisterEvent(IceHUD.UnitPowerEvent, "ComboPointsChanged")
-  end
+  self:RegisterEvent(IceHUD.UnitPowerEvent, "ComboPointsChanged")
 
   if not self.moduleSettings.alwaysFullAlpha then
     self:Show(false)
@@ -103,13 +101,13 @@ function RollTheBones.prototype:Disable(core)
   RollTheBones.super.prototype.Disable(self, core)
 end
 
-function RollTheBones.prototype:ComboPointsChanged(...)
-  if select('#', ...) >= 3 and select(1, ...) == IceHUD.UnitPowerEvent and select(3, ...) ~= "COMBO_POINTS" then
-    return
-  end
+function RollTheBones.prototype:ComboPointsChanged(event, unit, powerType)
+  if unit and unit ~= self.unit or powerType ~= "COMBO_POINTS" then
+		return
+	end
 
   self:TargetChanged()
-  self:UpdateDurationBar()
+  self:UpdateDurationBar("internal")
 end
 
 -- OVERRIDE
