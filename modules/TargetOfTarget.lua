@@ -42,12 +42,14 @@ end
 function TargetOfTarget.prototype:GetOptions()
 	local opts = TargetOfTarget.super.prototype.GetOptions(self)
 
+	self:AddDragMoveOption(opts, 30.91)
+
 	opts["vpos"] = {
 		type = "range",
 		name = L["Vertical Position"],
 		desc = L["Vertical Position"],
 		get = function()
-			return self.moduleSettings.vpos
+			return IceHUD:MathRound(self.moduleSettings.vpos)
 		end,
 		set = function(info, v)
 			self.moduleSettings.vpos = v
@@ -67,7 +69,7 @@ function TargetOfTarget.prototype:GetOptions()
 		name = L["Horizontal Position"],
 		desc = L["Horizontal Position"],
 		get = function()
-			return self.moduleSettings.hpos
+			return IceHUD:MathRound(self.moduleSettings.hpos)
 		end,
 		set = function(info, v)
 			self.moduleSettings.hpos = v
@@ -330,6 +332,8 @@ function TargetOfTarget.prototype:CreateFrame()
 		self.frame:SetAttribute("unit", self.unit)
 	end
 
+	self:CreateMoveHintFrame()
+
 	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	if self.moduleSettings.sizeToGap then
 		self.frame:SetWidth(self.settings.gap)
@@ -371,6 +375,19 @@ function TargetOfTarget.prototype:CreateFrame()
 	self:CreateToTFrame()
 	self:CreateToTHPFrame()
 	self:CreateDebuffFrame()
+end
+
+
+function TargetOfTarget.prototype:ToggleMoveHint()
+	if TargetOfTarget.super.prototype.ToggleMoveHint(self) then
+		self.origUnit = self.unit
+		self.unit = "player"
+	else
+		self.unit = self.origUnit
+		self:TargetChanged()
+	end
+
+	self:Redraw()
 end
 
 
