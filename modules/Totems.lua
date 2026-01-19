@@ -50,6 +50,8 @@ end
 function Totems.prototype:GetOptions()
 	local opts = Totems.super.prototype.GetOptions(self)
 
+	self:AddDragMoveOption(opts, 30.91)
+
 	opts["vpos"] = {
 		type = "range",
 		name = L["Vertical Position"],
@@ -265,9 +267,11 @@ end
 function Totems.prototype:CreateFrame()
 	Totems.super.prototype.CreateFrame(self)
 
+	self:CreateMoveHintFrame()
+
 	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
 	self.frame:SetWidth(self.totemSize*self.numTotems)
-	self.frame:SetHeight(1)
+	self.frame:SetHeight(28)
 	self.frame:ClearAllPoints()
 	self:SetFramePosition()
 
