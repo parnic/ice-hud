@@ -367,9 +367,10 @@ end
 -- OnUpdate handler
 function IceCastBar.prototype:MyOnUpdate()
 	-- safety catch
-	if (self.action == IceCastBar.Actions.None) then
+	if self.action == IceCastBar.Actions.None then
 		--IceHUD:Debug("Stopping action ", self.action)
 		self:StopBar()
+		IceHUD.IceCore:RequestUpdates(self, nil)
 		return
 	end
 
