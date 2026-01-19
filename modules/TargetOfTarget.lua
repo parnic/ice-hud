@@ -226,6 +226,7 @@ function TargetOfTarget.prototype:GetOptions()
 					return self.moduleSettings.leftTag
 				end,
 				set = function(info, v)
+					---@diagnostic disable-next-line: need-check-nil, undefined-field
 					v = DogTag:CleanCode(v)
 					self.moduleSettings.leftTag = v
 					self:RegisterFontStrings()
@@ -245,6 +246,7 @@ function TargetOfTarget.prototype:GetOptions()
 					return self.moduleSettings.rightTag
 				end,
 				set = function(info, v)
+					---@diagnostic disable-next-line: need-check-nil, undefined-field
 					v = DogTag:CleanCode(v)
 					self.moduleSettings.rightTag = v
 					self:RegisterFontStrings()
