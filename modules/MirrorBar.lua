@@ -30,6 +30,8 @@ function MirrorBar.prototype:init(side, offset, name, db)
 	self.moduleSettings.barVerticalOffset = 0
 	-- avoid nil warnings here
 	self.moduleSettings.myTagVersion = IceHUD.CurrTagVersion
+
+	self.onUpdateFunc = function(this, arg1, ...) self:OnUpdate(arg1) end
 end
 
 
@@ -102,7 +104,7 @@ function MirrorBar.prototype:MirrorStart(timer, value, maxValue, scale, paused, 
 
 	self:Update()
 	self:Show(true)
-	self.frame:SetScript("OnUpdate", function(this, arg1, ...) self:OnUpdate(arg1) end)
+	self.frame:SetScript("OnUpdate", self.onUpdateFunc)
 end
 
 
