@@ -76,12 +76,14 @@ end
 function Runes.prototype:GetOptions()
 	local opts = Runes.super.prototype.GetOptions(self)
 
+	self:AddDragMoveOption(opts, 30.91)
+
 	opts["vpos"] = {
 		type = "range",
 		name = L["Vertical Position"],
 		desc = L["Vertical Position"],
 		get = function()
-			return self.moduleSettings.vpos
+			return IceHUD:MathRound(self.moduleSettings.vpos)
 		end,
 		set = function(info, v)
 			self.moduleSettings.vpos = v
@@ -101,7 +103,7 @@ function Runes.prototype:GetOptions()
 		name = L["Horizontal Position"],
 		desc = L["Horizontal Position"],
 		get = function()
-			return self.moduleSettings.hpos
+			return IceHUD:MathRound(self.moduleSettings.hpos)
 		end,
 		set = function(info, v)
 			self.moduleSettings.hpos = v
@@ -477,9 +479,16 @@ end
 function Runes.prototype:CreateFrame()
 	Runes.super.prototype.CreateFrame(self)
 
+	self:CreateMoveHintFrame()
+
 	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
-	self.frame:SetWidth(self.runeSize*self.numRunes)
-	self.frame:SetHeight(1)
+	if self.moduleSettings.displayMode == "Horizontal" then
+		self.frame:SetWidth((self.runeSize - 3 + self.moduleSettings.runeGap) * self.numRunes)
+		self.frame:SetHeight(28)
+	else
+		self.frame:SetWidth(28)
+		self.frame:SetHeight((self.runeSize - 3 + self.moduleSettings.runeGap) * self.numRunes)
+	end
 	self.frame:ClearAllPoints()
 	self:SetFramePosition()
 
