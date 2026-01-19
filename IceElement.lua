@@ -304,7 +304,7 @@ function IceElement.prototype:AddDragMoveOption(opts, order)
 end
 
 function IceElement.prototype:IsInConfigMode()
-	return IceHUD.IceCore:IsInConfigMode() or (self.moveHint and self.moveHint:IsVisible())
+	return IceHUD.IceCore:IsInConfigMode() or self.inMoveMode
 end
 
 function IceElement.prototype:MoveHintMouseDown()
@@ -397,16 +397,18 @@ function IceElement.prototype:ToggleMoveHint()
 		self:CreateMoveHintFrame()
 	end
 
-	local wasVisible = self.moveHint:IsVisible()
-	if wasVisible then
+	local wasInMoveMode = self.inMoveMode
+	if wasInMoveMode then
+		self.inMoveMode = false
 		self.moveHint:Hide()
 		self:Redraw()
 	else
+		self.inMoveMode = true
 		self.moveHint:Show()
 		self:Redraw()
 	end
 
-	return not wasVisible
+	return not wasInMoveMode
 end
 
 
