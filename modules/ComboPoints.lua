@@ -412,7 +412,6 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 		self.frame.graphicalAnt = {}
 	end
 
-	local i
 	local maxComboPoints = self:GetMaxComboPoints()
 
 	-- create backgrounds
