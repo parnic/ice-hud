@@ -1,12 +1,12 @@
 # Changelog
 
-v1.16.1:
+## v1.16.1
 
 - Add option for combo points to grow in reverse (right->left or bottom->top) by request.
 - Fix Slice And Dice and Roll The Bones displaying when they shouldn't and sometimes not displaying when they should.
 - Re-fix an old "accessed nil" bug that popped back up after the 12.0 refactor.
 
-v1.16.0:
+## v1.16.0
 
 - Add initial compatibility with WoW 12.x / Midnight. Please see readme/in-game FAQ page for details about this significant change.
 - Add option to forcibly disable cooldown numbers on TargetInfo buff and debuff as well as class power frames (DK runes, Paladin holy power, etc.) when set to "Cooldown" or "Both" mode.
@@ -17,202 +17,202 @@ v1.16.0:
 - Update TBC Anniversary TOC.
 - Fix "locked" alpha text showing even when the bar was at 0% alpha (via the Transparency Settings cases in the module's options).
 
-v1.15.23:
+## v1.15.23
 
 - Fix Vigor display for 11.2.7.
 
-v1.15.22:
+## v1.15.22
 
 - Update TOCs
 
-v1.15.21:
+## v1.15.21
 
 - Update TOCs
 
-v1.15.20:
+## v1.15.20
 
 - Fix Algarian Stormrider showing the Blizzard vigor bar when IceHUD is set to suppress it.
 
-v1.15.19:
+## v1.15.19
 
 - Support WoW 11.2.0
 - Update TWW TOC to 11.2.0
 
-v1.15.18:
+## v1.15.18
 
 - Fix Stagger bar error on MoP classic.
 
-v1.15.17:
+## v1.15.17
 
 - Fix Warrior Rage showing 1200 instead of 120 when using the Glyph of Unending Rage in MoP Classic
 
-v1.15.16:
+## v1.15.16
 
 - Support Mists of Pandaria Classic
 - Switch the packaging method to release one version of the addon compatible with all game clients rather than separate packages per client type
 
-v1.15.15:
+## v1.15.15
 
 - Update TWW TOC to 11.1.7
 
-v1.15.14:
+## v1.15.14
 
 - Support WoW 11.1.5
 - Update TWW TOC to 11.1.5
 
-v1.15.13:
+## v1.15.13
 
 - Update TOCs
 
-v1.15.12:
+## v1.15.12
 
 - Update TOCs
 
-v1.15.11:
+## v1.15.11
 
 - Fix imported profiles not saving across reloads
 
-v1.15.10:
+## v1.15.10
 
 - Fix Chi not updating properly when the player's maximum amount of Chi points changes (e.g. via Ascension talent).
 - Update TOCs
 
-v1.15.9:
+## v1.15.9
 
 - Update Cataclysm Classic TOC to 4.4.1
 - Update Classic-era TOC to 1.15.4
 - Update TWW TOC to 11.0.5
 
-v1.15.8:
+## v1.15.8
 
 - Fix reported error with custom cooldown bars set to "when ready" mode due to deprecation in 11.x (wowace issue #368)
 
-v1.15.7:
+## v1.15.7
 
 - Fix cooldown display for overridden spells (such as Evoker spells where Font of Magic replaces the base spell with an override with the same name).
 
-v1.15.6:
+## v1.15.6
 
 - Package new version of LibDogTag-Unit to fix an error with some units on 11.0.2
 
-v1.15.5:
+## v1.15.5
 
 - Fix error when using an invalid spell with a custom bar on 11.x
 
-v1.15.4:
+## v1.15.4
 
 - Update TOC for TWW
 
-v1.15.3:
+## v1.15.3
 
 - Fix custom cooldown bars not working in 11.x (wowace issue #363)
 
-v1.15.2:
+## v1.15.2
 
 - Re-enable right-click context menus on 11.x.
 - Update TOC for Classic-era
 
-v1.15.1:
+## v1.15.1
 
 - Fix error opening options.
 
-v1.15.0:
+## v1.15.0
 
 - Support The War Within/11.0
 - Add support for exporting and importing profiles through text.
 
-v1.14.42:
+## v1.14.42
 
 - Fix Vengeance module in Cataclysm Classic
 
-v1.14.41:
+## v1.14.41
 
 - Fix swapped DK runes in Cataclysm Classic
 - Possible fix for castbar flashing sometimes when set to "Never"
 - Fix IceHUD Vigor bar not showing up for some types of dragons such as the Algarian Stormrider
 
-v1.14.40:
+## v1.14.40
 
 - Update TOC for Dragonflight to 10.2.7
 
-v1.14.39:
+## v1.14.39
 
 - Support Cataclysm Classic 4.4.0
 
-v1.14.38:
+## v1.14.38
 
 - Update TOCs
 
-v1.14.37:
+## v1.14.37
 
 - Update LibRangeCheck version to address taint issues (wowace ticket #353)
 
-v1.14.36:
+## v1.14.36
 
 - Really fix IceHUD stomping on other uses of the PowerBarContainer such as the Digging bar for the Archive event.
 
-v1.14.35:
+## v1.14.35
 
 - Fix IceHUD stomping on other uses of the PowerBarContainer such as the Digging bar for the Archive event.
 
-v1.14.34:
+## v1.14.34
 
 - Fix Vigor showing up sometimes when it shouldn't.
 
-v1.14.33:
+## v1.14.33
 
 - Update TOC for Dragonflight to 10.2.5
 
-v1.14.32:
+## v1.14.32
 
 - Enable GlobalCoolDown module in Classic Era 1.15.0+
 - Enable tracking target buffs/debuffs in Classic Era 1.15.0+
 
-v1.14.31:
+## v1.14.31
 
 - Fix nil concatenation error (wowace ticket #351)
 
-v1.14.30:
+## v1.14.30
 
 - Update Classic-era TOC for 1.15.0
 - Enable TargetCastBar module on Classic-era 1.15+
 
-v1.14.29:
+## v1.14.29
 
 - Fix Stagger bar error for 10.2.0 (wowace ticket #348)
 
-v1.14.28:
+## v1.14.28
 
 - Update TOC for Dragonflight to 10.2.0
 
-v1.14.27:
+## v1.14.27
 
 - Update TOC for Dragonflight to 10.1.7
 
-v1.14.26:
+## v1.14.26
 
 - Update TOC for classic-era to 1.14.4
 
-v1.14.25:
+## v1.14.25
 
 - Fixed lua error that would appear when targetting webwrapped players in heroic alpha/beta titan rune dungeons.
 - Added ability to adjust strata globally.
 
-v1.14.24:
+## v1.14.24
 
 - Fixed an error when targeting a player and right-clicking a module that should show a menu in 10.1.5.
 
-v1.14.23:
+## v1.14.23
 
 - Update Dragonflight TOC for 10.1.5
 
-v1.14.22:
+## v1.14.22
 
 - Fixed reported issue with a Lua error on Wrath Classic clients. <https://www.wowace.com/projects/ice-hud/issues/344>
 - Fixed Vigor module not working when riding Grotto Netherwing Drake (and theoretically all future Dragonriding mount types).
 - Updated TOC for Wrath-Classic.
 
-v1.14.21:
+## v1.14.21
 
 - Increased maximum scale/zoom to 400%, by request.
 - Fixed TargetCC/FocusCC modules on Wrath Classic.
@@ -220,119 +220,119 @@ v1.14.21:
 - Fixed Buff/Debuff Watchers showing an empty bar when set to Missing mode. If the background was disabled, this looked like just a floating spell icon.
 - Fixed spell icons sometimes not showing up for custom bars until the tracked spell had been cast once.
 
-v1.14.20:
+## v1.14.20
 
 - Added Winding Slitherdrake as recognized for the Dragonriding Vigor module
 
-v1.14.19:
+## v1.14.19
 
 - Updated TOCs for 10.1.0
 - Added addon icon for 10.1.0 clients
 - Fixed Dragonriding Vigor charges not showing up in 10.1.0
 - Fixed Vigor not always updating correctly when loading into the game or a new zone
 
-v1.14.18:
+## v1.14.18
 
 - Fixed Runic Power showing on a scale of 0-1000+ instead of 0-100+ with DogTags off
 - Added option (enabled by default) to hide mod during cataloging.
 - Fixed "Hide Blizzard Buffs" option on PlayerInfo causing errors and "?" icons when toggling off.
 - Also hide Debuff frame if it exists (Dragonflight+) when enabling "Hide Blizzard Buffs" in the PlayerInfo module.
 
-v1.14.17:
+## v1.14.17
 
 - Updated TOCs for 10.0.7
 
-v1.14.16:
+## v1.14.16
 
 - Exposed the option in the Totems module to hide the Blizzard Totems frame or not, and changed the default value to not hide when on a version of the game that doesn't support right-clicking to destroy totems (any version after Wrath). This enables using the default Totems frame to cancel totems early.
 - Fixed a reported error when playing Darkmoon Faire games.
 - Added a few more Polymorph ranks to TargetCC for Classic. I'm sure there are more missing.
 
-v1.14.15:
+## v1.14.15
 
 - Updated TOCs for 10.0.5
 
-v1.14.14:
+## v1.14.14
 
 - Fixed PlayerAlternatePower bar showing up when it shouldn't have, such as when casting Power Word: Shield before ever having done anything to trigger a game-level "alternate power" event, such as mounting a Dragonriding mount.
 
-v1.14.13:
+## v1.14.13
 
 - Fixed Vigor module hiding default Climbing, Film, etc. UIs. (wowace ticket #336)
 
-v1.14.12:
+## v1.14.12
 
 - Added a module for showing Dragonriding Vigor points.
 
-v1.14.11:
+## v1.14.11
 
 - Packaged a new version of LibDogTag-Unit to fix the Guild roster resetting its scroll position every 20 seconds.
 
-v1.14.10:
+## v1.14.10
 
 - Fix an error in TargetTargetHealth/Mana and CustomHealth when Low Threshold Color was checked and Scale by Health % was un-checked.
 
-v1.14.9:
+## v1.14.9
 
 - Fix Low Threshold to be usable even when Color By Health/Mana % is disabled. (ticket #334)
 
-v1.14.8:
+## v1.14.8
 
 - Fix Color By Health % to work with Low Threshold Color option. Previously, if Low Threshold was set, the color was always either MaxHealth/MaxMana or MinHealth/MinMana, it would never be colored by health %. Now if both are set, it will scale by health % until it reaches the low threshold, at which point it will switch to the Min color.
 - Fix Low Threshold color and flashing to work at the same percentage. Previously these were slightly different such that it would start flashing at 40% but not turn to the Min color until 39.9999%, for example.
 
-v1.14.7:
+## v1.14.7
 
 - Add option to scale absorb bar by the unit's maximum health.
 
-v1.14.6:
+## v1.14.6
 
 - Add ability for buff/debuff watchers to only display when the specified buff/debuff is missing. This also adds the ability to require that the given unit exists. So if you had Unit set to Target, Display mode set to Missing, and Only if unit exists checked, you'd show the bar if you have a target and they don't have the given buff/debuff.
 - Don't flash the castbar for instant-cast spells that the player didn't cast (such as internal quest spells).
 - Add DruidEnergy module (disabled by default). This module will show the player's Energy level if they're a Druid and currently shapeshifted to a non-energy-using form (eligible forms are configurable by the user).
 
-v1.14.5:
+## v1.14.5
 
 - Fix castbar flashing. There are controls on the player castbar module for flashing when a spell succeeds or fails, and separate controls for flashing when an instant cast completes. Those were broken, but now work again.
 - Add "@" after the number when the Combo Points module is in Numeric mode, "Show Charged points" is enabled, and the current combo point is charged.
 - Fix Charged point support in the ComboPointsBar module.
 
-v1.14.4:
+## v1.14.4
 
 - Update TOC for 10.0.2
 
-v1.14.3:
+## v1.14.3
 
 - Add Spell ID support for aura tracking.
 - Add Evoker support.
 - Add Empowered Casting (hold-to-cast levels) support.
 
-v1.14.2:
+## v1.14.2
 
 - Fix CC and Invuln modules not showing immediately when they should.
 
-v1.14.1:
+## v1.14.1
 
 - Fix Hide Party feature on pre-10.0 clients.
 
-v1.14.0:
+## v1.14.0
 
 - 10.0 compatibility
 - Renamed Anima Charged combo points to Charged, and removed specific references to Kyrian.
 
-v1.13.17.3:
+## v1.13.17.3
 
 - Packaged latest LibDogTag-Unit to work around crash in Wrath Classic client.
 
-v1.13.17.2:
+## v1.13.17.2
 
 - Fixed Runes disappearing for Death Knights on Wrath Classic when using the dual spec feature.
 
-v1.13.17.1:
+## v1.13.17.1
 
 - Fixed Priests hanging on login on the retail client.
 
-v1.13.17:
+## v1.13.17
 
 - Internal maintainability updates. There are so many versions of the game now, updates need to be as easy and safe as possible.
 - Improved reliability of Slice-n-Dice predicted length when changing talents.
@@ -341,223 +341,223 @@ v1.13.17:
 - Removed HolyPowerNumeric text from the configuration options of several modules that it didn't belong with.
 - Fixed combo points in Classic Era clients.
 
-v1.13.16:
+## v1.13.16
 
 - Enabled Incoming Heal Prediction on Wrath-Classic.
 - Added detection for the full Wrath Classic build (not just the pre-patch).
 
-v1.13.15:
+## v1.13.15
 
 - Updated TOC for Retail (9.2.7).
 - Added Wrath-Classic compatibility.
 
-v1.13.14.3:
+## v1.13.14.3
 
 - Restored right-click menus on Info and Health bars when targeting other players.
 
-v1.13.14.2:
+## v1.13.14.2
 
 - Restored right-click menus on Info and Health bars.
 
-v1.13.14.1:
+## v1.13.14.1
 
 - Restored guard around array that doesn't exist on Classic clients.
 
-v1.13.14:
+## v1.13.14
 
 - Fixed target health updating infrequently on Classic.
 - Fixed compatibility with WoW 9.2.5.
 - Updated TOC for all game flavors.
 
-v1.13.13:
+## v1.13.13
 
 - Slight optimization of Zereth Mortis puzzle detection logic.
 - Fixed target health updating infrequently on Classic-BC.
 - Fixed reported error in TargetInvuln module.
 
-v1.13.12:
+## v1.13.12
 
 - Hide IceHUD during Zereth Mortis puzzles
 - Fixed default player and target frames coming back sometimes (github issue #19)
 - Updated TOC for 9.2.0 and 1.14.2
 
-v1.13.11:
+## v1.13.11
 
 - Fixed totem bar dismissal for BC-Classic and Classic
 - Updated TOC for BC-Clasic
 
-v1.13.10:
+## v1.13.10
 
 - Updated TOCs for 9.1.5 and 1.14.1
 
-v1.13.9:
+## v1.13.9
 
 - Fixed FocusMana modules attempting to register invalid events in Classic builds.
 - Add support for multiple anima-charged combo points to display at once.
 - Update TOC for Classic 1.14.0
 
-v1.13.8.1:
+## v1.13.8.1
 
 - Updated TOC for BC-Classic and Classic.
 
-v1.13.8:
+## v1.13.8
 
 - Fixed Paladin GCD not functioning in BC-Classic.
 
-v1.13.7:
+## v1.13.7
 
 - Fixed energy ticker when zoning back into an instance after dying (Classic builds)
 - Added newer Fear spell to CC modules.
 - Fixed the straight textures (Tanks) not showing the lowest or highest values appropriately (10% could look empty, 90% could look full).
 
-v1.13.6:
+## v1.13.6
 
 - Updated TOC to 9.1
 - Packaged an updated DogTag library with a fix for Classic-era `[Class]` tags.
 
-v1.13.5:
+## v1.13.5
 
 - Classic-Burning Crusade support
 - Package a community fork of LibRangeCheck with BC-Classic compatibility
 - Prevented DogTag strings sometimes cutting off and showing "..." when they shouldn't if the user entered blank lines in the text box for the tags. Also changed the tooltip to not suggest pressing Enter since that could cause this problem. If you already have blank lines in your DogTag strings, you will want to remove them manually, but this fix prevents the problem from occurring in the future.
 - Fixed custom buff/debuff bar tracking for targettarget units.
 
-v1.13.4:
+## v1.13.4
 
 - Show Demon Hunter Fury top text as the raw Fury amount instead of a 0-100 scale with DogTags off. (ticket #301)
 - Package newer LibDogTag to fix upgrade bug in that library.
 
-v1.13.3:
+## v1.13.3
 
 - Activated Totems module for all classes in Shadowlands. Some class abilities spawn units that live for a specific amount of time, and the game handles these as Totems.
 - Fixed an issue where mana bars could use the wrong alpha settings if the player's maximum mana was 0 (such as during the use of Soulshape).
 - Update TOC for 9.0.5
 
-v1.13.2:
+## v1.13.2
 
 - Fixed which version of LibDogTag was being packaged. The previous version did not have 9.0 compatibility and was generating errors (ticket #293).
 
-v1.13.1:
+## v1.13.1
 
 - Added support for Anima-charged combo points for Kyrian covenant (ticket #291).
 - Updated TOC for 9.0.2
 
-v1.13.0:
+## v1.13.0
 
 - Made compatible with 9.0
 - Improved frame naming/debuggability
 - Updated TOC for 9.0
 
-v1.12.15:
+## v1.12.15
 
 - (Classic) Fixed reported issue with the Threat bar throwing errors sometimes.
 
-v1.12.14:
+## v1.12.14
 
 - Fixed pet health/mana sometimes using the wrong alpha if the player teleported.
 
-v1.12.13:
+## v1.12.13
 
 - Fixed various class power indicators using the wrong alpha visibility if the player teleported (like with a Hearthstone) when they had a target selected.
 - Show Hunter Focus top text as the raw Focus amount instead of a 0-100 scale with DogTags off.
 
-v1.12.12:
+## v1.12.12
 
 - (Classic) Fixed an error when certain spell events fire (like turning in Arathi Basin tokens) with LibClassicCasterino installed.
 - Fixed Death Knight Runes using the wrong alpha visibility if the player teleported (like with a Hearthstone) when they had a target selected.
 
-v1.12.11:
+## v1.12.11
 
 - Fixed TargetMana value not showing in the proper color with DogTags off
 - Fixed Rage showing on a scale of 0-1000 instead of 0-100 with DogTags off
 - Updated TOC for 8.3
 
-v1.12.10:
+## v1.12.10
 
 - (Classic) Temporarily(?) disabled the Totems module as the GetTotemInfo() API was removed.
 
-v1.12.9:
+## v1.12.9
 
 - (Classic) Fixed error in player cast bar if the user didn't have LibClassicCasterino installed.
 
-v1.12.8:
+## v1.12.8
 
 - (Classic) Fixed TargetCast bar to work for users with the LibClassicCasterino library installed. (thanks, Fulzamoth!)
 
-v1.12.7:
+## v1.12.7
 
 - (Classic) Fixed fallout from disabling GCD module (errors in castbar).
 
-v1.12.6:
+## v1.12.6
 
 - (Classic) Disabled Combo modules for non-Rogues/-Druids. They were sometimes showing for other class abilities for some reason.
 
-v1.12.5:
+## v1.12.5
 
 - (Classic) Disabled GCD module as the Classic client doesn't support tracking GCD.
 - (Classic) Packaged new LibDogTag-Unit to pick up Happiness tag fixes.
 
-v1.12.4:
+## v1.12.4
 
 - Fixed spellcast failure events on the castbar not being handled properly. (thanks, Fulzamoth!)
 
-v1.12.3:
+## v1.12.3
 
 - (Classic) Added support for RealMobHealth on the TargetHealth module when DogTags are disabled. (thanks, TwentyOneZ!)
 - (Classic) Added support for LibClassicDurations on the TargetInfo module to show (de)buff durations when the lib is installed. (thanks, Fulzamoth!)
 
-v1.12.2:
+## v1.12.2
 
 - (Classic) Fixed error when changing profiles or disabling IceHUD
 
-v1.12.1:
+## v1.12.1
 
 - (Classic) Fixed energy ticker resetting when spending energy.
 - (Classic) Fixed stack counters throwing errors and generally not functioning.
 - (Classic) Disabled target and target-of-target castbars. Added a note to the FAQ as to why.
 
-v1.12.0:
+## v1.12.0
 
 - Initial WoW Classic compatibility
 
-v1.11.11:
+## v1.11.11
 
 - Updated TOC to 8.2
 
-v1.11.10:
+## v1.11.10
 
 - Fixed pet health/power not updating every time it was supposed to.
 
-v1.11.9:
+## v1.11.9
 
 - Fixed player health never quite reaching full (and therefore never adhering to "full" alpha settings). It seems like a WoW client patch caused UNIT_MAXHEALTH to stop firing.
 
-v1.11.8:
+## v1.11.8
 
 - Updated TOC to 8.1
 
-v1.11.7:
+## v1.11.7
 
 - Fixed Warlock shard numeric formatting incorrectly in non-Destruction specs.
 - Possibly fixed reported bug with Brewmaster Monks' Stagger bars.
 - Added several spells to be tracked in the CC modules.
 
-v1.11.6:
+## v1.11.6
 
 - Only show placeholder icon on custom bars when in configuration mode (fixes placeholder icon showing up for abilities the player hasn't enabled yet, like Survival Hunter's Bombs).
 - Fixed Custom Cooldown bars not displaying properly when both "ignore range" and "only show with target" were checked.
 
-v1.11.5:
+## v1.11.5
 
 - Added Rogue's Between the Eyes stun to the CC stun bar list.
 - Added option (enabled by default) to hide mod during shell games.
 - Packaged new LibDogTag-Unit to fix hostile NPC class names displaying in all caps.
 
-v1.11.4:
+## v1.11.4
 
 - Fixed cast lag indicator updating randomly mid-cast.
 
-v1.11.3:
+## v1.11.3
 
 - Balance druids with Nature's Wrath now treat 50-100 astral power as full for alpha purposes (so the bar will fade to "out of combat" levels when resting around 50%).
 - Fixed the GCD and player castbar lag indicator to show up again.
@@ -565,89 +565,89 @@ v1.11.3:
 - Improved reliability of castbar lag indicator. Blizzard doesn't offer the necessary events to display this with 100% certainty.
 - Fixed an error caused by the Runes module when toggling "Hide Blizzard Frame" off.
 
-v1.11.2:
+## v1.11.2
 
 - Fixed Stagger bar to work in 8.0
 - Fixed DK Runes in graphical mode not always correctly showing runes on cooldown (curse ticket 238, thanks ithorazei!)
 - Renamed HarmonyPower module to Chi and moved saved settings over
 
-v1.11.1:
+## v1.11.1
 
 - Fixed error when playing as a Monk
 - Fixed castbar sometimes showing gibberish text and sometimes disappearing when the cast wasn't complete yet
 
-v1.11.0:
+## v1.11.0
 
 - Updated TOC for 8.0
 
-v1.10.18:
+## v1.10.18
 
 - BfA compatibility
 - Added gap setting between upper and lower text (github pull request #1, thanks lrds!)
 - Fixed Roll the Bones coloring when gaining 5 buffs.
 
-v1.10.17:
+## v1.10.17
 
 - Fixed Insanity display with DogTags disabled
 - Show text on Absorb and AltMana with DogTags disabled
 
-v1.10.16.1:
+## v1.10.16.1
 
 - Added option to hide the raid icon for Info frames.
 - Updated TOC for 7.3
 
-v1.10.16:
+## v1.10.16
 
 - Updated shard texture for Warlocks.
 
-v1.10.15.2:
+## v1.10.15.2
 
 - Updated shard display for Destro Warlocks (ticket #234, thanks stencil!).
 
-v1.10.15.1:
+## v1.10.15.1
 
 - Fixed an error in IceHUD's usage of GetLFGProposal()'s return values exposed by the 7.2.5 Chromie quests.
 
-v1.10.15:
+## v1.10.15
 
 - Fixed error on 7.2 due to a CVar being removed.
 - Updated TOC for 7.2
 
-v1.10.14:
+## v1.10.14
 
 - Fixed Holy Word: Serenity not being trackable in the Custom Cooldown module (ticket #232).
 - Updated Stagger bar to allow the user to set the max to 100% if desired.
 
-v1.10.13.1:
+## v1.10.13.1
 
 - Fixed "0" showing up for some users after 1.10.13 by adding a "show when zero" checkbox to custom counters (disabled by default). Anyone who has used IceHUD for a very long time has automatically-converted custom counter modules that replaced the old "maelstrom", "lacerate", and "sunder" modules that used to exist, each of which exhibited the behavior after the last update.
 
-v1.10.13:
+## v1.10.13
 
 - Fixed alpha settings for spell charges on custom counter bars and stack counters to treat "full" the same way a Mana or Health bar would. Previously these treated "full" as "empty" for charges because that's how buff/debuff stacking should work (ticket #231).
 - Fixed custom counters in numeric mode not hiding the count properly.
 
-v1.10.12:
+## v1.10.12
 
 - Tweaked a few Druid CCs in the CC modules. If you've got a more up-to-date list of any of the CCs, please send them along to <icehud@parnic.com>
 - Fixed a problem that could cause a custom counter to loop forever and cause framerate problems. (ticket #230)
 - Updated default text values for Health and Mana modules to show values in shortened form so they're more readable. Anyone who has customized their text will not be affected by this change and the shortened form only kicks in once values reach 10,000.
 
-v1.10.11:
+## v1.10.11
 
 - Updated TOC for IceHUD_Options module
 - Fixed custom stack counters in graphical mode tracking spell charges failing to update when the maximum number of charges changes (such as with a talented 2-charge Demon Hunter Throw Glaive)
 
-v1.10.10.1:
+## v1.10.10.1
 
 - Fixed the old energy ticker showing up in 7.1.
 
-v1.10.10:
+## v1.10.10
 
 - Updated TOC for 7.1
 - Re-enabled PlayerAbsorb by default by popular demand.
 
-v1.10.9:
+## v1.10.9
 
 - Added support for the Scale setting on mirror bars and extended the mod-wide scale setting to a range of 20%-200% (ticket #228).
 - Fixed Runes module causing a memory leak.
@@ -656,46 +656,46 @@ v1.10.9:
 - Added an option to keep Runes displayed on the screen whether you have a target or not if not all runes are recharged.
 - Added display of the player's current absorb amount to the top of the health bar. Incoming heals display on top of both. Disabled PlayerAbsorb by default because of this addition.
 
-v1.10.8:
+## v1.10.8
 
 - Fixed combo points sometimes showing a max of 5 when it should show a max of 6.
 - Added coloration to the Roll The Bones module for how many RtB buffs the player has active (ticket #227, thanks Zahariel!).
 
-v1.10.7:
+## v1.10.7
 
 - Added an option to PlayerMana to allow scaled mana color gradients to be used on classes that don't use Mana.
 - Added a user-submitted Roll The Bones module (ticket #220, thanks Zahariel!).
 
-v1.10.6:
+## v1.10.6
 
 - Fixed TargetInfo debuffs appearing to be spaced differently than buffs
 - Added support for the Pain mana type
 
-v1.10.5:
+## v1.10.5
 
 - Added colors for Maelstrom mana
 - Fixed TargetMana to use Insanity, Fury, and Maelstrom colors correctly
 - Fixed error on startup in 7.0 for users with old MaelstromCount, SunderCount, or LacerateCount modules in their settings.
 
-v1.10.4:
+## v1.10.4
 
 - Fixed Maelstrom using the wrong alpha setting when the bar was empty
 - Fixed reliability of visibility of the Absorb modules. They were sometimes showing up when they shouldn't and could be slow (or fail) to actually display when they needed to.
 
-v1.10.3:
+## v1.10.3
 
 - Fixed incorrect texture drawing behind power counters
 
-v1.10.2:
+## v1.10.2
 
 - Fixed errors popping up when playing as tank classes with the Resolve module enabled in 7.0 (Resolve isn't a thing anymore)
 - Fixed the castbar disappearing mid-cast sometimes when it shouldn't in 7.0
 
-v1.10.1.1:
+## v1.10.1.1
 
 - Fixed SliceAndDice error introdued in 1.10.1 that prevented the SnD module from working and the options from opening
 
-v1.10.1:
+## v1.10.1
 
 - Fixed the "low threshold" flash being in the wrong location after rotating a module 90 degrees
 - Fixed bar rotation not resetting properly when changing profiles from one with rotation enabled to one without
@@ -703,11 +703,11 @@ v1.10.1:
 - Fixed the new 7.0 power types (astral power, insanity, fury) using the wrong alpha setting when the bar was empty
 - Fixed mana colors on the TargetMana bar for the new 7.0 power types (insanity, fury)
 
-v1.10.0:
+## v1.10.0
 
 - Updated TOC for 7.0
 
-v1.10:
+## v1.10
 
 - First release supporting both 6.x and 7.0/Legion. At a high level, this means:
 -- Updated all class-specific resources to account for their 7.0 versions (rogues: 6-8 combo points, death knights: homogenized rune types, warlocks: all specs use shards, etc.)
@@ -717,22 +717,22 @@ v1.10:
 - Fixed how cooldowns are initialized to help them cooperate better with mods like OmniCC (ticket #205)
 - Updated the Stagger bar with the new Stagger support in DogTags so we don't have to figure out and format values ourselves.
 
-v1.9.18:
+## v1.9.18
 
 - Fixed the lag indicator sometimes completely covering the castbar when interacting with certain in-world quest objects
 - Improved some debugging tools
 
-v1.9.17:
+## v1.9.17
 
 - Use the GCD spell for calculating GCD time (ticket #204)
 
-v1.9.16:
+## v1.9.16
 
 - Added option to ignore the game's configured custom lag tolerance when displaying IceHUD's lag indicators (ticket #201)
 - Fixed "Show during cast" for classes with < 1.5s GCD (ticket #200 - thanks nandchan!)
 - Fixed GCD occasionally showing when it shouldn't (ticket #199 - thanks nandchan!)
 
-v1.9.15:
+## v1.9.15
 
 - Added optional lag indicator to the GCD. (ticket #196 - thanks nandchan!)
 - Fixed GCD bar appearing on top of other UI elements incorrectly - it now appears at the same level as the rest of the bars.
@@ -740,73 +740,73 @@ v1.9.15:
 - Channeled spells now respect the "Show during cast" option of the GCD bar. (ticket #197 - thanks nandchan!)
 - Hopefully fixed an issue that would cause the GCD to not always fire when it was supposed to. (ticket #198 - thanks nandchan!)
 
-v1.9.14:
+## v1.9.14
 
 - Fixed the Resolve module to work properly (thanks cgsg11!).
 
-v1.9.13.1:
+## v1.9.13.1
 
 - Fixed an error popping up about missing localization in the CustomCounterBar.
 
-v1.9.13:
+## v1.9.13
 
 - Added optional aura icon to the CustomCounterBar by request.
 
-v1.9.12:
+## v1.9.12
 
 - Added a custom counter bar module by popular demand. Behaves exactly like a stack counter module, but in bar form.
 
-v1.9.11:
+## v1.9.11
 
 - Fixed Anticipation not working in languages other than English. (ticket #194)
 
-v1.9.10.1:
+## v1.9.10.1
 
 - Fixed error in the Runes module caused by improper usage of SetCooldown (ticket #189)
 
-v1.9.10:
+## v1.9.10
 
 - Fixed CC modules sometimes catching the wrong debuff (thanks rmihalko! ticket #186)
 - Added option to hide IceHUD when interacting with barber shops (ticket #190)
 - Updated TOC to patch 6.2
 
-v1.9.9.1:
+## v1.9.9.1
 
 - Fixed a bug causing buff/debuff watchers to not display for (de)buffs that didn't stack.
 
-v1.9.9:
+## v1.9.9
 
 - Made Death Knight rune module cooldown wipes match the shape of the runes.
 - Fixed possible divide-by-zero in the custom counter module.
 - Added an option to only display a buff/debuff watcher when the tracked aura has more than X stacks (default 0) (ticket #185)
 - Added support for tracking spell stacks and charges in the Custom Count module.
 
-v1.9.8:
+## v1.9.8
 
 - Added Paladin Fist of Justice stun to the CC list by request.
 - Updated TOC to patch 6.1
 
-v1.9.7:
+## v1.9.7
 
 - Added Resolve module contributed by darkuja_9 and tweaked a bit.
 - Added feature to turn burning embers green if the player has the codex of xerrath spell.
 - Changed bar low threshold step from 5% increments to 1% increments by request.
 - Added Stagger module from user pilonog.
 
-v1.9.6:
+## v1.9.6
 
 - Updated the Chi module (HarmonyPower) to be able to display 6 Chi.
 - Fixed errors that were being generated by a few different modules in weapon enchant-related situations due to an API changing in 6.0 that I didn't know about until now. (ticket #183 - thanks slippycheeze!)
 - Fixed a bug where Monks with more than 4 Chi would not draw the additional Chi properly on initial load into the world.
 
-v1.9.5:
+## v1.9.5
 
 - Fixed being able to cancel a buff from the PlayerInfo module when the frame's alpha was zero. Unfortunately the mouse click is still eaten, but at least your buffs don't pop off.
 - Worked around a bug Blizzard created in 6.0 with cooldown wipes not updating alpha with their parent frame, specifically for Info modules. See <http://www.wowinterface.com/forums/showthread.php?t=49950> for discussion.
 - Updated FAQ in the mod's config panel.
 - Fixed ComboPointsBar not setting the proper alpha value sometimes.
 
-v1.9.4:
+## v1.9.4
 
 - Inactive mode "Darkened" on class power counters now displays a darkened background behind a full/partially full rune as well as the old behavior of showing empty runes as darkened forms. This aids in class powers like Demonology Warlocks who need to be able to see the full bar.
 - Fixed "divide by zero" errors that could happen in class power counters when switching specs.
@@ -816,21 +816,21 @@ v1.9.4:
 - Allow players to cancel their buffs outside of combat on the PlayerInfo module. (ticket #182 - thanks Thyraxion!)
 - Added support for ComboPoints, ComboPointsBar, and SliceAndDice to display with no target selected.
 
-v1.9.3:
+## v1.9.3
 
 - Fixed Vengeance- and Sunder-related 6.0 errors.
 
-v1.9.2:
+## v1.9.2
 
 - Fixed a few more errors popping up for specific classes with specific modules setup.
 
-v1.9.1:
+## v1.9.1
 
 - Fixed a bug with custom cooldown bars that existed prior to v1.9 causing errors when opening the configuration screen.
 
 - Fixed a localization-related issue causing an error for all locales.
 
-v1.9:
+## v1.9
 
 - WoW 6.0 TOC and compatibility updates. Rogue combo points will only be displayed when targeting an enemy for now until Blizzard adds an API to get combo points without a target.
 - Made the GCD bar respect global bar alpha settings. (ticket #126)
@@ -845,11 +845,11 @@ v1.9:
 - Fixed bug with the player's mana bar not updating its alpha properly when entering the world (i.e. teleporting/hearthing/etc.).
 - Added support for the "custom lag tolerance" setting to the castbar's lag display. (ticket #178 - Thanks slippycheeze!)
 
-v1.8.18.1:
+## v1.8.18.1
 
 - Fixed a bug causing combo points to always display in Numeric mode for any class instead of hiding when the player has 0 combo points and 0 anticipation stacks.
 
-v1.8.18:
+## v1.8.18
 
 - Integrated a feature by slippycheeze that enables the current threat target's name to be displayed in the "lower text" portion of the Threat bar. <http://www.wowace.com/addons/ice-hud/tickets/176-show-name-of-threat-holder-and-color-based-on-their/>
 - Possibly fixed some NaN/divide-by-zero errors that have been cropping up sporadically lately.
@@ -858,7 +858,7 @@ v1.8.18:
 - Fixed an issue causing cooldown bars set to "when ready" to not display if the player had no target but the spell was castable on the player and ready to be cast.
 - Packaged latest version of LibDogTag for some memory and performance improvements (should reduce "script ran too long" errors).
 
-v1.8.17:
+## v1.8.17
 
 - Added 90 degree rotation as an option for mirror bars.
 - Added support for DogTag strings on buff/debuff watchers.
@@ -867,109 +867,109 @@ v1.8.17:
 - Ticket #173: added a toggle to hide the entire HUD during pet battles.
 - Added a toggle to only show cooldown modules when you have a target selected for abilities that don't require a target to cast, by request.
 
-v1.8.16:
+## v1.8.16
 
 - Updated TOC to patch 5.4
 - Added Absorb modules for focus, target, and player.
 - Added Monks as eligible "tank" classes for the Vengeance module.
 - Merged Zahariel's support for the Nine-Tailed SnD bonus duration (ticket #174)
 
-v1.8.15.1:
+## v1.8.15.1
 
 - updated TOC for the options module so it loads in 5.3
 
-v1.8.15:
+## v1.8.15
 
 - updated TOC to patch 5.3
 - fixed a bug in the Warlock module when using numeric mode and switching specs
 
-v1.8.14:
+## v1.8.14
 
 - updated TOC to patch 5.2
 - <http://www.wowace.com/addons/ice-hud/tickets/145-hunter-pet-dismiss-error/> blacklisted the "dismiss pet" menu entry in pet right-click menus. Hunters should use the Dismiss Pet spell instead.
 - <http://www.wowace.com/addons/ice-hud/tickets/167-shaman-totems-cant-be-clicked-off/> disabled right-click-destroy on totems
 - <http://www.wowace.com/addons/ice-hud/tickets/171-cc-bar-not-showing-monk/> added Monk CC spells
 
-v1.8.13:
+## v1.8.13
 
 - fixed an error in the options module not being updated for 5.1
 
-v1.8.12:
+## v1.8.12
 
 - updated TOC to patch 5.1
 - fixed a bug with Chi power in 5.1
 
-v1.8.11:
+## v1.8.11
 
 - fixed PVP icon showing up as a green square for Pandaren who have not yet chosen a faction. this fix applies to TargetHealth and PlayerHealth, but not to DogTag text such as on the TargetInfo frame.
 - ticket #161: integrated Zahariel's fix for gradients.
 - ticket #157: fixed an error when a channeled spell ends early due to being hit. (Thanks, cg110!)
 
-v1.8.9:
+## v1.8.9
 
 - fixed an error when entering/exiting an instance as a Monk
 
-v1.8.8:
+## v1.8.8
 
 - fixed SnD duration prediction for 5.0 (thanks Zahariel!)
 - maybe fixed reported error message when mousing over a (de)buff in an Info module
 
-v1.8.7:
+## v1.8.7
 
 - fixed Holy Power only showing 3 max on login instead of 5
 
-v1.8.6:
+## v1.8.6
 
 - fixed a bug where the shard module could sometimes show zero runes on the graphical display after entering or exiting a dungeon
 - packaged the latest version of libdogtag-unit that fixes some errors when using talent-based tags in 5.0
 
-v1.8.5:
+## v1.8.5
 
 - fixed an error message displaying when opening the options menu as a priest
 - removed level restriction on harmony power since apparently that's not a thing any more.
 - fixed the fifth chi not always drawing immediately when changing specs to one that grants an additional chi.
 - updated harmony power module to refresh itself more frequently so it's more accurate
 
-v1.8.4:
+## v1.8.4
 
 - added another FAQ to the list
 - fixed the numeric display mode for class power counters sometimes showing "..."
 - added support for changing the outline/shadowing of all non-DogTag strings on all modules
 - added support for showing the numeric value on top of a class power's graphical display. this number can also be moved vertically.
 
-v1.8.3:
+## v1.8.3
 
 - fixed a few more causes of taint showing up in the glyph ui
 - fixed Holy Power non-'Graphical' modes having the images vertically squished
 - fixed a few 5.0-related errors appearing in the Threat, CC, and invuln modules.
 
-v1.8.2:
+## v1.8.2
 
 - fixed Warlock burning embers/soul shards not updating when applying or removing a glyph that changes the total number available
 
-v1.8.1:
+## v1.8.1
 
 - fixed IceHUD causing taint when applying glyphs
 
-v1.8:
+## v1.8
 
 - updated TOC to patch 5.0.4
 - full 5.0/MoP compatibility (Monks, new class powers, API changes, etc.) while maintaining 4.x compatibility as well
 
-v1.7.10:
+## v1.7.10
 
 - fixed an issue where buff/debuff watchers and cooldown watchers would sometimes get stuck and not update
 
-v1.7.9:
+## v1.7.9
 
 - added some localization entries that were causing errors trying to open IceHUD's options
 
-v1.7.8:
+## v1.7.8
 
 - fixed a few cooldown bar oddities that 4.3 brought up
 - added a toggle to disable tooltips on Info modules
 
-v1.7.7:
+## v1.7.7
 
 - updated TOC to patch 4.3
 - enabled the Totems module for druids since 'wild mushroom' is considered a totem (ticket #137)
@@ -977,24 +977,24 @@ v1.7.7:
 - updated to accept either a spell id or a spell name for custom bars. this allows tracking of different debuffs with the same name (such as Hemorrhage and its DoT). thanks to Nibelheim on WoWInterface for this one as well.
 - new 'max health' formula from Nibelheim over on WoWInterface (thanks!)
 
-v1.7.6:
+## v1.7.6
 
 - updated TOC to patch 4.2
 - fixed reported error in the CustomBar module
 - fixed error when selecting any of the last 4 presets in the list
 
-v1.7.5.1:
+## v1.7.5.1
 
 - removed the pet happiness DogTag from the PetInfo module default setting now that pet happiness is gone in 4.1
 
-v1.7.5:
+## v1.7.5
 
 - updated TOC to patch 4.1
 - fixed patch 4.1 breakages:
 -- removed all references to pet happiness
 -- re-implemented pulsing animations for shards and holy power since the Blizzard built-in animation system is now broken (or at least functioning differently than it used to)
 
-v1.7.4.4:
+## v1.7.4.4
 
 - fixed custom cooldown bars not working quite right with the 'When ready' display mode
 - fixed PlayerInfo to only show the "buff canceling is disabled" message when a buff is right-clicked instead of any button click. also clarified the popup message to better explain why the feature is currently disabled
@@ -1005,7 +1005,7 @@ v1.7.4.4:
 - made custom (de)buff watcher bars respect the bForceHide option for :Show() so that they are properly hidden when a profile change occurs or they are manually disabled via the options menu
 - fixed the elite (classification) icon for targets to respect the "lock all icons at 100% alpha" setting
 
-v1.7.4.3:
+## v1.7.4.3
 
 - added new option (enabled by default) to have buffs and debuffs in Info modules sorted by expiration time instead of the order the game returns them in (application time?)
 - ticket #116: first attempt at an honest-to-goodness alternate power bar. i don't raid, so i've only tested this against the alternate power in The Maw of Madness in Twilight Highlands...
@@ -1016,7 +1016,7 @@ v1.7.4.3:
 - ticket #117: respect the user's mod-wide "enabled" setting when changing profiles
 - cleaned up some logic that could cause errors when enabling the mod due to a profile switch when the player initially loaded with it disabled
 
-v1.7.4.2:
+## v1.7.4.2
 
 - added feature to custom cooldown bars to allow them to show/hide with the rest of the mod instead of having special rules (if desired)
 - added ability to ignore a spell's range/target castability if desired on a cd bar. this allows the bars to display when a buff is ready even if it can't be cast on your current target, for example
@@ -1024,7 +1024,7 @@ v1.7.4.2:
 - added new user-submitted bar textures (ticket #111)
 - "fixed" (read: worked around) crash that IceHUD was triggering in the client by implementing a Lua-only version of UnitSelectionColor(). the crash was triggered by having DogTags disabled, TargetInfo enabled, and leaving an instance while in combat with one of the instance's mobs targeted (ticket #110)
 
-v1.7.4.1:
+## v1.7.4.1
 
 - exposed upper text on snd bar since the string specified there is actually used by the module
 - disabled the potential duration text on the SnD module when the user has duration alpha set to 0
@@ -1035,7 +1035,7 @@ v1.7.4.1:
 - added spell ids for holy word: sanctuary and serenity since GetSpellCooldown() is bugged with them by name
 - converted DHUD skin from blp to tga because it's acting funny as a blp (ticket #106)
 
-v1.7.4:
+## v1.7.4
 
 - added custom upper/lower text coloring to buff/debuff bars and cooldown bars since they don't have any dogtag support
 - fixed lower text to be visible on custom buff/debuff bars and custom cooldown bars
@@ -1048,13 +1048,13 @@ v1.7.4:
 - fixed SnD bar (and potential duration bar) to show and hide much more reliably. previously it would sometimes not display the potential duration or the entire module would be visible when it shouldn't be
 - fixed SnD duration bonus from glyph (to 6 seconds from 3)
 
-v1.7.3.11:
+## v1.7.3.11
 
 - picked up latest version of LibRangeCheck to fix ranges reporting incorrectly for holy paladins
 - fixed some errors that could pop up with totems and custom bars
 - fixed low threshold flashing on custom bars
 
-v1.7.3.10:
+## v1.7.3.10
 
 - added support for custom buff/debuff trackers to be able to track totems by name
 - fixed layer ordering such that icons draw in front of bars again
@@ -1062,7 +1062,7 @@ v1.7.3.10:
 - changed custom cooldown bars back to never forcefully hide themselves when set to 'always' display mode. they will now respect the global transparency settings instead
 - added user-submitted CleanCurvesOutline texture which allows DHUD-like casting to be placed on top of another bar and only the outline fills up instead of the whole bar
 
-v1.7.3.9:
+## v1.7.3.9
 
 - minor performance optimizations
 - fixed custom buff bars and cooldown bars multiplying alpha values when they shouldn't have been. at low alpha this meant that they were much more transparent than they should have been
@@ -1070,32 +1070,32 @@ v1.7.3.9:
 - re-fixed a bug causing the player mana module to not update color when a druid left an LFD instance while in a form and was immediately placed back on a mount and not in a form
 - fixed configuration mode error in the player info module when the player had weapon buffs applied (ticket #104)
 
-v1.7.3.8:
+## v1.7.3.8
 
 - hopefully fixed a few error messages that have been reported, though I haven't been able to reproduce the error messages myself
 
-v1.7.3.7:
+## v1.7.3.7
 
 - added a toggle for the "override alpha" behavior that displays class counters at in-combat alpha when out of combat if the counter isn't full/empty
 - fixed the "debuff size" settings getting reset after every ui reload or log out/in
 - fixed an issue where the wrong texture could get applied to death runes when changing zones
 - fixed markers generating errors or just misbehaving when changing profiles (ticket #102)
 
-v1.7.3.6:
+## v1.7.3.6
 
 - fixed PlayerInfo module misbehaving with temporary weapon enchants
 
-v1.7.3.5:
+## v1.7.3.5
 
 - minor optimization in the threat bar
 - fixed secondary threat bar to display properly again
 - added support for pets to the second highest threat feature
 
-v1.7.3.4:
+## v1.7.3.4
 
 - fixed the GCD bar not animating
 
-v1.7.3.3:
+## v1.7.3.3
 
 - maybe fixed an issue where some bars (most notably the cast bar) could get stuck
 - fixed occasional flickering in the cast bar and threat bar when they are first displayed
@@ -1104,7 +1104,7 @@ v1.7.3.3:
 - fixed markers not rotating with a bar when the rotation option is set at runtime
 - fixed the player's health, mana and cast bars monitoring the wrong unit whenever the player leaves an instance while in a vehicle
 
-v1.7.3.2:
+## v1.7.3.2
 
 - fixed the eclipse bar turning gray when adjusting settings that caused a Redraw()
 - added ability to set icon sizes for debuffs separately from buffs in info modules
@@ -1114,7 +1114,7 @@ v1.7.3.2:
 - fixed text staying hidden when disabling and re-enabling a module
 - ripped ~1.3mb out of IceHUD itself and moved it into an LoD IceHUD_Options addon
 
-v1.7.3.1:
+## v1.7.3.1
 
 - fixed markers stuck in inverted mode.
 - fixed combining expanding & reverse fill options causing bars to position incorrectly.
@@ -1122,7 +1122,7 @@ v1.7.3.1:
 - enabled bar rotation for the CastBar and Eclipse modules.
 - added support for rotated markers.
 
-v1.7.3:
+## v1.7.3
 
 - fixed an error message some users were seeing with certain fonts
 - compressed buffs/debuffs in info modules to take up less vertical space when "buff size" and "own buff size" are set to different values
@@ -1134,13 +1134,13 @@ v1.7.3:
 - shamelessly ripped off code from pitbull4 to replace "set focus" in drop-down menus with instructions on how to do so
 - added a check for the player's mana type when PLAYER_ENTERING_WORLD fires so that we adjust mana type properly when entering/leaving instances
 
-v1.7.2.2:
+## v1.7.2.2
 
 - fixed the target cast bar to not freeze up and reset itself whenever a UNIT_SPELLCAST_INTERRUPTIBLE / UNIT_SPELLCAST_NOT_INTERRUPTIBLE event fires
 - fixed the cast bar to actually use the CastChanneling color when channeling. since this was apparently never hooked up, i also changed the default color for CastChanneling to match CastCasting so that long-time users won't notice the difference unless they've explicitly set a channeling color themselves
 - fixed an error introduced in 1.7.2 where the playerinfo's dropdown menu was trying to use the target's data instead of the player's data
 
-v1.7.2.1:
+## v1.7.2.1
 
 - fixed an error that could crop up when tweaking colors
 - fixed bars that don't support dogtags in their text blocks to say so in the tooltip instead of telling the user that they can use dogtags when they can't
@@ -1149,7 +1149,7 @@ v1.7.2.1:
 - extended vertical offset min/max for info modules (ticket #92)
 - fixed the Eclipse bar not showing up since 1.7.2 (ticket #93)
 
-v1.7.2:
+## v1.7.2
 
 - automatically replaced Lacerate/Sunder/MaelstromCount modules with custom counters if the user was using them. custom counters accomplish the same thing and are much more fully-featured/configurable than the old per-ability modules were. the only downside to the new system is that custom counters are loaded regardless of the player's class whereas the old ones only showed for their appropriate class
 - hid the "rotate 90 degrees" option on cast bars and eclipse bars since it just doesn't work very well and looks bad. users keep reporting that these are broken when rotating and since i don't have a good fix, i'm disabling the feature for now
@@ -1161,11 +1161,11 @@ v1.7.2:
 - finally (for reals, hopefully) fixed the gcd for all classes. gcd is a surprisingly difficult problem as there's no straightforward api for it
 - fixed the vengeance module not grabbing the player's max health until a UNIT_MAXHEALTH event fired (caused #1.INF to display sometimes and bar to not function)
 
-v1.7.1.1:
+## v1.7.1.1
 
 - set AceGUI-3.0-SharedMediaWidgets to load after LibSharedMedia to fix an error some users were seeing in 1.7.1
 
-v1.7.1:
+## v1.7.1
 
 - fixed an error some users were seeing on login that caused icehud to not load
 - changed the pet health/mana bars to monitor the player whenever the player enters a vehicle since the player bars already change to display vehicle info in that situation
@@ -1178,11 +1178,11 @@ v1.7.1:
 - added a 'vengeance' tracking module by user Rokiyo
 - fixed the cast lag indicator being completely wrong when using a meeting stone to summon someone
 
-v1.7.0.9:
+## v1.7.0.9
 
 - no changes in IceHUD; publishing an updated version to get a fixed LibDogTag-Unit-3.0 out there and stop the errors popping up about talents from other mods
 
-v1.7.0.8:
+## v1.7.0.8
 
 - very minor performance gain by not doing the per-frame update on invisible modules
 - nuked the primary offender of garbage generation. there is more to get rid of but finding it is a tedious process
@@ -1195,18 +1195,18 @@ v1.7.0.8:
 - yet another fix for text sometimes displaying the unit name for PetHealth
 - fixed how the 'second highest threat' bar is drawn so that it actually works with all textures
 
-v1.7.0.7:
+## v1.7.0.7
 
 - quick update to correct any click-through problems for Clique users until the new version gets pushed
 
-v1.7.0.6:
+## v1.7.0.6
 
 - made several changes to how mouse interaction works with various modules to support new Clique changes available in its latest alpha version. once a new release of Clique is made, then the Info modules not being click-through will be fixed if the user doesn't want mouse interaction to work there.
 - removed HungerForBlood module as the ability has been removed from the game
 - fixed "bar visible" checkbox to also hide/show the solar portion of the eclipse bar
 - fixed lower text popping back up when it shouldn't
 
-v1.7.0.5:
+## v1.7.0.5
 
 - fixed snd glyph detection on the SliceAndDice module due to new return value on GetGlyphSocketInfo
 - fixed certain buff types not displaying a tooltip on mouseover in the info modules
@@ -1214,7 +1214,7 @@ v1.7.0.5:
 - fixed bar text not properly hiding on bars that use RegisterUnitWatch to control visibility
 - fixed scaling to affect the text and icons again like it used to
 
-v1.7.0.4:
+## v1.7.0.4
 
 - added pulsing to the shard counter and holy power modules whenever they are maxed out
 - added option to use out-of-combat alpha on class power bars (holy power, shards) when targeting a friendly
@@ -1225,22 +1225,22 @@ v1.7.0.4:
 - fixed default runes from being incorrect (showing 6 blood runes) after re-enabling them from the runes module while the game is running
 - fixed configuration mode not working since v1.7.0.3
 
-v1.7.0.3:
+## v1.7.0.3
 
 - fixed CC module spell id's by removing spells/effects that no longer exist, adding some new ones, and updating id's of ones that have changed
 - attempt to fix ticket #81 <http://www.wowace.com/addons/ice-hud/tickets/81-lua-error-in-eclipse-bar/>
 - fixed text getting rotated along with bars when choosing the "rotate 90 degrees" option
 
-v1.7.0.2:
+## v1.7.0.2
 
 - fixed Blizzard's default runes to be properly hidden if desired when the default player health frame is left enabled
 - fixed gcd module to work for all classes without relying on specific spell ids
 
-v1.7.0.1:
+## v1.7.0.1
 
 - fixed a few errors causing the holy power/shard modules to not show up and the IceHUD options screen to not display for Paladins or Warlocks
 
-v1.7:
+## v1.7
 
 - fixed rotation of inverted bars to draw the bar correctly
 - added ability for spell ids to be specified instead of names for custom bars and cooldown bars. when an id is typed it will attempt to resolve to the buff name
@@ -1266,7 +1266,7 @@ v1.7:
 - setup the toc to properly strip out embeds.xml whenever it's building a no-lib version
 - added support for automatically changing profiles when changing specs (LibDualSpec)
 
-v1.6.12:
+## v1.6.12
 
 - added some more protection against people tweaking settings or changing profiles while in combat and added a warning message explaining that stuff could be broked if they manage to do it anyway
 - fixed cooldown bars that are set to "when ready" to be properly hidden when the module is disabled or profiles are changed
@@ -1284,12 +1284,12 @@ v1.6.12:
 - clarified some tooltip text on the TargetInfo module's text blocks
 - added DogTag support to the ToT module by request
 
-v1.6.11.1:
+## v1.6.11.1
 
 - fixed the GCD module to be available in the module settings list again
 - tweaked options visibility and made 'bg visible' work on the GCD module
 
-v1.6.11:
+## v1.6.11
 
 - fixed a bug where the combat icon would get stuck if you went into combat when resting but had the resting icon display disabled
 - made the combat icon replace the resting icon if you go into combat while resting and then switch back to the resting icon (if appropriate) when dropping combat
@@ -1302,7 +1302,7 @@ v1.6.11:
 - re-added "enabled" checkbox in the settings to allow users to completely enable/disable the mod (this seems to have been something we got for free with one of the ace2 libraries and is no longer present after the move to ace3)
 - registered callback for media updates from LibSharedMedia so that the mod's fonts/ToT bar texture can be refreshed if necessary
 
-v1.6.10:
+## v1.6.10
 
 - should resolve issues that some users were seeing with their settings not being loaded properly
 - minor optimization of frame rotation by un-registering the event listening for animation completion after it has done its job
@@ -1313,7 +1313,7 @@ v1.6.10:
 - added rough implementation of horizontal bars by abusing some features of Blizzard's UI animation system. we'll see if there's any actual demand for this to determine if the feature needs to be improved at all (ticket 60)
 - big giant options screen usability cleanup: colorized the FAQ and Module Settings description text to be more readable, removed custom coloring from certain options that didn't match the rest, hid a few debug-only settings, consolidated all the 'create custom module' buttons into a drop-down + create button, clarified description of some options so that their intent/purpose is more clear, moved around/cleaned up headers for consistency, doubled the width of long options so that they don't get cut off and ...'d
 
-v1.6.9:
+## v1.6.9
 
 - removed Deformat as it's no longer necessary
 - made all pop-up dialogs display on top of the options screen so that they're actually visible at lower resolutions
@@ -1328,7 +1328,7 @@ v1.6.9:
 - added LibDBIcon to bring back the minimap icon
 - don't hide the Blizzard version of Holy Power by default since we're not hiding the Blizzard player frame by default
 
-v1.6.8:
+## v1.6.8
 
 - removed FuBarPlugin-2.0 as it's no longer used
 - added a bit more user friendliness to the new configuration page. efforts to increase awareness about how to setup the mod and get help are ongoing
@@ -1336,7 +1336,7 @@ v1.6.8:
 - added upgrade detection to alert users that their profile may need to be re-selected if the last version they ran was pre-ace3-conversion
 - added an FAQ section to the /icehud configuration page so that users don't have to go to one of the addon hosting sites to get their questions answered
 
-v1.6.7:
+## v1.6.7
 
 - added basic implementation of Holy Power for Cataclysm Paladins. has a graphical mode (basically matches Blizzard's built-in frame without the background) and numeric mode (which just displays the number of runes active as 0/1/2/3)
 - updated UnitGroupRolesAssigned check for the new return value
@@ -1354,7 +1354,7 @@ v1.6.7:
 - fixes for cataclysm: added UNIT_POWER/UNIT_MAXPOWER event registrations in place of all the old power types, fixed mirror bar, targetinfo, and targetoftarget SetScripts to pass 'this' and 'arg#' around where necessary
 - forcibly set bar upper/lower text width to 0 after setting their contents so that they auto-resize to the proper width. some massive bar/font sizes were causing strings to get cut off
 
-v1.6.6:
+## v1.6.6
 
 - added focustarget and pettarget as valid units to look for buffs/debuffs on with a custom bar
 - made custom bars able to track auras (buffs with no end time like paladin auras, righteous fury, stealth, etc.)
@@ -1368,7 +1368,7 @@ v1.6.6:
 - fixed an issue where right-clicking weapon buffs in the PlayerInfo module wasn't canceling weapon buffs
 - fixed an issue where weapon buff cooldowns would flicker every second in PlayerInfo
 
-v1.6.5:
+## v1.6.5
 
 - fixed a bug with custom cooldown bars that would cause the bar to flash during the GCD if a maximum duration was specified higher than the GCD time
 - user-submitted patch for an 'invert' option in addition to the 'reverse' option for all bars. now 'reverse' controls bar movement direction while 'invert' controls bar fill behavior <http://www.wowace.com/addons/ice-hud/tickets/73-reversing-cast-bars-and-channels>
@@ -1379,21 +1379,21 @@ v1.6.5:
 - added a "second highest threat" overlay to the Threat module that shows where the next-closest person is on the threat bar (in terms of their raw threat value divided by yours) if you're the current tank.
 - if "always display at full alpha" is checked for slice and dice bar, then don't let it hide itself
 
-v1.6.4:
+## v1.6.4
 
 - fixed the slice'n'dice duration bar from not showing up when one of its alpha values is set to 0
 - when a custom CD bar is set to "when ready" display mode, it will only display an empty bar. therefore, empty should behave like full for the purposes of alpha ooc/target/etc. settings
 - fixed "when ready" option for the custom cooldown bar not working as intended (it was showing when ready OR cooling down)
 - this should also remedy any issues that users are having since 3.3.5 if they do not have Ace2 installed as a separate library and are not using any other Ace2 mods that have updated since 3.3.5. there was an issue in one of the ace libraries with the 3.3.5 chat frame updates that broke Ace2
 
-v1.6.3:
+## v1.6.3
 
 - added an option that allows a custom bar to track a substring or full name at the user's discretion. previously it was always a substring match. this was causing a custom bar for "trauma" to also trigger for "mind trauma", for example.
 - fixed maximum duration configuration not working for cooldown bars
 - fixed a bug where the player's icons (specifically seen with the party leader icon) would go full alpha when they first appeared instead of the proper alpha value
 - changed DK GCD spell to death coil from plague strike
 
-v1.6.2:
+## v1.6.2
 
 - fixed pet health to be colored properly whenever the "color bar by health %" option is checked
 - split the buff/debuff filter into a buff filter and a debuff filter
@@ -1403,7 +1403,7 @@ v1.6.2:
 - fixed the cast lag indicator, the incoming heal indicator, and aggro pull indicator to draw on the proper area of the bar when the bar is set to reverse direction
 - fixed the incoming heal bar being invisible sometimes (such as the bar alpha being 0 when OOC, >0 when not full, and the player being OOC with a non-full bar)
 
-v1.6.1:
+## v1.6.1
 
 - user-submitted change care of JX: Added "Display when ready" option to Custom Cooldown bar to replace "Display when empty" toggle.
 - added an optional icon to be displayed alongside a custom bar and cooldown bar that shows what spell the bar is tracking. default is off
@@ -1415,7 +1415,7 @@ v1.6.1:
 - added module to represent combo points in bar form by popular demand
 - fixed the player's clickable area when using the ArcHUD texture to be on the outside edge of the bar instead of the inside
 
-v1.6:
+## v1.6
 
 - fixed an issue with HiBar and GlowArc causing random textures to appear on the screen
 - added user-submitted "max duration" functionality to custom bars such that they can always be a fixed time period
@@ -1424,16 +1424,16 @@ v1.6:
 - made sure to set the default height on the slice'n'dice bar to 0 to make sure it doesn't go crazy
 - fixed the 'bar visible' checkbox to work again
 
-v1.5.18:
+## v1.5.18
 
 - fixed giant green bar that would appear for players who had "show incoming heals" disabled
 - fixed sunder count module generating an error and not functioning
 
-v1.5.17:
+## v1.5.17
 
 - fully fixed for WoW 3.3.3 (as far as we've tested). please submit all bug reports in this version on the comments page
 
-v1.5.16a:
+## v1.5.16a
 
 PLEASE NOTE: this is a VERY temporary stop-gap solution to fix IceHUD for the short term. This update forces ALL users to use the RivetBar texture as it's the only one that's currently functioning (since it's a vertical bar it's easy to fake). There WILL be another update once the mod is back in full working order, but everyone has been so generous and supportive so I wanted to get something out. Other changes included in this update are:
 
@@ -1448,41 +1448,41 @@ PLEASE NOTE: this is a VERY temporary stop-gap solution to fix IceHUD for the sh
 - filled out CC list a bit more with user-submitted spell id's
 - (by: Phanx) Added support for CUSTOM_CLASS_COLORS (ticket #26)
 
-v1.5.16:
+## v1.5.16
 
 - updated interface version to 3.3
 - added Entangling Roots and Intimidating Shout to the CC list
 - replaced libhealcomm-3 support with libhealcomm-4 support
 
-v1.5.15:
+## v1.5.15
 
 - updated the incoming heal bar to use the correct color
 - fix for user-reported runes error
 - the player's cast bar can now optionally change color whenever the target goes out of range. this is currently enabled by default
 - added support for custom bars to track by substring instead of an exact match
 
-v1.5.14:
+## v1.5.14
 
 - fixed user-submitted totem bug: <http://www.wowace.com/addons/ice-hud/tickets/29-error-when-dismissing-totems/>
 - changed the vertical position extents for TargetOfTarget to 600 instead of 300 by request
 bug <http://www.wowace.com/addons/ice-hud/tickets/28-add-hex-to-target-cc-module/> - added Hex to the CC list as an incapacitate effect
 - fixed a custom bar bug for users with rock + fubar that tried to use the right-click cascading menu to configure things
 
-v1.5.13:
+## v1.5.13
 
 - added PetInfo module
 - fixed some vehicle issues in ulduar
 
-v1.5.12:
+## v1.5.12
 
 - bumped TOC to 3.2
 
-v1.5.11:
+## v1.5.11
 
 - fixed custom textures not applying to low threshold, cast lag indicator, aggro indicator, slice'n'dice duration preview, and incoming heal amounts
 - Hopefully fixed issues with Party Frames being shown when Pitbull and other Unit Frame addons are present
 
-v1.5.10:
+## v1.5.10
 
 - fixed custom bars throwing all sorts of errors when creating/changing profiles with them active
 - fixed the pet/vehicle cast bar not being hidden when hiding the "blizzard cast bar" via the player cast module
@@ -1497,11 +1497,11 @@ bug <http://www.wowace.com/projects/ice-hud/tickets/18-use-new-vehicle-api-to-sw
 - made custom bars and counters not be case-sensitive in their spells-to-be-tracked
 - Added option to activate both Alpha and Cooldown to DK runes
 
-v1.5.9:
+## v1.5.9
 
 - includes newest version of LibDogTag to fix "double-free syndrome" error
 
-v1.5.8:
+## v1.5.8
 
 - fixed alpha on the target cast bar when "ooc and not full" transparency is set to 0 and "ooc and target" is non-zero
 - made tooltips on the custom bar/counter/cooldown bar more helpful
@@ -1510,7 +1510,7 @@ bug <http://www.wowace.com/projects/ice-hud/tickets/19-entry-on-blizzard-addon-o
 - added user-submitted custom cooldown tracker module. thanks regmellon!
 - re-added missing FangRune bar texture from the selection list
 
-v1.5.7:
+## v1.5.7
 
 - added buff timer configuration modes to the custom bar
 - added a rough version of tracking weapon buffs to the player info module
@@ -1519,7 +1519,7 @@ v1.5.7:
 - added an option to allow modules to hide the animation options in the configuration panel
 - made SnD hide the animation options so that people can't break the bar by enabling animation
 
-v1.5.6:
+## v1.5.6
 
 - added ability to specify a different texture on individual bars than the global one chosen on the main bar configuration panel
 - added more reminders that you have to press Enter after typing strings into various configuration panels before they will save
@@ -1528,35 +1528,35 @@ v1.5.6:
 - added the ability to track mh/oh weapon buff durations with the custom bar
 - if a module is set to always be at 100% alpha, make sure the internal 'alpha' variable is set to 1 or else any custom color's alpha will override it
 
-v1.5.5:
+## v1.5.5
 
 - added a ToT cast bar (disabled by default)
 - added a couple of reminders to press [enter] after typing into text boxes in the custom bar/counter configuration screens
 - fixed a bug causing rune cooldowns to not reset when the player died/res'd if the module was in alpha mode
 - fixed display of buffs on the player not cast by the player for custom bars
 
-v1.5.4:
+## v1.5.4
 
 - NaN-safe'd IceHUD's Clamp function to finally put the kibosh on any SetTexCoord errors
 - fix for a bug causing the runic power (and theoretically any other mana type) bar to sometimes not update if the player spent all of his remaining runic power/rage (or gained full mana/energy) at once
 - added support for binding a custom bar/counter to a larger variety of units (pets, focus targets, etc.)
 
-v1.5.3:
+## v1.5.3
 
 - fixed an issue with buff filtering not working properly for looking at buffs only cast by the player.
 - added some nil checks to avoid a few rare "accessed nil" errors
 
-v1.5.2:
+## v1.5.2
 
 - bumped TOC to mark compatibility with wow 3.1
 
-v1.5.1:
+## v1.5.1
 
 - added a PlayerInfo module (off by default, user requested) that inherits from TargetInfo and adds right-click dismissing buffs functionality
 - made custom bars/counters work with alpha settings properly
 - made multiple custom bars work together nicely...bad programmer for making local properties instead of class properties
 
-v1.5:
+## v1.5
 
 - created a custom bar that the user can create while running IceHUD that will track a given buff or debuff on the player or his target
 - added CustomCount module that behaves like the custom bar, but lets the user create a custom counter (the same as the sunder/lacerate/maelstrom counters)
@@ -1564,7 +1564,7 @@ v1.5:
 - increased the min/max vertical offset for bars by request
 - fixed a minor typo in the maelstrom counter options
 
-v1.4.4:
+## v1.4.4
 
 - fixed a bug with text alpha being unchangeable with LibDogTag usage disabled
 - added toggle to enable/disable showing incoming heals on the player's health bar. also cleaned up the implementation a bit to display more consistently and hide when appropriate
@@ -1574,7 +1574,7 @@ bug <http://www.wowace.com/projects/ice-hud/tickets/16-visual-heal-support/> - a
 - fixed HfB buff % (from 3 to 5) and added a version check so that it's correct whenever 3.1 comes out as well (goes to 1 charge of 15% instead of 3 charges of 5% each)
 - updated AceAddon-2.0 so that the donation frame is gone
 
-v1.4.3:
+## v1.4.3
 
 - fixed divide-by-zero causing a crash on the PTR (this *really* shouldn't cause a crash since it's UI script, but it would appear that the engine is not check for div-by-0 on the PTR. this could potentially happen in a lot of other places...)
 - fixed bug <http://www.wowace.com/projects/ice-hud/tickets/13-low-health-colour/> - added user-submitted ability to color a bar based on the low threshold. if it's above the threshold, the bar is max health/mana color, below the threshold is min health/mana color
@@ -1585,20 +1585,20 @@ v1.4.3:
 - properly set flash frame bar width
 - fixed a castbar bug with channeled spells
 
-v1.4.2:
+## v1.4.2
 
 - made the cast bar lag use the bar texture instead of the background texture. works much better to color on top of
 - fix for a bug involving an error message when targeting certain players
 - added user-requested toggle to color the TargetHealth bar by hostility if the target is an NPC and the bar is set to use class coloring (instead of health % coloring)
 - cleaned up the options and options dependencies a bit in the target health module
 
-v1.4.1:
+## v1.4.1
 
 - fixed a bug introduced in 1.4 that was causing taint in the target health module
 - added a fourth line of text (empty by default) by request to the TargetInfo module
 - fix for HfB text staying on the screen after the buff has timed out (Thanks Tunde!)
 
-v1.4:
+## v1.4
 
 - set HfB bar to be always visible (even with 0 duration) because secure/clickable frames cannot be dynamically shown or hidden during combat unless they're directly tied to a unit's targeted status
 - cleaned up "allow click casting" option to properly disable itself without having to reload the ui
@@ -1619,7 +1619,7 @@ v1.4:
 - vehicle fixes! vehicles now regenerate mana/energy properly instead of relying on events to fire (which seem to be too slow)
 - pet bar is now properly colored for all types of vehicles (was sometimes failing previously for vehicles with energy)
 
-v1.3.19:
+## v1.3.19
 
 - added separate configuration for the "resting" and "combat" portions of the player status icon
 - prettified/organized some configuration screens
@@ -1627,7 +1627,7 @@ v1.3.19:
 - fixed a bug that caused the /icehud slash command to not work when the addon was disabled (and therefore be unable to re-enable it). ouch!
 - fixed an error when adjusting the status icon's position while it's not visible on the screen
 
-v1.3.18:
+## v1.3.18
 
 - fixed TargetTargetMana bar to be able to use its own colors instead of inheriting what TargetMana was set to
 - fixed buff/debuff filter in the TargetInfo module to properly filter on hostile units as well as friendlies. not sure why this was setup to ignore the filter for hostiles in the first place, but it was just creating confusion
@@ -1640,7 +1640,7 @@ v1.3.18:
 - moved some icons into their own Icon Settings group for the TargetHealth/TargetTargetHealth bars configuration
 - fixed localization problem with clicking HfB bar to cast HfB (untested, submitted by module author)
 
-v1.3.17:
+## v1.3.17
 
 - removed the rogue-/druid-only restriction on the ComboPoints module since the Malygos fight needs combo points on the drakes
 - fixed <http://www.wowace.com/projects/ice-hud/tickets/8-module-target-info-long-targetnames-overwrites-the/> : target name in the TargetInfo module no longer spills to the next line or gets cut off if it's too long
@@ -1653,11 +1653,11 @@ v1.3.17:
 - added proper support for profiles instead of storing everything in account-wide un-customizable settings
 - added FuBar support
 
-v1.3.16:
+## v1.3.16
 
 - by popular demand, added an option to allow Rune cooldowns to be displayed in either the new cooldown wipe or the old simple alpha fade
 
-v1.3.15:
+## v1.3.15
 
 - added the ability for runes to draw vertically stacked. new configuration option to choose horizontal/vertical alignment
 - added a cooldown wipe to Runes with a "shine" when the cooldown is over (cooldown currently displays in a square instead of adhering to the circular icon...working on that)
@@ -1666,17 +1666,17 @@ v1.3.15:
 - fixed a potential nil access problem in the CastBar
 - fixed a bug causing TargetInfo lines to be forced to contain data. now any of the lines can be empty if the user chooses
 
-v1.3.14:
+## v1.3.14
 
 - fixed a bug with PlayerMana disabling OnUpdate code for warriors and DK's when their bar was full instead of when it is empty
 - fixed a bug with DK runes appearing to be available as soon as a fight was done instead of when they actually became available again
 - various other DK rune fixes to prepare for wotlk's release
 
-v1.3.13:
+## v1.3.13
 
 - fixes a bug causing the player's mana bar to sometimes not display full when it should. this typically only happened when a potion, mana gem, spell, etc. took the player to his max mana as opposed to gaining it through normal regen
 
-v1.3.12:
+## v1.3.12
 
 - added a global toggle for DogTags so they can be enabled or disabled for the mod
 - added an optional rare/elite/rare-elite indicator to the target health bar (off by default)
@@ -1686,7 +1686,7 @@ v1.3.12:
 - performance optimization: only run the OnUpdate code for the player mana bar when the player's power is not full
 - performance optimization: never run the every-frame OnUpdate for TargetMana or DruidMana bars since we don't need quite that level of granularity
 
-v1.3.11:
+## v1.3.11
 
 - added an option to force text justification on all bars
 - set focus cast default scale to match focus health/mana
@@ -1694,7 +1694,7 @@ v1.3.11:
 - made "configuration mode" display the name of the bar underneath it. causes things to get a bit crowded-looking, but helps distinguish bars a little better
 - fixed a bug that happened in the PlayerMana bar after disabling the predictedPower cvar without reloading the UI
 
-v1.3.9:
+## v1.3.9
 
 - fixed debuffs appearing as "own buff size" when they shouldn't have
 - made alpha settings properly affect non-bar elements (range finder, targetinfo, combo points, etc.)
@@ -1714,7 +1714,7 @@ v1.3.9:
 - set lacerate default vertical position such that it is out of the way of the combo points module instead of on top of it
 - fixed a bug where "graphical glow" and "graphical clean" presets did not work on lacerate and sunder count modules
 
-v1.3.8:
+## v1.3.8
 
 - changed the defaults for hiding the blizzard frame on the player and target health frames (now leaves the blizzard frames on by default)
 - fixed a potential nil access in the cast bar
@@ -1725,17 +1725,17 @@ v1.3.8:
 - increased vertical offset range by request
 - fixed Slice And Dice module for new Imp SnD talent values as well as the new SnD glyph
 
-v1.3.6:
+## v1.3.6
 
 - fixed a bug causing the mod to not load at all...(LibSharedMedia got borked in the last packaged release)
 
-v1.3.5:
+## v1.3.5
 
 - added user-submitted ArcHUD-like textures and preset
 - modified cast lag and threat pull indicators to use a custom color instead of being an alpha'd version of the background
 - fixed a bug where runic power would use the "not full" aggro setting when it was empty (it should behave like rage and treat "not full" as empty)
 
-v1.3.4:
+## v1.3.4
 
 - interface version up to 3.0! hooray new stuff.
 - made the threat module wow 3.0-compatible (these changes do not branch based on interface version due to the removal of lots of libs...there's no goin' back now!)
@@ -1745,7 +1745,7 @@ v1.3.4:
 - fixed a bug causing the mirror bar to not obey "offset" setting
 - made the mirror bar's text stop bouncing up and down based on its offset setting. now will always remain in the same place (since there are vertical/horizontal adjustment sliders for this text already)
 
-v1.3.2:
+## v1.3.2
 
 - added bar/background graphical blend mode options so we can have us some snazzier artses
 - added 3 new user-submitted bar textures (GlowArc, CleanCurves, and BloodGlaives) and 2 new user-submitted combo/sunder/lacerate count textures (Glow and CleanCurves)
@@ -1753,12 +1753,12 @@ v1.3.2:
 - widened the maximum gap once again to 700 by request (from 500)
 - made aggro alpha setting on the threat bar actually work
 
-v1.3.1: (minor fixes)
+## v1.3.1: (minor fixes)
 
 - made lag indicator on the player's cast bar respect the bar width setting
 - made castbar text respect alpha settings
 
-v1.3:
+## v1.3
 
 - officially tagged v1.3 version, considered a "release" version as opposed to the recent wotlk betas (this version does work with both wotlk and live realms)
 
@@ -1771,7 +1771,7 @@ v1.3:
 - added a few new user-submitted textures for the bars and combo/sunder/lacerate count modules
 - added an option to disable click-targeting on the player health bar when in combat (set by default)
 
-Wrath beta v9:
+## Wrath beta v9
 
 - added horizontal positioning option to the ToT module by request
 - added an option to disable click-targeting while in combat by request
@@ -1784,11 +1784,12 @@ Wrath beta v9:
 - added user-requested feature to resize TargetOfTarget module so it doesn't have to fit to the hud's gap setting
 - fixed own buffs/debuffs in the TargetInfo module overlapping the icons next to them
 
-Wrath beta v8:
+## Wrath beta v8
 
 - (wotlk) fixed cooldown display on buffs/debuffs in the TargetInfo module
 
-Wrath beta v7:
+## Wrath beta v7
+
 Wrath-related fixes:
 
 - updated for beta build 8820. IceHUD will start up correctly once again
@@ -1801,7 +1802,8 @@ Non-wrath-related fixes:
 
 - updated SliceAndDice module to be more efficient outside of combat (avoids unnecessary OnUpdate stuff)
 
-Wrath beta v6:
+## Wrath beta v6
+
 Wrath-related fixes:
 
 - removed UNIT_RUNIC_POWER hack in player & target mana modules since blizzard seems to have fixed the bug in the latest beta build
@@ -1815,35 +1817,38 @@ Non-wrath-related fixes:
 - increasing higher vertical positioning from 200 to 300 for the runes module by request
 - added user-submitted FocusCast module
 
-Wrath beta v5:
+## Wrath beta v5
 
 - updated to use the new rune graphics
 - frost and unholy are in their old locations still in this module...we'll see if Blizzard leaves their rune swap hack in before changing it
 
-Wrath beta v4:
+## Wrath beta v4
 
 - Fixed a bug that caused a lua error every time the player mounted as a DK (why the crap does the non-existent rune 7 and 8 get updated whenever the player mounts??)
 - Worked around a Blizzard bug introduced by the new system that allows the player to see his power (mana/energy/runic power) updating in "real-time" (they call it predicted power). The events for mana/runic power/energy/etc. regen are no longer being fired and the client uses a more cpu-expensive method of updating the available amount of power. Mimicked this new method (which the default UI uses) in IceHUD.
 
-Wrath beta v3:
+## Wrath beta v3
 
 - Updated Ace2 libraries to work with the latest beta build. No other changes in IceHUD functionality.
 
-Wrath beta v2:
--Added a Runes module (similar to combo points/sunder count) for DK's. This is a first rev and will probably go through some fine-tuning to make it prettier...though I kinda like it as is
--Added a few DK CC frost spells to the CC modules
+## Wrath beta v2
 
-Wrath beta (fixed):
--Fixed an error in the GCD module in the wow version check
+- Added a Runes module (similar to combo points/sunder count) for DK's. This is a first rev and will probably go through some fine-tuning to make it prettier...though I kinda like it as is
+- Added a few DK CC frost spells to the CC modules
 
-Wrath beta:
--Added DK-specific runic power updates to the player and target mana bars
--Fixed the return values of UnitBuff to work with 3.0
--Added DK starter spell to the GCD module
--No rune module available yet, but coming soon
--This version is backward compatible with older wow clients (such as the current live version) and will require "load out of date addons" to be checked if used in Wrath
+## Wrath beta (fixed)
 
-r77363:
+- Fixed an error in the GCD module in the wow version check
+
+## Wrath beta
+
+- Added DK-specific runic power updates to the player and target mana bars
+- Fixed the return values of UnitBuff to work with 3.0
+- Added DK starter spell to the GCD module
+- No rune module available yet, but coming soon
+- This version is backward compatible with older wow clients (such as the current live version) and will require "load out of date addons" to be checked if used in Wrath
+
+## r77363
 
 - removed LibGratuity-2.0 (or GratuityLib, whichever you wanna call it) since only the DruidMana module used it and even then only if the user didn't have LibDruidMana installed. now LibDruidMana is required instead of falling back to Gratuity...the Gratuity method was broken for powershifting anyway
 - fixed GCD module to work in all localizations
@@ -1886,11 +1891,11 @@ r77363:
 - updated to support LibDogTag-3.0
 - on first run, forced reset all custom DogTags to the module default since some of the old default tags no longer work
 
-v1.2-2.4:
+## v1.2-2.4
 
 - updated TOC for WoW 2.4
 
-v1.2-r62057:
+## v1.2-r62057
 
 - fixed castbar "lock text alpha" setting
 - added LibMobHealth-4.0 to externals/embeds so people without other ace mods get estimated health values properly
@@ -1903,7 +1908,7 @@ v1.2-r62057:
 - made player icons and raid icons fade according to bar visibility and added a config option to make them always locked to 100%
 - added party leader, status, master looter, and pvp icons to the player health bar
 
-v1.2:
+## v1.2
 
 - made the player health bar (configurably) clickable for targeting/click-casting/menus
 - added DogTag fields to the TargetInfo module
@@ -1917,7 +1922,7 @@ v1.2:
 - added an intermediate color for health and mana fading so it turns yellow in the middle instead of a gross brown
 - various other tweaks and fixes
 
-r60273:
+## r60273
 
 - added vertical/horizontal text offset options to the castbar
 - add an option to the player cast bar to show the default cast bar or not

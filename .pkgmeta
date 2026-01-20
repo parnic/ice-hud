@@ -72,8 +72,8 @@ tools-used:
 ignore:
     - readme.md
     - FUNDING.yml
-    - this_version.md
+    - build
 
-manual-changelog: this_version.md
+manual-changelog: changelog.short.md
 
 enable-nolib-creation: yes

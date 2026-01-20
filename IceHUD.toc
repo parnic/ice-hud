@@ -17,7 +17,7 @@
 ## X-Curse-Project-ID: 5394
 ## X-WoWI-ID: 8149
 ## X-Wago-ID: 5bGolJN0
-## Category-enUS: Unit Frames
+## Category: Unit Frames
 ## Category-deDE: Einheitenfenster
 ## Category-esES: Marcos de unidades
 ## Category-esMX: Marcos de unidades
