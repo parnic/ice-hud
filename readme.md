@@ -30,6 +30,8 @@ The 12.0 patch, for the Midnight expansion, made significant, sweeping changes t
 
 If you have any custom DogTags using `Fractional*:Short`, they will no longer work in Midnight - use something like `[[HP:Short] '/' [MaxHP:Short]]` instead. Many other enemy-HP-or-buff-dependent features, such as Low Threshold flashing or in-combat buff/debuff tracking, are no longer allowed by the game.
 
+See [the wiki page](https://github.com/parnic/ice-hud/wiki/List-of-missing-or-changed-features-in-Midnight) for an exhaustive list of Midnight/12.0 changes.
+
 ## **Frequently Asked Questions**
 
 1. **How do I hide the default Blizzard player, target unit frames and party unit frames?**
