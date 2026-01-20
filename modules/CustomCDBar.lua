@@ -733,8 +733,8 @@ function IceCustomCDBar.prototype:UpdateIcon()
 			end
 		end
 
-		if IceHUD.IceCore:IsInConfigMode() or self.moduleSettings.displayAuraIcon then
-			if not self.barFrame.icon:GetTexture() and IceHUD.IceCore:IsInConfigMode() then
+		if self:IsInConfigMode() or self.moduleSettings.displayAuraIcon then
+			if not self.barFrame.icon:GetTexture() and self:IsInConfigMode() then
 				self.barFrame.icon:SetTexture("Interface\\Icons\\Spell_Frost_Frost")
 			end
 			self.barFrame.icon:Show()

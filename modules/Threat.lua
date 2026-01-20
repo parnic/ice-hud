@@ -270,7 +270,7 @@ function IceThreat.prototype:Update(unit)
 		return
 	end
 
-	if IceHUD.IceCore:IsInConfigMode() then
+	if self:IsInConfigMode() then
 		return
 	end
 

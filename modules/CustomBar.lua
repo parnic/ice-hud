@@ -812,8 +812,8 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 			self.barFrame.icon:SetTexture(auraIcon)
 		end
 
-		if IceHUD.IceCore:IsInConfigMode() or self.moduleSettings.displayAuraIcon then
-			if IceHUD.IceCore:IsInConfigMode() and not self.barFrame.icon:GetTexture() then
+		if self:IsInConfigMode() or self.moduleSettings.displayAuraIcon then
+			if self:IsInConfigMode() and not self.barFrame.icon:GetTexture() then
 				self.barFrame.icon:SetTexture("Interface\\Icons\\Spell_Frost_Frost")
 			end
 

@@ -327,7 +327,7 @@ function IceCustomCounterBar.prototype:UpdateCustomCount()
 	local max = IceStackCounter_GetMaxCount(self) or 1
 	local percent = IceHUD:Clamp(1.0 * points / (max > 0 and max or 1), 0, 1)
 
-	if IceHUD.IceCore:IsInConfigMode() then
+	if self:IsInConfigMode() then
 		if not self.barFrame.icon:GetTexture() then
 			self.barFrame.icon:SetTexture(DefaultAuraIcon)
 		end

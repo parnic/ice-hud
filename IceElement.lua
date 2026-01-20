@@ -325,13 +325,15 @@ function IceElement.prototype:MoveHintMouseDown()
 	end
 
 	self.moveHintOrigX, self.moveHintOrigY = self:MoveHintGetOffsets()
-	self:SetMoveHintLast()
+	self:SetMoveHintLast(true)
 	self.moveHintScale = UIParent:GetEffectiveScale()
 	self.moveHint:SetScript("OnUpdate", function() self:MoveHintUpdate() end)
 end
 
-function IceElement.prototype:SetMoveHintLast()
-	self.moveHintLastX, self.moveHintLastY = GetCursorPosition()
+function IceElement.prototype:SetMoveHintLast(updateCursor)
+	if updateCursor then
+		self.moveHintLastX, self.moveHintLastY = GetCursorPosition()
+	end
 	self.moveHintLastLeft, self.moveHintLastTop = self.frame:GetLeft(), self.frame:GetTop()
 end
 
@@ -347,11 +349,11 @@ function IceElement.prototype:MoveHintUpdate()
 		dx = 0
 	end
 
-	self:MoveHintMoveBy(dx, dy)
+	local moveConsumed = self:MoveHintMoveBy(dx, dy)
 
 	self:SetFramePosition()
 	IceHUD:NotifyOptionsChange()
-	self:SetMoveHintLast()
+	self:SetMoveHintLast(moveConsumed)
 
 	-- if the frame clamping caused the frame to not move in a given direction, un-apply our delta to respect the clamp
 	if not IsShiftKeyDown() and currTop == self.moveHintLastTop then
@@ -368,6 +370,7 @@ end
 
 function IceElement.prototype:MoveHintMoveBy(dx, dy)
 	self:MoveHintMoveTo(self.moduleSettings.hpos + dx, self.moduleSettings.vpos + dy)
+	return true
 end
 
 function IceElement.prototype:MoveHintMoveTo(x, y)

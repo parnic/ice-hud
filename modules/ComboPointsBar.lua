@@ -126,7 +126,7 @@ function ComboPointsBar.prototype:UpdateComboPoints(...)
 	end
 
 	local points
-	if IceHUD.IceCore:IsInConfigMode() then
+	if self:IsInConfigMode() then
 		points = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS)
 	elseif UnitHasVehicleUI then
 		-- Parnic: apparently some fights have combo points while the player is in a vehicle?

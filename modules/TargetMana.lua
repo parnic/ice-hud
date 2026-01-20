@@ -102,6 +102,11 @@ end
 
 function IceTargetMana.prototype:Update(unit)
 	IceTargetMana.super.prototype.Update(self)
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
+
 	if (unit and (unit ~= self.unit)) then
 		return
 	end

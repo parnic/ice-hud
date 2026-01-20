@@ -144,7 +144,7 @@ function TargetTargetHealth.prototype:Update(unit)
 		self.color = "Tapped"
 	end
 
-	if UnitIsUnit("player", self.unit) then
+	if UnitIsUnit("player", self.unit) and not self:IsInConfigMode() then
 		if self.moduleSettings.selfDisplayMode == "Color as SelfColor" then
 			self.color = "SelfColor"
 		elseif self.moduleSettings.selfDisplayMode == "Hide" then

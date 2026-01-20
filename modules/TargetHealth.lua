@@ -764,8 +764,25 @@ function IceTargetHealth.prototype:UpdateEvent(event, unit)
 	self:Update(unit)
 end
 
+function IceTargetHealth.prototype:ToggleMoveHint()
+	if IceTargetHealth.super.prototype.ToggleMoveHint(self) then
+		self.origUnit = self.unit
+		self.unit = "player"
+	else
+		self.unit = self.origUnit
+		self:TargetChanged()
+	end
+
+	self:Redraw()
+end
+
 function IceTargetHealth.prototype:Update(unit)
 	IceTargetHealth.super.prototype.Update(self)
+
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
 
 	if (unit and (unit ~= self.unit)) then
 		return
@@ -811,7 +828,7 @@ function IceTargetHealth.prototype:Update(unit)
 		self.barFrame.classIcon:Show()
 
 		local elite, rareelite, rare = self:GetEliteTextures()
-		if self.configMode or IceHUD.IceCore:IsInConfigMode() or classification == "worldboss" or classification == "elite" then
+		if self.configMode or self:IsInConfigMode() or classification == "worldboss" or classification == "elite" then
 			self.barFrame.classIcon:SetTexture(elite)
 		elseif classification == "rareelite" then
 			self.barFrame.classIcon:SetTexture(rareelite)
@@ -972,12 +989,12 @@ function IceTargetHealth.prototype:UpdateRaidTargetIcon()
 		self.frame.raidIcon:SetFrameStrata(IceHUD.IceCore:DetermineStrata("LOW"))
 	end
 
-	if not self.moduleSettings.showRaidIcon or (not UnitExists(self.unit) and (not self.configMode and not IceHUD.IceCore:IsInConfigMode())) then
+	if not self.moduleSettings.showRaidIcon or (not UnitExists(self.unit) and (not self.configMode and not self:IsInConfigMode())) then
 		self.frame.raidIcon:Hide()
 		return
 	end
 
-	local index = (IceHUD.IceCore:IsInConfigMode() or self.configMode) and 1 or GetRaidTargetIndex(self.unit);
+	local index = (self:IsInConfigMode() or self.configMode) and 1 or GetRaidTargetIndex(self.unit);
 
 	if (index and (index > 0)) then
 		SetRaidTargetIconTexture(self.frame.raidIcon.icon, index)

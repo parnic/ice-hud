@@ -574,7 +574,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 		self.barFrame.icon:SetTexture(icon)
 	end
 
-	if IceHUD.IceCore:IsInConfigMode() or self.moduleSettings.displayAuraIcon then
+	if self:IsInConfigMode() or self.moduleSettings.displayAuraIcon then
 		self.barFrame.icon:Show()
 	else
 		self.barFrame.icon:Hide()

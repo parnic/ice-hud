@@ -214,6 +214,9 @@ do
 			name = L["Look and Feel"],
 			order = 29.9
 		}
+
+		self:AddDragMoveOption(opts, 29.91)
+
 		opts["side"] =
 		{
 			type = 'select',
@@ -445,7 +448,7 @@ do
 			max = 600,
 			step = 1,
 			get = function()
-				return self.moduleSettings.barVerticalOffset
+				return IceHUD:MathRound(self.moduleSettings.barVerticalOffset)
 			end,
 			set = function(info, v)
 				self.moduleSettings.barVerticalOffset = v
@@ -466,7 +469,7 @@ do
 			max = 600,
 			step = 1,
 			get = function()
-				return self.moduleSettings.barHorizontalOffset
+				return IceHUD:MathRound(self.moduleSettings.barHorizontalOffset)
 			end,
 			set = function(info, v)
 				self.moduleSettings.barHorizontalOffset = v
@@ -919,6 +922,54 @@ do
 	end
 end
 
+function IceBarElement.prototype:MoveHintGetOffsets()
+	return self.moduleSettings.barHorizontalOffset, self.moduleSettings.barVerticalOffset
+end
+
+function IceBarElement.prototype:MoveHintMoveBy(dx, dy)
+	if IsAltKeyDown() then
+		dy = 0
+		local threshold = (self.settings.barProportion * self.settings.barWidth) + self.settings.barSpace
+		if abs(dx) < threshold then
+			return false
+		end
+
+		local increase
+		if self.moduleSettings.side == IceCore.Side.Left then
+			increase = dx < 0
+		else
+			increase = dx > 0
+		end
+
+		self.moduleSettings.offset = self.moduleSettings.offset + (increase and 1 or -1)
+		if self.moduleSettings.offset < -10 then
+			if self.moduleSettings.side == IceCore.Side.Left then
+				self.moduleSettings.side = IceCore.Side.Right
+			else
+				self.moduleSettings.side = IceCore.Side.Left
+			end
+
+			self:Redraw()
+		end
+		return true
+	end
+
+	self:MoveHintMoveTo(self.moduleSettings.barHorizontalOffset + dx, self.moduleSettings.barVerticalOffset + dy)
+	return true
+end
+
+function IceBarElement.prototype:MoveHintMoveTo(x, y)
+	self.moduleSettings.barHorizontalOffset = x
+	self.moduleSettings.barVerticalOffset = y
+end
+
+function IceBarElement.prototype:MoveHintGetTooltip()
+	if not self.moveHintTooltip then
+		self.moveHintTooltip = "|cffffffff"..self.elementName.."|r\n"..L["|cff9999ffLeft click|r and drag to move. Hold |cff9999ffShift|r to lock vertical position, hold |cff9999ffControl|r to lock horizontal position.\n\nHold |cff9999ffAlt/Option|r to adjust Offset instead of position.\n\n|cff9999ffMiddle click|r to reset to previous position.\n\n|cff9999ffRight click|r to lock in place."]
+	end
+	return self.moveHintTooltip
+end
+
 function IceBarElement.prototype:ShouldReverseFill()
 	if self:BarFillReverse() then
 		return self:BarFillNormal()
@@ -1067,6 +1118,8 @@ function IceBarElement.prototype:CreateBackground()
 	if not self.frame then
 		self.frame = CreateFrame("Frame", "IceHUD_"..self.elementName, self.masterFrame)
 	end
+
+	self:CreateMoveHintFrame()
 
 	local rotated = self.barFrame and self.barFrame.rotated
 
@@ -1549,7 +1602,7 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	end
 
 	-- post-process override for the bar alpha to be 1 (ignoring BG alpha for now)
-	if self.moduleSettings.alwaysFullAlpha then
+	if self.moduleSettings.alwaysFullAlpha or self:IsInConfigMode() then
 		self.alpha = 1
 	end
 
