@@ -4,6 +4,7 @@ v1.16.1:
 
 - Add option for combo points to grow in reverse (right->left or bottom->top) by request.
 - Fix Slice And Dice and Roll The Bones displaying when they shouldn't and sometimes not displaying when they should.
+- Re-fix an old "accessed nil" bug that popped back up after the 12.0 refactor.
 
 v1.16.0:
 
