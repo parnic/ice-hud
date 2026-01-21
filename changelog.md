@@ -3,6 +3,7 @@
 ## v1.16.3
 
 - Improve reliability of Target castbar interruptions.
+- Add Reverse option to class power counters (Mage Arcane Charges, Monk Chi, Evoker Essence, Paladin Holy Power, and Warlock Shards) and Dragonriding Vigor charges.
 
 ## v1.16.2
 

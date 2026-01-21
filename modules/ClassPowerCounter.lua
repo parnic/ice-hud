@@ -230,6 +230,27 @@ function IceClassPowerCounter.prototype:GetOptions()
 		order = 35
 	}
 
+	opts["reverse"] =
+	{
+		type = 'toggle',
+		name = L["Reverse direction"],
+		desc = L["How points should grow. If orientation is Horizontal, reversing will cause them to grow right to left. If orientation is Vertical, reversing will cause them to grow bottom to top."],
+		get = function()
+			return self.moduleSettings.reverse
+		end,
+		set = function(info, value)
+			self.moduleSettings.reverse = value
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return self.moduleSettings.runeMode == "Numeric"
+		end,
+		order = 35.1
+	}
+
 	opts["inactiveDisplayMode"] = {
 		type = 'select',
 		name = L["Inactive mode"],
@@ -418,6 +439,7 @@ function IceClassPowerCounter.prototype:GetDefaultSettings()
 	defaults["overrideAlpha"] = true
 	defaults["numericVerticalOffset"] = -25
 	defaults["alwaysShowNumeric"] = false
+	defaults["reverse"] = false
 
 	return defaults
 end
@@ -583,16 +605,17 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 
 	if self:GetRuneMode() ~= "Numeric" then
 		for i=1, self.numRunes do
+			local effectivei = self.moduleSettings.reverse and self.numRunes - i + 1 or i
 			-- todo:midnight: this is stupid for secret vals and effectively disables this whole thing
 			if IceHUD.CanAccessValue(percentReady) and i <= self.round(percentReady) then
 				if self:GetRuneMode() == "Graphical" then
-					self:SetRuneGraphicalTexture(i)
+					self:SetRuneGraphicalTexture(effectivei)
 				else
-					self:SetCustomColor(i)
+					self:SetCustomColor(i, effectivei)
 				end
 
 				if self.moduleSettings.inactiveDisplayMode == "Hidden" then
-					self.frame.graphical[i]:Show()
+					self.frame.graphical[effectivei]:Show()
 				end
 
 				if i > numReady or self.numRunes == 1 then
@@ -601,33 +624,33 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 						currPercent = numReady / self:GetPowerMax()
 					end
 
-					self:SetRuneCoords(i, currPercent)
+					self:SetRuneCoords(effectivei, currPercent)
 				elseif IceHUD.CanAccessValue(self.lastNumReady) and i > self.lastNumReady then
-					self:SetRuneCoords(i, 1)
+					self:SetRuneCoords(effectivei, 1)
 
 					if self.moduleSettings.flashWhenBecomingReady then
 						local fadeInfo={
 							mode = "IN",
 							timeToFade = self.runeShineFadeSpeed,
-							finishedFunc = function() self:ShineFinished(i) end,
-							finishedArg1 = i
+							finishedFunc = function() self:ShineFinished(effectivei) end,
+							finishedArg1 = effectivei
 						}
-						UIFrameFade(self.frame.graphical[i].shine, fadeInfo);
+						UIFrameFade(self.frame.graphical[effectivei].shine, fadeInfo);
 					end
 				end
 			else
 				if self.partialReady then
 					if i == self.partialReady then
-						self:SetRuneCoords(i, self.partialReadyPercent)
+						self:SetRuneCoords(effectivei, self.partialReadyPercent)
 						if self:GetRuneMode() == "Graphical" then
-							self:SetRuneGraphicalTexture(i, true)
+							self:SetRuneGraphicalTexture(effectivei, true)
 						end
 					else
-						self:SetRuneCoords(i, 0)
+						self:SetRuneCoords(effectivei, 0)
 					end
 				end
 
-				self:HideRune(i)
+				self:HideRune(effectivei)
 			end
 		end
 	end
@@ -965,12 +988,12 @@ function IceClassPowerCounter.prototype:GetAlphaAdd()
 	return 0.15
 end
 
-function IceClassPowerCounter.prototype:SetCustomColor(i)
+function IceClassPowerCounter.prototype:SetCustomColor(i, effectivei)
 	local r, g, b = self:GetCustomColor()
 	if (self.moduleSettings.gradient) then
 		r,g,b = self:GetGradientColor(i)
 	end
-	self.frame.graphical[i].rune:SetVertexColor(r, g, b)
+	self.frame.graphical[effectivei].rune:SetVertexColor(r, g, b)
 end
 
 function IceClassPowerCounter.prototype:GetGradientColor(curr)
