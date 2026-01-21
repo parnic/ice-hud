@@ -412,7 +412,6 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 		self.frame.graphicalAnt = {}
 	end
 
-	local i
 	local maxComboPoints = self:GetMaxComboPoints()
 
 	-- create backgrounds
@@ -460,7 +459,9 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 			frame.texture:SetAllPoints(frame)
 			forceTextureUpdate = true
 		end
+	end
 
+	for i = 1, maxComboPoints do
 		if forceTextureUpdate then
 			if self.moduleSettings.comboMode == "Graphical Bar" then
 				self.frame.graphical[i].texture:SetTexture(IceElement.TexturePath .. "Combo")
@@ -477,15 +478,15 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 		self.frame.graphical[i]:SetAllPoints(self.frame.graphicalBG[i])
 
 		local r, g, b = self:GetColor("ComboPoints")
-		if (self.moduleSettings.gradient) then
-			local effectivei = self.moduleSettings.reverse and maxComboPoints - i + 1 or i
-			g = g - ((1 / maxComboPoints)*effectivei)
+		if self.moduleSettings.gradient then
+			g = g - ((1 / maxComboPoints)*i)
 		end
 
+		local effectivei = self.moduleSettings.reverse and maxComboPoints - i + 1 or i
 		if self.moduleSettings.bShowCharged and self:IsChargedPoint(i) then
-			self.frame.graphical[i].texture:SetVertexColor(self:GetColor("ChargedComboPoint"))
+			self.frame.graphical[effectivei].texture:SetVertexColor(self:GetColor("ChargedComboPoint"))
 		else
-			self.frame.graphical[i].texture:SetVertexColor(r, g, b)
+			self.frame.graphical[effectivei].texture:SetVertexColor(r, g, b)
 		end
 
 		self.frame.graphical[i]:Hide()
