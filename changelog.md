@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.16.4
+
+- Fix cast lag bar not applying the new texture until a UI reload when changing bar textures.
+
 ## v1.16.3
 
 - Improve reliability of Target castbar interruptions.
