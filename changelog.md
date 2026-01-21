@@ -4,7 +4,7 @@
 
 - Fix reverse combo points showing the wrong point as charged.
 - Fix Secrets error in TargetOfTarget module with DogTags disabled.
-- Remove custom buff/debuff counters and bars in 12.0 due to Secerts. These were supposed to be gone already but got missed somehow.
+- Remove custom buff/debuff counters and bars in 12.0 due to Secrets. These were supposed to be gone already but got missed somehow.
 
 ## v1.16.1
 
