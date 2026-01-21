@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.16.2
+
+- Fix reverse combo points showing the wrong point as charged.
+
 ## v1.16.1
 
 - Add option for combo points to grow in reverse (right->left or bottom->top) by request.
