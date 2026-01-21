@@ -459,7 +459,9 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 			frame.texture:SetAllPoints(frame)
 			forceTextureUpdate = true
 		end
+	end
 
+	for i = 1, maxComboPoints do
 		if forceTextureUpdate then
 			if self.moduleSettings.comboMode == "Graphical Bar" then
 				self.frame.graphical[i].texture:SetTexture(IceElement.TexturePath .. "Combo")
