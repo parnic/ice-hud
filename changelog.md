@@ -3,6 +3,7 @@
 ## v1.16.2
 
 - Fix reverse combo points showing the wrong point as charged.
+- Fix Secrets error in TargetOfTarget module with DogTags disabled.
 
 ## v1.16.1
 
