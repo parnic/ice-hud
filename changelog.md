@@ -4,6 +4,7 @@
 
 - Improve reliability of Target castbar interruptions.
 - Add Reverse option to class power counters (Mage Arcane Charges, Monk Chi, Evoker Essence, Paladin Holy Power, and Warlock Shards) and Dragonriding Vigor charges.
+- Add Numeric Horizontal Offset option to class power counters and Dragonriding Vigor charges when using the "Also show numeric" option so it can fit alongside vertical orientations better.
 
 ## v1.16.2
 

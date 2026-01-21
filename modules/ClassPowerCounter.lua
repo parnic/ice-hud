@@ -186,6 +186,29 @@ function IceClassPowerCounter.prototype:GetOptions()
 		order = 34.02,
 	}
 
+	opts["numericHorizontalOffset"] = {
+		type = 'range',
+		min = -500,
+		max = 500,
+		step = 1,
+		name = L["Numeric horizontal offset"],
+		desc = L["How far to offset the numeric display left or right."],
+		get = function(info)
+			return self.moduleSettings.numericHorizontalOffset
+		end,
+		set = function(info, v)
+			self.moduleSettings.numericHorizontalOffset = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return self.moduleSettings.runeMode == "Numeric" or not self.moduleSettings.alsoShowNumeric
+		end,
+		order = 34.03,
+	}
+
 	opts["runeGap"] = {
 		type = 'range',
 		name = L["Rune gap"],
@@ -438,6 +461,7 @@ function IceClassPowerCounter.prototype:GetDefaultSettings()
 	defaults["pulseWhenFull"] = true
 	defaults["overrideAlpha"] = true
 	defaults["numericVerticalOffset"] = -25
+	defaults["numericHorizontalOffset"] = 0
 	defaults["alwaysShowNumeric"] = false
 	defaults["reverse"] = false
 
@@ -812,7 +836,13 @@ end
 function IceClassPowerCounter.prototype:SetDisplayMode()
 	if self:GetRuneMode() == "Numeric" or self.moduleSettings.alsoShowNumeric then
 		self.frame.numeric:Show()
-		self.frame.numeric:SetPoint("CENTER", self.frame.numericParent, "CENTER", 0, self.moduleSettings.runeMode == "Numeric" and 0 or self.moduleSettings.numericVerticalOffset)
+		self.frame.numeric:SetPoint(
+			"CENTER",
+			self.frame.numericParent,
+			"CENTER",
+			self.moduleSettings.runeMode == "Numeric" and 0 or self.moduleSettings.numericHorizontalOffset,
+			self.moduleSettings.runeMode == "Numeric" and 0 or self.moduleSettings.numericVerticalOffset
+		)
 		for i=1, self.numRunes do
 			self.frame.graphical[i]:Hide()
 		end
