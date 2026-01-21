@@ -11,9 +11,9 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
 ## **Short feature list**
 
 * Lots of different bar shapes and patterns to make the HUD look like you want
-* Class-specific modules such as combo point counters, Slice'n'dice timers, druid mana trackers, Eclipse bar, Holy Power monitoring, Warlock shard tracking, and more
+* Class-specific modules such as combo point counters, Slice And Dice timers, druid mana trackers, Holy Power monitoring, Warlock shard tracking, and more
 * Target-of-target bars, Crowd Control timers, Range Finders, Threat meters, and plenty of other helpful modules
-* Lots of DogTag-supported strings for extreme customizability (with the option to completely disable DogTag support for those that dislike the CPU toll that it takes)
+* Lots of DogTag-supported strings for extreme customizability (with the option to completely disable DogTag support if desired)
 * Cast lag indicator (optional)
 * Alpha settings for in combat, target selected, etc.
 * Fully customizable bars and counters capable of tracking buff/debuff applications on any unit, spell/ability cooldowns, and the health/mana of any unit you specify. The custom health/mana bars will even work with crazy unit specifications like "focustargettargetfocustarget" if you want!
@@ -27,8 +27,6 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
 ## **A Note on WoW Midnight**
 
 The 12.0 patch, for the Midnight expansion, made significant, sweeping changes to how addons work in the game. As a result, many features previously available are no longer allowed by the game. If IceHUD is no longer doing something it used to do, the most likely reason is that it's not possible (or much more difficult) in the new patch. Feel free to create a GitHub issue for any errors you find; it's expected that there will be some errors for a while due to the extent of changes required.
-
-If you have any custom DogTags using `Fractional*:Short`, they will no longer work in Midnight - use something like `[[HP:Short] '/' [MaxHP:Short]]` instead. Many other enemy-HP-or-buff-dependent features, such as Low Threshold flashing or in-combat buff/debuff tracking, are no longer allowed by the game.
 
 See [the wiki page](https://github.com/parnic/ice-hud/wiki/List-of-missing-or-changed-features-in-Midnight) for an exhaustive list of Midnight/12.0 changes.
 
@@ -94,4 +92,4 @@ See [the wiki page](https://github.com/parnic/ice-hud/wiki/List-of-missing-or-ch
 1. **Why do buff/debuff timers not work in Classic?**
    The Classic game client doesn't provide this information to addons because it wasn't a feature when the game first released. You can install the LibClassicDurations addon to enable support, but it's a best guess and not completely accurate.
 
-See [here](https://github.com/parnic/ice-hud/discussions/47) for a user-created guide to creating new IceHUD textures.
+See [this user-created guide](https://github.com/parnic/ice-hud/discussions/47) to creating new IceHUD textures.
