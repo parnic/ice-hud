@@ -436,7 +436,7 @@ function IceHUD:OnInitialize()
 
 	self:NotifyNewDb()
 
-	ConfigDialog:SetDefaultSize("IceHUD", 750, 650)
+	ConfigDialog:SetDefaultSize("IceHUD", 775, 650)
 	self:RegisterChatCommand("icehud", function()
 			if not UnitAffectingCombat("player") then
 				IceHUD:OpenConfig()
