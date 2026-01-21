@@ -74,6 +74,8 @@ ignore:
     - FUNDING.yml
     - build
 
-manual-changelog: changelog.short.md
+manual-changelog:
+    filename: changelog.short.md
+    markup-type: markdown
 
 enable-nolib-creation: yes
