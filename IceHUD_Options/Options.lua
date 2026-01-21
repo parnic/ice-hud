@@ -4,7 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local icon = LibStub("LibDBIcon-1.0", true)
 local AceGUI = LibStub("AceGUI-3.0")
 local AceSerializer = LibStub("AceSerializer-3.0", true)
-local lastCustomModule = "Bar"
+local lastCustomModule = IceHUD.IsSecretEnv() and "Health" or "Bar"
 
 IceHUD_Options = {}
 

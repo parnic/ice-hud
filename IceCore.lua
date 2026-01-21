@@ -261,17 +261,17 @@ function IceCore.prototype:Enable(userToggle)
 	for k,v in pairs(self.settings.modules) do
 		local newModule
 
-		if self.settings.modules[k].customBarType == "Bar" and IceCustomBar ~= nil then
+		if self.settings.modules[k].customBarType == "Bar" and IceCustomBar ~= nil and IceHUD.validCustomModules.Bar then
 			newModule = IceCustomBar:new()
-		elseif self.settings.modules[k].customBarType == "Counter" and IceCustomCount ~= nil then
+		elseif self.settings.modules[k].customBarType == "Counter" and IceCustomCount ~= nil and IceHUD.validCustomModules.Counter then
 			newModule = IceCustomCount:new()
-		elseif self.settings.modules[k].customBarType == "CounterBar" and IceCustomCounterBar ~= nil then
+		elseif self.settings.modules[k].customBarType == "CounterBar" and IceCustomCounterBar ~= nil and IceHUD.validCustomModules.CounterBar then
 			newModule = IceCustomCounterBar:new()
-		elseif self.settings.modules[k].customBarType == "CD" and IceCustomCDBar ~= nil then
+		elseif self.settings.modules[k].customBarType == "CD" and IceCustomCDBar ~= nil and IceHUD.validCustomModules.CD then
 			newModule = IceCustomCDBar:new()
-		elseif self.settings.modules[k].customBarType == "Health" and IceCustomHealth ~= nil then
+		elseif self.settings.modules[k].customBarType == "Health" and IceCustomHealth ~= nil and IceHUD.validCustomModules.Health then
 			newModule = IceCustomHealth:new()
-		elseif self.settings.modules[k].customBarType == "Mana" and IceCustomMana ~= nil then
+		elseif self.settings.modules[k].customBarType == "Mana" and IceCustomMana ~= nil and IceHUD.validCustomModules.Mana then
 			newModule = IceCustomMana:new()
 		end
 

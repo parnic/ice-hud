@@ -107,6 +107,22 @@ if C_Spell and C_Spell.GetSpellName then
 	GetSpellName = C_Spell.GetSpellName
 end
 
+IceHUD.IsSecretEnv = function()
+	return issecretvalue
+end
+
+IceHUD.IsSecretValue = function(value)
+	return issecretvalue and issecretvalue(value)
+end
+
+IceHUD.CanAccessSecrets = function()
+	return not canaccesssecrets or canaccesssecrets()
+end
+
+IceHUD.CanAccessValue = function(value)
+	return not canaccessvalue or canaccessvalue(value)
+end
+
 -- compatibility/feature flags
 IceHUD.CanShowTargetCasting = not IceHUD.WowClassic or LibClassicCasterino or (IceHUD.WowClassic and IceHUD.WowVer >= 11500)
 IceHUD.GetPlayerAuraBySpellID = _G["C_UnitAuras"] and C_UnitAuras.GetPlayerAuraBySpellID
@@ -156,7 +172,14 @@ IceHUD.validBarList = {
 	"RivetBar2",
 	"RoundBar",
 }
+
 IceHUD.validCustomModules = {Bar="Buff/Debuff watcher", Counter="Buff/Debuff stack counter", CD="Cooldown bar", Health="Health bar", Mana="Mana bar", CounterBar="Stack count bar"}
+if IceHUD.IsSecretEnv() then
+	IceHUD.validCustomModules.Bar = nil
+	IceHUD.validCustomModules.Counter = nil
+	IceHUD.validCustomModules.CD = nil
+	IceHUD.validCustomModules.CounterBar = nil
+end
 
 ---@diagnostic disable-next-line: deprecated
 IceHUD.IsPlayerSpell = IsPlayerSpell
@@ -189,22 +212,6 @@ if not IceHUD.GetSpellCharges and C_Spell then
 			return spellChargeInfo.currentCharges, spellChargeInfo.maxCharges, spellChargeInfo.cooldownStartTime, spellChargeInfo.cooldownDuration, spellChargeInfo.chargeModRate
 		end
 	end
-end
-
-IceHUD.IsSecretEnv = function()
-	return issecretvalue
-end
-
-IceHUD.IsSecretValue = function(value)
-	return issecretvalue and issecretvalue(value)
-end
-
-IceHUD.CanAccessSecrets = function()
-	return not canaccesssecrets or canaccesssecrets()
-end
-
-IceHUD.CanAccessValue = function(value)
-	return not canaccessvalue or canaccessvalue(value)
 end
 
 IceHUD.SupportsExpandMode = not IceHUD.IsSecretEnv()
