@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.16.3
+
+- Improve reliability of Target castbar interruptions.
+
 ## v1.16.2
 
 - Fix reverse combo points showing the wrong point as charged.
