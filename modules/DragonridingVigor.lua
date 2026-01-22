@@ -127,6 +127,11 @@ function DragonridingVigor.prototype:Enable(core)
 	DragonridingVigor.super.prototype.Enable(self, core)
 	self:Show(false)
 
+	-- vigor charges is usually a secret value in 12.0, so force the config off since we also hide it
+	if IceHUD.IsSecretEnv() then
+		self.moduleSettings.pulseWhenFull = false
+	end
+
 	-- Decide mode:
 	-- In 11.2.7+ Blizzard removed Vigor and moved Skyriding to shared charges.
 	-- Even if the old Vigor widget still exists, it may stay hidden (shownState=0),
