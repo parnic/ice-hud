@@ -1459,7 +1459,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 
 	if self.moduleSettings.auras[aura].show then
 		for i = 1, IceCore.BuffLimit do
-			local _, icon, count, duration, expirationTime, unitCaster, isStealable
+			local _, icon, count, duration, expirationTime, unitCaster, isStealable, auraInstanceID
 
 			---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
 			local spellID
@@ -1470,7 +1470,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 			else
 				---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
 				-- 1. in addition to other info, get the spellID for for the (de)buff
-				_, icon, count, _, duration, expirationTime, unitCaster, isStealable, _, spellID = IceHUD.UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
+				_, icon, count, _, duration, expirationTime, unitCaster, isStealable, _, spellID, _, _, _, _, _, auraInstanceID = IceHUD.UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
 				if IceHUD.CanAccessValue(duration) and duration == 0 and LibClassicDurations then
 					-- 2. if no duration defined for the (de)buff, look up the spell in LibClassicDurations
 					local classicDuration, classicExpirationTime = LibClassicDurations:GetAuraDurationByUnit(self.unit, spellID, unitCaster)
@@ -1495,10 +1495,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 				if self:CanSortBuffs() and self.moduleSettings.auras[aura].sortByExpiration then
 					buffData[aura][i] = {aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, aura}
 				else
-					if not IceHUD.CanAccessValue(count) then
-						count = nil
-					end
-					self:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, aura)
+					self:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, aura, auraInstanceID)
 				end
 			else
 				self.frame[auraFrame].iconFrames[i]:Hide()
@@ -1521,7 +1518,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 	self.frame[auraFrame].iconFrames = self:CreateIconFrames(self.frame[auraFrame], self.moduleSettings.auras[aura].growDirection, self.frame[auraFrame].iconFrames, aura)
 end
 
-function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, auraType)
+function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, auraType, auraInstanceID)
 	local zoom = self.moduleSettings.zoom
 	local auraFrame = aura.."Frame"
 
@@ -1551,6 +1548,9 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 		else
 			frame.cd:Hide()
 		end
+	elseif auraInstanceID then
+		duration = C_UnitAuras.GetAuraDuration(self.unit, auraInstanceID)
+		frame.cd:SetCooldown(duration:GetStartTime(), duration:GetTotalDuration())
 	end
 
 	frame.type = auraType
@@ -1560,7 +1560,12 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 	frameIcon.texture:SetTexture(icon)
 	frameIcon.texture:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
 	if not IceHUD.CanAccessValue(count) then
-		frameIcon.stack:SetText(count or nil)
+		if auraInstanceID then
+			count = C_UnitAuras.GetAuraApplicationDisplayCount(self.unit, auraInstanceID)
+			frameIcon.stack:SetText(count)
+		else
+			frameIcon.stack:SetText()
+		end
 	else
 		frameIcon.stack:SetText((count and (count > 1)) and count or nil)
 	end

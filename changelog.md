@@ -3,6 +3,7 @@
 ## v1.16.5
 
 - Fix TargetInfo errors in 12.0 with a profile that previously had "sort by expiration" enabled.
+- Fix target buffs and debuffs not showing durations or stack counts in combat with some enemies in 12.0.
 
 ## v1.16.4
 

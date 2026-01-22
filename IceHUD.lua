@@ -33,6 +33,7 @@ IceHUD.UnpackAuraData = function(auraData)
 		auraData.isFromPlayerOrPlayerPet,
 		auraData.nameplateShowAll,
 		auraData.timeMod,
+		auraData.auraInstanceID,
 		IceHUD.CanAccessValue(auraData.points) and unpack(auraData.points) or auraData.points
 end
 
