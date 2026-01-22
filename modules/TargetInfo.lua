@@ -1830,7 +1830,7 @@ function IceTargetInfo.prototype:AllowMouseBuffInteraction(id)
 end
 
 function IceTargetInfo.prototype:BuffOnEnter(this)
-	if not self:AllowMouseBuffInteraction(this.id) or not IceHUD.CanAccessSecrets() then
+	if not self:AllowMouseBuffInteraction(this.id) then
 		return
 	end
 

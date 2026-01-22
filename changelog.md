@@ -5,6 +5,7 @@
 - Fix TargetInfo errors in 12.0 with a profile that previously had "sort by expiration" enabled.
 - Fix target buffs and debuffs not showing durations or stack counts in combat with some enemies in 12.0.
 - Fix Secret error in 12.0 while in Zereth Mortis around players or enemies who are in combat.
+- Re-enable mouseover buff/debuff info on Info modules. This was disabled previously due to it triggering Secret errors internal to Blizzard's code. It seems to not be doing that now.
 
 ## v1.16.4
 
