@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.16.5
+
+- Fix TargetInfo errors in 12.0 with a profile that previously had "sort by expiration" enabled.
+
 ## v1.16.4
 
 - Fix cast lag bar not applying the new texture until a UI reload when changing bar textures.

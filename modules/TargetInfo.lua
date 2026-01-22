@@ -1492,7 +1492,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 			end
 
 			if icon then
-				if IceHUD.CanAccessValue(expirationTime) and self.moduleSettings.auras[aura].sortByExpiration then
+				if self:CanSortBuffs() and self.moduleSettings.auras[aura].sortByExpiration then
 					buffData[aura][i] = {aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, aura}
 				else
 					if not IceHUD.CanAccessValue(count) then
@@ -1507,7 +1507,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 		end
 	end
 
-	if self.moduleSettings.auras[aura].sortByExpiration and #buffData[aura] > 0 then
+	if self:CanSortBuffs() and self.moduleSettings.auras[aura].sortByExpiration and #buffData[aura] > 0 then
 		table.sort(buffData[aura], BuffExpirationSort)
 		for k,v in pairs(buffData[aura]) do
 			if v then
