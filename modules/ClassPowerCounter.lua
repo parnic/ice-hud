@@ -679,10 +679,11 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 		end
 	end
 
+	local canAccess = IceHUD.CanAccessValue(self.lastNumReady) and IceHUD.CanAccessValue(numReady)
 	if self.moduleSettings.pulseWhenFull then
-		if numReady > self.lastNumReady and (numReady == self.numRunes or numReady >= self.numConsideredFull) then
+		if canAccess and numReady > self.lastNumReady and (numReady == self.numRunes or numReady >= self.numConsideredFull) then
 			self:StartRunesFullAnimation()
-		elseif numReady < self.numRunes and numReady < self.numConsideredFull then
+		elseif not canAccess or (numReady < self.numRunes and numReady < self.numConsideredFull) then
 			self:StopRunesFullAnimation()
 		end
 	end

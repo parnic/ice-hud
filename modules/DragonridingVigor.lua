@@ -361,6 +361,9 @@ function DragonridingVigor.prototype:GetOptions()
 	local opts = DragonridingVigor.super.prototype.GetOptions(self)
 
 	opts.inactiveDisplayMode.hidden = function() return true end
+	if IceHUD.IsSecretEnv() then
+		opts.pulseWhenFull.hidden = true
+	end
 
 	return opts
 end

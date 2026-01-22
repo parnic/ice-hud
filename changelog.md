@@ -3,6 +3,7 @@
 ## v1.16.4
 
 - Fix cast lag bar not applying the new texture until a UI reload when changing bar textures.
+- Fix error in Vigor module when enabling "pulse when full" on 12.0+.
 
 ## v1.16.3
 
