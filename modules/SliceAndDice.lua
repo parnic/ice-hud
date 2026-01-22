@@ -355,7 +355,7 @@ end
 function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
 	local t = GetTime()
 
-	if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDuration then
+	if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDataByAuraInstanceID then
 		if InCombatLockdown() and CalculatedSnDEndTime > t then
 			return CurrSndDuration, CalculatedSnDEndTime - t
 		end
