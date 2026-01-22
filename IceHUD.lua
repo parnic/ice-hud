@@ -704,8 +704,8 @@ do
 		end
 
 		while name do
-			for i=1, #spellIDs do
-				if spellIDs[i] == auraID then
+			for j=1, #spellIDs do
+				if IceHUD.CanAccessValue(auraID) and spellIDs[j] == auraID then
 					retval[i] = applications == 0 and true or applications
 					break
 				end
