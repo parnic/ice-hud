@@ -439,7 +439,7 @@ function FocusHealth.prototype:UpdateRaidFocusIcon()
 
 	local index = GetRaidTargetIndex(self.unit);
 
-	if (index and (index > 0)) then
+	if index then
 		SetRaidTargetIconTexture(self.frame.raidIcon.icon, index)
 		self.frame.raidIcon:Show()
 	else

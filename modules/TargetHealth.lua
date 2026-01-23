@@ -996,7 +996,7 @@ function IceTargetHealth.prototype:UpdateRaidTargetIcon()
 
 	local index = (self:IsInConfigMode() or self.configMode) and 1 or GetRaidTargetIndex(self.unit);
 
-	if (index and (index > 0)) then
+	if index then
 		SetRaidTargetIconTexture(self.frame.raidIcon.icon, index)
 		self.frame.raidIcon:Show()
 	else
