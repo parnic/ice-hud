@@ -92,7 +92,6 @@ end
 function ComboPointsBar.prototype:Enable(core)
 	ComboPointsBar.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateComboPoints")
 	if not IceHUD.EventExistsPlayerComboPoints then
 		if IceHUD.EventExistsUnitComboPoints then
 			self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
@@ -110,6 +109,11 @@ function ComboPointsBar.prototype:Enable(core)
 	if GetUnitChargedPowerPoints then
 		self:RegisterEvent("UNIT_POWER_POINT_CHARGE", "UpdateComboPoints")
 	end
+end
+
+function ComboPointsBar.prototype:TargetChanged()
+	self:UpdateComboPoints()
+	ComboPointsBar.super.prototype.TargetChanged(self)
 end
 
 function ComboPointsBar.prototype:CreateFrame()

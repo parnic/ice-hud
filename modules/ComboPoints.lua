@@ -320,7 +320,6 @@ end
 function ComboPoints.prototype:Enable(core)
 	ComboPoints.super.prototype.Enable(self, core)
 
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateComboPoints")
 	if not IceHUD.EventExistsPlayerComboPoints then
 		if IceHUD.EventExistsUnitComboPoints then
 			self:RegisterEvent("UNIT_COMBO_POINTS", "UpdateComboPoints")
@@ -352,6 +351,11 @@ function ComboPoints.prototype:Enable(core)
 
 	self:CreateComboFrame(true)
 	self:UpdateChargedComboPoints()
+end
+
+function ComboPoints.prototype:TargetChanged()
+	self:UpdateComboPoints()
+	ComboPoints.super.prototype.TargetChanged(self)
 end
 
 function ComboPoints.prototype:UpdateMaxComboPoints(event, unit, powerType)
