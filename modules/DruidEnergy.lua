@@ -111,7 +111,7 @@ function DruidEnergy.prototype:Update()
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
-		self:SetBottomText1(string.format("%.0f", UnitPowerPercent and UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, CurveConstants.ScaleTo100) or math.floor(self.DruidEnergyPercentage * 100)))
+		self:SetBottomText1(string.format("%.0f", UnitPowerPercent and UnitPowerPercent(self.unit, SPELL_POWER_ENERGY, true, CurveConstants.ScaleTo100) or math.floor(self.DruidEnergyPercentage * 100)))
 		self:SetBottomText2(self:GetFormattedText(self:Round(self.DruidEnergy), self:Round(self.DruidEnergyMax)), "DruidEnergy")
 	end
 
