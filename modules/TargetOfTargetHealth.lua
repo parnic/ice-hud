@@ -120,6 +120,9 @@ function TargetTargetHealth.prototype:Disable(core)
 end
 
 function TargetTargetHealth.prototype:Update(unit)
+	if unit and unit ~= self.unit then
+		return
+	end
 	self.color = "TargetTargetHealthFriendly" -- friendly > 4
 
 	local reaction = UnitReaction(self.unit, "player")

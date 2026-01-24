@@ -70,6 +70,9 @@ function TargetTargetMana.prototype:Disable(core)
 end
 
 function TargetTargetMana.prototype:Update(unit)
+	if unit and unit ~= self.unit then
+		return
+	end
 	self.color = "TargetTargetMana"
 
 	if self.moduleSettings.selfDisplayMode == "Hide" and UnitIsUnit("player", self.unit) then

@@ -1273,10 +1273,10 @@ function PlayerHealth.prototype:UpdateEvent(event, unit)
 end
 
 function PlayerHealth.prototype:Update(unit)
-	PlayerHealth.super.prototype.Update(self)
-	if (unit and (unit ~= self.unit)) then
+	if unit and unit ~= self.unit then
 		return
 	end
+	PlayerHealth.super.prototype.Update(self)
 
 	local color = "PlayerHealth"
 

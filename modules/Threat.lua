@@ -264,11 +264,10 @@ end
 
 -- bar stuff
 function IceThreat.prototype:Update(unit)
-	IceThreat.super.prototype.Update(self)
-
-	if (unit and (unit ~= self.unit)) then
+	if unit and unit ~= self.unit then
 		return
 	end
+	IceThreat.super.prototype.Update(self)
 
 	if self:IsInConfigMode() then
 		return

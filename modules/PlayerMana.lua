@@ -318,10 +318,10 @@ function PlayerMana.prototype:UpdateEvent(event, unit, powertype)
 end
 
 function PlayerMana.prototype:Update(unit, powertype)
-	PlayerMana.super.prototype.Update(self)
-	if (unit and (unit ~= self.unit)) then
+	if unit and unit ~= self.unit then
 		return
 	end
+	PlayerMana.super.prototype.Update(self)
 
 	if powertype ~= nil and powertype == "ENERGY" then
 		self:UpdateEnergy(nil, unit)

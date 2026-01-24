@@ -70,10 +70,10 @@ function FocusMana.prototype:UpdateEvent(event, unit)
 end
 
 function FocusMana.prototype:Update(unit)
-	FocusMana.super.prototype.Update(self)
-	if (unit and (unit ~= self.unit)) then
+	if unit and unit ~= self.unit then
 		return
 	end
+	FocusMana.super.prototype.Update(self)
 
 	if not UnitExists(unit) then
 		self:Show(false)

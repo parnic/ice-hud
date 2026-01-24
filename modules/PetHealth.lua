@@ -84,10 +84,10 @@ function PetHealth.prototype:UpdateEvent(event, unit)
 end
 
 function PetHealth.prototype:Update(unit)
-	PetHealth.super.prototype.Update(self)
-	if (unit and (unit ~= self.unit)) then
+	if unit and unit ~= self.unit then
 		return
 	end
+	PetHealth.super.prototype.Update(self)
 
 	local color = "PetHealthHappy"
 

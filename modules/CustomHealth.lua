@@ -128,6 +128,9 @@ function IceCustomHealth.prototype:MyOnUpdate()
 end
 
 function IceCustomHealth.prototype:Update(unit)
+	if unit and unit ~= self.unit then
+		return
+	end
 	self.color = "CustomHealthFriendly" -- friendly > 4
 
 	local reaction = UnitReaction(self.unit, "player")

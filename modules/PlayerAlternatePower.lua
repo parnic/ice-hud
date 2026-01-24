@@ -72,10 +72,10 @@ function PlayerAlternatePower.prototype:UpdateEvent(event, unit)
 end
 
 function PlayerAlternatePower.prototype:Update(unit)
-	PlayerAlternatePower.super.prototype.Update(self)
-	if (unit and (unit ~= self.unit)) then
+	if unit and unit ~= self.unit then
 		return
 	end
+	PlayerAlternatePower.super.prototype.Update(self)
 
 	if IceHUD.DragonridingVigor and IceHUD.DragonridingVigor.bIsVisible then
 		self:Show(false)

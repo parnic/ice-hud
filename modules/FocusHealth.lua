@@ -332,8 +332,7 @@ function FocusHealth.prototype:UpdateEvent(event, unit)
 end
 
 function FocusHealth.prototype:Update(unit)
-	FocusHealth.super.prototype.Update(self)
-	if (unit and (unit ~= self.unit)) then
+	if unit and unit ~= self.unit then
 		return
 	end
 
@@ -343,6 +342,7 @@ function FocusHealth.prototype:Update(unit)
 	else
 		--self:Show(true)
 	end
+	FocusHealth.super.prototype.Update(self)
 
 	if not self.frame.raidIcon then
 		self:CreateRaidIconFrame()

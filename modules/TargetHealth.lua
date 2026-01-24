@@ -777,14 +777,13 @@ function IceTargetHealth.prototype:ToggleMoveHint()
 end
 
 function IceTargetHealth.prototype:Update(unit)
+	if unit and unit ~= self.unit then
+		return
+	end
 	IceTargetHealth.super.prototype.Update(self)
 
 	if self:IsInConfigMode() then
 		self:Show(true)
-		return
-	end
-
-	if (unit and (unit ~= self.unit)) then
 		return
 	end
 

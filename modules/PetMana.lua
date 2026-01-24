@@ -150,11 +150,10 @@ function PetMana.prototype:UpdateEvent(event, unit)
 end
 
 function PetMana.prototype:Update(unit)
-	PetMana.super.prototype.Update(self)
-
-	if (unit and (unit ~= self.unit)) then
+	if unit and unit ~= self.unit then
 		return
 	end
+	PetMana.super.prototype.Update(self)
 
 	if ((not UnitExists(unit)) or (self.maxMana == 0)) then
 		self:Show(false)

@@ -101,13 +101,13 @@ function IceTargetMana.prototype:UpdateEvent(event, unit)
 end
 
 function IceTargetMana.prototype:Update(unit)
-	IceTargetMana.super.prototype.Update(self)
-	if self:IsInConfigMode() then
-		self:Show(true)
+	if unit and unit ~= self.unit then
 		return
 	end
+	IceTargetMana.super.prototype.Update(self)
 
-	if (unit and (unit ~= self.unit)) then
+	if self:IsInConfigMode() then
+		self:Show(true)
 		return
 	end
 
