@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.16.6
+
+- Fix more Secrets problems in Player Alt Mana when DogTags were disabled.
+
 ## v1.16.5
 
 - Fix TargetInfo errors in 12.0 with a profile that previously had "sort by expiration" enabled.

@@ -378,13 +378,8 @@ function FocusHealth.prototype:Update(unit)
 		self:SetBottomText1(string.format("%.0f", UnitHealthPercent and UnitHealthPercent(self.unit, true, CurveConstants.ScaleTo100) or math.floor(self.healthPercentage * 100)))
 
 		if self.moduleSettings.abbreviateHealth then
-			if AbbreviateNumbers then
-				self.health = AbbreviateNumbers(self.health)
-				self.maxHealth = AbbreviateNumbers(self.maxHealth)
-			else
-				self.health = self:Round(self.health)
-				self.maxHealth = self:Round(self.maxHealth)
-			end
+			self.health = self:Round(self.health)
+			self.maxHealth = self:Round(self.maxHealth)
 		end
 
 		if not IceHUD.CanAccessValue(self.maxHealth) or self.maxHealth ~= 100 then
@@ -445,17 +440,6 @@ function FocusHealth.prototype:UpdateRaidFocusIcon()
 	else
 		self.frame.raidIcon:Hide()
 	end
-end
-
-
-function FocusHealth.prototype:Round(health)
-	if (health > 1000000) then
-		return self:MathRound(health/1000000, 1) .. "M"
-	end
-	if (health > 1000) then
-		return self:MathRound(health/1000, 1) .. "k"
-	end
-	return health
 end
 
 

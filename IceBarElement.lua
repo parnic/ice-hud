@@ -1784,6 +1784,10 @@ function IceBarElement.prototype:SetScaledColor(colorVar, percent, maxColor, min
 end
 
 function IceBarElement.prototype:Round(num)
+	if AbbreviateNumbers then
+		return AbbreviateNumbers(num)
+	end
+
 	if (num > 1000000) then
 		return IceHUD:MathRound(num/1000000, 1) .. "M"
 	end

@@ -112,7 +112,7 @@ function DruidEnergy.prototype:Update()
 
 	if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
 		self:SetBottomText1(string.format("%.0f", UnitPowerPercent and UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, CurveConstants.ScaleTo100) or math.floor(self.DruidEnergyPercentage * 100)))
-		self:SetBottomText2(self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.DruidEnergy) or self:Round(self.DruidEnergy), AbbreviateNumbers and AbbreviateNumbers(self.DruidEnergyMax) or self:Round(self.DruidEnergyMax)), "DruidEnergy")
+		self:SetBottomText2(self:GetFormattedText(self:Round(self.DruidEnergy), self:Round(self.DruidEnergyMax)), "DruidEnergy")
 	end
 
 	self:UpdateBar(self.DruidEnergyPercentage, "DruidEnergy")

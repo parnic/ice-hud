@@ -877,16 +877,11 @@ function IceTargetHealth.prototype:Update(unit)
 
 		if not IceHUD.CanAccessValue(self.maxHealth) or self.maxHealth ~= 100 then
 			if self.moduleSettings.abbreviateHealth then
-				if AbbreviateNumbers then
-					self:SetBottomText2(self:GetFormattedText(AbbreviateNumbers(self.health), AbbreviateNumbers(self.maxHealth)), self.color)
-				else
-					self.health = self:Round(self.health)
-					self.maxHealth = self:Round(self.maxHealth)
-					self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
-				end
-			else
-				self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
+				self.health = self:Round(self.health)
+				self.maxHealth = self:Round(self.maxHealth)
 			end
+
+			self:SetBottomText2(self:GetFormattedText(self.health, self.maxHealth), self.color)
 		else
 			self:SetBottomText2()
 		end
