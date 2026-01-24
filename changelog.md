@@ -4,6 +4,7 @@
 
 - Fix more Secrets problems in Player Alt Mana when DogTags were disabled.
 - Fix incorrect value used for the displayed value of the Druid Energy module when DogTags were disabled.
+- Fix Secrets error when targeting a unit casting an Empowered ability.
 
 ## v1.16.5
 

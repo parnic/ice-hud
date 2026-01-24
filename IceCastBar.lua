@@ -549,7 +549,11 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 
 	if IceHUD.CanAccessValue(numStages) and numStages and numStages > 0 then
 		self.NumStages = numStages
-		endTime = endTime + GetUnitEmpowerHoldAtMaxTime(self.unit)
+		if IceHUD.CanAccessValue(endTime) then
+			-- unclear what to do about this if we can't access endTime.
+			-- is there a way to compute an enemy's empower hold?
+			endTime = endTime + GetUnitEmpowerHoldAtMaxTime(self.unit)
+		end
 		action = IceCastBar.Actions.ReverseChannel
 	else
 		self.NumStages = nil
