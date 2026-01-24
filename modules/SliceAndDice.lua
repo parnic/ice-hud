@@ -186,7 +186,8 @@ function SliceAndDice.prototype:SpellcastSucceeded(event, unit, castGuid, spellI
 		-- that this math doesn't match the game's buff, but this is as "best effort" as we can get, and
 		-- realistically the vast majority of fights will sort themselves out as the player continues using
 		-- finishers and refreshing the SnD time as the fight goes on.
-		if CurrSndDuration + bonusTimeSeconds > maxDuration then
+		local remaining = CalculatedSnDEndTime - GetTime()
+		if remaining + bonusTimeSeconds > maxDuration then
 			CurrSndDuration = maxDuration
 			CalculatedSnDEndTime = GetTime() + CurrSndDuration
 		else
