@@ -6,6 +6,7 @@
 - Fix incorrect value used for the displayed value of the Druid Energy module when DogTags were disabled.
 - Fix Secrets error when targeting a unit casting an Empowered ability.
 - Fix SnD showing a max-duration buff remaining time when re-activating due to a Cut To The Chase finisher sometimes.
+- Package a new version of LibDogTag-Unit-3.0 to pick up some Casting tag fixes.
 
 ## v1.16.5
 
