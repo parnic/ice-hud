@@ -195,7 +195,7 @@ function PetMana.prototype:Update(unit)
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self:SetBottomText1(string.format("%.0f", UnitPowerPercent and UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, CurveConstants.ScaleTo100) or math.floor(self.manaPercentage * 100)))
+		self:SetBottomText1(string.format("%.0f", UnitPowerPercent and UnitPowerPercent(self.unit, self.manaType, true, CurveConstants.ScaleTo100) or math.floor(self.manaPercentage * 100)))
 	end
 end
 
@@ -259,7 +259,7 @@ function PetMana.prototype:EnteringWorld()
 end
 
 function PetMana.prototype:IsPowerBar()
-	return true
+	return self.manaType
 end
 
 -- Load us up

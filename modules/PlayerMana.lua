@@ -276,6 +276,7 @@ function PlayerMana.prototype:ManaType(event, unit)
 		return
 	end
 
+	local prevManaType = self.manaType
 	self.manaType = UnitPowerType(self.unit)
 
 	if self:ShouldUseTicker() then
@@ -290,6 +291,10 @@ function PlayerMana.prototype:ManaType(event, unit)
 	end
 
 	self.bTreatEmptyAsFull = self:TreatEmptyAsFull()
+
+	if self.manaType ~= prevManaType then
+		self:Redraw()
+	end
 
 	self:Update(self.unit)
 end
@@ -342,7 +347,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 	local color = "PlayerMana"
 	if not (self.alive) then
 		color = "Dead"
-	elseif (self.moduleSettings.scaleManaColor and (UnitPowerType(self.unit) == SPELL_POWER_MANA or self.moduleSettings.scaleManaColorForAll)) then
+	elseif (self.moduleSettings.scaleManaColor and (self.manaType == SPELL_POWER_MANA or self.moduleSettings.scaleManaColorForAll)) then
 		color = "ScaledManaColor"
 	elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.manaPercentage) and self.manaPercentage <= self.moduleSettings.lowThreshold then
 		color = "ScaledManaColor"
@@ -391,7 +396,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 	if not IceHUD.IceCore:ShouldUseDogTags() then
 		local displayPercentage = self.manaPercentage
 		if UnitPowerPercent then
-			displayPercentage = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, CurveConstants.ScaleTo100)
+			displayPercentage = UnitPowerPercent(self.unit, self.manaType, true, CurveConstants.ScaleTo100)
 		else
 			displayPercentage = math.floor(displayPercentage * 100)
 		end
@@ -423,13 +428,13 @@ function PlayerMana.prototype:UpdateEnergy(event, unit)
 	end
 
 	if self:ShouldUseTicker() and
-		((not (self.previousEnergy) or (self.previousEnergy < UnitPower(self.unit, UnitPowerType(self.unit)))) and
+		((not (self.previousEnergy) or (self.previousEnergy < UnitPower(self.unit, self.manaType))) and
 		(self.moduleSettings.tickerEnabled) and self.manaType == SPELL_POWER_ENERGY) then
 			self.tickStart = GetTime()
 			self.tickerFrame:Show()
 	end
 
-	self.previousEnergy = UnitPower(self.unit, UnitPowerType(self.unit))
+	self.previousEnergy = UnitPower(self.unit, self.manaType)
 	if IceHUD.WowVer < 40000 then
 		self:Update(unit)
 	end
@@ -495,7 +500,7 @@ function PlayerMana.prototype:CreateTickerFrame()
 end
 
 function PlayerMana.prototype:IsPowerBar()
-	return true
+	return self.manaType
 end
 
 -- Load us up

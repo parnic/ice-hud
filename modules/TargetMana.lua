@@ -123,9 +123,10 @@ function IceTargetMana.prototype:Update(unit)
 		self:Show(true)
 	end
 
-	local manaType = UnitPowerType(self.unit)
+	local prevManaType = self.manaType
+	self.manaType = UnitPowerType(self.unit)
 
-	if self.moduleSettings.onlyShowMana and manaType ~= SPELL_POWER_MANA then
+	if self.moduleSettings.onlyShowMana and self.manaType ~= SPELL_POWER_MANA then
 		self:Show(false)
 		return
 	end
@@ -139,21 +140,21 @@ function IceTargetMana.prototype:Update(unit)
 			self.color = "ScaledManaColor"
 		end
 
-		if (manaType == SPELL_POWER_RAGE) then
+		if (self.manaType == SPELL_POWER_RAGE) then
 			self.color = "TargetRage"
-		elseif (manaType == SPELL_POWER_FOCUS) then
+		elseif (self.manaType == SPELL_POWER_FOCUS) then
 			self.color = "TargetFocus"
-		elseif (manaType == SPELL_POWER_ENERGY) then
+		elseif (self.manaType == SPELL_POWER_ENERGY) then
 			self.color = "TargetEnergy"
-		elseif (manaType == SPELL_POWER_RUNIC_POWER) then
+		elseif (self.manaType == SPELL_POWER_RUNIC_POWER) then
 			self.color = "TargetRunicPower"
-		elseif (manaType == SPELL_POWER_INSANITY) then
+		elseif (self.manaType == SPELL_POWER_INSANITY) then
 			self.color = "TargetInsanity"
-		elseif (manaType == SPELL_POWER_FURY) then
+		elseif (self.manaType == SPELL_POWER_FURY) then
 			self.color = "TargetFury"
-		elseif (manaType == SPELL_POWER_MAELSTROM) then
+		elseif (self.manaType == SPELL_POWER_MAELSTROM) then
 			self.color = "TargetMaelstrom"
-		elseif (manaType == SPELL_POWER_PAIN) then
+		elseif (self.manaType == SPELL_POWER_PAIN) then
 			self.color = "TargetPain"
 		end
 
@@ -162,12 +163,16 @@ function IceTargetMana.prototype:Update(unit)
 		end
 	end
 
-	self.bTreatEmptyAsFull = self:TreatEmptyAsFull(manaType)
+	self.bTreatEmptyAsFull = self:TreatEmptyAsFull(self.manaType)
+
+	if self.manaType ~= prevManaType then
+		self:Redraw()
+	end
 
 	self:UpdateBar(self.manaPercentage, self.color)
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
-		self:SetBottomText1(string.format("%.0f", UnitPowerPercent and UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, CurveConstants.ScaleTo100) or math.floor(self.manaPercentage * 100)))
+		self:SetBottomText1(string.format("%.0f", UnitPowerPercent and UnitPowerPercent(self.unit, self.manaType, true, CurveConstants.ScaleTo100) or math.floor(self.manaPercentage * 100)))
 		self:SetBottomText2(self:GetFormattedText(AbbreviateNumbers and AbbreviateNumbers(self.mana) or self.mana, AbbreviateNumbers and AbbreviateNumbers(self.maxMana) or self.maxMana), self.color)
 	end
 end
@@ -220,7 +225,7 @@ function IceTargetMana.prototype:GetOptions()
 end
 
 function IceTargetMana.prototype:IsPowerBar()
-	return true
+	return self.manaType
 end
 
 -- Load us up

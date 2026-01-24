@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.16.7
+
+- Fix an issue where bars would use the wrong alpha sometimes, especially those that treat "empty" as "full" such as a Shadow Priest's Insanity bar.
+- Fix an issue where PlayerAltMana would not respect alpha settings correctly.
+
 ## v1.16.6
 
 - Fix more Secrets problems in Player Alt Mana when DogTags were disabled.

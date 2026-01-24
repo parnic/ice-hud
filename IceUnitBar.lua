@@ -296,16 +296,16 @@ function IceUnitBar.prototype:Update()
 
 	-- note that UnitPowerType returns 2 arguments and UnitPower[Max] accepts a third argument to get the values on a different scale
 	-- so this technically doesn't get us the answer we want most of the time. too risky to change at this point, though.
-	self.mana = UnitPower(self.unit, UnitPowerType(self.unit))
-	self.maxMana = UnitPowerMax(self.unit, UnitPowerType(self.unit))
 	local powerType = UnitPowerType(self.unit)
+	self.mana = UnitPower(self.unit, powerType)
+	self.maxMana = UnitPowerMax(self.unit, powerType)
 	if IceHUD.CanAccessValue(self.mana) then
 		if (powerType == SPELL_POWER_RAGE and self.maxMana >= 1000)
 			or (powerType == SPELL_POWER_RUNIC_POWER and self.maxMana >= 1000) then
 			self.mana = IceHUD:MathRound(self.mana / 10)
 			self.maxMana = IceHUD:MathRound(self.maxMana / 10)
 		end
-		if IceHUD.WowVer >= 70300 and UnitPowerType(self.unit) == SPELL_POWER_INSANITY then
+		if IceHUD.WowVer >= 70300 and powerType == SPELL_POWER_INSANITY then
 			self.mana = IceHUD:MathRound(self.mana / 100)
 			self.maxMana = IceHUD:MathRound(self.maxMana / 100)
 		end
@@ -314,7 +314,7 @@ function IceUnitBar.prototype:Update()
 	-- account for cases where maxMana is 0, perhaps briefly (during certain spells, for example)
 	-- and properly handle it as full. this allows for proper alpha handling during these times.
 	if UnitPowerPercent then
-		self.manaPercentage = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self:ShouldReverseFill() and CurveConstants.Reverse or CurveConstants.ZeroToOne)
+		self.manaPercentage = UnitPowerPercent(self.unit, powerType, true, self:ShouldReverseFill() and CurveConstants.Reverse or CurveConstants.ZeroToOne)
 	else
 		if self.maxMana == self.mana then
 			self.manaPercentage = 1
@@ -322,9 +322,6 @@ function IceUnitBar.prototype:Update()
 			self.manaPercentage = self.maxMana ~= 0 and (self.mana/self.maxMana) or 0
 		end
 	end
-
-	local _
-	_, self.unitClass = UnitClass(self.unit)
 
 	if self.hpColorCurveR then
 		local r = UnitHealthPercent(self.unit, true, self.hpColorCurveR)
@@ -342,9 +339,9 @@ function IceUnitBar.prototype:Update()
 	end
 
 	if self.mpColorCurveR then
-		local r = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.mpColorCurveR)
-		local g = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.mpColorCurveG)
-		local b = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.mpColorCurveB)
+		local r = UnitPowerPercent(self.unit, powerType, true, self.mpColorCurveR)
+		local g = UnitPowerPercent(self.unit, powerType, true, self.mpColorCurveG)
+		local b = UnitPowerPercent(self.unit, powerType, true, self.mpColorCurveB)
 		self.scaleMPColorInst.r = r
 		self.scaleMPColorInst.g = g
 		self.scaleMPColorInst.b = b

@@ -185,7 +185,7 @@ function EclipseBar.prototype:MyOnUpdate()
 	self:Update()
 
 	self:UpdateEclipsePower()
-	self:UpdateBar(0.5, self.barUpdateColor, 1)
+	self:UpdateBar(0.5, self.barUpdateColor)
 	self:UpdateAlpha()
 end
 

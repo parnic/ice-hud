@@ -105,6 +105,10 @@ function PlayerAltMana.prototype:Update()
 	self:UpdateBar(self.PlayerAltManaPercentage, "PlayerAltMana")
 end
 
+function PlayerAltMana.prototype:IsPowerBar()
+	return SPELL_POWER_MANA
+end
+
 if (unitClass == "PRIEST" and IceHUD.WowVer >= 70000)
 	or (unitClass == "DRUID")
 	or (unitClass == "SHAMAN" and IceHUD.WowVer >= 70000)

@@ -17,13 +17,6 @@ IceBarElement.prototype.Markers = {}
 IceBarElement.prototype.IsBarElement = true -- cheating to avoid crawling up the 'super' references looking for this class. see IceCore.lua
 IceBarElement.prototype.bTreatEmptyAsFull = false
 
-if C_CurveUtil then
-	IceBarElement.prototype.oocNotFullCurve = C_CurveUtil.CreateCurve()
-	IceBarElement.prototype.oocNotFullCurve:SetType(Enum.LuaCurveType.Linear)
-	IceBarElement.prototype.oocNotFullCurveBg = C_CurveUtil.CreateCurve()
-	IceBarElement.prototype.oocNotFullCurveBg:SetType(Enum.LuaCurveType.Linear)
-end
-
 local lastMarkerPosConfig = 50
 local lastMarkerColorConfig = {r=1, b=0, g=0, a=1}
 local lastMarkerHeightConfig = 6
@@ -32,6 +25,13 @@ local lastEditMarkerConfig = 1
 -- Constructor --
 function IceBarElement.prototype:init(name, ...)
 	IceBarElement.super.prototype.init(self, name, ...)
+
+	if C_CurveUtil then
+		self.oocNotFullCurve = C_CurveUtil.CreateCurve()
+		self.oocNotFullCurve:SetType(Enum.LuaCurveType.Linear)
+		self.oocNotFullCurveBg = C_CurveUtil.CreateCurve()
+		self.oocNotFullCurveBg:SetType(Enum.LuaCurveType.Linear)
+	end
 end
 
 
@@ -1034,15 +1034,19 @@ function IceBarElement.prototype:UpdateAlphaCurves()
 		return
 	end
 
+	local nearlyFullAlpha = self.bTreatEmptyAsFull and 0.00001 or 0.99999
+	local fullAlpha = self.bTreatEmptyAsFull and 0.0 or 1.0
+	local emptyAlpha = self.bTreatEmptyAsFull and 1.0 or 0.0
+
 	self.oocNotFullCurve:ClearPoints()
-	self.oocNotFullCurve:AddPoint(0.0, self.settings.alphaNotFull)
-	self.oocNotFullCurve:AddPoint(0.9999999, self.settings.alphaNotFull)
-	self.oocNotFullCurve:AddPoint(1, self.settings.alphaooc)
+	self.oocNotFullCurve:AddPoint(emptyAlpha, self.settings.alphaNotFull)
+	self.oocNotFullCurve:AddPoint(nearlyFullAlpha, self.settings.alphaNotFull)
+	self.oocNotFullCurve:AddPoint(fullAlpha, self.settings.alphaooc)
 
 	self.oocNotFullCurveBg:ClearPoints()
-	self.oocNotFullCurveBg:AddPoint(0.0, self.settings.alphaNotFullbg)
-	self.oocNotFullCurveBg:AddPoint(0.9999999, self.settings.alphaNotFullbg)
-	self.oocNotFullCurveBg:AddPoint(1, self.settings.alphaoocbg)
+	self.oocNotFullCurveBg:AddPoint(emptyAlpha, self.settings.alphaNotFullbg)
+	self.oocNotFullCurveBg:AddPoint(nearlyFullAlpha, self.settings.alphaNotFullbg)
+	self.oocNotFullCurveBg:AddPoint(fullAlpha, self.settings.alphaoocbg)
 end
 
 
@@ -1555,13 +1559,10 @@ function IceBarElement.prototype:IsHealthBar()
 end
 
 function IceBarElement.prototype:IsPowerBar()
-	return false
+	return nil
 end
 
-function IceBarElement.prototype:UpdateBar(scale, color, alpha)
-	alpha = alpha or 1
-	self.frame:SetAlpha(alpha)
-
+function IceBarElement.prototype:UpdateBar(scale, color)
 	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
 	if (self.settings.backgroundToggle) then
 		r, g, b = self:GetColor(color)
@@ -1582,9 +1583,10 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 			curveAlpha = UnitHealthPercent(self.unit, true, self.oocNotFullCurve)
 			curveBgalpha = UnitHealthPercent(self.unit, true, self.oocNotFullCurveBg)
 		end
-		if self:IsPowerBar() and UnitPowerPercent then
-			curveAlpha = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.oocNotFullCurve)
-			curveBgalpha = UnitPowerPercent(self.unit, UnitPowerType(self.unit), true, self.oocNotFullCurveBg)
+		local powerType = self:IsPowerBar()
+		if powerType and UnitPowerPercent then
+			curveAlpha = UnitPowerPercent(self.unit, powerType, true, self.oocNotFullCurve)
+			curveBgalpha = UnitPowerPercent(self.unit, powerType, true, self.oocNotFullCurveBg)
 		end
 
 		if curveAlpha then
@@ -1605,6 +1607,8 @@ function IceBarElement.prototype:UpdateBar(scale, color, alpha)
 	if self.moduleSettings.alwaysFullAlpha or self:IsInConfigMode() then
 		self.alpha = 1
 	end
+
+	self.frame:SetAlpha(self.alpha)
 
 	self.frame.bg:SetVertexColor(r, g, b, self.backgroundAlpha)
 	self:SetBarColorRGBA(self:GetColor(color))
