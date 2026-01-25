@@ -607,7 +607,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 
 		if self.barFrame.SetTimerDuration then
 			local duration
-			if self.NumStages then
+			if self.NumStages and IceHUD.CanAccessValue(endTime) then
 				duration = C_DurationUtil.CreateDuration()
 				duration:SetTimeSpan(startTime / 1000, endTime / 1000)
 			else
