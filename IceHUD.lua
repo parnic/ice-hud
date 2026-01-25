@@ -57,6 +57,11 @@ if not IceHUD.GetSpecialization and C_SpecializationInfo then
 	IceHUD.GetSpecialization = C_SpecializationInfo.GetSpecialization
 end
 
+IceHUD.IsSpellInRange = IsSpellInRange
+if not IceHUD.IsSpellInRange and C_Spell then
+	IceHUD.IsSpellInRange = C_Spell.IsSpellInRange
+end
+
 IceHUD.CurrTagVersion = 3
 IceHUD.debugging = false
 

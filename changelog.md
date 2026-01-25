@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.16.8
+
+- Fix the player's Cast bar to update its alpha to in-combat alpha when the player enters or exits combat while casting something.
+- Package a new version of LibDogTag-Unit-3.0 to pick up some more Casting tag fixes.
+
 ## v1.16.7
 
 - Fix an issue where bars would use the wrong alpha sometimes, especially those that treat "empty" as "full" such as a Shadow Priest's Insanity bar.

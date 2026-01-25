@@ -1544,8 +1544,8 @@ end
 --	ShowPartyFrame() -- Just call Blizzard default method
 --end
 
-function PlayerHealth.prototype:UpdateBar(scale, color, alpha)
-	PlayerHealth.super.prototype.UpdateBar(self, scale, color, alpha)
+function PlayerHealth.prototype:UpdateBar(scale, color)
+	PlayerHealth.super.prototype.UpdateBar(self, scale, color)
 
 	if self.healFrame then
 		self:SetBarFrameColorRGBA(self.healFrame, self:GetColor("PlayerHealthHealAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.healAlpha))

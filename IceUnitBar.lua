@@ -385,8 +385,8 @@ end
 
 
 -- OVERRIDE
-function IceUnitBar.prototype:UpdateBar(scale, color, alpha)
-	IceUnitBar.super.prototype.UpdateBar(self, scale, color, alpha)
+function IceUnitBar.prototype:UpdateBar(scale, color)
+	IceUnitBar.super.prototype.UpdateBar(self, scale, color)
 
 	if (not self.flashFrame) then
 		-- skip if flashFrame hasn't been created yet

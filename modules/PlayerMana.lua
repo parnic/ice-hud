@@ -415,10 +415,10 @@ end
 
 
 -- OVERRIDE
-function PlayerMana.prototype:UpdateBar(scale, color, alpha)
+function PlayerMana.prototype:UpdateBar(scale, color)
 	self.noFlash = (self.manaType ~= SPELL_POWER_MANA)
 
-	PlayerMana.super.prototype.UpdateBar(self, scale, color, alpha)
+	PlayerMana.super.prototype.UpdateBar(self, scale, color)
 end
 
 

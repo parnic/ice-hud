@@ -1088,8 +1088,8 @@ function IceTargetHealth.prototype:HideBlizz()
 	ComboFrame:SetParent(self.ComboFrameParent)
 end
 
-function IceTargetHealth.prototype:UpdateBar(scale, color, alpha)
-	IceTargetHealth.super.prototype.UpdateBar(self, scale, color, alpha)
+function IceTargetHealth.prototype:UpdateBar(scale, color)
+	IceTargetHealth.super.prototype.UpdateBar(self, scale, color)
 --[[ seems to be causing taint. oh well
 	if self.frame.button then
 		if self.alpha == 0 then

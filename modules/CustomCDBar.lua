@@ -17,11 +17,6 @@ local COOLDOWN_TYPE_ITEM = 2
 
 local localizedInventorySlotNames = {}
 
-local IsSpellInRange = IsSpellInRange
-if not IsSpellInRange and C_Spell then
-	IsSpellInRange = C_Spell.IsSpellInRange
-end
-
 local GetSpellName = GetSpellInfo
 if C_Spell and C_Spell.GetSpellName then
 	GetSpellName = C_Spell.GetSpellName
@@ -683,7 +678,7 @@ function IceCustomCDBar.prototype:EnableUpdates(enable_update)
 	-- If we want to display as soon as the spell is ready, we need to over-ride the parameter if
 	-- it is possible the spell might be starting or stopping to be ready at any time. For spells
 	-- without range (don't require a target) this is any time. For ranged spells that's when we
-	-- have a valid target (IsSpellInRange() returns 0 or 1).
+	-- have a valid target (IsSpellInRange() returns non-nil).
 	--
 	-- There is a hole in the logic here for spells that can be cast on any friendly target. When
 	-- the correct UI option is selected they will cast on self when no target is selected. Deal
@@ -692,7 +687,7 @@ function IceCustomCDBar.prototype:EnableUpdates(enable_update)
 -- Parnic: there are too many edge cases for "when ready" cooldowns that cause the bar to not appear when it should
 --         so, i'm forcing updates to always run for any bar that's set to only show "when ready"
 --		if SpellHasRange(self.moduleSettings.cooldownToTrack) then
---			if IsSpellInRange(self.moduleSettings.cooldownToTrack, "target") then
+--			if IceHUD.IsSpellInRange(self.moduleSettings.cooldownToTrack, "target") then
 --				enable_update = true
 --			end
 --		else
@@ -866,8 +861,8 @@ function IceCustomCDBar.prototype:IsReady()
 			if self.moduleSettings.bIgnoreRange and self.moduleSettings.bOnlyShowWithTarget then
 				is_ready = UnitExists("target") and 1 or nil
 			elseif (not self.moduleSettings.bIgnoreRange and SpellHasRange(checkSpell)) or (self.moduleSettings.bOnlyShowWithTarget) then
-				if (UnitExists("target") and (not SpellHasRange(checkSpell) or IsSpellInRange(checkSpell, "target") == 1))
-					or (not UnitExists("target") and not self.moduleSettings.bOnlyShowWithTarget and IsSpellInRange(checkSpell, "player")) then
+				if (UnitExists("target") and (not SpellHasRange(checkSpell) or IceHUD.IsSpellInRange(checkSpell, "target")))
+					or (not UnitExists("target") and not self.moduleSettings.bOnlyShowWithTarget and IceHUD.IsSpellInRange(checkSpell, "player")) then
 					is_ready = 1
 				end
 			else

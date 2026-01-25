@@ -50,8 +50,8 @@ function TargetCast.prototype:SpellCastNotInterruptible(event, unit)
 	self:UpdateInterruptibleColor()
 end
 
-function TargetCast.prototype:UpdateBar(scale, color, alpha)
-	TargetCast.super.prototype.UpdateBar(self, scale, color, alpha)
+function TargetCast.prototype:UpdateBar(scale, color)
+	TargetCast.super.prototype.UpdateBar(self, scale, color)
 	self:UpdateInterruptibleColor()
 end
 

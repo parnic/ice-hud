@@ -8,11 +8,6 @@ if not CastingBarFrame then
 	CastingBarFrame = PlayerCastingBarFrame
 end
 
-local IsSpellInRange = IsSpellInRange
-if not IsSpellInRange and C_Spell then
-	IsSpellInRange = C_Spell.IsSpellInRange
-end
-
 local GetSpellCooldown = GetSpellCooldown
 if not GetSpellCooldown and C_Spell then
 	GetSpellCooldown = function(spellID)
@@ -545,25 +540,31 @@ function CastBar.prototype:UpdateLagBar(isChannel)
 	self.spellCastSent = nil
 end
 
+function CastBar.prototype:Update()
+	CastBar.super.prototype.Update(self)
 
-function CastBar.prototype:UpdateBar(scale, color, alpha)
+	self:UpdateAlpha()
+	self:ApplyColor(self:GetCurrentCastingColor())
+end
+
+function CastBar.prototype:GetCurrentCastingColor()
 	local bCheckRange = true
 	local inRange
 
 	if not self.moduleSettings.rangeColor or not self.current or not self.action or not UnitExists("target") then
 		bCheckRange = false
 	else
-		inRange = IsSpellInRange(self.current, "target")
+		inRange = IceHUD.IsSpellInRange(self.current, "target")
 		if inRange == nil then
 			bCheckRange = false
 		end
 	end
 
-	if bCheckRange and inRange == 0 then
-		color = "CastNotInRange"
+	if bCheckRange and not inRange then
+		return "CastNotInRange"
 	end
 
-	CastBar.super.prototype.UpdateBar(self, scale, color, alpha)
+	return CastBar.super.prototype.GetCurrentCastingColor(self)
 end
 
 -------------------------------------------------------------------------------

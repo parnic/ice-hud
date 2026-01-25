@@ -206,6 +206,7 @@ function FocusHealth.prototype:GetOptions()
 		end,
 		set = function(info, v)
 			self.moduleSettings.abbreviateHealth = v
+			self:Redraw()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled

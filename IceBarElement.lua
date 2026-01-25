@@ -1562,12 +1562,7 @@ function IceBarElement.prototype:IsPowerBar()
 	return nil
 end
 
-function IceBarElement.prototype:UpdateBar(scale, color)
-	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
-	if (self.settings.backgroundToggle) then
-		r, g, b = self:GetColor(color)
-	end
-
+function IceBarElement.prototype:UpdateAlpha(scale)
 	local useTargetAlpha = self.target and not self:AlphaPassThroughTarget()
 	local useNotFullAlpha = self:UseTargetAlpha(scale)
 	if self.combat then
@@ -1607,17 +1602,29 @@ function IceBarElement.prototype:UpdateBar(scale, color)
 	if self.moduleSettings.alwaysFullAlpha or self:IsInConfigMode() then
 		self.alpha = 1
 	end
+end
 
-	self.frame:SetAlpha(self.alpha)
+function IceBarElement.prototype:ApplyColor(color)
+	local r, g, b = self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b
+	if self.settings.backgroundToggle then
+		r, g, b = self:GetColor(color)
+	end
 
 	self.frame.bg:SetVertexColor(r, g, b, self.backgroundAlpha)
 	self:SetBarColorRGBA(self:GetColor(color))
 	if self.moduleSettings.markers then
 		for i=1, #self.Markers do
-			local color = self.moduleSettings.markers[i].color
-			self.Markers[i].texture:SetVertexColor(color.r, color.g, color.b, self.alpha)
+			local markerColor = self.moduleSettings.markers[i].color
+			self.Markers[i].texture:SetVertexColor(markerColor.r, markerColor.g, markerColor.b, self.alpha)
 		end
 	end
+end
+
+function IceBarElement.prototype:UpdateBar(scale, color)
+	self.frame:SetAlpha(1)
+	self:UpdateAlpha(scale)
+
+	self:ApplyColor(color)
 
 	if not IceHUD.CanAccessValue(scale) or not IceHUD.CanAccessValue(self.DesiredScale) then
 		self.DesiredScale = scale
