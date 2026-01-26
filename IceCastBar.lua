@@ -459,7 +459,7 @@ function IceCastBar.prototype:GetStageDuration(stage)
 end
 
 function IceCastBar.prototype:GetDurationUpToStage(stage)
-	if stage == nil or stage < 0 then
+	if stage == nil or not IceHUD.CanAccessValue(stage) then
 		return 0
 	end
 
@@ -491,7 +491,7 @@ function IceCastBar.prototype:IsCastingEmpowerSpell()
 end
 
 function IceCastBar.prototype:GetCurrentCastingColor()
-	if self:IsCastingEmpowerSpell() then
+	if self:IsCastingEmpowerSpell() and IceHUD.CanAccessValue(self.NumStages) then
 		return ("EmpowerStage%d"):format(self:GetCurrentStage())
 	end
 
