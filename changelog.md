@@ -4,7 +4,7 @@
 
 - Fix the player's Cast bar to update its alpha to in-combat alpha when the player enters or exits combat while casting something.
 - Package a new version of LibDogTag-Unit-3.0 to pick up some more Casting tag fixes.
-- Maybe fix a Secrets error when targeting a player who is casting an Empowered spell.
+- Fix a Secrets error when targeting a player who is casting an Empowered spell.
 
 ## v1.16.7
 
