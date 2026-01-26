@@ -19,6 +19,8 @@ jobs:
       - name: Update TOC Interface version
         uses: p3lim/toc-interface-updater@v4
         with:
+          beta: true
+          ptr: true
           flavor: |
             vanilla
             tbc
