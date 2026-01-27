@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.16.9
+
+- Set default update speed for new installations to 60hz to have everything appear smoother. I recommend anyone who has it at the default of ~30 bump to 60.
+
 ## v1.16.8
 
 - Fix the player's Cast bar to update its alpha to in-combat alpha when the player enters or exits combat while casting something.

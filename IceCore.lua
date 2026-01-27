@@ -126,7 +126,7 @@ function IceCore.prototype:SetupDefaults()
 
 			bShouldUseDogTags = true,
 
-			updatePeriod = 0.033,
+			updatePeriod = 0.0166,
 			minimap = {},
 
 			TextDecoration = "Shadow",
