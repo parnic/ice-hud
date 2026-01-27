@@ -421,7 +421,7 @@ function IceCastBar.prototype:MyOnUpdate()
 	then
 		local scale
 		if self.actionStartTime then
-			scale = (GetTime() - self.actionStartTime) * 2
+			scale = GetTime() - self.actionStartTime
 		end
 
 		if scale and (scale > 1) then
@@ -703,7 +703,7 @@ function IceCastBar.prototype:SpellCastStop(event, unit, castGuid, spellId, cast
 	IceHUD:Debug("SpellCastStop", unit, castGuid, spellId, castBarId)
 
 	-- ignore if not coming from current spell
-	if IceHUD.IsSecretEnv() and self.current and castBarId and self.current ~= castBarId then
+	if IceHUD.IsSecretEnv() and self.current and self.current ~= castBarId then
 		return
 	end
 	-- fall back to pre-Midnight guid check
@@ -728,7 +728,7 @@ function IceCastBar.prototype:SpellCastFailed(event, unit, castGuid, spellId, ca
 	IceHUD:Debug("SpellCastFailed", unit, castGuid, spellId, castBarId)
 
 	-- ignore if not coming from current spell
-	if IceHUD.IsSecretEnv() and self.current and castBarId and self.current ~= castBarId then
+	if IceHUD.IsSecretEnv() and self.current and self.current ~= castBarId then
 		return
 	end
 	-- fall back to pre-Midnight guid check
@@ -760,7 +760,7 @@ function IceCastBar.prototype:SpellCastInterrupted(event, unit, castGuid, spellI
 	IceHUD:Debug("SpellCastInterrupted", unit, castGuid, spellId, castBarId)
 
 	-- ignore if not coming from current spell
-	if IceHUD.IsSecretEnv() and self.current and castBarId and self.current ~= castBarId then
+	if IceHUD.IsSecretEnv() and self.current and self.current ~= castBarId then
 		return
 	end
 	-- fall back to pre-Midnight guid check
@@ -803,7 +803,7 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId,
 	end
 
 	-- ignore if not coming from current spell
-	if IceHUD.IsSecretEnv() and self.current and castBarId and self.current ~= castBarId then
+	if IceHUD.IsSecretEnv() and self.current and self.current ~= castBarId then
 		return
 	end
 	-- fall back to pre-Midnight guid check
@@ -811,6 +811,7 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId,
 		return
 	end
 
+	self.current = nil
 	local spell = GetSpellName(spellId)
 
 	-- show after normal successfull cast

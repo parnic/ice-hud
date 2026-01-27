@@ -459,16 +459,16 @@ function CastBar.prototype:SpellCastSent(event, unit, target, castGuid, spellId)
 end
 
 -- OVERRIDE
-function CastBar.prototype:SpellCastChanged(event, arg1)
-	CastBar.super.prototype.SpellCastChanged(self, event, arg1)
+function CastBar.prototype:SpellCastChanged(event, cancelled)
+	CastBar.super.prototype.SpellCastChanged(self, event, cancelled)
 	if IceHUD.WowVer >= 70000 then
 		self.spellCastSent = GetTime()
 	end
 end
 
 -- OVERRIDE
-function CastBar.prototype:SpellCastStart(event, unit, castGuid, spellId)
-	CastBar.super.prototype.SpellCastStart(self, event, unit, castGuid, spellId)
+function CastBar.prototype:SpellCastStart(event, unit, castGuid, spellId, castBarId)
+	CastBar.super.prototype.SpellCastStart(self, event, unit, castGuid, spellId, castBarId)
 	if (unit ~= self.unit or not spellId) then return end
 
 	if not self:IsVisible() or not self.actionDuration then
@@ -487,8 +487,8 @@ end
 
 
 -- OVERRIDE
-function CastBar.prototype:SpellCastChannelStart(event, unit)
-	CastBar.super.prototype.SpellCastChannelStart(self, event, unit)
+function CastBar.prototype:SpellCastChannelStart(event, unit, castGuid, spellId, castBarId)
+	CastBar.super.prototype.SpellCastChannelStart(self, event, unit, castGuid, spellId, castBarId)
 	if (unit ~= self.unit) then return end
 
 	if not self:IsVisible() or not self.actionDuration then
@@ -499,8 +499,8 @@ function CastBar.prototype:SpellCastChannelStart(event, unit)
 end
 
 -- OVERRIDE
-function CastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId)
-	CastBar.super.prototype.SpellCastSucceeded(self, event, unit, castGuid, spellId)
+function CastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId, castBarId)
+	CastBar.super.prototype.SpellCastSucceeded(self, event, unit, castGuid, spellId, castBarId)
 
 	if not self.actionDuration or unit ~= self.unit then
 		return
