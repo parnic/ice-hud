@@ -506,7 +506,7 @@ function IceCore.prototype:AddNewDynamicModule(module, hasSettings)
 
 	module:SetDatabase(self.settings)
 
-	if not hasSettings or type(hasSettings) == "table" then
+	if (not hasSettings or type(hasSettings) == "table") and module:GetDefaultSettings().customBarType then
 		local numExisting = self:GetNumCustomModules(module, module:GetDefaultSettings().customBarType)
 		self:RenameDynamicModule(module, "MyCustom"..module:GetDefaultSettings().customBarType..(numExisting+1))
 	end
