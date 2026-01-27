@@ -511,6 +511,11 @@ function IceCore.prototype:AddNewDynamicModule(module, hasSettings)
 		self:RenameDynamicModule(module, "MyCustom"..module:GetDefaultSettings().customBarType..(numExisting+1))
 	end
 
+	self:PostCreateModule(module)
+end
+
+
+function IceCore.prototype:PostCreateModule(module)
 	module:Create(self.IceHUDFrame)
 	if (module:IsEnabled()) then
 		module:Enable(true)
@@ -519,6 +524,17 @@ function IceCore.prototype:AddNewDynamicModule(module, hasSettings)
 	if IceHUD.optionsLoaded then
 		IceHUD_Options:GenerateModuleOptions()
 	end
+end
+
+
+function IceCore.prototype:RegisterExternalModule(module)
+	if not self.settings.modules[module.elementName] then
+		self.settings.modules[module.elementName] = module:GetDefaultSettings()
+	end
+
+	module:SetDatabase(self.settings)
+
+	self:PostCreateModule(module)
 end
 
 
