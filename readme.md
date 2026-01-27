@@ -81,6 +81,7 @@ See [the wiki page](https://github.com/parnic/ice-hud/wiki/List-of-missing-or-ch
    IceHUD is not responsible for this countdown text, but there is an option on the TargetInfo settings to force-disable the numbers. The 6.0 patch added an option in the game client to display counts on top of cooldowns. Look at the Action Bars menu under the game's Interface options. You can turn the text on or off there. Mods like OmniCC or CooldownCount will generally give you the same feature but allow you to control when, where, and how the text shows up.
 
 1. **When I rotate some modules 90 degrees, such as the castbar, the bar appears to wiggle up and down as it fills or empties. How do I fix this?**
+   Note: the described behavior is expected to be gone on WoW 12.0+.
    This is a side effect of the animation API that I'm co-opting to force a rotation without having to provide duplicates of every bar texture in the mod. Any bar moving sufficiently quickly and updating rapidly will cause this. IceHUD is intended to be a vertically-oriented mod, so the rotation feature is there for people who are willing to accept the side effects that come with it. My suggestion is to use one of the many horizontally-oriented bar mods out there if you're wanting horizontal bars. Quartz is a good castbar replacement that you can use and disable IceHUD's built-in castbar, for example.
 
 1. **How do I get rid of the bars that showed up beneath the player in the 7.0 patch?**
