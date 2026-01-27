@@ -3,6 +3,7 @@
 ## v1.16.9
 
 - Set default update speed for new installations to 60hz to have everything appear smoother. I recommend anyone who has it at the default of ~30 bump to 60.
+- Fix an issue where bars such as TargetHealth could sometimes get stuck at the wrong value on clients < 12.0. This was most noticeable when the bar's value changed right as it was hidden, like when an enemy dies.
 
 ## v1.16.8
 

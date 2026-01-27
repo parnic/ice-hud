@@ -1492,6 +1492,7 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 		self:GetBarFrameTexture(barFrame):SetTexCoord(0, 1, min_y, max_y)
 		self:SetBarFramePoints(barFrame, 0, offset_y)
 		barFrame:SetHeight(self.settings.barHeight * scale)
+		self.ActualScale = scale
 	end
 end
 
@@ -1502,7 +1503,7 @@ function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
 		return
 	end
 
-	local oldScale = self.CurrScale
+	local oldScale = self.ActualScale
 
 	if not skipLerp then
 		self.CurrScale = self:LerpScale(inScale)
