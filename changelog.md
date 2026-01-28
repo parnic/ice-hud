@@ -6,6 +6,7 @@
 - Fix error when opening the Colors config panel under certain circumstances.
 - Fix SliceAndDice not showing the time for the active buff on clients < 12.0.
 - Fix some bars showing full when they should be showing empty after first loading into a session.
+- Fix Vigor charges displaying when Steady flying.
 
 ## v1.16.9
 

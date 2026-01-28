@@ -67,6 +67,14 @@ function DragonridingVigor.prototype:ShouldShowCharges()
 		return false
 	end
 
+	-- check for steady-flight or skyriding
+	if C_PlayerInfo and C_PlayerInfo.GetGlidingInfo then
+		local _, canGlide = C_PlayerInfo.GetGlidingInfo()
+		if not canGlide then
+			return false
+		end
+	end
+
 	local spellID = DragonridingVigor.GetChargeSpell()
 	if not spellID then
 		return false
