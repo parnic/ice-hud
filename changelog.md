@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.16.10
+
+- Add support for loading modules via separate addons so that IceHUD plugin addons can be built.
+
 ## v1.16.9
 
 - Set default update speed for new installations to 60hz to have everything appear smoother. I recommend anyone who has it at the default of ~30 bump to 60.
