@@ -80,8 +80,6 @@ function DragonridingVigor.prototype:ShouldShowCharges()
 		return false
 	end
 
-	-- If the client provides gliding info, we can be stricter and only show when it reports skyriding/gliding.
-	-- But different builds return different payloads, so we keep it permissive.
 	return true
 end
 
