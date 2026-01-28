@@ -506,11 +506,10 @@ function IceHUD:OnEnable(isFirst)
 	local LibDualSpec = LibStub('LibDualSpec-1.0', true)
 	if LibDualSpec then
 		LibDualSpec:EnhanceDatabase(self.db, "IceHUD")
+		self.dbEnhanced = true
 	end
 
-	--@debug@
 	IceHUD_Options:OnLoad()
-	--@end-debug@
 end
 
 -- add settings changes/updates here so that existing users don't lose their settings

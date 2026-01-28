@@ -857,6 +857,11 @@ function IceHUD_Options:SetupProfileImportButtons()
 end
 
 function IceHUD_Options:OnLoad()
+	if not IceHUD.dbEnhanced or self.loaded then
+		-- make sure we're ready and haven't done this already.
+		return
+	end
+
 	self:GenerateModuleOptions(true)
 	self.options.args.colors.args = IceHUD.IceCore:GetColorOptions()
 	self.options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(IceHUD.db)
@@ -868,6 +873,7 @@ function IceHUD_Options:OnLoad()
 	end
 
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("IceHUD", options, "icehudcl")
+	self.loaded = true
 end
 
 if IceHUD and IceHUD.IceCore then
