@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.16.11
+
+- Fix player castbar disappearing early after being delayed due to taking damage while casting.
+
 ## v1.16.10
 
 - Add support for loading modules via separate addons so that IceHUD plugin addons can be built. See [wiki page](https://github.com/parnic/ice-hud/wiki/Creating-standalone-IceHUD-module-addons) for more information.

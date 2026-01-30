@@ -392,12 +392,12 @@ function IceCastBar.prototype:MyOnUpdate()
 
 		if not self.barFrame.SetTimerDuration then
 			self:UpdateBar(IceHUD:Clamp(scale, 0, 1), self:GetCurrentCastingColor())
+
+			if remainingTime <= 0 then
+				self:StopBar()
+			end
 		elseif self.NumStages then
 			self:SetBarColorRGBA(self:GetColor(self:GetCurrentCastingColor()))
-		end
-
-		if (remainingTime <= 0) then
-			self:StopBar()
 		end
 
 		local timeString = self.moduleSettings.showCastTime and string.format("%.1fs ", remainingTime) or ""
@@ -778,10 +778,7 @@ function IceCastBar.prototype:SpellCastDelayed(event, unit, castGuid, spellId)
 	IceHUD:Debug("SpellCastDelayed", unit, castGuid, spellId, UnitCastingInfo(unit))
 
 	if UnitCastingDuration then
-		local duration = UnitCastingDuration(self.unit)
-		if duration then
-			self:SetTimerDuration(duration, self.action)
-		end
+		self:StartBar(self.action)
 		return
 	end
 
@@ -855,11 +852,7 @@ function IceCastBar.prototype:SpellCastChannelUpdate(event, unit)
 	--IceHUD:Debug("SpellCastChannelUpdate", unit, UnitChannelInfo(unit))
 
 	if UnitChannelDuration then
-		local duration = UnitChannelDuration(self.unit)
-		if duration then
-			self:SetTimerDuration(duration, self.action)
-		end
-
+		self:StartBar(IceCastBar.Actions.Channel)
 		return
 	end
 
