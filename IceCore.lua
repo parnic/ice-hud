@@ -713,18 +713,20 @@ function IceCore.prototype:GetColorOptions()
 
 	if #self.elements > 0 then
 		for k, v in pairs(self.elements[1]:GetColors()) do
-			options[k] =  {
-				type = 'color',
-				desc = k,
-				name = k,
-				get = function()
-					return IceHUD.IceCore:GetColor(k)
-				end,
-				set = function(info, r, g, b)
-					local color = k
-					IceHUD.IceCore:SetColor(k, r, g, b)
-				end
-			}
+			if k ~= "ScaledHealthColor" and k ~= "ScaledManaColor" then
+				options[k] =  {
+					type = 'color',
+					desc = k,
+					name = k,
+					get = function()
+						return IceHUD.IceCore:GetColor(k)
+					end,
+					set = function(info, r, g, b)
+						local color = k
+						IceHUD.IceCore:SetColor(k, r, g, b)
+					end
+				}
+			end
 		end
 	end
 

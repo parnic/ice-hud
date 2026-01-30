@@ -3,6 +3,7 @@
 ## v1.16.10
 
 - Add support for loading modules via separate addons so that IceHUD plugin addons can be built.
+- Fix error when opening the Colors config panel under certain circumstances.
 
 ## v1.16.9
 
