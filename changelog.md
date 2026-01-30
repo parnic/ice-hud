@@ -3,6 +3,7 @@
 ## v1.16.11
 
 - Fix player castbar disappearing early after being delayed due to taking damage while casting.
+- Fix an error on login that was introduced in v1.16.10.
 
 ## v1.16.10
 

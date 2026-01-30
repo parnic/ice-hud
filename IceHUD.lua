@@ -509,7 +509,9 @@ function IceHUD:OnEnable(isFirst)
 		self.dbEnhanced = true
 	end
 
-	IceHUD_Options:OnLoad()
+	if IceHUD_Options then
+		IceHUD_Options:OnLoad()
+	end
 end
 
 -- add settings changes/updates here so that existing users don't lose their settings
