@@ -5,6 +5,7 @@
 - Add support for loading modules via separate addons so that IceHUD plugin addons can be built.
 - Fix error when opening the Colors config panel under certain circumstances.
 - Fix SliceAndDice not showing the time for the active buff on clients < 12.0.
+- Fix some bars showing full when they should be showing empty after first loading into a session.
 
 ## v1.16.9
 

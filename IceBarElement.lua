@@ -1449,51 +1449,51 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 		barFrame:Hide()
 	else
 		barFrame:Show()
-
-		if barFrame.SetValue then
-			barFrame:SetValue(scale, interp)
-			return
-		end
-
-		local min_y, max_y
-		local offset_y = 0
-
-		local reverse = self:BarFillReverse()
-		if overrideReverse then
-			reverse = false
-		end
-
-		if IceHUD:xor(reverse, top) then
-			if self:BarFillInverse() then
-				min_y = 1 - scale
-				max_y = 1
-				offset_y = 0 - (self.settings.barHeight * (1 - scale))
-			elseif self:BarFillExpand() then
-				min_y = 0.5 - (scale * 0.5)
-				max_y = 0.5 + (scale * 0.5)
-			else
-				min_y = 0
-				max_y = scale
-				offset_y = (self.settings.barHeight * (1 - scale))
-			end
-		else
-			if self:BarFillInverse() then
-				min_y = 0
-				max_y = scale
-			elseif self:BarFillExpand() then
-				min_y = 0.5 - (scale * 0.5)
-				max_y = 0.5 + (scale * 0.5)
-			else
-				min_y = 1-scale
-				max_y = 1
-			end
-		end
-
-		self:GetBarFrameTexture(barFrame):SetTexCoord(0, 1, min_y, max_y)
-		self:SetBarFramePoints(barFrame, 0, offset_y)
-		barFrame:SetHeight(self.settings.barHeight * scale)
-		self.ActualScale = scale
 	end
+
+	if barFrame.SetValue then
+		barFrame:SetValue(scale, interp)
+		return
+	end
+
+	local min_y, max_y
+	local offset_y = 0
+
+	local reverse = self:BarFillReverse()
+	if overrideReverse then
+		reverse = false
+	end
+
+	if IceHUD:xor(reverse, top) then
+		if self:BarFillInverse() then
+			min_y = 1 - scale
+			max_y = 1
+			offset_y = 0 - (self.settings.barHeight * (1 - scale))
+		elseif self:BarFillExpand() then
+			min_y = 0.5 - (scale * 0.5)
+			max_y = 0.5 + (scale * 0.5)
+		else
+			min_y = 0
+			max_y = scale
+			offset_y = (self.settings.barHeight * (1 - scale))
+		end
+	else
+		if self:BarFillInverse() then
+			min_y = 0
+			max_y = scale
+		elseif self:BarFillExpand() then
+			min_y = 0.5 - (scale * 0.5)
+			max_y = 0.5 + (scale * 0.5)
+		else
+			min_y = 1-scale
+			max_y = 1
+		end
+	end
+
+	self:GetBarFrameTexture(barFrame):SetTexCoord(0, 1, min_y, max_y)
+	self:SetBarFramePoints(barFrame, 0, offset_y)
+	barFrame:SetHeight(self.settings.barHeight * scale)
+	self.ActualScale = scale
 end
 
 function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
