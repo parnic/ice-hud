@@ -8,6 +8,7 @@
 - Fix some bars showing full when they should be showing empty after first loading into a session.
 - Fix Vigor charges displaying when Steady flying.
 - Prevent PlayerAlternatePower bar displaying when it has nothing to show.
+- Mark as compatible with Titan client.
 
 ## v1.16.9
 
