@@ -320,9 +320,6 @@ end
 function SliceAndDice.prototype:CreateDurationBar()
 	self.durationFrame = self:BarFactory(self.durationFrame, "BACKGROUND", "ARTWORK", "Duration")
 
-	-- Rokiyo: Do we need to call this here?
-	self.CurrScale = 0
-
 	self:SetBarFrameColorRGBA(self.durationFrame, self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
 	if self.durationFrame.SetValue then
 		self.durationFrame:SetValue(0)
@@ -330,7 +327,7 @@ function SliceAndDice.prototype:CreateDurationBar()
 		self.durationFrame.texture:SetHeight(0)
 	end
 
-	self:UpdateBar(1, "undef")
+	self:UpdateBar(0, "undef")
 
 	-- force update the bar...if we're in here, then either the UI was just loaded or the player is jacking with the options.
 	-- either way, make sure the duration bar matches accordingly
@@ -356,7 +353,7 @@ end
 function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
 	local t = GetTime()
 
-	if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDataByAuraInstanceID then
+	if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDataByAuraInstanceID and C_UnitAuras.GetAuraDuration then
 		if InCombatLockdown() and CalculatedSnDEndTime > t then
 			return CurrSndDuration, CalculatedSnDEndTime - t
 		end
