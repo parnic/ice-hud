@@ -3,6 +3,7 @@
 ## v1.16.12
 
 - Ensure Vigor charges are always shown when not full.
+- Fix options not loading on Classic clients due to an error introduced in v1.16.10.
 
 ## v1.16.11
 

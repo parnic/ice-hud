@@ -856,9 +856,23 @@ function IceHUD_Options:SetupProfileImportButtons()
 	end
 end
 
+function IceHUD_Options:TryEnhanceOptions()
+	if not IceHUD or not IceHUD.dbEnhanced or not IceHUD.db then
+		return
+	end
+
+	if self.enhanced or not LibDualSpec then
+		return
+	end
+
+	LibDualSpec:EnhanceOptions(IceHUD_Options.options.args.profiles, IceHUD.db)
+	self.enhanced = true
+end
+
 function IceHUD_Options:OnLoad()
-	if not IceHUD.dbEnhanced or self.loaded then
+	if self.loaded then
 		-- make sure we're ready and haven't done this already.
+		IceHUD_Options:TryEnhanceOptions()
 		return
 	end
 
@@ -868,9 +882,7 @@ function IceHUD_Options:OnLoad()
 	self:SetupProfileImportButtons()
 
 	-- Add dual-spec support
-	if IceHUD.db ~= nil and LibDualSpec then
-		LibDualSpec:EnhanceOptions(IceHUD_Options.options.args.profiles, IceHUD.db)
-	end
+	IceHUD_Options:TryEnhanceOptions()
 
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("IceHUD", options, "icehudcl")
 	self.loaded = true
