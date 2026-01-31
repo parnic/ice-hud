@@ -289,7 +289,7 @@ function IceCore.prototype:Enable(userToggle)
 	self:RedirectRemovedModules()
 
 	-- make sure the module options are re-generated. if we switched profiles, we don't want the old elements hanging around
-	if IceHUD.optionsLoaded then
+	if IceHUD_Options and IceHUD_Options.loaded then
 		IceHUD_Options:GenerateModuleOptions()
 	end
 
@@ -521,7 +521,7 @@ function IceCore.prototype:PostCreateModule(module)
 		module:Enable(true)
 	end
 
-	if IceHUD.optionsLoaded then
+	if IceHUD_Options and IceHUD_Options.loaded then
 		IceHUD_Options:GenerateModuleOptions()
 	end
 end
@@ -574,7 +574,7 @@ function IceCore.prototype:DeleteDynamicModule(module)
 	table.remove(self.elements,ndx)
 	self.settings.modules[module.elementName] = nil
 
-	if IceHUD.optionsLoaded then
+	if IceHUD_Options and IceHUD_Options.loaded then
 		IceHUD_Options:GenerateModuleOptions()
 	end
 end
@@ -586,7 +586,7 @@ function IceCore.prototype:RenameDynamicModule(module, newName)
 
 	module.elementName = newName
 
-	if IceHUD.optionsLoaded then
+	if IceHUD_Options and IceHUD_Options.loaded then
 		IceHUD_Options:GenerateModuleOptions()
 	end
 
