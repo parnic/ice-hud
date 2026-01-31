@@ -169,7 +169,9 @@
         "GetSpellCharges",
         "GetSpellCount",
         "IsUsableSpell",
-        "AbbreviateNumbers"
+        "AbbreviateNumbers",
+        "CombatLogGetCurrentEventInfo",
+        "FindSpellOverrideByID"
     ],
     "Lua.runtime.version": "Lua 5.1",
     "Lua.runtime.builtin": {
