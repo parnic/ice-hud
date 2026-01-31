@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.16.13
+
+- Fix Secrets error in PlayerInfo module.
+
 ## v1.16.12
 
 - Ensure Vigor charges are always shown when not full.
