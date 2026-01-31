@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.16.12
+
+- Ensure Vigor charges are always shown when not full.
+
 ## v1.16.11
 
 - Fix player castbar disappearing early after being delayed due to taking damage while casting.

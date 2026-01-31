@@ -296,6 +296,7 @@ function DragonridingVigor.prototype:UpdateVigorRechargeCharges(event, widget)
 	-- Update
 	if event ~= "internal" then
 		self:UpdateRunePower()
+		self:CheckShouldShow()
 	end
 end
 
