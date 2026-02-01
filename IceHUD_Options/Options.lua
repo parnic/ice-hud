@@ -480,12 +480,19 @@ The Classic game client doesn't provide this information to addons because it wa
 					name = L["Presets"],
 					desc = L["Predefined settings for different bars"],
 					get = function(info)
-						return IceHUD:GetSelectValue(info, IceHUD.IceCore:GetBarPreset())
+						return IceHUD.IceCore:GetBarPreset()
 					end,
 					set = function(info, value)
-						IceHUD.IceCore:SetBarPreset(info.option.values[value])
+						IceHUD.IceCore:SetBarPreset(value)
 					end,
-					values = IceHUD.validBarList,
+					values = function()
+						local keys = {}
+						for key, _ in pairs(IceHUD.IceCore.presets) do
+							keys[key] = key
+						end
+						table.sort(keys)
+						return keys
+					end,
 					order = 9
 				},
 

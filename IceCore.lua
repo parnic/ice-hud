@@ -929,6 +929,8 @@ function IceCore.prototype:SetBarPreset(value)
 	self:Redraw()
 end
 function IceCore.prototype:ChangePreset(value)
+	local promptReload
+
 	self:SetBarTexture(self.presets[value].barTexture)
 	self:SetBarHeight(self.presets[value].barHeight)
 	self:SetBarWidth(self.presets[value].barWidth)
@@ -937,7 +939,60 @@ function IceCore.prototype:ChangePreset(value)
 	self:SetBarBlendMode(self.presets[value].barBlendMode)
 	self:SetBarBgBlendMode(self.presets[value].barBgBlendMode)
 
+	local gap = self.presets[value].gap or self.defaults.profile.gap
+	self:SetGap(gap)
+
+	local alphaic = self.presets[value].alphaic or self.defaults.profile.alphaic
+	self:SetAlpha("IC", alphaic)
+
+	local alphaTarget = self.presets[value].alphaTarget or self.defaults.profile.alphaTarget
+	self:SetAlpha("Target", alphaTarget)
+
+	local alphaNotFull = self.presets[value].alphaNotFull or self.defaults.profile.alphaNotFull
+	self:SetAlpha("NotFull", alphaNotFull)
+
+	local alphaooc = self.presets[value].alphaooc or self.defaults.profile.alphaooc
+	self:SetAlpha("OOC", alphaooc)
+
+	local alphaicbg = self.presets[value].alphaicbg or self.defaults.profile.alphaicbg
+	self:SetAlphaBG("IC", alphaicbg)
+
+	local alphaTargetbg = self.presets[value].alphaTargetbg or self.defaults.profile.alphaTargetbg
+	self:SetAlphaBG("Target", alphaTargetbg)
+
+	local alphaNotFullbg = self.presets[value].alphaNotFullbg or self.defaults.profile.alphaNotFullbg
+	self:SetAlphaBG("NotFull", alphaNotFullbg)
+
+	local alphaoocbg = self.presets[value].alphaoocbg or self.defaults.profile.alphaoocbg
+	self:SetAlphaBG("OOC", alphaoocbg)
+
+	if self.presets[value].modules then
+		promptReload = true
+		for k, v in pairs(self.presets[value].modules) do
+			local module = self:GetModuleByName(k)
+			if module then
+				for mk, mv in pairs(v) do
+					module.moduleSettings[mk] = mv
+				end
+			end
+		end
+	end
+
 	IceHUD:NotifyOptionsChange()
+
+	if promptReload then
+		StaticPopup_Show("ICEHUD_CHANGED_DOGTAG")
+	end
+end
+
+function IceCore.prototype:GetModuleByName(name)
+	for _, v in pairs(self.elements) do
+		if v.elementName == name then
+			return v
+		end
+	end
+
+	return nil
 end
 
 
@@ -1288,6 +1343,69 @@ function IceCore.prototype:LoadPresets()
 		barSpace = 1,
 		barBlendMode = "BLEND",
 		barBgBlendMode = "BLEND",
+	}
+
+	self.presets.AuthorsChoice = {
+		barTexture = "CleanCurves",
+		barWidth = 155,
+		barHeight = 220,
+		barProportion = 0.09,
+		barSpace = 1,
+		barBlendMode = "BLEND",
+		barBgBlendMode = "BLEND",
+		gap = 295,
+
+		alphaooc = 0,
+		alphaic = 1,
+		alphaTarget = 0.65,
+		alphaNotFull = 0.65,
+
+		alphaoocbg = 0,
+		alphaicbg = 0.45,
+		alphaTargetbg = 0.4,
+		alphaNotFullbg = 0.4,
+		modules = {
+			FocusAbsorb = {
+				enabled = false
+			},
+			GlobalCoolDown = {
+				enabled = true
+			},
+			PlayerAbsorb = {
+				enabled = false
+			},
+			PlayerHealth = {
+				side = IceCore.Side.Left,
+				offset = 2,
+				hideBlizz = true,
+				lockUpperTextAlpha = false
+			},
+			PlayerMana = {
+				side = IceCore.Side.Left,
+				offset = 1,
+				lockUpperTextAlpha = false
+			},
+			TargetAbsorb = {
+				enabled = false
+			},
+			TargetHealth = {
+				side = IceCore.Side.Right,
+				offset = 2,
+				hideBlizz = true,
+				lockUpperTextAlpha = false
+			},
+			TargetMana = {
+				side = IceCore.Side.Right,
+				offset = 1,
+				lockUpperTextAlpha = false
+			},
+			TargetOfTarget = {
+				enabled = false
+			},
+			Threat = {
+				enabled = true
+			}
+		}
 	}
 
 end
