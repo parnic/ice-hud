@@ -3,7 +3,7 @@ IceCastBar = IceCore_CreateClass(IceBarElement)
 
 local IceHUD = _G.IceHUD
 
-IceCastBar.Actions = { None = 0, Cast = 1, Channel = 2, Instant = 3, Success = 4, Failure = 5, ReverseChannel = 6 }
+IceCastBar.Actions = { None = "NONE", Cast = "CAST", Channel = "CHANNEL", Instant = "INSTANT", Success = "SUCCESS", Failure = "FAILURE", ReverseChannel = "REVERSECHANNEL" }
 
 IceCastBar.prototype.action = nil
 IceCastBar.prototype.actionStartTime = nil
@@ -392,12 +392,12 @@ function IceCastBar.prototype:MyOnUpdate()
 
 		if not self.barFrame.SetTimerDuration then
 			self:UpdateBar(IceHUD:Clamp(scale, 0, 1), self:GetCurrentCastingColor())
-
-			if remainingTime <= 0 then
-				self:StopBar()
-			end
 		elseif self.NumStages then
 			self:SetBarColorRGBA(self:GetColor(self:GetCurrentCastingColor()))
+		end
+
+		if remainingTime <= 0 then
+			self:StopBar()
 		end
 
 		local timeString = self.moduleSettings.showCastTime and string.format("%.1fs ", remainingTime) or ""
@@ -528,18 +528,18 @@ end
 
 function IceCastBar.prototype:StartBar(action, message, spellId)
 	local isChannel
-	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill, numStages
+	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill, numStages, _, castGuid, castBarId
 	if IceHUD.SpellFunctionsReturnRank then
-		spell, rank, displayName, icon, startTime, endTime, isTradeSkill = UnitCastingInfo(self.unit)
+		spell, rank, displayName, icon, startTime, endTime, isTradeSkill, castGuid = UnitCastingInfo(self.unit)
 	else
-		spell, displayName, icon, startTime, endTime, isTradeSkill = UnitCastingInfo(self.unit)
+		spell, displayName, icon, startTime, endTime, isTradeSkill, castGuid, _, _, castBarId = UnitCastingInfo(self.unit)
 	end
 	if not (spell) then
 		isChannel = true
 		if IceHUD.SpellFunctionsReturnRank then
 			spell, rank, displayName, icon, startTime, endTime = UnitChannelInfo(self.unit)
 		else
-			spell, displayName, icon, startTime, endTime, isTradeSkill, _, _, _, numStages = UnitChannelInfo(self.unit)
+			spell, displayName, icon, startTime, endTime, isTradeSkill, _, _, _, numStages, castBarId = UnitChannelInfo(self.unit)
 		end
 	end
 
@@ -584,13 +584,25 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 		self.barFrame.icon:Hide()
 	end
 
+	if self:IsCastOrChannel(action) then
+		if IceHUD.IsSecretEnv() then
+			self.current = castBarId
+		else
+			self.current = castGuid
+		end
+	else
+		self.current = nil
+	end
 	self.action = action
+	self.lastSpell = spell
 	self.actionStartTime = GetTime()
 	self.actionMessage = message
 
 	if not message and spell then
 		self.actionMessage = spell .. (self.moduleSettings.showSpellRank and self:GetShortRank(rank) or "")
 	end
+
+	IceHUD:Debug("  StartBar", self.action, self.current, self.actionMessage)
 
 	local setupUpdates = true
 	if startTime and endTime then
@@ -609,6 +621,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 			local duration
 			if self.NumStages and IceHUD.CanAccessValue(endTime) then
 				duration = C_DurationUtil.CreateDuration()
+				---@diagnostic disable-next-line: undefined-field
 				duration:SetTimeSpan(startTime / 1000, endTime / 1000)
 			else
 				duration = isChannel and UnitChannelDuration(self.unit) or UnitCastingDuration(self.unit)
@@ -626,6 +639,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 	else
 		if C_DurationUtil and self.barFrame.SetTimerDuration then
 			local duration = C_DurationUtil.CreateDuration()
+			---@diagnostic disable-next-line: undefined-field
 			duration:SetTimeFromEnd(GetTime(), GetTime())
 			self.barFrame:SetTimerDuration(duration)
 		end
@@ -651,6 +665,8 @@ function IceCastBar.prototype:SetTimerDuration(duration, action)
 end
 
 function IceCastBar.prototype:StopBar()
+	IceHUD:Debug("  StopBar", self.action)
+	self.current = nil
 	self.action = IceCastBar.Actions.None
 	self.actionStartTime = nil
 	self.actionDuration = nil
@@ -679,28 +695,23 @@ end
 
 function IceCastBar.prototype:SpellCastSent(event, unit, target, castGuid, spellId)
 	if (unit ~= self.unit) then return end
-	IceHUD:Debug("SpellCastSent", unit, target, castGuid, spellId)
+	IceHUD:Debug("SpellCastSent", unit, target, castGuid, spellId, C_Spell.GetSpellName(spellId))
 end
 
 function IceCastBar.prototype:SpellCastChanged(event, cancelled)
-	IceHUD:Debug("SpellCastChanged", cancelled)
+	-- IceHUD:Debug("SpellCastChanged", cancelled)
 end
 
 function IceCastBar.prototype:SpellCastStart(event, unit, castGuid, spellId, castBarId)
 	if (unit ~= self.unit) then return end
-	IceHUD:Debug("SpellCastStart", unit, castGuid, spellId, castBarId)
+	IceHUD:Debug("SpellCastStart", unit, castGuid, spellId, castBarId, C_Spell.GetSpellName(spellId), "|", self.action, self.current)
 
 	self:StartBar(IceCastBar.Actions.Cast, nil, spellId)
-	if IceHUD.IsSecretEnv() then
-		self.current = castBarId
-	else
-		self.current = castGuid
-	end
 end
 
 function IceCastBar.prototype:SpellCastStop(event, unit, castGuid, spellId, castBarId)
 	if (unit ~= self.unit) then return end
-	IceHUD:Debug("SpellCastStop", unit, castGuid, spellId, castBarId)
+	IceHUD:Debug("SpellCastStop", unit, castGuid, spellId, castBarId, C_Spell.GetSpellName(spellId), "|", self.action, self.current)
 
 	-- ignore if not coming from current spell
 	if IceHUD.IsSecretEnv() and self.current and self.current ~= castBarId then
@@ -711,21 +722,20 @@ function IceCastBar.prototype:SpellCastStop(event, unit, castGuid, spellId, cast
 		return
 	end
 
-	if (self.action ~= IceCastBar.Actions.Success and
+	if self.action ~= IceCastBar.Actions.Success and
 		self.action ~= IceCastBar.Actions.Failure and
+		self.action ~= IceCastBar.Actions.Instant and
 		self.action ~= IceCastBar.Actions.Channel and
-		self.action ~= IceCastBar.Actions.ReverseChannel)
+		self.action ~= IceCastBar.Actions.ReverseChannel
 	then
 		self:StopBar()
 	end
-
-	self.current = nil
 end
 
 
 function IceCastBar.prototype:SpellCastFailed(event, unit, castGuid, spellId, castBarId)
 	if (unit ~= self.unit) then return end
-	IceHUD:Debug("SpellCastFailed", unit, castGuid, spellId, castBarId)
+	IceHUD:Debug("SpellCastFailed", unit, castGuid, spellId, castBarId, C_Spell.GetSpellName(spellId), "|", self.action, self.current)
 
 	-- ignore if not coming from current spell
 	if IceHUD.IsSecretEnv() and self.current and self.current ~= castBarId then
@@ -741,8 +751,6 @@ function IceCastBar.prototype:SpellCastFailed(event, unit, castGuid, spellId, ca
 		return
 	end
 
-	self.current = nil
-
 	-- determine if we want to show failed casts
 	if (self.moduleSettings.flashFailures == "Never") then
 		return
@@ -757,7 +765,7 @@ end
 
 function IceCastBar.prototype:SpellCastInterrupted(event, unit, castGuid, spellId, interruptedBy, castBarId)
 	if (unit ~= self.unit) then return end
-	IceHUD:Debug("SpellCastInterrupted", unit, castGuid, spellId, castBarId)
+	IceHUD:Debug("SpellCastInterrupted", unit, castGuid, spellId, castBarId, C_Spell.GetSpellName(spellId), "|", self.action, self.current)
 
 	-- ignore if not coming from current spell
 	if IceHUD.IsSecretEnv() and self.current and self.current ~= castBarId then
@@ -768,17 +776,24 @@ function IceCastBar.prototype:SpellCastInterrupted(event, unit, castGuid, spellI
 		return
 	end
 
-	self.current = nil
-
 	self:StartBar(IceCastBar.Actions.Failure, L["Interrupted"], spellId)
 end
 
-function IceCastBar.prototype:SpellCastDelayed(event, unit, castGuid, spellId)
+function IceCastBar.prototype:SpellCastDelayed(event, unit, castGuid, spellId, castBarId)
 	if (unit ~= self.unit) then return end
-	IceHUD:Debug("SpellCastDelayed", unit, castGuid, spellId, UnitCastingInfo(unit))
+	IceHUD:Debug("SpellCastDelayed", unit, castGuid, spellId, C_Spell.GetSpellName(spellId), "|", self.action, self.current)
+
+	-- ignore if not coming from current spell
+	if IceHUD.IsSecretEnv() and self.current and self.current ~= castBarId then
+		return
+	end
+	-- fall back to pre-Midnight guid check
+	if not IceHUD.IsSecretEnv() and self.current and castGuid and self.current ~= castGuid then
+		return
+	end
 
 	if UnitCastingDuration then
-		self:StartBar(self.action)
+		self:StartBar(IceCastBar.Actions.Cast, nil, spellId)
 		return
 	end
 
@@ -792,7 +807,7 @@ end
 
 function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId, castBarId)
 	if (unit ~= self.unit) then return end
-	IceHUD:Debug("SpellCastSucceeded", unit, castGuid, spellId, castBarId)
+	IceHUD:Debug("SpellCastSucceeded", unit, castGuid, spellId, castBarId, C_Spell.GetSpellName(spellId), "|", self.action, self.current)
 
 	-- never show on channeled (why on earth does this event even fire when channeling starts?)
 	if (self.action == IceCastBar.Actions.Channel or self.action == IceCastBar.Actions.ReverseChannel) then
@@ -808,7 +823,6 @@ function IceCastBar.prototype:SpellCastSucceeded(event, unit, castGuid, spellId,
 		return
 	end
 
-	self.current = nil
 	local spell = GetSpellName(spellId)
 
 	-- show after normal successfull cast
@@ -842,17 +856,29 @@ end
 
 function IceCastBar.prototype:SpellCastChannelStart(event, unit, castGuid, spellId, castBarId)
 	if (unit ~= self.unit) then return end
-	IceHUD:Debug("SpellCastChannelStart", unit, castGuid, spellId, castBarId)
+	IceHUD:Debug("SpellCastChannelStart", unit, castGuid, spellId, castBarId, C_Spell.GetSpellName(spellId), "|", self.action, self.current)
 
 	self:StartBar(IceCastBar.Actions.Channel)
+	if not IceHUD.IsSecretEnv() then
+		self.current = castGuid
+	end
 end
 
-function IceCastBar.prototype:SpellCastChannelUpdate(event, unit)
+function IceCastBar.prototype:SpellCastChannelUpdate(event, unit, castGuid, spellId, castBarId)
 	if (unit ~= self.unit or not self.actionStartTime) then return end
-	--IceHUD:Debug("SpellCastChannelUpdate", unit, UnitChannelInfo(unit))
+	IceHUD:Debug("SpellCastChannelUpdate", unit, UnitChannelInfo(unit), C_Spell.GetSpellName(spellId), "|", self.action, self.current)
+
+	-- ignore if not coming from current spell
+	if IceHUD.IsSecretEnv() and self.current and self.current ~= castBarId then
+		return
+	end
+	-- fall back to pre-Midnight guid check
+	if not IceHUD.IsSecretEnv() and self.current and castGuid and self.current ~= castGuid then
+		return
+	end
 
 	if UnitChannelDuration then
-		self:StartBar(IceCastBar.Actions.Channel)
+		self:StartBar(IceCastBar.Actions.Channel, nil, spellId)
 		return
 	end
 
@@ -871,10 +897,22 @@ end
 
 function IceCastBar.prototype:SpellCastChannelStop(event, unit, castGuid, spellId, interruptedBy, castBarId)
 	if (unit ~= self.unit) then return end
-	IceHUD:Debug("SpellCastChannelStop", unit, castGuid, spellId, castBarId)
+	IceHUD:Debug("SpellCastChannelStop", unit, castGuid, spellId, castBarId, C_Spell.GetSpellName(spellId), "|", self.action, self.current)
 
-	self:StopBar()
+	-- ignore if not coming from current spell
+	if IceHUD.IsSecretEnv() and self.current and self.current ~= castBarId then
+		return
+	end
+	-- fall back to pre-Midnight guid check
+	if not IceHUD.IsSecretEnv() and self.current and castGuid and self.current ~= castGuid then
+		return
+	end
+
+	if self.action ~= IceCastBar.Actions.Success and
+		self.action ~= IceCastBar.Actions.Failure and
+		self.action ~= IceCastBar.Actions.Instant and
+		self.action ~= IceCastBar.Actions.Cast
+	then
+		self:StopBar()
+	end
 end
-
-
-

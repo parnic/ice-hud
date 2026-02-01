@@ -3,6 +3,7 @@
 ## v1.16.13
 
 - Fix Secrets error in PlayerInfo module.
+- Hopefully fix a rare issue where the target castbar could get stuck with a full bar.
 
 ## v1.16.12
 

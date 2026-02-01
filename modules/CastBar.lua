@@ -551,10 +551,10 @@ function CastBar.prototype:GetCurrentCastingColor()
 	local bCheckRange = true
 	local inRange
 
-	if not self.moduleSettings.rangeColor or not self.current or not self.action or not UnitExists("target") then
+	if not self.moduleSettings.rangeColor or not self.lastSpell or not self.action or not UnitExists("target") then
 		bCheckRange = false
 	else
-		inRange = IceHUD.IsSpellInRange(self.current, "target")
+		inRange = IceHUD.IsSpellInRange(self.lastSpell, "target")
 		if inRange == nil then
 			bCheckRange = false
 		end
