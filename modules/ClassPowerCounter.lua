@@ -722,7 +722,7 @@ end
 
 function IceClassPowerCounter.prototype:HideRune(i)
 	if self:GetRuneMode() == "Numeric" then
-		self.frame.graphical[i].Hide()
+		self.frame.graphical[i]:Hide()
 		return
 	end
 
