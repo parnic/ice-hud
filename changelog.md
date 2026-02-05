@@ -5,6 +5,7 @@
 - Add Author's Choice preset to the Bar Settings Presets list. This sets up bars and transparencies the way the author prefers to have them setup.
 - Fix error message printed on login sometimes when a class power module is set to Numeric mode.
 - Fix an issue where some bars could disappear when they shouldn't.
+- Fix an issue that could cause the player castbar to not stop when an empower cast was stopped early.
 
 ## v1.16.13
 

@@ -138,7 +138,7 @@ function IceCastBar.prototype:Enable(core)
 		if GetUnitEmpowerHoldAtMaxTime then
 			self:RegisterEvent("UNIT_SPELLCAST_EMPOWER_START", "SpellCastChannelStart")
 			self:RegisterEvent("UNIT_SPELLCAST_EMPOWER_UPDATE", "SpellCastChannelUpdate")
-			self:RegisterEvent("UNIT_SPELLCAST_EMPOWER_STOP", "SpellCastChannelStop")
+			self:RegisterEvent("UNIT_SPELLCAST_EMPOWER_STOP", "SpellCastEmpowerStop")
 		end
 
 	end
@@ -915,4 +915,12 @@ function IceCastBar.prototype:SpellCastChannelStop(event, unit, castGuid, spellI
 	then
 		self:StopBar()
 	end
+end
+
+function IceCastBar.prototype:SpellCastEmpowerStop(event, unit, castGuid, spellId, complete, interruptedBy, castBarId)
+	if unit ~= self.unit then
+		return
+	end
+
+	self:SpellCastChannelStop(event, unit, castGuid, spellId, interruptedBy, castBarId)
 end
