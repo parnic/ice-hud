@@ -337,7 +337,7 @@ function FocusHealth.prototype:Update(unit)
 		return
 	end
 
-	if not (UnitExists(unit)) then
+	if not UnitExists(self.unit) then
 		--self:Show(false)
 		return
 	else

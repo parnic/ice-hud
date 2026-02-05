@@ -787,7 +787,7 @@ function IceTargetHealth.prototype:Update(unit)
 		return
 	end
 
-	if unit and not (UnitExists(unit)) then
+	if not UnitExists(self.unit) then
 --		self:Show(false)
 		if self.barFrame.PvPIcon then
 			self.barFrame.PvPIcon:Hide()
@@ -866,8 +866,8 @@ function IceTargetHealth.prototype:Update(unit)
 
 	self:UpdateBar(self.healthPercentage, self.color)
 
-	if IsAddOnLoaded("RealMobHealth") and RealMobHealth.UnitHasHealthData(unit) then
-		self.health, self.maxHealth = RealMobHealth.GetUnitHealth(unit)
+	if IsAddOnLoaded("RealMobHealth") and RealMobHealth.UnitHasHealthData(self.unit) then
+		self.health, self.maxHealth = RealMobHealth.GetUnitHealth(self.unit)
 		self.healthPercentage = self.health / self.maxHealth
 	end
 

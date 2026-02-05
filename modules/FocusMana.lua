@@ -75,7 +75,7 @@ function FocusMana.prototype:Update(unit)
 	end
 	FocusMana.super.prototype.Update(self)
 
-	if not UnitExists(unit) then
+	if not UnitExists(self.unit) then
 		self:Show(false)
 		return
 	end

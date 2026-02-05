@@ -327,7 +327,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 		self:UpdateEnergy(nil, unit)
 	end
 
-	if self.unit == "vehicle" and ((not UnitExists(unit)) or (self.maxMana == 0)) then
+	if self.unit == "vehicle" and (not UnitExists(self.unit) or self.maxMana == 0) then
 		self:Show(false)
 		return
 	else
