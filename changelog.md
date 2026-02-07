@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.16.15
+
+- Fix another Secrets error when targeting someone casting an Empower spell.
+
 ## v1.16.14
 
 - Add Author's Choice preset to the Bar Settings Presets list. This sets up bars and transparencies the way the author prefers to have them setup.

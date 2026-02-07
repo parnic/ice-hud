@@ -465,7 +465,11 @@ function IceCastBar.prototype:GetDurationUpToStage(stage)
 
 	local total = 0
 	for i=0,stage-1 do
-		total = total + self:GetStageDuration(i)
+		local duration = self:GetStageDuration(i)
+		if not IceHUD.CanAccessValue(duration) then
+			return duration
+		end
+		total = total + duration
 	end
 
 	return total
@@ -478,7 +482,11 @@ function IceCastBar.prototype:GetCurrentStage()
 
 	local castDuration = self:GetCurrentCastDurationMs()
 	for i=1,self.NumStages do
-		if castDuration < self:GetDurationUpToStage(i) then
+		local stageDuration = self:GetDurationUpToStage(i)
+		if not IceHUD.CanAccessValue(stageDuration) then
+			return i
+		end
+		if castDuration < stageDuration then
 			return i - 1
 		end
 	end
