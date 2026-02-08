@@ -18,7 +18,7 @@ function FocusAbsorb.prototype:GetDefaultSettings()
 end
 
 function FocusAbsorb.prototype:MyRegisterCustomEvents()
-	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "UpdateAbsorbAmount")
+	self:RegisterEvent("PLAYER_FOCUS_CHANGED", "Update")
 end
 
 function FocusAbsorb.prototype:MyUnregisterCustomEvents()
@@ -26,6 +26,6 @@ function FocusAbsorb.prototype:MyUnregisterCustomEvents()
 end
 
 -- Load us up
-if UnitGetTotalAbsorbs ~= nil and not IceHUD.IsSecretEnv() then
+if UnitGetTotalAbsorbs then
 	IceHUD.FocusAbsorb = FocusAbsorb:new()
 end

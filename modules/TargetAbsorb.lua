@@ -7,6 +7,12 @@ IceTargetAbsorb.prototype.ColorName = "TargetAbsorb"
 local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
 
 function IceTargetAbsorb.prototype:init(moduleName, unit, colorName)
+	if CreateUnitHealPredictionCalculator then
+		self.calculator = CreateUnitHealPredictionCalculator()
+		---@diagnostic disable-next-line: undefined-field
+		self.calculator:SetDamageAbsorbClampMode(Enum.UnitDamageAbsorbClampMode.MaximumHealth)
+	end
+
 	if moduleName == nil or unit == nil then
 		IceTargetAbsorb.super.prototype.init(self, "TargetAbsorb", "target")
 	else
@@ -53,14 +59,32 @@ function IceTargetAbsorb.prototype:GetOptions()
 end
 
 function IceTargetAbsorb.prototype:Enable(core)
+	self:SetBarValues()
+
 	IceTargetAbsorb.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UpdateAbsorbAmount")
+	if self.calculator then
+		self:RegisterEvent("UNIT_MAXHEALTH", "UpdateMaxHealth")
+	end
 	self:MyRegisterCustomEvents()
 
 	self:UpdateAbsorbAmount()
 
 	self:Show(false)
+end
+
+function IceTargetAbsorb.prototype:UpdateMaxHealth()
+	self:SetBarValues()
+end
+
+function IceTargetAbsorb.prototype:SetBarValues()
+	if not self.calculator then
+		return
+	end
+
+	local hpMax = UnitHealthMax(self.unit)
+	self.barFrame:SetMinMaxValues(0, hpMax)
 end
 
 function IceTargetAbsorb.prototype:MyRegisterCustomEvents()
@@ -71,11 +95,37 @@ end
 
 function IceTargetAbsorb.prototype:Update()
 	IceTargetAbsorb.super.prototype.Update(self)
+	self:SetBarValues()
 	self:UpdateAbsorbAmount()
 end
 
 function IceTargetAbsorb.prototype:UpdateAbsorbAmount(event, unit)
 	if event == "UNIT_ABSORB_AMOUNT_CHANGED" and unit ~= self.unit then
+		return
+	end
+
+	if self:IsInConfigMode() then
+		self:UpdateBar(UnitHealthMax(self.unit), self.ColorName)
+		self:Show(true)
+		return
+	end
+
+	if not UnitExists(self.unit) then
+		self:Show(false)
+		return
+	end
+
+	if self.calculator then
+		UnitGetDetailedHealPrediction(self.unit, nil, self.calculator)
+		---@diagnostic disable-next-line: undefined-field
+		local amount = self.calculator:GetDamageAbsorbs()
+		self:UpdateBar(amount, self.ColorName)
+
+		self:Show(true)
+
+		if not IceHUD.IceCore:ShouldUseDogTags() and self.frame:IsVisible() then
+			self:SetBottomText1(self:GetFormattedText(self:Round(amount)), self.ColorName)
+		end
 		return
 	end
 
@@ -116,6 +166,14 @@ function IceTargetAbsorb.prototype:Disable(core)
 	self:MyUnregisterCustomEvents()
 end
 
-if UnitGetTotalAbsorbs ~= nil and not IceHUD.IsSecretEnv() then
+-- in a client with secrets, we can't calculate bar alpha based on the absorb amount because
+-- the absorb information is secret, so we need to pretend to be a health bar in order to follow
+-- health bar alpha rules. this is not completely ideal, but it more or less follows what the
+-- player is probably expecting.
+function IceTargetAbsorb.prototype:IsHealthBar()
+	return true
+end
+
+if UnitGetTotalAbsorbs then
 	IceHUD.TargetAbsorb = IceTargetAbsorb:new()
 end

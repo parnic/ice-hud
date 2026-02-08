@@ -4,6 +4,7 @@
 
 - Update FocusThreat default scale and placement to match other Focus bars.
 - Add Stagger bar back to 12.0 with somewhat more limited functionality.
+- Add Absorb bars back for Player, Target, and Focus to 12.0 with somewhat more limited functionality.
 
 ## v1.16.15
 

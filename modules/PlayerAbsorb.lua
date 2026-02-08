@@ -19,6 +19,6 @@ function PlayerAbsorb.prototype:GetDefaultSettings()
 end
 
 -- Load us up
-if UnitGetTotalAbsorbs ~= nil and not IceHUD.IsSecretEnv() then
+if UnitGetTotalAbsorbs then
 	IceHUD.PlayerAbsorb = PlayerAbsorb:new()
 end
