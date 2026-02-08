@@ -946,33 +946,33 @@ end
 
 function IceBarElement.prototype:MoveHintMoveBy(dx, dy)
 	if IsAltKeyDown() then
-		dy = 0
-		local threshold = (self.settings.barProportion * self.settings.barWidth) + self.settings.barSpace
-		if abs(dx) < threshold then
-			return false
-		end
-
-		local increase
-		if self.moduleSettings.side == IceCore.Side.Left then
-			increase = dx < 0
-		else
-			increase = dx > 0
-		end
-
-		self.moduleSettings.offset = self.moduleSettings.offset + (increase and 1 or -1)
-		if self.moduleSettings.offset < -10 then
-			if self.moduleSettings.side == IceCore.Side.Left then
-				self.moduleSettings.side = IceCore.Side.Right
-			else
-				self.moduleSettings.side = IceCore.Side.Left
-			end
-
-			self:Redraw()
-		end
+		self:MoveHintMoveTo(self.moduleSettings.barHorizontalOffset + dx, self.moduleSettings.barVerticalOffset + dy)
 		return true
 	end
 
-	self:MoveHintMoveTo(self.moduleSettings.barHorizontalOffset + dx, self.moduleSettings.barVerticalOffset + dy)
+	dy = 0
+	local threshold = (self.settings.barProportion * self.settings.barWidth) + self.settings.barSpace
+	if abs(dx) < threshold then
+		return false
+	end
+
+	local increase
+	if self.moduleSettings.side == IceCore.Side.Left then
+		increase = dx < 0
+	else
+		increase = dx > 0
+	end
+
+	self.moduleSettings.offset = self.moduleSettings.offset + (increase and 1 or -1)
+	if self.moduleSettings.offset < -10 then
+		if self.moduleSettings.side == IceCore.Side.Left then
+			self.moduleSettings.side = IceCore.Side.Right
+		else
+			self.moduleSettings.side = IceCore.Side.Left
+		end
+
+		self:Redraw()
+	end
 	return true
 end
 
@@ -983,7 +983,7 @@ end
 
 function IceBarElement.prototype:MoveHintGetTooltip()
 	if not self.moveHintTooltip then
-		self.moveHintTooltip = "|cffffffff"..self.elementName.."|r\n"..L["|cff9999ffLeft click|r and drag to move. Hold |cff9999ffShift|r to lock vertical position, hold |cff9999ffControl|r to lock horizontal position.\n\nHold |cff9999ffAlt/Option|r to adjust Offset instead of position.\n\n|cff9999ffMiddle click|r to reset to previous position.\n\n|cff9999ffRight click|r to lock in place."]
+		self.moveHintTooltip = "|cffffffff"..self.elementName.."|r\n"..L["|cff9999ffLeft click|r and drag to adjust bar Offset.\n\nHold |cff9999ffAlt/Option|r to adjust Position instead of Offset.\nHold |cff9999ffShift|r to lock vertical position, hold |cff9999ffControl|r to lock horizontal position.\n\n|cff9999ffMiddle click|r to reset to previous position.\n\n|cff9999ffRight click|r to lock in place."]
 	end
 	return self.moveHintTooltip
 end
