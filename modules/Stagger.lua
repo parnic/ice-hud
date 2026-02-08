@@ -60,18 +60,29 @@ StaggerBar.prototype.StaggerEndTime = 0
 function StaggerBar.prototype:init()
 	StaggerBar.super.prototype.init(self, "Stagger", "player")
 
-	self:SetDefaultColor("Stagger1", 200, 180, 20)
-	self:SetDefaultColor("Stagger2", 200, 90, 10)
-	self:SetDefaultColor("Stagger3", 200, 0, 0)
-	self:SetDefaultColor("StaggerTime", 255, 255, 255)
+	if C_CurveUtil then
+		self.healthCurve = C_CurveUtil.CreateCurve()
+		---@diagnostic disable-next-line: undefined-field
+		self.healthCurve:SetType(Enum.LuaCurveType.Linear)
+	end
 
-	self.bTreatEmptyAsFull = false
+	if self.healthCurve then
+		self:SetDefaultColor("Stagger", 200, 180, 20)
+	else
+		self:SetDefaultColor("Stagger1", 200, 180, 20)
+		self:SetDefaultColor("Stagger2", 200, 90, 10)
+		self:SetDefaultColor("Stagger3", 200, 0, 0)
+		self:SetDefaultColor("StaggerTime", 255, 255, 255)
+	end
+
+	self.bTreatEmptyAsFull = true
 end
 
 function StaggerBar.prototype:Redraw()
 	StaggerBar.super.prototype.Redraw(self)
 
 	self:MyOnUpdate()
+	self:UpdateStaggerBar()
 end
 
 function StaggerBar.prototype:GetDefaultSettings()
@@ -93,7 +104,8 @@ function StaggerBar.prototype:GetDefaultSettings()
 	settings["bAllowExpand"] = true
 	settings["bShowWithNoTarget"] = true
 	settings["upperText"] = "[PercentStagger]"
-	settings["lowerText"] = "[FractionalStagger:Short]"
+	settings["lowerText"] = "[FractionalStagger:Short:Bracket]"
+	settings["textHorizontalOffset"] = -10
 
 	return settings
 end
@@ -154,11 +166,22 @@ function StaggerBar.prototype:Enable(core)
 	staggerNames[2] = GetSpellName(ModerateID)
 	staggerNames[3] = GetSpellName(HeavyID)
 
-	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	if self.healthCurve then
+		self:RegisterEvent("UNIT_MAXHEALTH", "UpdateMaxHealth")
+		self:RegisterEvent(IceHUD.UnitPowerEvent, "UpdateStaggerBar")
+		self:RegisterEvent("UNIT_AURA", "UpdateStaggerBar")
+	else
+		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 
+	self:UpdateCurves()
 	self:UpdateShown()
+end
+
+function StaggerBar.prototype:UpdateMaxHealth()
+	self:UpdateCurves()
 end
 
 function StaggerBar.prototype:Disable(core)
@@ -174,6 +197,10 @@ function StaggerBar.prototype:CreateFrame()
 end
 
 function StaggerBar.prototype:CreateTimerBar()
+	if self.healthCurve then
+		return
+	end
+
 	self.timerFrame = self:BarFactory(self.timerFrame, "MEDIUM", "ARTWORK", "Timer")
 
 	self.CurrScale = 0
@@ -258,14 +285,28 @@ function StaggerBar.prototype:COMBAT_LOG_EVENT_UNFILTERED(...)
 end
 
 function StaggerBar.prototype:UpdateStaggerBar()
+	if self:IsInConfigMode() then
+		self:Show(true)
+		self:UpdateBar(0.25, "Stagger")
+		return
+	end
+
+	if self.healthCurve then
+		local stagger = UnitStagger(self.unit)
+		---@diagnostic disable-next-line: undefined-field
+		local eval = self.healthCurve:Evaluate(stagger)
+
+		self:UpdateBar(eval, "Stagger")
+		self:UpdateShown()
+		return
+	end
+
 	self:GetDebuffInfo()
 
-	-- local health = UnitHealth(self.unit)
 	local maxHealth = UnitHealthMax(self.unit)
 	local scale = IceHUD:Clamp((self.amount / maxHealth) * (100 / self.moduleSettings.maxPercent), 0, 1)
 
 	if self.amount > 0 and (not self.duration or self.duration <= 10) then
-		-- self:SetBarFrameColorRGBA(self.timerFrame, self:GetColor("StaggerTime", self.moduleSettings.timerAlpha))
 		self:UpdateBar(scale or 0, "Stagger"..self.staggerLevel)
 		self:UpdateShown()
 		self:UpdateTimerFrame()
@@ -305,7 +346,25 @@ function StaggerBar.prototype:MyOnUpdate()
 	end
 end
 
+function StaggerBar.prototype:UpdateCurves()
+	if not self.healthCurve then
+		return
+	end
+
+	local hpMax = UnitHealthMax(self.unit)
+	---@diagnostic disable-next-line: undefined-field
+	self.healthCurve:ClearPoints()
+	---@diagnostic disable-next-line: undefined-field
+	self.healthCurve:AddPoint(0, 0)
+	---@diagnostic disable-next-line: undefined-field
+	self.healthCurve:AddPoint(hpMax, 1)
+end
+
 function StaggerBar.prototype:UpdateTimerFrame(event, unit, fromUpdate)
+	if self.healthCurve then
+		return
+	end
+
 	if unit and unit ~= self.unit then
 		return
 	end
@@ -353,6 +412,6 @@ function StaggerBar.prototype:UpdateTimerFrame(event, unit, fromUpdate)
 end
 
 local _, unitClass = UnitClass("player")
-if unitClass == "MONK" and not IceHUD.IsSecretEnv() then
+if unitClass == "MONK" then
 	IceHUD.StaggerBar = StaggerBar:new()
 end

@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.16.16
+
+- Update FocusThreat default scale and placement to match other Focus bars.
+- Add Stagger bar back to 12.0 with somewhat more limited functionality.
+
 ## v1.16.15
 
 - Fix another Secrets error when targeting someone casting an Empower spell.
