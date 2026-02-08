@@ -926,6 +926,24 @@ function IceBarElement.prototype:MoveHintGetOffsets()
 	return self.moduleSettings.barHorizontalOffset, self.moduleSettings.barVerticalOffset
 end
 
+function IceBarElement.prototype:MoveHintMouseDown()
+	IceBarElement.super.prototype.MoveHintMouseDown(self)
+
+	if IsMouseButtonDown("MiddleButton") then
+		if self.moveHintOrigOffset and self.moveHintOrigSide then
+			self.moduleSettings.offset = self.moveHintOrigOffset
+			self.moduleSettings.side = self.moveHintOrigSide
+
+			self:Redraw()
+			IceHUD:NotifyOptionsChange()
+			return
+		end
+	end
+
+	self.moveHintOrigOffset = self.moduleSettings.offset
+	self.moveHintOrigSide = self.moduleSettings.side
+end
+
 function IceBarElement.prototype:MoveHintMoveBy(dx, dy)
 	if IsAltKeyDown() then
 		dy = 0
