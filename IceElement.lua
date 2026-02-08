@@ -417,6 +417,9 @@ function IceElement.prototype:ToggleMoveHint()
 	return not wasInMoveMode
 end
 
+function IceElement.prototype:ToggleConfigMode(enabled)
+end
+
 
 function IceElement.prototype:UpdateAlpha()
 	if self:IsInConfigMode() or self.moduleSettings.alwaysFullAlpha then

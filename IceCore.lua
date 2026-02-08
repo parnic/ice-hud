@@ -1086,27 +1086,33 @@ function IceCore.prototype:ConfigModeToggle(bWantConfig)
 			if self.elements[i]:IsEnabled() then
 				self.elements[i].masterFrame:Show()
 				self.elements[i].frame:Show()
-				self.elements[i]:Redraw()
 				if self.elements[i].IsBarElement then
 					self.elements[i]:SetBottomText1(self.elements[i].elementName)
 				end
+
+				self.elements[i]:ToggleConfigMode(self.bConfigMode)
+				self.elements[i]:Redraw()
 			end
 		end
 	else
 		for i = 1, #self.elements do
-			if not self.elements[i]:IsVisible() then
-				self.elements[i].masterFrame:Hide()
-				self.elements[i].frame:Hide()
-			end
+			if self.elements[i]:IsEnabled() then
+				if not self.elements[i]:IsVisible() then
+					self.elements[i].masterFrame:Hide()
+					self.elements[i].frame:Hide()
+				end
 
-			-- blank the bottom text that we set before. if the module uses this text, it will reset itself on redraw
-			if self.elements[i].IsBarElement and self.elements[i].frame then
-				self.elements[i]:SetBottomText1()
-			end
+				-- blank the bottom text that we set before. if the module uses this text, it will reset itself on redraw
+				if self.elements[i].IsBarElement and self.elements[i].frame then
+					self.elements[i]:SetBottomText1()
+				end
 
-			self.elements[i]:Redraw()
+				self.elements[i]:ToggleConfigMode(self.bConfigMode)
+				self.elements[i]:Redraw()
+			end
 		end
 	end
+
 end
 
 function IceCore.prototype:ShouldUseDogTags()
