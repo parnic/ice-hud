@@ -765,7 +765,13 @@ function IceTargetHealth.prototype:UpdateEvent(event, unit)
 end
 
 function IceTargetHealth.prototype:ToggleMoveHint()
-	if IceTargetHealth.super.prototype.ToggleMoveHint(self) then
+	local enabled = IceTargetHealth.super.prototype.ToggleMoveHint(self)
+	self:ToggleConfigMode(enabled)
+	self:Redraw()
+end
+
+function IceTargetHealth.prototype:ToggleConfigMode(enabled)
+	if enabled then
 		self.origUnit = self.unit
 		self.unit = "player"
 	else
@@ -773,7 +779,7 @@ function IceTargetHealth.prototype:ToggleMoveHint()
 		self:TargetChanged()
 	end
 
-	self:Redraw()
+	IceTargetHealth.super.prototype.ToggleConfigMode(self, enabled)
 end
 
 function IceTargetHealth.prototype:Update(unit)

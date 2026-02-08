@@ -401,17 +401,25 @@ function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
 	return nil, nil
 end
 
+function SliceAndDice.prototype:ShouldShowWithNoTarget()
+	return self.moduleSettings.bShowWithNoTarget or self:IsInConfigMode()
+end
+
 function SliceAndDice.prototype:MyOnUpdate()
 	SliceAndDice.super.prototype.MyOnUpdate(self)
 	if self.bUpdateSnd then
 		self:UpdateSliceAndDice("internal", self.unit)
 	end
-	if self.target or self.moduleSettings.bShowWithNoTarget then
+	if self.target or self:ShouldShowWithNoTarget() then
 		self:UpdateDurationBar()
 	end
 end
 
-local function SNDGetComboPoints(unit)
+function SliceAndDice.prototype:SNDGetComboPoints(unit)
+	if self:IsInConfigMode() then
+		return maxComboPoints
+	end
+
 	if IceHUD.PerTargetComboPoints then
 		return GetComboPoints(unit, "target")
 	elseif IceHUD.WowVer >= 60000 then
@@ -456,6 +464,11 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 		end
 	end
 
+	if self:IsInConfigMode() then
+		local max = self:GetMaxBuffTime(maxComboPoints / 2)
+		sndEndTime = now + max
+	end
+
 	if sndEndTime and sndEndTime >= now then
 		if not fromUpdate then
 			self.bUpdateSnd = true
@@ -470,7 +483,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 	else
 		self:UpdateBar(0, "SliceAndDice")
 
-		if SNDGetComboPoints(self.unit) == 0 or (not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget) or ShouldHide() then
+		if self:SNDGetComboPoints(self.unit) == 0 or (not UnitExists("target") and not self:ShouldShowWithNoTarget()) or ShouldHide() then
 			if self.bIsVisible then
 				self.bUpdateSnd = nil
 			end
@@ -489,7 +502,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 end
 
 function SliceAndDice.prototype:TargetChanged()
-	if self.moduleSettings.bShowWithNoTarget and SNDGetComboPoints(self.unit) > 0 then
+	if self:ShouldShowWithNoTarget() and self:SNDGetComboPoints(self.unit) > 0 then
 		self.target = true
 	else
 		self.target = UnitExists("target")
@@ -500,12 +513,17 @@ function SliceAndDice.prototype:TargetChanged()
 	self:UpdateSliceAndDice()
 end
 
+function SliceAndDice.prototype:Redraw()
+	SliceAndDice.super.prototype.Redraw(self)
+	self:TargetChanged()
+end
+
 function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 	if unit and unit ~= self.unit then
 		return
 	end
 
-	local points = SNDGetComboPoints(self.unit)
+	local points = self:SNDGetComboPoints(self.unit)
 
 	-- first, set the cached upper limit of SnD duration
 	CurrMaxSnDDuration = self:GetMaxBuffTime(maxComboPoints)
@@ -523,7 +541,7 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 	self.durationFrame:Show()
 
 	-- if we have combo points and a target selected, go ahead and show the bar so the duration bar can be seen
-	if points > 0 and (UnitExists("target") or self.moduleSettings.bShowWithNoTarget) then
+	if points > 0 and (UnitExists("target") or self:ShouldShowWithNoTarget()) then
 		self:Show(true)
 	end
 
@@ -685,6 +703,11 @@ function SliceAndDice.prototype:OutCombat()
 	SliceAndDice.super.prototype.OutCombat(self)
 
 	self:UpdateSliceAndDice()
+end
+
+function SliceAndDice.prototype:ToggleMoveHint()
+	SliceAndDice.super.prototype.ToggleMoveHint(self)
+	self:TargetChanged()
 end
 
 local _, unitClass = UnitClass("player")

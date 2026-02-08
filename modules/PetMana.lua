@@ -261,5 +261,18 @@ function PetMana.prototype:IsPowerBar()
 	return self.manaType
 end
 
+function PetMana.prototype:ToggleMoveHint()
+	if PetMana.super.prototype.ToggleMoveHint(self) then
+		self.origUnit = self.unit
+		self.unit = "player"
+		self:Show(true)
+	else
+		self.unit = self.origUnit
+		self:CheckPet()
+	end
+
+	self:Redraw()
+end
+
 -- Load us up
 IceHUD.PetMana = PetMana:new()

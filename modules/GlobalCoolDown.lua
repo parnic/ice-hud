@@ -284,6 +284,11 @@ end
 function GlobalCoolDown.prototype:MyOnUpdate()
 	GlobalCoolDown.super.prototype.MyOnUpdate(self)
 
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
+
 	local scaleReachedZero = self.startTime ~= nil and self.duration ~= nil and self.CurrScale <= 0.01
 	local fallbackMaxDuration = self.startTime and self.duration and GetTime() >= self.startTime + self.duration
 	if self:IsVisible() and (scaleReachedZero or fallbackMaxDuration) then
@@ -346,6 +351,20 @@ function GlobalCoolDown.prototype:GetSpellId()
 
 		local _, unitClass = UnitClass("player")
 		return defaultSpells[unitClass]
+	end
+end
+
+function GlobalCoolDown.prototype:ToggleMoveHint()
+	local enabled = GlobalCoolDown.super.prototype.ToggleMoveHint(self)
+	self:ToggleConfigMode(enabled)
+	self:Redraw()
+end
+
+function GlobalCoolDown.prototype:ToggleConfigMode(enabled)
+	if enabled then
+		self:Show(true)
+	else
+		self:Show(false)
 	end
 end
 

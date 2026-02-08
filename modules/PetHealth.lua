@@ -36,6 +36,8 @@ function PetHealth.prototype:CreateFrame()
 		self.frame.bottomUpperText:Hide()
 		self.frame.bottomLowerText:Hide()
 	end
+
+	self.frame:SetAttribute("unit", self.unit)
 end
 
 function PetHealth.prototype:Enable(core)
@@ -60,7 +62,6 @@ function PetHealth.prototype:Enable(core)
 	end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
 
-	self.frame:SetAttribute("unit", self.unit)
 	RegisterUnitWatch(self.frame)
 
 	self:CheckPet()
@@ -241,6 +242,24 @@ end
 
 function PetHealth.prototype:IsHealthBar()
 	return true
+end
+
+function PetHealth.prototype:ToggleMoveHint()
+	local enabled = PetHealth.super.prototype.ToggleMoveHint(self)
+	self:ToggleConfigMode(enabled)
+	self:Redraw()
+end
+
+function PetHealth.prototype:ToggleConfigMode(enabled)
+	if enabled then
+		self.origUnit = self.unit
+		self.unit = "player"
+	else
+		self.unit = self.origUnit
+		self:CheckPet()
+	end
+
+	IceTargetHealth.super.prototype.ToggleConfigMode(self, enabled)
 end
 
 -- Load us up

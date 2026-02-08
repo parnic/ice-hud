@@ -75,6 +75,11 @@ function FocusMana.prototype:Update(unit)
 	end
 	FocusMana.super.prototype.Update(self)
 
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
+
 	if not UnitExists(self.unit) then
 		self:Show(false)
 		return
@@ -143,6 +148,19 @@ end
 
 function FocusMana.prototype:IsPowerBar()
 	return self.manaType
+end
+
+function FocusMana.prototype:ToggleMoveHint()
+	if FocusMana.super.prototype.ToggleMoveHint(self) then
+		self.origUnit = self.unit
+		self.unit = "player"
+		self:Show(true)
+	else
+		self.unit = self.origUnit
+		self:UpdateFocus()
+	end
+
+	self:Redraw()
 end
 
 -- Load us up

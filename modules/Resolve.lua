@@ -89,6 +89,11 @@ end
 function Resolve.prototype:Update()
 	Resolve.super.prototype.Update(self)
 
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
+
 	if self.current == 0 then
 		self:Show(false)
 		return

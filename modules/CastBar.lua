@@ -543,8 +543,20 @@ end
 function CastBar.prototype:Update()
 	CastBar.super.prototype.Update(self)
 
+	if self:IsInConfigMode() then
+		self:Show(true)
+	end
+
 	self:UpdateAlpha()
 	self:ApplyColor(self:GetCurrentCastingColor())
+end
+
+function CastBar.prototype:ToggleMoveHint()
+	if CastBar.super.prototype.ToggleMoveHint(self) then
+		self:Show(true)
+	else
+		self:Show(false)
+	end
 end
 
 function CastBar.prototype:GetCurrentCastingColor()

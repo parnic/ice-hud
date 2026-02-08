@@ -108,6 +108,20 @@ function FocusCast.prototype:GetOptions()
 	return opts
 end
 
+
+function FocusCast.prototype:ToggleMoveHint()
+	if FocusCast.super.prototype.ToggleMoveHint(self) then
+		self.origUnit = self.unit
+		self.unit = "player"
+		self:Show(true)
+	else
+		self.unit = self.origUnit
+		self:FocusChanged()
+	end
+
+	self:Redraw()
+end
+
 -------------------------------------------------------------------------------
 
 

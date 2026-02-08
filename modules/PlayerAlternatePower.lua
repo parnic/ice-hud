@@ -95,14 +95,17 @@ function PlayerAlternatePower.prototype:Update(unit)
 		end
 	end
 
-	local isVigorShowing = IceHUD.DragonridingVigor and IceHUD.DragonridingVigor:IsVisible()
-	local hasNoMaxPower = IceHUD.CanAccessValue(self.maxPower) and self.maxPower == 0
-	if isVigorShowing or hasNoMaxPower then
-		self:Show(false)
-	else
-		self:Show(self.wantToShow)
+	if self:IsInConfigMode() then
+		self.powerPercent = 0.5
 	end
 
+	local isVigorShowing = IceHUD.DragonridingVigor and IceHUD.DragonridingVigor:IsVisible()
+	local hasNoMaxPower = IceHUD.CanAccessValue(self.maxPower) and self.maxPower == 0
+	if not self:IsInConfigMode() and (isVigorShowing or hasNoMaxPower) then
+		self:Show(false)
+	else
+		self:Show(self.wantToShow or self:IsInConfigMode())
+	end
 
 	self:UpdateBar(self.powerPercent)
 
@@ -152,6 +155,14 @@ function PlayerAlternatePower.prototype:HideBlizz()
 	PlayerPowerBarAlt:Hide()
 
 	PlayerPowerBarAlt:UnregisterAllEvents()
+end
+
+function PlayerAlternatePower.prototype:ToggleMoveHint()
+	if PlayerAlternatePower.super.prototype.ToggleMoveHint(self) then
+		self:Show(true)
+	end
+
+	self:Redraw()
 end
 
 -- Load us up

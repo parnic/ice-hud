@@ -85,6 +85,11 @@ function PlayerAltMana.prototype:Update()
 	self.PlayerAltManaMax = UnitPowerMax(self.unit, SPELL_POWER_MANA)
 	self.PlayerAltManaPercentage = UnitPowerPercent and UnitPowerPercent(self.unit, SPELL_POWER_MANA) or self.PlayerAltManaMax ~= 0 and (self.PlayerAltMana/self.PlayerAltManaMax) or 0
 
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
+
 	if (not self.alive or not ShouldShow(self.unit) or not self.PlayerAltMana or not self.PlayerAltManaMax or self.PlayerAltManaMax == 0) then
 		self:Show(false)
 		return

@@ -485,6 +485,18 @@ function IceThreat.prototype:Show(bShouldShow)
 	end
 end
 
+function IceThreat.prototype:ToggleMoveHint()
+	if IceThreat.super.prototype.ToggleMoveHint(self) then
+		self.origUnit = self.unit
+		self.unit = "player"
+		self:Show(true)
+	else
+		self.unit = self.origUnit
+	end
+
+	self:Redraw()
+end
+
 -- Load us up
 if UnitDetailedThreatSituation then
 	IceHUD.IceThreat = IceThreat:new()

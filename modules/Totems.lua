@@ -45,6 +45,18 @@ function Totems.prototype:init()
 end
 -- 'Public' methods -----------------------------------------------------------
 
+function Totems.prototype:GetTotemInfo(totem)
+	if self:IsInConfigMode() then
+		return true, "config", GetTime() - 3, 1.5, "Interface\\Icons\\Spell_Frost_Frost"
+	end
+
+	if not GetTotemInfo then
+		return
+	end
+
+	local haveTotem, name, startTime, duration, icon = GetTotemInfo(totem)
+	return haveTotem, name, startTime, duration, icon
+end
 
 -- OVERRIDE
 function Totems.prototype:GetOptions()
@@ -210,6 +222,7 @@ function Totems.prototype:Redraw()
 	Totems.super.prototype.Redraw(self)
 
 	self:CreateFrame()
+	self:ResetTotemAvailability()
 end
 
 -- OVERRIDE
@@ -244,11 +257,11 @@ function Totems.prototype:ResetTotemAvailability()
 end
 
 function Totems.prototype:UpdateTotem(event, totem, ...)
-	if not totem or tonumber(totem) ~= totem or totem < 1 or totem > self.numTotems or not GetTotemInfo then
+	if not totem or tonumber(totem) ~= totem or totem < 1 or totem > self.numTotems then
 		return
 	end
 
-	local haveTotem, name, startTime, duration, icon = GetTotemInfo(totem);
+	local haveTotem, name, startTime, duration, icon = self:GetTotemInfo(totem)
  	if IceHUD.CanAccessValue(duration) and duration > 0 then
 		self.frame.graphical[totem].totem:SetTexture(icon)
 		CooldownFrame_SetTimer(self.frame.graphical[totem].cd, startTime, duration, true)
@@ -339,10 +352,10 @@ function Totems.prototype:CheckCombat()
 end
 
 function Totems.prototype:CreateTotem(i, name)
-	if not name or not GetTotemInfo then
+	if not name then
 		return
 	end
-	local haveTotem, name, startTime, duration, icon = GetTotemInfo(i)
+	local haveTotem, name, startTime, duration, icon = self:GetTotemInfo(i)
 	if (not self.frame.graphical[i]) then
 		self.frame.graphical[i] = CreateFrame("Frame", nil, self.frame)
 		self.frame.graphical[i].totem = self.frame.graphical[i]:CreateTexture(nil, "BACKGROUND")

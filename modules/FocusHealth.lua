@@ -256,9 +256,14 @@ function FocusHealth.prototype:Enable(core)
 
 	self:Update(self.unit)
 
+	RegisterUnitWatch(self.frame)
+end
+
+function FocusHealth.prototype:CreateFrame()
+	FocusHealth.super.prototype.CreateFrame(self)
+
 	-- for showing/hiding the frame based on unit visibility
 	self.frame:SetAttribute("unit", self.unit)
-	RegisterUnitWatch(self.frame)
 end
 
 function FocusHealth.prototype:CreateBackground()
@@ -334,6 +339,11 @@ end
 
 function FocusHealth.prototype:Update(unit)
 	if unit and unit ~= self.unit then
+		return
+	end
+
+	if self:IsInConfigMode() then
+		self:Show(true)
 		return
 	end
 
@@ -464,6 +474,24 @@ end
 
 function FocusHealth.prototype:IsHealthBar()
 	return true
+end
+
+function FocusHealth.prototype:ToggleMoveHint()
+	local enabled = FocusHealth.super.prototype.ToggleMoveHint(self)
+	self:ToggleConfigMode(enabled)
+	self:Redraw()
+end
+
+function FocusHealth.prototype:ToggleConfigMode(enabled)
+	if enabled then
+		self.origUnit = self.unit
+		self.unit = "player"
+	else
+		self.unit = self.origUnit
+		self:UpdateFocus()
+	end
+
+	IceTargetHealth.super.prototype.ToggleConfigMode(self, enabled)
 end
 
 -- Load us up

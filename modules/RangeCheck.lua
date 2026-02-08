@@ -170,24 +170,32 @@ end
 
 -- this function is called every 0.1 seconds only if LibDogTag is not being used
 function RangeCheck.prototype:UpdateRange()
-	if self:IsInConfigMode() and not UnitExists("target") then
-		self.frame.rangeFontString:SetText("RangeCheck")
-	elseif LibRange and UnitExists("target") then
+	local text
+	if LibRange and UnitExists("target") then
 		local min, max = LibRange:getRange("target")
 		if min then
 			if max then
-				self.frame.rangeFontString:SetText("Range: " .. min .. " - " .. max)
+				text = "Range: " .. min .. " - " .. max
 			else
-				self.frame.rangeFontString:SetText("Range: " .. min .. "+")
+				text = "Range: " .. min .. "+"
 			end
 		else
-			self.frame.rangeFontString:SetText("Unknown")
+			text = "Unknown"
 		end
 
 		self.frame.rangeFontString:SetWidth(0)
-	else
-		self.frame.rangeFontString:SetText()
 	end
+
+	if not text and self:IsInConfigMode() then
+		text = "RangeCheck"
+	end
+
+	self.frame.rangeFontString:SetText(text)
+end
+
+function RangeCheck.prototype:ToggleMoveHint()
+	RangeCheck.super.prototype.ToggleMoveHint(self)
+	self:UpdateRange()
 end
 
 IceHUD.RangeCheck = RangeCheck:new()

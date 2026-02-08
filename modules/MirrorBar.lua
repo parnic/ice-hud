@@ -28,6 +28,7 @@ function MirrorBar.prototype:init(side, offset, name, db)
 	self.moduleSettings.shouldAnimate = false
 	-- this has to be set to 0 or else it will error out when trying to use it for SetPoint later
 	self.moduleSettings.barVerticalOffset = 0
+	self.moduleSettings.barHorizontalOffset = 0
 	-- avoid nil warnings here
 	self.moduleSettings.myTagVersion = IceHUD.CurrTagVersion
 
@@ -70,16 +71,7 @@ function MirrorBar.prototype:OnUpdate(elapsed)
 
 	self.value = self.value + (self.timerScale * elapsed * 1000)
 
-	local scale = self.maxValue ~= 0 and self.value / self.maxValue or 0
-
-	if (scale < 0) then -- lag compensation
-		scale = 0
-	end
-	if (scale > 1) then -- lag compensation
-		scale = 1
-	end
-
-
+	local scale = IceHUD:Clamp(self.maxValue ~= 0 and self.value / self.maxValue or 0, 0, 1)
 	local timeRemaining = IceHUD:Clamp(self.value / 1000, 0, self.maxValue / 1000)
 	local remaining = string.format("%.1f", timeRemaining)
 
@@ -137,6 +129,13 @@ function MirrorBar.prototype:CleanUp()
 end
 
 
+function MirrorBar.prototype:MoveHintMoveTo(x, y)
+	MirrorBar.super.prototype.MoveHintMoveTo(self, x, y)
+
+	IceHUD.MirrorBarHandler.moduleSettings.barHorizontalOffset = x
+	IceHUD.MirrorBarHandler.moduleSettings.barVerticalOffset = y
+end
+
 
 
 
@@ -179,6 +178,7 @@ function MirrorBarHandler.prototype:GetDefaultSettings()
 	settings["myTagVersion"] = 2
 	settings["usesDogTagStrings"] = false
 	settings["barVerticalOffset"] = 0
+	settings["barHorizontalOffset"] = 0
 	settings["hideBlizz"] = true
 
 	return settings
@@ -194,6 +194,8 @@ function MirrorBarHandler.prototype:GetOptions()
 		name = L["Look and Feel"],
 		order = 29.9
 	}
+
+	self:AddDragMoveOption(opts, 29.91)
 
 	opts["side"] =
 	{
@@ -280,7 +282,7 @@ function MirrorBarHandler.prototype:GetOptions()
 		max = 600,
 		step = 1,
 		get = function()
-			return self.moduleSettings.barVerticalOffset
+			return IceHUD:MathRound(self.moduleSettings.barVerticalOffset)
 		end,
 		set = function(info, v)
 			self.moduleSettings.barVerticalOffset = v
@@ -291,6 +293,27 @@ function MirrorBarHandler.prototype:GetOptions()
 		end,
 		order = 34
 	}
+
+	opts["barHorizontalAdjust"] =
+		{
+			type='range',
+			name = L["Bar horizontal adjust"],
+			desc = L["This is a per-pixel horizontal adjustment. You should probably use the 'offset' setting above as it is designed to snap bars together. This may be used in the case of a horizontal bar needing to be positioned outside the normal bar locations."],
+			min = -600,
+			max = 600,
+			step = 1,
+			get = function()
+				return IceHUD:MathRound(self.moduleSettings.barHorizontalOffset)
+			end,
+			set = function(info, v)
+				self.moduleSettings.barHorizontalOffset = v
+				self:Redraw()
+			end,
+			disabled = function()
+				return not self.moduleSettings.enabled
+			end,
+			order = 34.5
+		}
 
 	opts["barRotate"] =
 	{
@@ -501,50 +524,57 @@ end
 
 
 function MirrorBarHandler.prototype:MirrorStart(event, timer, value, maxValue, scale, paused, label)
-	local done = nil
-
+	local used
 	-- check if we can find an already running timer to reverse it
 	for i = 1, #self.bars do
-		if (self.bars[i].timer == timer) then
-			done = true
+		if self.bars[i].timer == timer then
+			used = i
 			self.bars[i]:MirrorStart(timer, value, maxValue, scale, paused, label)
+			break
 		end
 	end
 
 	-- check if there's a free instance in case we didn't find an already running bar
-	if not (done) then
+	if not used then
 		for i = 1, #self.bars do
-			if not (self.bars[i].timer) and not (done) then
-				done = true
+			if not self.bars[i].timer then
+				used = i
 				self.bars[i]:MirrorStart(timer, value, maxValue, scale, paused, label)
+				break
 			end
 		end
 	end
 
 	-- finally create a new instance if no available ones were found
-	if not (done) then
+	if not used then
 		local count = #self.bars
-		self.bars[count + 1] = MirrorBar:new(self.moduleSettings.side, self.moduleSettings.offset + count, "MirrorBar" .. tostring(count+1), self.settings)
+		used = count + 1
+		self.bars[used] = MirrorBar:new(self.moduleSettings.side, self.moduleSettings.offset + count, "MirrorBar" .. tostring(count+1), self.settings)
 		self:SetSettings(self.bars[count+1])
-		self.bars[count + 1]:Create(self.parent)
-		self.bars[count + 1]:Enable()
-		self.bars[count + 1]:MirrorStart(timer, value, maxValue, scale, paused, label)
+		self.bars[used]:Create(self.parent)
+		self.bars[used]:Enable()
+		self.bars[used]:MirrorStart(timer, value, maxValue, scale, paused, label)
 	end
+
+	return used
 end
 
 
 function MirrorBarHandler.prototype:MirrorStop(event, timer)
 	for i = 1, #self.bars do
-		if (self.bars[i].timer == timer) then
+		if self.bars[i].timer == timer then
 			self.bars[i]:MirrorStop()
+			return i
 		end
 	end
+
+	return nil
 end
 
 
 function MirrorBarHandler.prototype:MirrorPause(event, paused)
 	for i = 1, #self.bars do
-		if (self.bars[i].timer ~= nil) then
+		if self.bars[i].timer ~= nil then
 			self.bars[i]:MirrorPause(paused > 0)
 		end
 	end
@@ -580,6 +610,23 @@ function MirrorBarHandler.prototype:ToggleBlizz(on)
 		MirrorTimerContainer:UnregisterAllEvents()
 		MirrorTimerContainer:Hide()
 	end
+end
+
+
+function MirrorBarHandler.prototype:ToggleMoveHint()
+	if MirrorBarHandler.super.prototype.ToggleMoveHint(self) then
+		local idx = self:MirrorStart("internal", "config", 1000000, 1000000, -1, 0, self.elementName)
+		if idx then
+			self.bars[idx]:ToggleMoveHint()
+		end
+	else
+		local idx = self:MirrorStop("internal", "config")
+		if idx then
+			self.bars[idx]:ToggleMoveHint()
+		end
+	end
+
+	self:Redraw()
 end
 
 

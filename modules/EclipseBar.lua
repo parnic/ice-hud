@@ -120,6 +120,11 @@ function EclipseBar.prototype:CreateSolarBar()
 end
 
 function EclipseBar.prototype:UpdateShown()
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
+
 	local form  = GetShapeshiftFormID()
 
 	if form == MOONKIN_FORM or not form then
@@ -190,6 +195,6 @@ function EclipseBar.prototype:MyOnUpdate()
 end
 
 local _, unitClass = UnitClass("player")
-if (unitClass == "DRUID" and GetEclipseDirection) then
+if unitClass == "DRUID" and GetEclipseDirection then
 	IceHUD.EclipseBar = EclipseBar:new()
 end

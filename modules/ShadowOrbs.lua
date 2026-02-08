@@ -20,10 +20,10 @@ function ShadowOrbs.prototype:init()
 		self.numConsideredFull = PRIEST_BAR_NUM_LARGE_ORBS
 		-- pulled from PriestBar.xml in Blizzard's UI source
 		self.runeCoords = { }
-		for i=1, PRIEST_BAR_NUM_SMALL_ORBS do
+		for i=1, PRIEST_BAR_NUM_SMALL_ORBS or 1 do
 			self.runeCoords[i] = {0.45703125, 0.60546875, 0.44531250, 0.73437500}
 		end
-		if IceHUD.IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
+		if SHADOW_ORB_MINOR_TALENT_ID and IceHUD.IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
 			self.numRunes = PRIEST_BAR_NUM_SMALL_ORBS
 		else
 			self.numRunes = PRIEST_BAR_NUM_LARGE_ORBS
@@ -45,7 +45,7 @@ end
 function ShadowOrbs.prototype:Enable(core)
 	ShadowOrbs.super.prototype.Enable(self, core)
 
-	if IceHUD.WowVer >= 60000 then
+	if IceHUD.WowVer >= 60000 and SHADOW_ORB_MINOR_TALENT_ID then
 		if not IceHUD.IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
 			self:RegisterEvent("SPELLS_CHANGED", "CheckHasMoreOrbs")
 		end
@@ -53,7 +53,7 @@ function ShadowOrbs.prototype:Enable(core)
 end
 
 function ShadowOrbs.prototype:CheckHasMoreOrbs(event)
-	if IceHUD.IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
+	if SHADOW_ORB_MINOR_TALENT_ID and IceHUD.IsSpellKnown(SHADOW_ORB_MINOR_TALENT_ID) then
 		self:UnregisterEvent("SPELLS_CHANGED")
 		self:UpdateRunePower()
 	end
@@ -108,7 +108,7 @@ end
 
 -- Load us up
 local _, unitClass = UnitClass("player")
-if (unitClass == "PRIEST" and IceHUD.WowVer >= 50000 and IceHUD.WowVer < 70000) then
+if unitClass == "PRIEST" and IceHUD.WowVer >= 50000 and IceHUD.WowVer < 70000 then
 	IceHUD.ShadowOrbs = ShadowOrbs:new()
 end
 

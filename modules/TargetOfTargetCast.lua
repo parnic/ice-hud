@@ -74,7 +74,9 @@ function TargetTargetCast.prototype:UpdateTargetTarget()
 		end
 	end
 
-	self:StopBar()
+	if not self:IsInConfigMode() then
+		self:StopBar()
+	end
 end
 
 
@@ -142,6 +144,25 @@ function TargetTargetCast.prototype:GetOptions()
 	}
 
 	return opts
+end
+
+function TargetTargetCast.prototype:ToggleMoveHint()
+	if TargetTargetCast.super.prototype.ToggleMoveHint(self) then
+		self.origUnit = self.unit
+		self.unit = "player"
+		if self.moduleSettings.displayAuraIcon then
+			self.barFrame.icon:Show()
+		end
+		self:Show(true)
+	else
+		self.unit = self.origUnit
+		if self.moduleSettings.displayAuraIcon then
+			self.barFrame.icon:Hide()
+		end
+		self:TargetChanged()
+	end
+
+	self:Redraw()
 end
 
 -------------------------------------------------------------------------------

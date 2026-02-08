@@ -94,8 +94,12 @@ end
 
 
 -- OVERRIDE
-function TargetCast.prototype:TargetChanged(unit)
-	TargetCast.super.prototype.TargetChanged(self, unit)
+function TargetCast.prototype:TargetChanged()
+	TargetCast.super.prototype.TargetChanged(self)
+
+	if self:IsInConfigMode() then
+		return
+	end
 
 	if not self.target then
 		self:StopBar()
@@ -207,6 +211,25 @@ function TargetCast.prototype:GetCastSpellAndInterruptible()
 	end
 
 	return spell, notInterruptible, isSpellCast
+end
+
+function TargetCast.prototype:ToggleMoveHint()
+	if TargetCast.super.prototype.ToggleMoveHint(self) then
+		self.origUnit = self.unit
+		self.unit = "player"
+		if self.moduleSettings.displayAuraIcon then
+			self.barFrame.icon:Show()
+		end
+		self:Show(true)
+	else
+		self.unit = self.origUnit
+		if self.moduleSettings.displayAuraIcon then
+			self.barFrame.icon:Hide()
+		end
+		self:TargetChanged()
+	end
+
+	self:Redraw()
 end
 
 -------------------------------------------------------------------------------

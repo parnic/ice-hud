@@ -72,6 +72,9 @@ do
 	local spellName = GetSpellName(VENGEANCE_SPELL_ID)
 
 	function Vengeance.prototype:UpdateCurrent(event, unit)
+		if not spellName then
+			return
+		end
 		if (unit and (unit ~= self.unit)) then
 			return
 		end
@@ -106,6 +109,11 @@ end
 
 function Vengeance.prototype:Update()
 	Vengeance.super.prototype.Update(self)
+
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
 
 	if self.current == 0 then
 		self:Show(false)

@@ -318,17 +318,25 @@ function RollTheBones.prototype:GetBuffDuration(unitName, ids)
   end
 end
 
+function RollTheBones.prototype:ShouldShowWithNoTarget()
+	return self.moduleSettings.bShowWithNoTarget or self:IsInConfigMode()
+end
+
 function RollTheBones.prototype:MyOnUpdate()
   RollTheBones.super.prototype.MyOnUpdate(self)
   if self.bUpdateRtb then
     self:UpdateRollTheBones("internal", self.unit)
   end
-  if self.target or self.moduleSettings.bShowWithNoTarget then
+  if self.target or self:ShouldShowWithNoTarget() then
     self:UpdateDurationBar()
   end
 end
 
-local function RTBGetComboPoints(unit)
+function RollTheBones.prototype:RTBGetComboPoints(unit)
+  if self:IsInConfigMode() then
+		return maxComboPoints
+	end
+
   return UnitPower(unit, SPELL_POWER_COMBO_POINTS)
 end
 
@@ -350,15 +358,21 @@ function RollTheBones.prototype:UpdateRollTheBones(event, unit)
 
   if C_UnitAuras and C_UnitAuras.GetAuraDuration then
     local _
-    rtbDuration, _, _ = self:GetBuffDuration(self.unit)
+    if self:IsInConfigMode() then
+      rtbDuration = self:GetMaxBuffTime(maxComboPoints / 2)
+    else
+      rtbDuration, _, _ = self:GetBuffDuration(self.unit)
+    end
     self:UpdateBar(rtbDuration and 1 or 0, "RollTheBones")
 		if rtbDuration then
       self:Show(true)
-			self.barFrame:SetTimerDuration(
-        rtbDuration,
-        Enum.StatusBarInterpolation.Immediate,
-        self:ShouldReverseFill() and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
-      )
+      if not self:IsInConfigMode() then
+        self.barFrame:SetTimerDuration(
+          rtbDuration,
+          Enum.StatusBarInterpolation.Immediate,
+          self:ShouldReverseFill() and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
+        )
+      end
 		end
 
 		return
@@ -378,6 +392,11 @@ function RollTheBones.prototype:UpdateRollTheBones(event, unit)
     end
   end
 
+  if self:IsInConfigMode() then
+		local max = self:GetMaxBuffTime(maxComboPoints / 2)
+		rtbEndTime = now + max
+	end
+
   if rtbEndTime and rtbEndTime >= now then
     if not fromUpdate then
       self.bUpdateRtb = true
@@ -392,7 +411,7 @@ function RollTheBones.prototype:UpdateRollTheBones(event, unit)
   else
     self:UpdateBar(0, "RollTheBones")
 
-    if RTBGetComboPoints(self.unit) == 0 or (not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget) or ShouldHide() then
+    if self:RTBGetComboPoints(self.unit) == 0 or (not UnitExists("target") and not self:ShouldShowWithNoTarget()) or ShouldHide() then
       if self.bIsVisible then
         self.bUpdateRtb = nil
       end
@@ -419,7 +438,7 @@ function RollTheBones.prototype:GetColorName(count)
 end
 
 function RollTheBones.prototype:TargetChanged()
-  if self.moduleSettings.bShowWithNoTarget and RTBGetComboPoints(self.unit) > 0 then
+  if self:ShouldShowWithNoTarget() and self:RTBGetComboPoints(self.unit) > 0 then
     self.target = true
   else
     self.target = UnitExists("target")
@@ -428,6 +447,11 @@ function RollTheBones.prototype:TargetChanged()
 
   self:UpdateDurationBar()
   self:UpdateRollTheBones()
+end
+
+function RollTheBones.prototype:Redraw()
+  RollTheBones.super.prototype.Redraw(self)
+	self:TargetChanged()
 end
 
 function RollTheBones.prototype:UpdateDurationBar(event, unit)
@@ -439,7 +463,7 @@ function RollTheBones.prototype:UpdateDurationBar(event, unit)
     return
   end
 
-  local points = RTBGetComboPoints(self.unit)
+  local points = self:RTBGetComboPoints(self.unit)
   if UnitPowerMax then
     CurrMaxRtBDuration = self:GetMaxBuffTime(UnitPowerMax(self.unit, SPELL_POWER_COMBO_POINTS))
   else
@@ -467,7 +491,7 @@ function RollTheBones.prototype:UpdateDurationBar(event, unit)
   self.durationFrame:Show()
 
   -- if we have combo points and a target selected, go ahead and show the bar so the duration bar can be seen
-  if points > 0 and (UnitExists("target") or self.moduleSettings.bShowWithNoTarget) then
+  if points > 0 and (UnitExists("target") or self:ShouldShowWithNoTarget()) then
     self:Show(true)
   end
 
@@ -533,6 +557,11 @@ function RollTheBones.prototype:OutCombat()
   RollTheBones.super.prototype.OutCombat(self)
 
   self:UpdateRollTheBones()
+end
+
+function RollTheBones.prototype:ToggleMoveHint()
+	RollTheBones.super.prototype.ToggleMoveHint(self)
+	self:TargetChanged()
 end
 
 local _, unitClass = UnitClass("player")
