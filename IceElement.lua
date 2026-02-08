@@ -341,7 +341,7 @@ function IceElement.prototype:MoveHintUpdate()
 	local currLeft, currTop = self.frame:GetLeft(), self.frame:GetTop()
 	local lastX, lastY = self.moveHintLastX, self.moveHintLastY
 	local currX, currY = GetCursorPosition()
-	local dx, dy = (currX - lastX) / self.moveHintScale / IceHUD.IceCore:GetScale(), (currY - lastY) / self.moveHintScale / IceHUD.IceCore:GetScale()
+	local dx, dy = (currX - lastX) / self.moveHintScale / IceHUD.IceCore:GetScale() / self.moduleSettings.scale, (currY - lastY) / self.moveHintScale / IceHUD.IceCore:GetScale() / self.moduleSettings.scale
 	if IsShiftKeyDown() then
 		dy = 0
 	end
