@@ -1,21 +1,23 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
-local IceFocusThreat = IceCore_CreateClass(IceThreat)
+local FocusThreat = IceCore_CreateClass(IceThreat)
 
 -- constructor
-function IceFocusThreat.prototype:init()
-	IceFocusThreat.super.prototype.init(self, "FocusThreat", "focus")
+function FocusThreat.prototype:init()
+	FocusThreat.super.prototype.init(self, "FocusThreat", "focus")
 end
 
-function IceFocusThreat.prototype:GetDefaultSettings()
-	local settings = IceFocusThreat.super.prototype.GetDefaultSettings(self)
+function FocusThreat.prototype:GetDefaultSettings()
+	local settings = FocusThreat.super.prototype.GetDefaultSettings(self)
 
-	settings["side"] = IceCore.Side.Right
-	settings["offset"] = 4
+	settings.side = IceCore.Side.Right
+	settings.offset = 4
+	settings.scale = 0.7
+	settings.barVerticalOffset = 35
 
 	return settings
 end
 
 -- Load us up
 if FocusUnit then
-	IceHUD.IceFocusThreat = IceFocusThreat:new()
+	IceHUD.FocusThreat = FocusThreat:new()
 end
