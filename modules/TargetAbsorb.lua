@@ -105,7 +105,7 @@ function IceTargetAbsorb.prototype:UpdateAbsorbAmount(event, unit)
 	end
 
 	if self:IsInConfigMode() then
-		self:UpdateBar(UnitHealthMax(self.unit), self.ColorName)
+		self:UpdateBar(self.calculator and UnitHealthMax(self.unit) or 1, self.ColorName)
 		self:Show(true)
 		return
 	end
