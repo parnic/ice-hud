@@ -761,6 +761,11 @@ function IceCustomCDBar.prototype:UpdateCustomBarEvent(event, unit)
 end
 
 function IceCustomCDBar.prototype:UpdateCustomBar(fromUpdate)
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
+
 	local now = GetTime()
 	local remaining = nil
 	local auraIcon = nil

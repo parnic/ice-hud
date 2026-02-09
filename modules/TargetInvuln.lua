@@ -213,7 +213,17 @@ function TargetInvuln.prototype:MyOnUpdate()
 	self:UpdateTargetBuffs("internal", self.unit)
 end
 
+function TargetInvuln.prototype:Update()
+	TargetInvuln.super.prototype.Update(self)
+	self:UpdateTargetBuffs("internal", self.unit)
+end
+
 function TargetInvuln.prototype:UpdateTargetBuffs(event, unit)
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
+
 	local name, duration, remaining
 	local isUpdate = event == "internal"
 

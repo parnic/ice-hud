@@ -775,6 +775,11 @@ function IceCustomBar.prototype:UpdateTotems(event, totem)
 end
 
 function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
+
 	if unit and unit ~= self.unit and not (self.unit == "main hand weapon" or self.unit == "off hand weapon") then
 		return
 	end

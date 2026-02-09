@@ -408,6 +408,11 @@ function TargetCC.prototype:MyOnUpdate()
 end
 
 function TargetCC.prototype:UpdateTargetDebuffs(event, unit)
+	if self:IsInConfigMode() then
+		self:Show(true)
+		return
+	end
+
 	local name, duration, remaining
 	local isUpdate = event == "internal"
 
