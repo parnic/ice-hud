@@ -396,7 +396,7 @@ function IceCastBar.prototype:MyOnUpdate()
 			self:SetBarColorRGBA(self:GetColor(self:GetCurrentCastingColor()))
 		end
 
-		if remainingTime <= 0 then
+		if remainingTime <= -0.5 then
 			self:StopBar()
 		end
 
