@@ -1,4 +1,4 @@
-## Interface: 11508, 20505, 38000, 50503, 120000, 120001
+## Interface: 11508, 20505, 38000, 50503, 120001
 ## Author: Parnic, originally created by Iceroth
 ## Name: IceHUD
 ## Title: IceHUD |cff7fff7f-Ace3-|r
