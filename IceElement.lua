@@ -286,14 +286,6 @@ function IceElement.prototype:AddDragMoveOption(opts, order)
 		desc = L["Toggles the ability to drag this module to the desired location instead of adjusting Position sliders."],
 		width = "full",
 		func = function() self:ToggleMoveHint() end,
-		hidden =
-			--[===[@non-debug@
-			true
-			--@end-non-debug@]===]
-			--@debug@
-			false
-			--@end-debug@
-		,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,

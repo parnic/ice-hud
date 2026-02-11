@@ -2,6 +2,7 @@
 
 ## v1.17.0
 
+- Add interactive movement button to each module's options. This allows the player to drag the module around with the mouse rather than placing it with awkward vertical/horizontal sliders. Note that this touches every module in the addon, including all the class-specific ones, so I've tested it the best I could but there are probably some issues somewhere.
 - Fix an error in TargetInfo from 12.0.1
 
 ## v1.16.16
