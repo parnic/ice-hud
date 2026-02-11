@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.0
+
+- Fix an error in TargetInfo from 12.0.1
+
 ## v1.16.16
 
 - Update FocusThreat default scale and placement to match other Focus bars.

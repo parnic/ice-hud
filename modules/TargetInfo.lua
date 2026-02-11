@@ -1550,7 +1550,9 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 		end
 	elseif auraInstanceID then
 		duration = C_UnitAuras.GetAuraDuration(self.unit, auraInstanceID)
-		frame.cd:SetCooldownFromDurationObject(duration)
+		if duration then
+			frame.cd:SetCooldownFromDurationObject(duration)
+		end
 	end
 
 	frame.type = auraType
