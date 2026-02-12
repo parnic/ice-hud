@@ -4,6 +4,7 @@
 
 - Add interactive movement button to each module's options. This allows the player to drag the module around with the mouse rather than placing it with awkward vertical/horizontal sliders. Note that this touches every module in the addon, including all the class-specific ones, so I've tested it the best I could but there are probably some issues somewhere.
 - Fix an error in TargetInfo from 12.0.1
+- Package a new version of LibDogTag-Unit-3.0 to fix an error with UnitIsAFK and UnitIsDND usage that's now sometimes Secret in 12.0.1.
 
 ## v1.16.16
 
