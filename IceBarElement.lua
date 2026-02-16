@@ -1463,10 +1463,12 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 	if not scale then scale = 0 end
 	scale = IceHUD:Clamp(scale, 0, 1)
 
-	if scale == 0 then
-		barFrame:Hide()
-	else
-		barFrame:Show()
+	if self.moduleSettings.barVisible['bar'] then
+		if scale == 0 then
+			barFrame:Hide()
+		else
+			barFrame:Show()
+		end
 	end
 
 	if barFrame.SetValue then

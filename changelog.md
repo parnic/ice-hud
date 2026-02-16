@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.1
+
+- Fix bars appearing on Classic/TBC/Mists (i.e. <12.0) clients when bar visibility was un-checked and the bar was not empty/full.
+
 ## v1.17.0
 
 - Add interactive movement button to each module's options. This allows the player to drag the module around with the mouse rather than placing it with awkward vertical/horizontal sliders. Note that this touches every module in the addon, including all the class-specific ones, so I've tested it the best I could but there are probably some issues somewhere.
