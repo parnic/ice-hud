@@ -259,7 +259,7 @@ function PetHealth.prototype:ToggleConfigMode(enabled)
 		self:CheckPet()
 	end
 
-	IceTargetHealth.super.prototype.ToggleConfigMode(self, enabled)
+	PetHealth.super.prototype.ToggleConfigMode(self, enabled)
 end
 
 -- Load us up

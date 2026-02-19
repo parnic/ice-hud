@@ -492,7 +492,7 @@ function FocusHealth.prototype:ToggleConfigMode(enabled)
 		self:UpdateFocus()
 	end
 
-	IceTargetHealth.super.prototype.ToggleConfigMode(self, enabled)
+	FocusHealth.super.prototype.ToggleConfigMode(self, enabled)
 end
 
 function FocusHealth.prototype:TargetChanged()
