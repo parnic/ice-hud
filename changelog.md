@@ -2,7 +2,8 @@
 
 ## v1.17.2
 
-- Fix TargetHealth, TargetOfTargetHealth, CustomHealth, and FocusHealth coloring by class always showing white
+- Fix TargetHealth, TargetOfTargetHealth, CustomHealth, and FocusHealth coloring by class always showing white.
+- Add individual point placement ability for all class power-type modules (Vigor, Mage Arcane Charges, Monk Chi, Evoker Essence, Paladin Holy Power, Priest Shadow Orbs, and Warlock Shards).
 
 ## v1.17.1
 

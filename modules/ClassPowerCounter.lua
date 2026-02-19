@@ -11,7 +11,7 @@ IceClassPowerCounter.prototype.lastNumReady = 0
 IceClassPowerCounter.prototype.runeCoords = {}
 IceClassPowerCounter.prototype.runeShineFadeSpeed = 0.4
 IceClassPowerCounter.prototype.minLevel = 9
-IceClassPowerCounter.prototype.DesiredAnimDuration = 0.6
+IceClassPowerCounter.prototype.DesiredAnimDuration = 0.3
 IceClassPowerCounter.prototype.DesiredScaleMod = .4
 IceClassPowerCounter.prototype.DesiredAnimPause = 0.5
 IceClassPowerCounter.prototype.requiredSpec = nil
@@ -435,6 +435,36 @@ function IceClassPowerCounter.prototype:GetOptions()
 		order = 43,
 	}
 
+	opts.powerDragMove = {
+		type = "execute",
+		name = L["Toggle interactive point placement"],
+		desc = L["Toggles the ability to drag individual points to the desired location."],
+		width = "full",
+		func = function() self:TogglePowerMoveHint() end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return self.moduleSettings.runeMode == "Numeric"
+		end,
+		order = 44,
+	}
+
+	opts.powerPointReset = {
+		type = "execute",
+		name = L["Reset custom point placement"],
+		desc = L["Resets all individual points to their default location."],
+		width = "full",
+		func = function() self:ResetPowerMoveLocations() end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return self.moduleSettings.runeMode == "Numeric"
+		end,
+		order = 45,
+	}
+
 	return opts
 end
 
@@ -497,6 +527,10 @@ function IceClassPowerCounter.prototype:Enable(core)
 	self:CreateFrame()
 
 	self:CheckValidLevel(nil, UnitLevel("player"))
+end
+
+function IceClassPowerCounter.prototype:IsInConfigMode()
+	return IceClassPowerCounter.super.prototype.IsInConfigMode(self) or self.inPowerMoveMode
 end
 
 function IceClassPowerCounter.prototype:CheckValidLevel(event, level)
@@ -770,7 +804,8 @@ function IceClassPowerCounter.prototype:UpdateRuneAnimation(frame, elapsed)
 	end
 
 	for i=1, #self.frame.graphical do
-		self.frame.graphical[i]:SetScale(scale)
+		local scaleFrame = self:HasAnyCustomPointPlacement() and self.frame.graphical[i].rune or self.frame.graphical[i]
+		scaleFrame:SetScale(scale)
 	end
 	self.frame.numericParent:SetScale(scale)
 end
@@ -778,7 +813,8 @@ end
 function IceClassPowerCounter.prototype:StopRunesFullAnimation()
 	self.frame:SetScript("OnUpdate", nil)
 	for i=1, #self.frame.graphical do
-		self.frame.graphical[i]:SetScale(1)
+		local scaleFrame = self:HasAnyCustomPointPlacement() and self.frame.graphical[i].rune or self.frame.graphical[i]
+		scaleFrame:SetScale(1)
 	end
 	self.frame.numericParent:SetScale(1)
 end
@@ -978,15 +1014,21 @@ function IceClassPowerCounter.prototype:SetupRuneTexture(rune)
 		end
 	end
 
+	local offx, offy = 0, 0
+	if self.moduleSettings.powerMoveOffsets and self.moduleSettings.powerMoveOffsets[rune] then
+		offx = self.moduleSettings.powerMoveOffsets[rune].x or 0
+		offy = self.moduleSettings.powerMoveOffsets[rune].y or 0
+	end
+
 	-- make sure any texture aside from the special one is square and has the proper coordinates
 	self.frame.graphical[rune].rune:SetTexCoord(a, b, c, d)
 	self.frame.graphical[rune]:SetWidth(width)
 	self.frame:SetWidth(width*self.numRunes)
 	local runeAdjust = rune - (self.numRunes / 2) - 0.5
 	if self.moduleSettings.displayMode == "Horizontal" then
-		self.frame.graphical[rune]:SetPoint("CENTER", runeAdjust * (width-5) + runeAdjust + (runeAdjust * self.moduleSettings.runeGap), 0)
+		self.frame.graphical[rune]:SetPoint("CENTER", runeAdjust * (width-5) + runeAdjust + (runeAdjust * self.moduleSettings.runeGap) + offx, offy)
 	else
-		self.frame.graphical[rune]:SetPoint("CENTER", 0, -1 * (runeAdjust * (self.runeHeight-5) + runeAdjust + (runeAdjust * self.moduleSettings.runeGap)))
+		self.frame.graphical[rune]:SetPoint("CENTER", offx, -1 * (runeAdjust * (self.runeHeight-5) + runeAdjust + (runeAdjust * self.moduleSettings.runeGap) + offy))
 	end
 
 	if self:GetRuneMode() == "Graphical" then
@@ -1103,3 +1145,181 @@ function IceClassPowerCounter.prototype:UseTargetAlpha()
 	end
 end
 
+function IceClassPowerCounter.prototype:CreatePowerMoveHintFrames()
+	if not self.powerMoveHint then
+		self.powerMoveHint = {}
+	end
+
+	for i=1,self.numRunes do
+		self.frame.graphical[i]:SetClampedToScreen(true)
+
+		if not self.powerMoveHint[i] then
+			self.powerMoveHint[i] = CreateFrame("Frame", "IceHUD_"..self.elementName.."_rune_" .. i .. "_move", self.frame.graphical[i])
+
+			self.powerMoveHint[i].texture = self.powerMoveHint[i]:CreateTexture(nil, "ARTWORK")
+			self.powerMoveHint[i].texture:SetTexture("Interface/Tooltips/UI-Tooltip-Background")
+			self.powerMoveHint[i].texture:SetBlendMode("ADD")
+			self.powerMoveHint[i].texture:SetVertexColor(0.2, 0.8, 0.2, 0.75)
+			self.powerMoveHint[i].texture:SetAllPoints(self.powerMoveHint[i])
+
+			self.powerMoveHint[i]:SetScript("OnMouseDown", function() self:PowerMoveHintMouseDown(i) end)
+			self.powerMoveHint[i]:SetScript("OnMouseUp", function() self:PowerMoveHintMouseUp(i) end)
+			self.powerMoveHint[i]:SetScript("OnEnter", function() self:PowerMoveHintEnter(i) end)
+			self.powerMoveHint[i]:SetScript("OnLeave", function() self:PowerMoveHintLeave(i) end)
+			self.powerMoveHint[i]:Hide()
+		end
+
+		self.powerMoveHint[i]:SetAllPoints(self.frame.graphical[i])
+	end
+end
+
+function IceClassPowerCounter.prototype:PowerMoveHintMouseDown(i)
+	if IsMouseButtonDown("RightButton") then
+		self:TogglePowerMoveHint()
+		self:PowerMoveHintMouseUp(i)
+		return
+	elseif IsMouseButtonDown("MiddleButton") then
+		self:PowerMoveHintMoveTo(i, 0, 0)
+
+		self:SetupRuneTexture(i)
+		return
+	elseif not IsMouseButtonDown("LeftButton") then
+		return
+	end
+
+	self:SetPowerMoveHintLast(i, true)
+	self.powerMoveHintScale = UIParent:GetEffectiveScale()
+	self.powerMoveHint[i]:SetScript("OnUpdate", function() self:PowerMoveHintUpdate(i) end)
+end
+
+function IceClassPowerCounter.prototype:PowerMoveHintMouseUp(i)
+	self.powerMoveHint[i]:SetScript("OnUpdate", nil)
+end
+
+function IceClassPowerCounter.prototype:PowerMoveHintEnter(i)
+	if not self.powerMoveHintTooltip then
+		self.powerMoveHintTooltip = {}
+	end
+	if not self.powerMoveHintTooltip[i] then
+		self.powerMoveHintTooltip[i] = "|cffffffff"..self.elementName.."|r point |cffffffff"..i.."|r\n"..L["|cff9999ffLeft click|r and drag to move. Hold |cff9999ffShift|r to lock vertical position, hold |cff9999ffControl|r to lock horizontal position.\n\n|cff9999ffMiddle click|r to reset to previous position.\n\n|cff9999ffRight click|r to exit placement mode."]
+	end
+
+	GameTooltip:SetOwner(self.powerMoveHint[i], "ANCHOR_TOPLEFT")
+	GameTooltip:SetText(self.powerMoveHintTooltip[i])
+end
+
+function IceClassPowerCounter.prototype:PowerMoveHintLeave(i)
+	GameTooltip:Hide()
+end
+
+function IceClassPowerCounter.prototype:TogglePowerMoveHint()
+	self:CreatePowerMoveHintFrames()
+
+	local wasInPowerMoveMode = self.inPowerMoveMode
+	if wasInPowerMoveMode then
+		self.inPowerMoveMode = false
+		for i=1,self.numRunes do
+			self.powerMoveHint[i]:Hide()
+		end
+		self:Redraw()
+	else
+		self.inPowerMoveMode = true
+		for i=1,self.numRunes do
+			self.powerMoveHint[i]:Show()
+		end
+		self:Redraw()
+	end
+
+	return not wasInPowerMoveMode
+end
+
+function IceClassPowerCounter.prototype:ResetPowerMoveLocations()
+	if not self.moduleSettings.powerMoveOffsets then
+		self.moduleSettings.powerMoveOffsets = {}
+	end
+
+	for i=1,self.numRunes do
+		if not self.moduleSettings.powerMoveOffsets[i] then
+			break
+		end
+
+		self.moduleSettings.powerMoveOffsets[i].x = 0
+		self.moduleSettings.powerMoveOffsets[i].y = 0
+	end
+
+	self:Redraw()
+end
+
+function IceClassPowerCounter.prototype:PowerMoveHintUpdate(i)
+	local currLeft, currTop = self.frame.graphical[i]:GetLeft(), self.frame.graphical[i]:GetTop()
+	local lastX, lastY = self.powerMoveHintLastX, self.powerMoveHintLastY
+	local currX, currY = GetCursorPosition()
+	local dx, dy = (currX - lastX) / self.powerMoveHintScale / IceHUD.IceCore:GetScale() / self.moduleSettings.scale, (currY - lastY) / self.powerMoveHintScale / IceHUD.IceCore:GetScale() / self.moduleSettings.scale
+	if IsShiftKeyDown() then
+		dy = 0
+	end
+	if IsControlKeyDown() then
+		dx = 0
+	end
+
+	local moveConsumed = self:PowerMoveHintMoveBy(i, dx, dy)
+
+	self:SetupRuneTexture(i)
+	self:SetPowerMoveHintLast(i, moveConsumed)
+
+	-- if the frame clamping caused the frame to not move in a given direction, un-apply our delta to respect the clamp
+	if not IsShiftKeyDown() and currTop == self.powerMoveHintLastTop then
+		self:PowerMoveHintMoveBy(i, 0, -dy)
+	end
+	if not IsControlKeyDown() and currLeft == self.powerMoveHintLastLeft then
+		self:PowerMoveHintMoveBy(i, -dx, 0)
+	end
+end
+
+function IceClassPowerCounter.prototype:PowerMoveHintMoveBy(i, dx, dy)
+	local prevx, prevy = 0, 0
+	if self.moduleSettings.powerMoveOffsets and self.moduleSettings.powerMoveOffsets[i] then
+		prevx = self.moduleSettings.powerMoveOffsets[i].x or 0
+		prevy = self.moduleSettings.powerMoveOffsets[i].y or 0
+	end
+
+	self:PowerMoveHintMoveTo(i, prevx + dx, prevy + dy)
+	return true
+end
+
+function IceClassPowerCounter.prototype:PowerMoveHintMoveTo(i, x, y)
+	if not self.moduleSettings.powerMoveOffsets then
+		self.moduleSettings.powerMoveOffsets = {}
+	end
+	if not self.moduleSettings.powerMoveOffsets[i] then
+		self.moduleSettings.powerMoveOffsets[i] = {}
+	end
+
+	self.moduleSettings.powerMoveOffsets[i].x = x
+	self.moduleSettings.powerMoveOffsets[i].y = y
+end
+
+function IceClassPowerCounter.prototype:SetPowerMoveHintLast(i, updateCursor)
+	if updateCursor then
+		self.powerMoveHintLastX, self.powerMoveHintLastY = GetCursorPosition()
+	end
+	self.powerMoveHintLastLeft, self.powerMoveHintLastTop = self.frame.graphical[i]:GetLeft(), self.frame.graphical[i]:GetTop()
+end
+
+function IceClassPowerCounter.prototype:HasAnyCustomPointPlacement()
+	if not self.moduleSettings.powerMoveOffsets then
+		return false
+	end
+
+	for i=1,self.numRunes do
+		if not self.moduleSettings.powerMoveOffsets[i] then
+			return false
+		end
+
+		if self.moduleSettings.powerMoveOffsets[i].x ~= 0 or self.moduleSettings.powerMoveOffsets[i].y ~= 0 then
+			return true
+		end
+	end
+
+	return false
+end
