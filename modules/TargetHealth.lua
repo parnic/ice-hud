@@ -1173,5 +1173,10 @@ function IceTargetHealth.prototype:IsHealthBar()
 	return true
 end
 
+function IceTargetHealth.prototype:TargetChanged()
+	IceTargetHealth.super.prototype.TargetChanged(self)
+	_, self.unitClass = UnitClass(self.unit)
+end
+
 -- Load us up
 IceHUD.TargetHealth = IceTargetHealth:new()

@@ -320,6 +320,7 @@ function FocusHealth.prototype:EnableClickTargeting(bEnable)
 end
 
 function FocusHealth.prototype:UpdateFocus()
+	self:TargetChanged()
 	self:Update(self.unit)
 end
 
@@ -492,6 +493,11 @@ function FocusHealth.prototype:ToggleConfigMode(enabled)
 	end
 
 	IceTargetHealth.super.prototype.ToggleConfigMode(self, enabled)
+end
+
+function FocusHealth.prototype:TargetChanged()
+	FocusHealth.super.prototype.TargetChanged(self)
+	_, self.unitClass = UnitClass(self.unit)
 end
 
 -- Load us up

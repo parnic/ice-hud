@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.2
+
+- Fix TargetHealth, TargetOfTargetHealth, CustomHealth, and FocusHealth coloring by class always showing white
+
 ## v1.17.1
 
 - Fix bars appearing on Classic/TBC/Mists (i.e. <12.0) clients when bar visibility was un-checked and the bar was not empty/full.
