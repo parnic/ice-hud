@@ -4,6 +4,7 @@
 
 - Fix TargetHealth, TargetOfTargetHealth, CustomHealth, and FocusHealth coloring by class always showing white.
 - Add individual point placement ability for all class power-type modules (Vigor, Mage Arcane Charges, Monk Chi, Evoker Essence, Paladin Holy Power, Priest Shadow Orbs, and Warlock Shards).
+- Package a new version of LibDogTag-Unit-3.0 to fix an error with UnitGuid usage that Blizzard introduced in game version 12.0.1.66017.
 
 ## v1.17.1
 
