@@ -277,17 +277,22 @@ function PlayerMana.prototype:ManaType(event, unit)
 	end
 
 	local prevManaType = self.manaType
-	self.manaType = UnitPowerType(self.unit)
+	local powerName
+	self.manaType, powerName = UnitPowerType(self.unit)
 
 	if self:ShouldUseTicker() then
 		-- register ticker for rogue energy
 		if self.moduleSettings.tickerEnabled and self.manaType == SPELL_POWER_ENERGY then
 			self.tickerFrame:Show()
-			self.tickerFrame:SetScript("OnUpdate", function() self:EnergyTick() end)
+			if not self.energyTickerUpdateFunc then
+				self.energyTickerUpdateFunc = function() self:EnergyTick() end
+			end
+			self.tickerFrame:SetScript("OnUpdate", self.energyTickerUpdateFunc)
 		else
 			self.tickerFrame:Hide()
 			self.tickerFrame:SetScript("OnUpdate", nil)
 		end
+	else
 	end
 
 	self.bTreatEmptyAsFull = self:TreatEmptyAsFull()
@@ -296,7 +301,7 @@ function PlayerMana.prototype:ManaType(event, unit)
 		self:Redraw()
 	end
 
-	self:Update(self.unit)
+	self:Update(self.unit, powerName)
 end
 
 function PlayerMana.prototype:TreatEmptyAsFull()
@@ -323,7 +328,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 	end
 	PlayerMana.super.prototype.Update(self)
 
-	if powertype ~= nil and powertype == "ENERGY" then
+	if powertype == "ENERGY" then
 		self:UpdateEnergy(nil, unit)
 	end
 

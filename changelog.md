@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.3
+
+- Fix energy ticker not showing immediately on login in Classic clients.
+
 ## v1.17.2
 
 - Fix TargetHealth, TargetOfTargetHealth, CustomHealth, and FocusHealth coloring by class always showing white.
