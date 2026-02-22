@@ -44,6 +44,7 @@ function PlayerMana.prototype:init()
 		self:SetDefaultColor("PlayerFury", 201, 66, 253)
 		self:SetDefaultColor("PlayerMaelstrom", 62, 54, 152)
 		self:SetDefaultColor("PlayerPain", 255, 156, 0)
+		self:SetDefaultColor("PlayerAstralPower", 77, 133, 230)
 	end
 end
 
@@ -373,6 +374,8 @@ function PlayerMana.prototype:Update(unit, powertype)
 			color = "PlayerMaelstrom"
 		elseif (self.manaType == SPELL_POWER_PAIN) then
 			color = "PlayerPain"
+		elseif (self.manaType == SPELL_POWER_LUNAR_POWER) then
+			color = "PlayerAstralPower"
 		end
 	end
 
