@@ -45,6 +45,7 @@ function IceTargetMana.prototype:init(moduleName, unit)
 		self:SetDefaultColor("TargetFury", 255, 50, 255)
 		self:SetDefaultColor("TargetMaelstrom", 52, 64, 221)
 		self:SetDefaultColor("TargetPain", 255, 50, 255)
+		self:SetDefaultColor("TargetAstralPower", 77, 133, 230)
 	end
 end
 
@@ -156,6 +157,8 @@ function IceTargetMana.prototype:Update(unit)
 			self.color = "TargetMaelstrom"
 		elseif (self.manaType == SPELL_POWER_PAIN) then
 			self.color = "TargetPain"
+		elseif (self.manaType == SPELL_POWER_LUNAR_POWER) then
+			self.color = "TargetAstralPower"
 		end
 
 		if (self.tapped) then
