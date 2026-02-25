@@ -4,6 +4,7 @@
 
 - Fix energy ticker not showing immediately on login in Classic clients.
 - Add AstralPower color customization option which applies to mana bars.
+- Add some missing localization entries causing errors from v1.17.2.
 
 ## v1.17.2
 
