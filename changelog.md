@@ -3,6 +3,7 @@
 ## v1.17.4
 
 - Remove "own (de)buff size" options on Info modules in 12.0+. This information is secret during combat so it cannot function.
+- Adjust all bars, ComboPoints, and Totems texts to follow the strata of the bar it's attached to. Previously it was using one higher strata than the bar, so it could render on top of things that the bar didn't.
 
 ## v1.17.3
 

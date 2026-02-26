@@ -292,7 +292,7 @@ function Totems.prototype:CreateFrame()
 end
 
 function Totems.prototype:CreateTotemFrame()
-	self.frame.numeric = self:FontFactory(self.moduleSettings.totemFontSize, nil, self.frame.numeric)
+	self.frame.numeric = self:FontFactory(self.moduleSettings.totemFontSize, self.frame, self.frame.numeric)
 
 	self.frame.numeric:SetWidth(50)
 	self.frame.numeric:SetJustifyH("CENTER")

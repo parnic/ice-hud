@@ -402,7 +402,7 @@ end
 
 function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 	-- create numeric combo points
-	self.frame.numeric = self:FontFactory(self.moduleSettings.comboFontSize, nil, self.frame.numeric)
+	self.frame.numeric = self:FontFactory(self.moduleSettings.comboFontSize, self.frame, self.frame.numeric)
 
 	self.frame.numeric:SetWidth(50)
 	self.frame.numeric:SetJustifyH("CENTER")
