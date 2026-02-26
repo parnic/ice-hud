@@ -449,6 +449,9 @@ function IceTargetInfo.prototype:GetOptions()
 				disabled = function()
 					return not self.moduleSettings.enabled
 				end,
+				hidden = function()
+					return IceHUD.IsSecretEnv()
+				end,
 				order = 35
 			},
 			growDirection = {
@@ -623,6 +626,9 @@ function IceTargetInfo.prototype:GetOptions()
 				step = 1,
 				disabled = function()
 					return not self.moduleSettings.enabled
+				end,
+				hidden = function()
+					return IceHUD.IsSecretEnv()
 				end,
 				order = 35
 			},

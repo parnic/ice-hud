@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.4
+
+- Remove "own (de)buff size" options on Info modules in 12.0+. This information is secret during combat so it cannot function.
+
 ## v1.17.3
 
 - Fix energy ticker not showing immediately on login in Classic clients.
