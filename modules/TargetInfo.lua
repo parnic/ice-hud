@@ -1375,7 +1375,7 @@ do
 			frame:SetPoint(anchor, offset_x, offset_y)
 
 			-- Frame resizing --
-			local size = frame.fromPlayer and self.moduleSettings.auras[type].ownSize or self.moduleSettings.auras[type].size
+			local size = (frame.fromPlayer and not IceHUD.IsSecretEnv()) and self.moduleSettings.auras[type].ownSize or self.moduleSettings.auras[type].size
 			lastAuraSize = size * (left and -1 or 1)
 			largestHeightThisRow = max(size, largestHeightThisRow)
 
