@@ -102,7 +102,7 @@ function PetHealth.prototype:Update(unit)
 		color = "Dead"
 	end
 
-	if (self.maxHealth > 0) then
+	if not IceHUD.CanAccessValue(self.maxHealth) or self.maxHealth > 0 then
 		self:UpdateBar(self.healthPercentage, color)
 	end
 
