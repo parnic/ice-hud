@@ -112,7 +112,7 @@ function EclipseBar.prototype:CreateFrame()
 end
 
 function EclipseBar.prototype:CreateSolarBar()
-	self.solarBar = self:BarFactory(self.solarBar, "BACKGROUND", "ARTWORK", "Solar", true)
+	self.solarBar = self:BarFactory(self.solarBar, IceElement.defaultStrata, "ARTWORK", "Solar", true)
 	self:SetBarCoord(self.solarBar, 0.5, true)
 
 	self:SetBarFrameColorRGBA(self.solarBar, self:GetColor("EclipseSolar", 1))

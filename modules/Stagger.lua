@@ -201,7 +201,7 @@ function StaggerBar.prototype:CreateTimerBar()
 		return
 	end
 
-	self.timerFrame = self:BarFactory(self.timerFrame, "MEDIUM", "ARTWORK", "Timer")
+	self.timerFrame = self:BarFactory(self.timerFrame, IceElement.aboveDefaultStrata, "ARTWORK", "Timer")
 
 	self.CurrScale = 0
 

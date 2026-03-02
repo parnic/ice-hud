@@ -318,7 +318,7 @@ function SliceAndDice.prototype:CreateFrame()
 end
 
 function SliceAndDice.prototype:CreateDurationBar()
-	self.durationFrame = self:BarFactory(self.durationFrame, "BACKGROUND", "ARTWORK", "Duration")
+	self.durationFrame = self:BarFactory(self.durationFrame, IceElement.defaultStrata, "ARTWORK", "Duration")
 
 	self:SetBarFrameColorRGBA(self.durationFrame, self:GetColor("SliceAndDicePotential", self.moduleSettings.durationAlpha))
 	if self.durationFrame.SetValue then

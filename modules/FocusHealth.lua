@@ -434,7 +434,7 @@ end
 
 function FocusHealth.prototype:UpdateRaidFocusIcon()
 	if self.moduleSettings.raidIconOnTop then
-		self.frame.raidIcon:SetFrameStrata(IceHUD.IceCore:DetermineStrata("MEDIUM"))
+		self.frame.raidIcon:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.aboveDefaultStrata))
 	else
 		self.frame.raidIcon:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 	end

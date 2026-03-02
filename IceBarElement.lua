@@ -1145,7 +1145,7 @@ function IceBarElement.prototype:CreateBackground()
 
 	local rotated = self.barFrame and self.barFrame.rotated
 
-	self.frame:SetFrameStrata(self.masterFrame:GetFrameStrata())
+	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.belowDefaultStrata))
 	local width = self.settings.barWidth + (self.moduleSettings.widthModifier or 0)
 	local height = self.settings.barHeight
 	if rotated then
@@ -1212,7 +1212,7 @@ end
 
 -- Creates the actual bar
 function IceBarElement.prototype:CreateBar()
-	self.barFrame = self:BarFactory(self.barFrame, "LOW", "ARTWORK", "Bar")
+	self.barFrame = self:BarFactory(self.barFrame, IceElement.defaultStrata, "ARTWORK", "Bar")
 
 	self:SetBarCoord(self.barFrame)
 

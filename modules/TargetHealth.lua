@@ -900,7 +900,7 @@ end
 
 function IceTargetHealth.prototype:CreateTexCoord(texframe, icon, width, height, scale, left, right, top, bottom)
 	if not texframe then
-		texframe = self.masterFrame:CreateTexture(nil, "BACKGROUND")
+		texframe = self.barFrame:CreateTexture(nil, "BACKGROUND")
 	end
 
 	texframe:SetTexture(icon)
@@ -984,7 +984,7 @@ end
 
 function IceTargetHealth.prototype:UpdateRaidTargetIcon()
 	if self.moduleSettings.raidIconOnTop then
-		self.frame.raidIcon:SetFrameStrata(IceHUD.IceCore:DetermineStrata("MEDIUM"))
+		self.frame.raidIcon:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.aboveDefaultStrata))
 	else
 		self.frame.raidIcon:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 	end

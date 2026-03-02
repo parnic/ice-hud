@@ -7,6 +7,8 @@ IceElement = IceCore_CreateClass()
 
 IceElement.TexturePath = IceHUD.Location .. "\\textures\\"
 IceElement.defaultStrata = "LOW"
+IceElement.belowDefaultStrata = "BACKGROUND"
+IceElement.aboveDefaultStrata = "MEDIUM"
 
 -- Protected variables --
 IceElement.prototype.elementName = nil

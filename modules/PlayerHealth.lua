@@ -943,7 +943,7 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 end
 
 function PlayerHealth.prototype:CreateHealBar()
-	self.healFrame = self:BarFactory(self.healFrame, "LOW","BACKGROUND", "Heal")
+	self.healFrame = self:BarFactory(self.healFrame, IceElement.aboveDefaultStrata, "BACKGROUND", "Heal")
 
 	self:SetBarFrameColorRGBA(self.healFrame, self:GetColor("PlayerHealthHealAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.healAlpha))
 
@@ -955,7 +955,7 @@ function PlayerHealth.prototype:CreateHealBar()
 end
 
 function PlayerHealth.prototype:CreateAbsorbBar()
-	self.absorbFrame = self:BarFactory(self.absorbFrame, "LOW","BACKGROUND", "Absorb")
+	self.absorbFrame = self:BarFactory(self.absorbFrame, IceElement.aboveDefaultStrata, "BACKGROUND", "Absorb")
 
 	self:SetBarFrameColorRGBA(self.absorbFrame, self:GetColor("PlayerHealthAbsorbAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.absorbAlpha))
 

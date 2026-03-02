@@ -440,7 +440,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 			end
 		end
 
-		self.frame.graphicalBG[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
+		self.frame.graphicalBG[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.belowDefaultStrata))
 		self.frame.graphicalBG[i]:SetWidth(self.comboSize)
 		self.frame.graphicalBG[i]:SetHeight(self.comboSize)
 		if self.moduleSettings.graphicalLayout == "Horizontal" then

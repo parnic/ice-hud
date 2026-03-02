@@ -384,7 +384,7 @@ function IceCustomCount.prototype:CreateCustomFrame(doTextureUpdate)
 			end
 		end
 
-		self.frame.graphicalBG[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
+		self.frame.graphicalBG[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.belowDefaultStrata))
 		self.frame.graphicalBG[i]:SetWidth(self.countSize)
 		self.frame.graphicalBG[i]:SetHeight(self.countSize)
 		if self.moduleSettings.graphicalLayout == "Horizontal" then

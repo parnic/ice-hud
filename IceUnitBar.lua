@@ -241,7 +241,7 @@ function IceUnitBar.prototype:CreateFlashFrame()
 		self.flashFrame = CreateFrame("Frame", "IceHUD_"..self.elementName.."_Flash", self.frame)
 	end
 
-	self.flashFrame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
+	self.flashFrame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.belowDefaultStrata))
 	self.flashFrame:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.flashFrame:SetHeight(self.settings.barHeight)
 
