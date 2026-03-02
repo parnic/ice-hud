@@ -485,7 +485,7 @@ function PlayerMana.prototype:CreateTickerFrame()
 		self.tickerFrame = CreateFrame("Frame", nil, self.barFrame)
 	end
 
-	self.tickerFrame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+	self.tickerFrame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 	self.tickerFrame:SetWidth(self.settings.barWidth)
 	self.tickerFrame:SetHeight(self.settings.barHeight)
 

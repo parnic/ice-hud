@@ -64,7 +64,7 @@ function GlobalCoolDown.prototype:Enable(core)
 
 	self:Show(false)
 
-	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("LOW"))
+	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 
 	self.CDSpellId = self:GetSpellId()
 end

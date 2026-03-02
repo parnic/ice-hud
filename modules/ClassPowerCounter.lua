@@ -856,7 +856,7 @@ function IceClassPowerCounter.prototype:CreateFrame()
 
 	self:CreateMoveHintFrame()
 
-	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("LOW"))
+	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 	self.frame:SetHeight(self.runeHeight)
 	self.frame:ClearAllPoints()
 	self:SetFramePosition()
@@ -938,7 +938,7 @@ function IceClassPowerCounter.prototype:CreateRune(i)
 	-- create runes
 	if (not self.frame.graphical[i]) then
 		self.frame.graphical[i] = CreateFrame("Frame", nil, self.frame)
-		self.frame.graphical[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+		self.frame.graphical[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 
 		self.frame.graphical[i].rune = self.frame.graphical[i]:CreateTexture(nil, "BORDER")
 		self.frame.graphical[i].rune:SetVertexColor(0, 0, 0)

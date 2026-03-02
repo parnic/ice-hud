@@ -1145,7 +1145,7 @@ function IceBarElement.prototype:CreateBackground()
 
 	local rotated = self.barFrame and self.barFrame.rotated
 
-	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+	self.frame:SetFrameStrata(self.masterFrame:GetFrameStrata())
 	local width = self.settings.barWidth + (self.moduleSettings.widthModifier or 0)
 	local height = self.settings.barHeight
 	if rotated then
@@ -1292,7 +1292,7 @@ function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer,
 		end
 	end
 
-	barFrame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(frameStrata and frameStrata or "LOW"))
+	barFrame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(frameStrata and frameStrata or IceElement.defaultStrata))
 	local width = self.settings.barWidth + (self.moduleSettings.widthModifier or 0)
 	local height = self.settings.barHeight
 	if barFrame.rotated then
@@ -1329,8 +1329,8 @@ end
 
 
 function IceBarElement.prototype:CreateTexts()
-	self.frame.bottomUpperText = self:FontFactory(self.moduleSettings.barFontSize, self.frame, self.frame.bottomUpperText)
-	self.frame.bottomLowerText = self:FontFactory(self.moduleSettings.barFontSize, self.frame, self.frame.bottomLowerText)
+	self.frame.bottomUpperText = self:FontFactory(self.moduleSettings.barFontSize, nil, self.frame.bottomUpperText)
+	self.frame.bottomLowerText = self:FontFactory(self.moduleSettings.barFontSize, nil, self.frame.bottomLowerText)
 
 -- Parnic - commented these out so that they conform to whatever width the string is set to
 --	self.frame.bottomUpperText:SetWidth(80)

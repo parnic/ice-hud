@@ -382,7 +382,7 @@ end
 function ComboPoints.prototype:CreateFrame()
 	ComboPoints.super.prototype.CreateFrame(self)
 
-	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 	if self.moduleSettings.graphicalLayout == "Horizontal" then
 		self.frame:SetWidth((self.comboSize - 5)*self:GetMaxComboPoints())
 		self.frame:SetHeight(28)
@@ -402,7 +402,7 @@ end
 
 function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 	-- create numeric combo points
-	self.frame.numeric = self:FontFactory(self.moduleSettings.comboFontSize, self.frame, self.frame.numeric)
+	self.frame.numeric = self:FontFactory(self.moduleSettings.comboFontSize, nil, self.frame.numeric)
 
 	self.frame.numeric:SetWidth(50)
 	self.frame.numeric:SetJustifyH("CENTER")
@@ -440,7 +440,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 			end
 		end
 
-		self.frame.graphicalBG[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+		self.frame.graphicalBG[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 		self.frame.graphicalBG[i]:SetWidth(self.comboSize)
 		self.frame.graphicalBG[i]:SetHeight(self.comboSize)
 		if self.moduleSettings.graphicalLayout == "Horizontal" then
@@ -478,7 +478,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 			end
 		end
 
-		self.frame.graphical[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata("LOW"))
+		self.frame.graphical[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 		self.frame.graphical[i]:SetAllPoints(self.frame.graphicalBG[i])
 
 		local r, g, b = self:GetColor("ComboPoints")
@@ -518,7 +518,7 @@ function ComboPoints.prototype:CreateComboFrame(forceTextureUpdate)
 				end
 			end
 
-			self.frame.graphicalAnt[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata("LOW"))
+			self.frame.graphicalAnt[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 			self.frame.graphicalAnt[i]:SetFrameLevel(self.frame.graphical[i]:GetFrameLevel() + 1)
 			self.frame.graphicalAnt[i]:SetWidth(math.floor(self.comboSize / 2))
 			self.frame.graphicalAnt[i]:SetHeight(math.floor(self.comboSize / 2))

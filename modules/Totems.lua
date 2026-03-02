@@ -282,7 +282,7 @@ function Totems.prototype:CreateFrame()
 
 	self:CreateMoveHintFrame()
 
-	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 	self.frame:SetWidth(self.totemSize*self.numTotems)
 	self.frame:SetHeight(28)
 	self.frame:ClearAllPoints()
@@ -292,7 +292,7 @@ function Totems.prototype:CreateFrame()
 end
 
 function Totems.prototype:CreateTotemFrame()
-	self.frame.numeric = self:FontFactory(self.moduleSettings.totemFontSize, self.frame, self.frame.numeric)
+	self.frame.numeric = self:FontFactory(self.moduleSettings.totemFontSize, nil, self.frame.numeric)
 
 	self.frame.numeric:SetWidth(50)
 	self.frame.numeric:SetJustifyH("CENTER")
@@ -366,7 +366,7 @@ function Totems.prototype:CreateTotem(i, name)
 		self.frame.graphical[i].totem:SetAllPoints(self.frame.graphical[i])
 	end
 
-	self.frame.graphical[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+	self.frame.graphical[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 	self.frame.graphical[i]:SetWidth(self.totemSize)
 	self.frame.graphical[i]:SetHeight(self.totemSize)
 
@@ -397,7 +397,7 @@ function Totems.prototype:CreateTotem(i, name)
 		end
 	end
 
-	self.frame.graphical[i].cd:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+	self.frame.graphical[i].cd:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 	self.frame.graphical[i].cd:SetFrameLevel(self.frame.graphical[i]:GetFrameLevel()+1)
 	self.frame.graphical[i].cd:ClearAllPoints()
 	self.frame.graphical[i].cd:SetAllPoints(self.frame.graphical[i])

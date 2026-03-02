@@ -3,6 +3,7 @@
 ## v1.17.5
 
 - Fix secret number access in certain situations in the PetHealth module.
+- Fix bar text rotating with bars when the rotation feature was enabled on game clients < 12.0. This includes a pass to unify the strata used by all frames in the addon so that the entire mod should either be above or below certain other UI elements rather than bars behaving differently than other modules.
 
 ## v1.17.4
 

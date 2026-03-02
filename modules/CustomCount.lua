@@ -328,7 +328,7 @@ end
 function IceCustomCount.prototype:CreateFrame()
 	IceCustomCount.super.prototype.CreateFrame(self)
 
-	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 	if self.moduleSettings.graphicalLayout == "Horizontal" then
 		self.frame:SetWidth((self.countSize + self.moduleSettings.countGap)*IceStackCounter_GetMaxCount(self))
 		self.frame:SetHeight(28)
@@ -384,7 +384,7 @@ function IceCustomCount.prototype:CreateCustomFrame(doTextureUpdate)
 			end
 		end
 
-		self.frame.graphicalBG[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+		self.frame.graphicalBG[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 		self.frame.graphicalBG[i]:SetWidth(self.countSize)
 		self.frame.graphicalBG[i]:SetHeight(self.countSize)
 		if self.moduleSettings.graphicalLayout == "Horizontal" then
@@ -418,7 +418,7 @@ function IceCustomCount.prototype:CreateCustomFrame(doTextureUpdate)
 			end
 		end
 
-		self.frame.graphical[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+		self.frame.graphical[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 		self.frame.graphical[i]:SetAllPoints(self.frame.graphicalBG[i])
 
 		self.frame.graphical[i]:Hide()

@@ -436,7 +436,7 @@ function FocusHealth.prototype:UpdateRaidFocusIcon()
 	if self.moduleSettings.raidIconOnTop then
 		self.frame.raidIcon:SetFrameStrata(IceHUD.IceCore:DetermineStrata("MEDIUM"))
 	else
-		self.frame.raidIcon:SetFrameStrata(IceHUD.IceCore:DetermineStrata("LOW"))
+		self.frame.raidIcon:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 	end
 
 	if not (UnitExists(self.unit)) or not self.moduleSettings.showRaidIcon then

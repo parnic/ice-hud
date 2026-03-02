@@ -6,6 +6,7 @@ local IceHUD = _G.IceHUD
 IceElement = IceCore_CreateClass()
 
 IceElement.TexturePath = IceHUD.Location .. "\\textures\\"
+IceElement.defaultStrata = "LOW"
 
 -- Protected variables --
 IceElement.prototype.elementName = nil
@@ -74,7 +75,7 @@ function IceElement.prototype:Create(parent)
 	self.parent = parent
 	if not self.masterFrame then
 		self.masterFrame = CreateFrame("Frame", "IceHUD_Element_"..self.elementName, self.parent)
-		self.masterFrame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("MEDIUM"))
+		self.masterFrame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 	end
 	self:CreateFrame()
 	self:Show(false)

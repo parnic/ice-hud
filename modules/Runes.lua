@@ -481,7 +481,7 @@ function Runes.prototype:CreateFrame()
 
 	self:CreateMoveHintFrame()
 
-	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 	if self.moduleSettings.displayMode == "Horizontal" then
 		self.frame:SetWidth((self.runeSize - 3 + self.moduleSettings.runeGap) * self.numRunes)
 		self.frame:SetHeight(28)
@@ -547,7 +547,7 @@ function Runes.prototype:CreateRune(i, type, name)
 		self.frame.graphical[i].shine = self.frame.graphical[i]:CreateTexture(nil, "OVERLAY")
 	end
 
-	self.frame.graphical[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+	self.frame.graphical[i]:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 	self.frame.graphical[i]:SetWidth(self.runeSize)
 	self.frame.graphical[i]:SetHeight(self.runeSize)
 	if self.frame.graphical[i].cd.SetHideCountdownNumbers then
@@ -580,7 +580,7 @@ function Runes.prototype:CreateRune(i, type, name)
 		self.frame.graphical[i]:Hide()
 	end
 
-	self.frame.graphical[i].cd:SetFrameStrata(IceHUD.IceCore:DetermineStrata("BACKGROUND"))
+	self.frame.graphical[i].cd:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 	self.frame.graphical[i].cd:SetFrameLevel(self.frame.graphical[i]:GetFrameLevel()+1)
 	self.frame.graphical[i].cd:ClearAllPoints()
 	self.frame.graphical[i].cd:SetAllPoints(self.frame.graphical[i])
