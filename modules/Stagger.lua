@@ -81,6 +81,7 @@ end
 function StaggerBar.prototype:Redraw()
 	StaggerBar.super.prototype.Redraw(self)
 
+	self:UpdateMaxHealth()
 	self:MyOnUpdate()
 	self:UpdateStaggerBar()
 end
@@ -352,12 +353,19 @@ function StaggerBar.prototype:UpdateCurves()
 	end
 
 	local hpMax = UnitHealthMax(self.unit)
+	if IceHUD.CanAccessValue(hpMax) then
+		hpMax = hpMax * (self.moduleSettings.maxPercent / 100)
+	elseif self.healthCurveInitialized then
+		return
+	end
 	---@diagnostic disable-next-line: undefined-field
 	self.healthCurve:ClearPoints()
 	---@diagnostic disable-next-line: undefined-field
 	self.healthCurve:AddPoint(0, 0)
 	---@diagnostic disable-next-line: undefined-field
 	self.healthCurve:AddPoint(hpMax, 1)
+
+	self.healthCurveInitialized = true
 end
 
 function StaggerBar.prototype:UpdateTimerFrame(event, unit, fromUpdate)

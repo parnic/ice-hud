@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.6
+
+- Fix Stagger module not respecting the Max Percent option's value.
+
 ## v1.17.5
 
 - Fix secret number access in certain situations in the PetHealth module.
