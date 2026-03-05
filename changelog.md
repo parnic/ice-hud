@@ -3,6 +3,7 @@
 ## v1.17.6
 
 - Fix Stagger module not respecting the Max Percent option's value.
+- Update LibDogTag-Unit to pick up reputation fixes for 12.0.
 
 ## v1.17.5
 
