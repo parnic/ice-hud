@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.7
+
+- Fix a couple more secret error edge cases in TargetInfo.
+
 ## v1.17.6
 
 - Fix Stagger module not respecting the Max Percent option's value.

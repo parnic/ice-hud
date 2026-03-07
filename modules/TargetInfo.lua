@@ -233,7 +233,7 @@ function IceTargetInfo.prototype:Disable(core)
 end
 
 function IceTargetInfo.prototype:CanSortBuffs()
-	return IceHUD.CanAccessSecrets()
+	return not IceHUD.IsSecretEnv()
 end
 
 
@@ -1429,9 +1429,9 @@ do
 end
 
 local function BuffExpirationSort(a, b)
-	if a[5] == 0 then
+	if not a[5] or a[5] == 0 then
 		return false
-	elseif b[5] == 0 then
+	elseif not b[5] or b[5] == 0 then
 		return true
 	end
 
