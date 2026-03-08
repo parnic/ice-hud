@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.8
+
+- Fix PlayerAlternatePower showing full sometimes when it shouldn't.
+
 ## v1.17.7
 
 - Fix a couple more secret error edge cases in TargetInfo.

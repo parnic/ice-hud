@@ -86,7 +86,7 @@ function PlayerAlternatePower.prototype:Update(unit)
 	self.maxPower = UnitPowerMax(self.unit, self.powerIndex)
 	self.power = UnitPower(self.unit, self.powerIndex)
 	if UnitPowerPercent then
-		self.powerPercent = UnitPowerPercent(self.unit, self.powerIndex, true, CurveConstants.ScaleTo100)
+		self.powerPercent = UnitPowerPercent(self.unit, self.powerIndex, true, CurveConstants.ZeroToOne)
 	else
 		if self.maxPower > 0 then
 			self.powerPercent = self.power / self.maxPower
