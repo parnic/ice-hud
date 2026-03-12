@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.9
+
+- Include the new context-specific 12.0 player casting bar in the "Show default cast bar" checkbox of the CastBar module.
+
 ## v1.17.8
 
 - Fix PlayerAlternatePower showing full sometimes when it shouldn't.

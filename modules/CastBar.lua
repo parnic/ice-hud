@@ -423,6 +423,9 @@ function CastBar.prototype:ToggleBlizzCast(on)
 		-- remove blizz cast bar
 		CastingBarFrame:UnregisterAllEvents()
 		PetCastingBarFrame:UnregisterAllEvents()
+		if OverlayPlayerCastingBarFrame then
+			OverlayPlayerCastingBarFrame:UnregisterAllEvents()
+		end
 	end
 end
 
