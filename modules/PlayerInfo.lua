@@ -24,10 +24,6 @@ function PlayerInfo.prototype:GetDefaultSettings()
 	return settings
 end
 
-function PlayerInfo.prototype:CanSortBuffs()
-	return not IceHUD.IsSecretEnv() or not InCombatLockdown()
-end
-
 function PlayerInfo.prototype:GetOptions()
 	local opts = PlayerInfo.super.prototype.GetOptions(self)
 
