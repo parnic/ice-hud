@@ -3,6 +3,7 @@
 ## v1.17.9
 
 - Include the new context-specific 12.0 player casting bar in the "Show default cast bar" checkbox of the CastBar module.
+- Hopefully fix another case of Secrets errors in PlayerInfo.
 
 ## v1.17.8
 
