@@ -678,6 +678,7 @@ function IceCastBar.prototype:StopBar()
 	self.action = IceCastBar.Actions.None
 	self.actionStartTime = nil
 	self.actionDuration = nil
+	self.lastSentGuid = nil
 
 	self:SetBottomText1()
 	self:SetBottomText2()
@@ -704,6 +705,7 @@ end
 function IceCastBar.prototype:SpellCastSent(event, unit, target, castGuid, spellId)
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastSent", unit, target, castGuid, spellId, C_Spell.GetSpellName(spellId))
+	self.lastSentGuid = castGuid
 end
 
 function IceCastBar.prototype:SpellCastChanged(event, cancelled)
@@ -714,6 +716,7 @@ function IceCastBar.prototype:SpellCastStart(event, unit, castGuid, spellId, cas
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastStart", unit, castGuid, spellId, castBarId, C_Spell.GetSpellName(spellId), "|", self.action, self.current)
 
+	self.lastCastGuid = castGuid
 	self:StartBar(IceCastBar.Actions.Cast, nil, spellId)
 end
 
@@ -866,6 +869,10 @@ function IceCastBar.prototype:SpellCastChannelStart(event, unit, castGuid, spell
 	if (unit ~= self.unit) then return end
 	IceHUD:Debug("SpellCastChannelStart", unit, castGuid, spellId, castBarId, C_Spell.GetSpellName(spellId), "|", self.action, self.current)
 
+	self.lastCastGuid = castGuid
+	if not self.lastCastGuid then
+		self.lastCastGuid = self.lastSentGuid
+	end
 	self:StartBar(IceCastBar.Actions.Channel)
 	if not IceHUD.IsSecretEnv() then
 		self.current = castGuid

@@ -527,6 +527,9 @@ function CastBar.prototype:UpdateLagBar(isChannel)
 	local scale
 	if self.unit == "vehicle" then
 		scale = 0
+	elseif self.lastSentGuid and self.lastCastGuid ~= self.lastSentGuid then
+		-- some quest-related interactions are technically casts, but they're never "sent", so we don't have an accurate time to compare to
+		scale = 0
 	elseif self.useFixedLatency then
 		scale = IceHUD:Clamp(self.fixedLatency / self.actionDuration, 0, 1)
 	else
