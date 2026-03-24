@@ -402,9 +402,23 @@ function Totems.prototype:CreateTotem(i, name)
 	self.frame.graphical[i].cd:ClearAllPoints()
 	self.frame.graphical[i].cd:SetAllPoints(self.frame.graphical[i])
 	if not IceHUD.CanAccessValue(haveTotem) or (haveTotem and duration) then
-		self.frame.graphical[i].cd:SetCooldown(startTime, duration)
-		self.frame.graphical[i].cd:Show()
-		self.frame.graphical[i]:Show()
+		local hasDuration = true
+
+		if not IceHUD.CanAccessValue(duration) and GetTotemDuration then
+			local durationObj = GetTotemDuration(i)
+			if durationObj then
+				self.frame.graphical[i].cd:SetCooldownFromDurationObject(durationObj)
+			else
+				hasDuration = false
+			end
+		else
+			self.frame.graphical[i].cd:SetCooldown(startTime, duration)
+		end
+
+		if hasDuration then
+			self.frame.graphical[i].cd:Show()
+			self.frame.graphical[i]:Show()
+		end
 	end
 
 	self.frame.graphical[i].shine:SetTexture("Interface\\ComboFrame\\ComboPoint")

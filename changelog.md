@@ -3,6 +3,7 @@
 ## v1.17.10
 
 - Fix castbar sometimes showing an incorrectly-sized lag indicator for quest interactions.
+- Fix Totems error introduced in game version 12.0.1.66562
 
 ## v1.17.9
 
