@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.11
+
+- Fix an issue where pet health and mana bars could use the Dead color after reviving the pet following the player and pet both dying.
+
 ## v1.17.10
 
 - Fix castbar sometimes showing an incorrectly-sized lag indicator for quest interactions.

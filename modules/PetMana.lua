@@ -182,7 +182,7 @@ function PetMana.prototype:Update(unit)
 	elseif self.moduleSettings.lowThresholdColor and IceHUD.CanAccessValue(self.manaPercentage) and self.manaPercentage <= self.moduleSettings.lowThreshold then
 		color = "ScaledManaColor"
 	end
-	if not (self.alive) then
+	if UnitIsDeadOrGhost(self.unit) then
 		color = "Dead"
 	else
 		if (self.manaType == SPELL_POWER_RAGE) then

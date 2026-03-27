@@ -98,7 +98,7 @@ function PetHealth.prototype:Update(unit)
 		color = "ScaledHealthColor"
 	end
 
-	if not (self.alive) then
+	if UnitIsDeadOrGhost(self.unit) then
 		color = "Dead"
 	end
 
