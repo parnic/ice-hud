@@ -1438,11 +1438,14 @@ local function BuffExpirationSort(a, b)
 	return a[5] < b[5]
 end
 
-local buffData = {}
-buffData["buff"] = {}
-buffData["debuff"] = {}
-
 function IceTargetInfo.prototype:UpdateBuffType(aura)
+	if not self.buffData then
+		self.buffData = {
+			buff = {},
+			debuff = {},
+		}
+	end
+
 	local filter = false
 	local auraFrame = aura.."Frame"
 
@@ -1499,20 +1502,20 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 
 			if icon then
 				if self:CanSortBuffs() and self.moduleSettings.auras[aura].sortByExpiration then
-					buffData[aura][i] = {aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, aura}
+					self.buffData[aura][i] = {aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, aura}
 				else
 					self:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, aura, auraInstanceID)
 				end
 			else
 				self.frame[auraFrame].iconFrames[i]:Hide()
-				table.remove(buffData[aura], i)
+				table.remove(self.buffData[aura], i)
 			end
 		end
 	end
 
-	if self:CanSortBuffs() and self.moduleSettings.auras[aura].sortByExpiration and #buffData[aura] > 0 then
-		table.sort(buffData[aura], BuffExpirationSort)
-		for k,v in pairs(buffData[aura]) do
+	if self:CanSortBuffs() and self.moduleSettings.auras[aura].sortByExpiration and #self.buffData[aura] > 0 then
+		table.sort(self.buffData[aura], BuffExpirationSort)
+		for k,v in pairs(self.buffData[aura]) do
 			if v then
 				self:SetupAura(v[1], k, v[3], v[4], v[5], v[6], v[7], v[8], v[9])
 				-- pretty hacky, but hey...whaddya gonna do?
