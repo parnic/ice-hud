@@ -3,7 +3,7 @@
 ## v1.17.11
 
 - Fix an issue where pet health and mana bars could use the Dead color after reviving the pet following the player and pet both dying.
-- Fix multiple Info modules sometimes interfering with each others' buffs and debuffs (e.g. Pet buffs/debuffs showing up under Target buffs/debuffs as well).
+- Fix multiple Info modules sometimes interfering with each others' buffs and debuffs (e.g. Pet buffs/debuffs showing up under Target buffs/debuffs as well) or hanging onto buffs from previous targets.
 
 ## v1.17.10
 
