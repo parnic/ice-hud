@@ -4,6 +4,7 @@
 
 - Fix an issue where pet health and mana bars could use the Dead color after reviving the pet following the player and pet both dying.
 - Fix multiple Info modules sometimes interfering with each others' buffs and debuffs (e.g. Pet buffs/debuffs showing up under Target buffs/debuffs as well) or hanging onto buffs from previous targets.
+- Made the profile import feature more explicit with a separate Import button and confirmation chat messages.
 
 ## v1.17.10
 

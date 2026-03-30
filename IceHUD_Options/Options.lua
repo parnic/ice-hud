@@ -812,7 +812,7 @@ function IceHUD_Options:SetupProfileImportButtons()
 			func = function()
 				local frame = AceGUI:Create("Frame")
 				frame:SetTitle("Profile data")
-				frame:SetStatusText("Exported profile details")
+				frame:SetStatusText("Copy the above text for importing")
 				frame:SetLayout("Flow")
 				frame:SetCallback("OnClose", function(widget) AceGUI:Release(widget) end)
 				local editbox = AceGUI:Create("MultiLineEditBox")
@@ -835,27 +835,34 @@ function IceHUD_Options:SetupProfileImportButtons()
 			func = function()
 				local frame = AceGUI:Create("Frame")
 				frame:SetTitle("Profile data")
-				frame:SetStatusText("Exported profile details")
+				frame:SetStatusText("Paste profile in the box")
 				frame:SetLayout("Flow")
 				frame:SetCallback("OnClose", function(widget)
-					local newTable, err = IceHUD.json.decode(widget.children[1]:GetText())
-					if err ~= nil then
-						print("failed to import profile: "..err)
-					else
-						-- print("importing profile")
-						IceHUD:PreProfileChanged()
-						IceHUD:populateDefaults(newTable, IceHUD.IceCore.defaults.profile)
-						IceHUD.db.profile = IceHUD.deepcopy(newTable)
-						IceHUD.db.profiles[IceHUD.db:GetCurrentProfile()] = IceHUD.db.profile
-						IceHUD:PostProfileChanged()
-					end
 					AceGUI:Release(widget)
 				end)
 				local editbox = AceGUI:Create("MultiLineEditBox")
 				editbox:SetLabel("Profile")
 				editbox:SetFullWidth(true)
 				editbox:SetFullHeight(true)
-				editbox:DisableButton(true)
+				editbox:SetCallback("OnEnterPressed", function()
+					local text = strtrim(editbox:GetText())
+					if strlen(text) > 0 then
+						local newTable, err = IceHUD.json.decode(text)
+						if err ~= nil then
+							print("Failed to import IceHUD profile: "..err)
+						else
+							IceHUD:PreProfileChanged()
+							IceHUD:populateDefaults(newTable, IceHUD.IceCore.defaults.profile)
+							IceHUD.db.profile = IceHUD.deepcopy(newTable)
+							IceHUD.db.profiles[IceHUD.db:GetCurrentProfile()] = IceHUD.db.profile
+							IceHUD:PostProfileChanged()
+							print("IceHUD profile imported and applied successfully.")
+						end
+					end
+					frame:Hide()
+				end)
+				editbox.button:SetText("Import")
+				editbox.button:SetPoint("RIGHT", editbox.frame, "RIGHT", 0, 0)
 				frame:AddChild(editbox)
 			end,
 			order = 98.2
