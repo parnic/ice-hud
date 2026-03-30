@@ -1515,7 +1515,8 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 				self.buffData[aura][i][7] = count
 				self.buffData[aura][i][8] = isStealable
 				self.buffData[aura][i][9] = aura
-				self.buffData[aura][i][10] = icon ~= nil
+				self.buffData[aura][i][10] = auraInstanceID
+				self.buffData[aura][i][11] = icon ~= nil
 			else
 				self:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, aura, auraInstanceID, icon ~= nil)
 			end
@@ -1525,8 +1526,8 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 	if self:CanSortBuffs() and self.moduleSettings.auras[aura].sortByExpiration and #self.buffData[aura] > 0 then
 		table.sort(self.buffData[aura], BuffExpirationSort)
 		for i = 1, IceCore.BuffLimit do
-			local v = self.buffData[aura]
-			self:SetupAura(v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10])
+			local v = self.buffData[aura][i]
+			self:SetupAura(v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11])
 		end
 	end
 
@@ -1543,11 +1544,9 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 	local frameIcon = frame.icon
 
 	if not isActive then
-		-- print("hiding", auraFrame, "for", i)
 		frame:Hide()
 		return
 	end
-	-- print("showing", auraFrame, "for", i)
 
 	if aura == "buff" then
 		frame.isStealable = isStealable
