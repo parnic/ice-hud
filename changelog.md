@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.12
+
+- Ensure bar text always draws on top of the bar it's attached to.
+
 ## v1.17.11
 
 - Fix an issue where pet health and mana bars could use the Dead color after reviving the pet following the player and pet both dying.

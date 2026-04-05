@@ -1329,8 +1329,12 @@ end
 
 
 function IceBarElement.prototype:CreateTexts()
-	self.frame.bottomUpperText = self:FontFactory(self.moduleSettings.barFontSize, nil, self.frame.bottomUpperText)
-	self.frame.bottomLowerText = self:FontFactory(self.moduleSettings.barFontSize, nil, self.frame.bottomLowerText)
+	if not self.textFrame then
+		self.textFrame = CreateFrame("Frame", "IceHUD_"..self.elementName.."_Text", self.masterFrame)
+		self.textFrame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.aboveDefaultStrata))
+	end
+	self.frame.bottomUpperText = self:FontFactory(self.moduleSettings.barFontSize, self.textFrame, self.frame.bottomUpperText)
+	self.frame.bottomLowerText = self:FontFactory(self.moduleSettings.barFontSize, self.textFrame, self.frame.bottomLowerText)
 
 -- Parnic - commented these out so that they conform to whatever width the string is set to
 --	self.frame.bottomUpperText:SetWidth(80)
