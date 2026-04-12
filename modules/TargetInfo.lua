@@ -985,6 +985,82 @@ function IceTargetInfo.prototype:GetOptions()
 		order = 39.3,
 	}
 
+	opts.line1Alignment = {
+		type = 'select',
+		name = L["Line 1 justification"],
+		desc = L["This sets the alignment for the text on line 1"],
+		get = function()
+			return self.moduleSettings.line1Alignment or "CENTER"
+		end,
+		set = function(_, value)
+			self.moduleSettings.line1Alignment = value
+			self.frame.targetName:SetText()
+			self:Redraw()
+		end,
+		values = { CENTER = L["Center"], LEFT = L["Left"], RIGHT = L["Right"] },
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 40.1
+	}
+
+	opts.line2Alignment = {
+		type = 'select',
+		name = L["Line 2 justification"],
+		desc = L["This sets the alignment for the text on line 2"],
+		get = function()
+			return self.moduleSettings.line2Alignment or "CENTER"
+		end,
+		set = function(_, value)
+			self.moduleSettings.line2Alignment = value
+			self.frame.targetInfo:SetText()
+			self:Redraw()
+		end,
+		values = { CENTER = L["Center"], LEFT = L["Left"], RIGHT = L["Right"] },
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 40.2
+	}
+
+	opts.line3Alignment = {
+		type = 'select',
+		name = L["Line 3 justification"],
+		desc = L["This sets the alignment for the text on line 3"],
+		get = function()
+			return self.moduleSettings.line3Alignment or "CENTER"
+		end,
+		set = function(_, value)
+			self.moduleSettings.line3Alignment = value
+			self.frame.targetGuild:SetText()
+			self:Redraw()
+		end,
+		values = { CENTER = L["Center"], LEFT = L["Left"], RIGHT = L["Right"] },
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 40.3
+	}
+
+	opts.line4Alignment = {
+		type = 'select',
+		name = L["Line 4 justification"],
+		desc = L["This sets the alignment for the text on line 4"],
+		get = function()
+			return self.moduleSettings.line4Alignment or "CENTER"
+		end,
+		set = function(_, value)
+			self.moduleSettings.line4Alignment = value
+			self.frame.targetExtra:SetText()
+			self:Redraw()
+		end,
+		values = { CENTER = L["Center"], LEFT = L["Left"], RIGHT = L["Right"] },
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 40.4
+	}
+
 	opts["showRaidIcon"] = {
 		type = 'toggle',
 		name = L['Show raid icon'],
@@ -1147,12 +1223,15 @@ function IceTargetInfo.prototype:RedrawBuffs()
 end
 
 -- 'Protected' methods --------------------------------------------------------
-do 	-- OVERRIDE: IceTargetInfo.prototype:CreateFrame(redraw)
-	local function CreateTextFrame(self, textFrame, fontSize, relativePoint, offsetX, offsetY, height, show)
+do
+	local function CreateTextFrame(self, textFrame, fontSize, relativePoint, offsetX, offsetY, height, show, align)
+		if not align then align = "CENTER" end
 		textFrame = self:FontFactory(fontSize, self.frame, textFrame)
-		textFrame:SetJustifyH("CENTER")
+		textFrame:SetJustifyH(align)
 		textFrame:SetJustifyV("TOP")
 		textFrame:SetPoint("TOP", self.frame, relativePoint, offsetX, offsetY)
+		textFrame:SetPoint("LEFT", self.frame, "LEFT")
+		textFrame:SetPoint("RIGHT", self.frame, "RIGHT")
 
 		if height then textFrame:SetHeight(height) end
 		if show then textFrame:Show() end
@@ -1240,10 +1319,10 @@ do 	-- OVERRIDE: IceTargetInfo.prototype:CreateFrame(redraw)
 
 
 		-- create rest of the frames
-		self.frame.targetName = CreateTextFrame(self, self.frame.targetName, self.moduleSettings.fontSize+1, "TOP", 0, 0, nil, nil)
-		self.frame.targetInfo = CreateTextFrame(self, self.frame.targetInfo, self.moduleSettings.fontSize, "TOP", 0, -16, 14, true)
-		self.frame.targetGuild = CreateTextFrame(self, self.frame.targetGuild, self.moduleSettings.fontSize, "BOTTOM", 0, 0, 14, true)
-		self.frame.targetExtra = CreateTextFrame(self, self.frame.targetExtra, self.moduleSettings.fontSize, "BOTTOM", 0, -16, 14, true)
+		self.frame.targetName = CreateTextFrame(self, self.frame.targetName, self.moduleSettings.fontSize+1, "TOP", 0, 0, nil, nil, self.moduleSettings.line1Alignment)
+		self.frame.targetInfo = CreateTextFrame(self, self.frame.targetInfo, self.moduleSettings.fontSize, "TOP", 0, -16, 14, true, self.moduleSettings.line2Alignment)
+		self.frame.targetGuild = CreateTextFrame(self, self.frame.targetGuild, self.moduleSettings.fontSize, "BOTTOM", 0, 0, 14, true, self.moduleSettings.line3Alignment)
+		self.frame.targetExtra = CreateTextFrame(self, self.frame.targetExtra, self.moduleSettings.fontSize, "BOTTOM", 0, -16, 14, true, self.moduleSettings.line4Alignment)
 
 		self:CreateAuraFrame("buff", redraw)
 		self:CreateAuraFrame("debuff", redraw)

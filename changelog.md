@@ -3,6 +3,7 @@
 ## v1.17.12
 
 - Ensure bar text always draws on top of the bar it's attached to.
+- Add options to control alignment of each line of text in Info modules.
 
 ## v1.17.11
 
