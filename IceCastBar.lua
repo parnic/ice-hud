@@ -348,7 +348,12 @@ function IceCastBar.prototype:GetRemainingCastTime()
 		return self.actionStartTime + self.actionDuration - GetTime()
 	end
 
-	local remaining = (self.isChannel and UnitChannelDuration(self.unit) or UnitCastingDuration(self.unit)):GetRemainingDuration()
+	local duration = self.isChannel and UnitChannelDuration(self.unit) or UnitCastingDuration(self.unit)
+	if not duration then
+		return self.actionDuration
+	end
+
+	local remaining = duration:GetRemainingDuration()
 	return remaining
 end
 
