@@ -348,7 +348,8 @@ function IceCastBar.prototype:GetRemainingCastTime()
 		return self.actionStartTime + self.actionDuration - GetTime()
 	end
 
-	return self.actionDuration
+	local remaining = (self.isChannel and UnitChannelDuration(self.unit) or UnitCastingDuration(self.unit)):GetRemainingDuration()
+	return remaining
 end
 
 function IceCastBar.prototype:GetCurrentCastDurationMs()
@@ -379,11 +380,14 @@ function IceCastBar.prototype:MyOnUpdate()
 
 	-- handle casting and channeling
 	if self:IsCastOrChannel(self.action) then
+		local remainingTime = self:GetRemainingCastTime()
 		if not IceHUD.CanAccessValue(self.actionDuration) then
+			if self.moduleSettings.showCastTime then
+				self:SetBottomText1(string.format("%.1fs %s", remainingTime, self.actionMessage))
+			end
 			return
 		end
 
-		local remainingTime = self:GetRemainingCastTime()
 		local scale = 1 - (self.actionDuration ~= 0 and remainingTime / self.actionDuration or 0)
 
 		if self.action == IceCastBar.Actions.ReverseChannel then
@@ -535,7 +539,7 @@ end
 
 
 function IceCastBar.prototype:StartBar(action, message, spellId)
-	local isChannel
+	self.isChannel = false
 	local spell, rank, displayName, icon, startTime, endTime, isTradeSkill, numStages, _, castGuid, castBarId
 	if IceHUD.SpellFunctionsReturnRank then
 		spell, rank, displayName, icon, startTime, endTime, isTradeSkill, castGuid = UnitCastingInfo(self.unit)
@@ -543,7 +547,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 		spell, displayName, icon, startTime, endTime, isTradeSkill, castGuid, _, _, castBarId = UnitCastingInfo(self.unit)
 	end
 	if not (spell) then
-		isChannel = true
+		self.isChannel = true
 		if IceHUD.SpellFunctionsReturnRank then
 			spell, rank, displayName, icon, startTime, endTime = UnitChannelInfo(self.unit)
 		else
@@ -632,7 +636,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 				---@diagnostic disable-next-line: undefined-field
 				duration:SetTimeSpan(startTime / 1000, endTime / 1000)
 			else
-				duration = isChannel and UnitChannelDuration(self.unit) or UnitCastingDuration(self.unit)
+				duration = self.isChannel and UnitChannelDuration(self.unit) or UnitCastingDuration(self.unit)
 			end
 
 			if not duration then

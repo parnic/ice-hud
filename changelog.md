@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.13
+
+- Added cast times back to the target castbar for not-the-player targets.
+
 ## v1.17.12
 
 - Ensure bar text always draws on top of the bar it's attached to.
