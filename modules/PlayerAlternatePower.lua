@@ -165,6 +165,10 @@ function PlayerAlternatePower.prototype:ToggleMoveHint()
 	self:Redraw()
 end
 
+function PlayerAlternatePower.prototype:IsPowerBar()
+	return self.powerIndex
+end
+
 -- Load us up
 if ALTERNATE_POWER_INDEX then
 	IceHUD.PlayerAlternatePower = PlayerAlternatePower:new()

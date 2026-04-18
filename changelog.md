@@ -3,6 +3,7 @@
 ## v1.17.13
 
 - Added cast times back to the target castbar for not-the-player targets.
+- Fixed AlternatePower bar sometimes disappearing after mounting up and never coming back. This is used for some quests to indicate your progress in filling something up, among other things.
 
 ## v1.17.12
 

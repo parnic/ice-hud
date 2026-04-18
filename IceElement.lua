@@ -299,7 +299,7 @@ function IceElement.prototype:AddDragMoveOption(opts, order)
 end
 
 function IceElement.prototype:IsInConfigMode()
-	return IceHUD.IceCore:IsInConfigMode() or self.inMoveMode
+	return IceHUD.IceCore:IsInConfigMode() or self.inMoveMode == true
 end
 
 function IceElement.prototype:MoveHintMouseDown()
@@ -593,16 +593,16 @@ end
 
 function IceElement.prototype:Show(bShouldShow)
 	if self.bIsVisible == bShouldShow or not self.masterFrame or not self.frame then
-		return nil
+				return nil
 	end
 
 	self.bIsVisible = bShouldShow
-
+	
 	if not bShouldShow then
-		self.masterFrame:Hide()
+				self.masterFrame:Hide()
 		self.frame:Hide()
 	else
-		self.masterFrame:Show()
+				self.masterFrame:Show()
 		self.frame:Show()
 	end
 
