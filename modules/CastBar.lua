@@ -417,11 +417,20 @@ end
 function CastBar.prototype:ToggleBlizzCast(on)
 	if on then
 		-- restore blizz cast bar
+if PlayerCastingBarFrame then
+			StaticPopup_Show("ICEHUD_CHANGED_DOGTAG")
+		else
 		CastingBarFrame:GetScript("OnLoad")(CastingBarFrame)
+end
 		PetCastingBarFrame:GetScript("OnLoad")(PetCastingBarFrame)
 	else
 		-- remove blizz cast bar
+if PlayerCastingBarFrame then
+			PlayerCastingBarFrame.unit = nil
+			PlayerCastingBarFrame:UnregisterAllEvents()
+		else
 		CastingBarFrame:UnregisterAllEvents()
+end
 		PetCastingBarFrame:UnregisterAllEvents()
 		if OverlayPlayerCastingBarFrame then
 			OverlayPlayerCastingBarFrame:UnregisterAllEvents()
