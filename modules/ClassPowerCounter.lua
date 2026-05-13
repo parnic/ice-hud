@@ -649,7 +649,7 @@ function IceClassPowerCounter.prototype:UpdateRunePower(event, arg1, arg2)
 
 	if self:GetRuneMode() == "Numeric" or self.moduleSettings.alsoShowNumeric then
 		local displayPercent = percentReady
-		if self.partialReadyPercent then
+		if self.partialReadyPercent and IceHUD.CanAccessValue(percentReady) then
 			displayPercent = percentReady + self.partialReadyPercent
 		end
 

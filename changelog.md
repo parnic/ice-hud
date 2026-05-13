@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.17.14
+
+- Hopefully fix another secret error in the Vigor module.
+- Update TOCs for 12.0.7
+
 ## v1.17.13
 
 - Added cast times back to the target castbar for not-the-player targets.
