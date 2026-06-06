@@ -119,6 +119,12 @@ function IceTargetAbsorb.prototype:UpdateAbsorbAmount(event, unit)
 		UnitGetDetailedHealPrediction(self.unit, nil, self.calculator)
 		---@diagnostic disable-next-line: undefined-field
 		local amount = self.calculator:GetDamageAbsorbs()
+
+		if IceHUD.CanAccessValue(amount) and amount <= 0 then
+			self:Show(false)
+			return
+		end
+
 		self:UpdateBar(amount, self.ColorName)
 
 		self:Show(true)

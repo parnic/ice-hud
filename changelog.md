@@ -2,10 +2,11 @@
 
 ## v1.17.14
 
-- Hopefully fix another secret error in the Vigor module.
-- Update TOCs for 12.0.7
-- Fix configuration mode leaving "RangeCheck" text on the screen when LibRangeCheck is not available.
-- Fix feature and behavior changes in non-Midnight clients. Classic's client code was recently updated to bring in Midnight's changes, and we were using the wrong function to determine whether Secrets were ever possible in the game or not.
+- Hopefully fixed another secret error in the Vigor module.
+- Updated TOCs for 12.0.7
+- Fixed configuration mode leaving "RangeCheck" text on the screen when LibRangeCheck is not available.
+- Fixed feature and behavior changes in non-Midnight clients. Classic's client code was recently updated to bring in Midnight's changes, and we were using the wrong function to determine whether Secrets were ever possible in the game or not.
+- Fixed Absorb modules always showing their upper text value even with no absorb in a pre-Midnight client.
 
 ## v1.17.13
 
