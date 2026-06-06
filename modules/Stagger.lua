@@ -273,13 +273,16 @@ function StaggerBar.prototype:GetDebuffInfo()
 end
 
 function StaggerBar.prototype:COMBAT_LOG_EVENT_UNFILTERED(...)
-	local eventArgs = {...}
-    if (CombatLogGetCurrentEventInfo) then
-        eventArgs = {CombatLogGetCurrentEventInfo()}
-    end
+	local subevent, destName, spellId
+	if (CombatLogGetCurrentEventInfo) then
+		local _
+		_, subevent, _, _, _, _, _, _, destName, _, _, spellId = CombatLogGetCurrentEventInfo()
+	else
+		subevent, destName, spellId = select(2, ...), select(9, ...), select(12, ...)
+	end
 
-	if eventArgs[9] == playerName then
-		if eventArgs[12] == StaggerID or eventArgs[2] == "SWING_DAMAGE" or eventArgs[2] == "SPELL_AURA_APPLIED" or eventArgs[2] == "SPELL_AURA_REMOVED" then
+	if destName == playerName then
+		if spellId == StaggerID or subevent == "SWING_DAMAGE" or subevent == "SPELL_AURA_APPLIED" or subevent == "SPELL_AURA_REMOVED" then
 			self:UpdateStaggerBar()
 		end
 	end

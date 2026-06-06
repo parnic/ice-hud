@@ -1132,10 +1132,9 @@ function IceCore.prototype:SetUpdatePeriod(period)
 end
 
 -- For elements that want to receive updates even when hidden
-function IceCore.prototype:HandleUpdates()
+function IceCore.prototype:HandleUpdates(elapsed)
 	local update_period = self:UpdatePeriod()
-	local elapsed = 1 / GetFramerate()
-	self.update_elapsed = self.update_elapsed + elapsed
+	self.update_elapsed = self.update_elapsed + (elapsed or 0)
 	if (self.update_elapsed >= update_period) then
 		for module, func in pairs(self.updatees) do
 			func()
@@ -1154,17 +1153,11 @@ function IceCore.prototype:RequestUpdates(module, func)
 		end
 	end
 
-	local count = 0
-	for k,v in pairs(self.updatees) do
-		count = count + 1
-		break
-	end
-
-	if (count == 0) then
+	if next(self.updatees) == nil then
 		self.IceHUDFrame:SetScript("OnUpdate", nil)
 	else
 		if not self.UpdateFunc then
-			self.UpdateFunc = function() self:HandleUpdates() end
+			self.UpdateFunc = function(frame, elapsed) self:HandleUpdates(elapsed) end
 		end
 
 		if self.IceHUDFrame:GetScript("OnUpdate") ~= self.UpdateFunc then

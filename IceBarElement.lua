@@ -1114,7 +1114,12 @@ function IceBarElement.prototype:ConditionalSetupUpdate()
 		return
 	end
 
-	if not string.find(self.elementName, "MirrorBar") and not string.find(self.elementName, "PlayerMana") then
+	if self.bManagesOwnUpdateSubscription == nil then
+		self.bManagesOwnUpdateSubscription = string.find(self.elementName, "MirrorBar") ~= nil
+			or string.find(self.elementName, "PlayerMana") ~= nil
+	end
+
+	if not self.bManagesOwnUpdateSubscription then
 		IceHUD.IceCore:RequestUpdates(self, self.MyOnUpdateFunc)
 	end
 end
@@ -1568,7 +1573,7 @@ function IceBarElement.prototype:LerpScale(scale)
 		self.CurrLerpTime = self.CurrLerpTime + (now - (self.lastLerpTime or now))
 	end
 
-	self.lastLerpTime = GetTime()
+	self.lastLerpTime = now
 
 	if self.CurrLerpTime > self.moduleSettings.desiredLerpTime then
 		self.CurrLerpTime = self.moduleSettings.desiredLerpTime
