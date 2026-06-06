@@ -383,12 +383,17 @@ function ComboPoints.prototype:CreateFrame()
 	ComboPoints.super.prototype.CreateFrame(self)
 
 	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
+	local maxComboPoints = self:GetMaxComboPoints()
+	local pointSpan = (self.comboSize - 5) * maxComboPoints
+	if self.moduleSettings.comboMode ~= "Numeric" then
+		pointSpan = pointSpan + (maxComboPoints - 1) * self.moduleSettings.comboGap
+	end
 	if self.moduleSettings.graphicalLayout == "Horizontal" then
-		self.frame:SetWidth((self.comboSize - 5)*self:GetMaxComboPoints())
+		self.frame:SetWidth(pointSpan)
 		self.frame:SetHeight(28)
 	else
 		self.frame:SetWidth(28)
-		self.frame:SetHeight((self.comboSize - 5)*self:GetMaxComboPoints())
+		self.frame:SetHeight(pointSpan)
 	end
 	self.frame:ClearAllPoints()
 	self:SetFramePosition()

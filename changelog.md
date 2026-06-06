@@ -3,6 +3,7 @@
 ## v1.17.15
 
 - Fixed target castbar sometimes using the out-of-combat alpha after entering combat.
+- Ensured combo points stay centered even after adjusting the Gap value. Note: this may cause some peoples' combo points placement to be different if you've adjusted both Gap and Offset.
 
 ## v1.17.14
 
