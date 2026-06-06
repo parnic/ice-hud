@@ -356,7 +356,7 @@ function RollTheBones.prototype:UpdateRollTheBones(event, unit)
     return
   end
 
-  if C_UnitAuras and C_UnitAuras.GetAuraDuration then
+  if C_UnitAuras and C_UnitAuras.GetAuraDuration and self.barFrame.SetTimerDuration then
     local _
     if self:IsInConfigMode() then
       rtbDuration = self:GetMaxBuffTime(maxComboPoints / 2)

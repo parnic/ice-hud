@@ -221,7 +221,7 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, castGuid, sp
 		self.CurrSpellGuid = castGuid
 	end
 
-	if C_Spell and C_Spell.GetSpellCooldownDuration then
+	if C_Spell and C_Spell.GetSpellCooldownDuration and self.barFrame.SetTimerDuration then
 		local dur = C_Spell.GetSpellCooldownDuration(self.CDSpellId)
 
 		if dur then

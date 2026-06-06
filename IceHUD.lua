@@ -113,8 +113,9 @@ if C_Spell and C_Spell.GetSpellName then
 	GetSpellName = C_Spell.GetSpellName
 end
 
+local isSecretEnv = C_Secrets and C_Secrets.HasSecretRestrictions and C_Secrets.HasSecretRestrictions() or false
 IceHUD.IsSecretEnv = function()
-	return issecretvalue
+	return isSecretEnv
 end
 
 IceHUD.IsSecretValue = function(value)

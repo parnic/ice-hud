@@ -5,6 +5,7 @@
 - Hopefully fix another secret error in the Vigor module.
 - Update TOCs for 12.0.7
 - Fix configuration mode leaving "RangeCheck" text on the screen when LibRangeCheck is not available.
+- Fix feature and behavior changes in non-Midnight clients. Classic's client code was recently updated to bring in Midnight's changes, and we were using the wrong function to determine whether Secrets were ever possible in the game or not.
 
 ## v1.17.13
 

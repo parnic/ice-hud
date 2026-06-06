@@ -79,7 +79,7 @@ function IceTargetAbsorb.prototype:UpdateMaxHealth()
 end
 
 function IceTargetAbsorb.prototype:SetBarValues()
-	if not self.calculator then
+	if not self.calculator or not self.barFrame.SetMinMaxValues then
 		return
 	end
 
