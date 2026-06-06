@@ -168,6 +168,11 @@ function RangeCheck.prototype:UnregisterFontStrings()
 	end
 end
 
+function RangeCheck.prototype:Update()
+	RangeCheck.super.prototype.Update(self)
+	self:UpdateRange()
+end
+
 -- this function is called every 0.1 seconds only if LibDogTag is not being used
 function RangeCheck.prototype:UpdateRange()
 	local text

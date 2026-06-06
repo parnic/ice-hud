@@ -413,6 +413,7 @@ function IceElement.prototype:ToggleMoveHint()
 end
 
 function IceElement.prototype:ToggleConfigMode(enabled)
+	self:Update()
 end
 
 

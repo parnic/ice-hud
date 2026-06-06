@@ -4,6 +4,7 @@
 
 - Hopefully fix another secret error in the Vigor module.
 - Update TOCs for 12.0.7
+- Fix configuration mode leaving "RangeCheck" text on the screen when LibRangeCheck is not available.
 
 ## v1.17.13
 
