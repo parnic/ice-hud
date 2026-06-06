@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.15
+
+- Fixed target castbar sometimes using the out-of-combat alpha after entering combat.
+
 ## v1.17.14
 
 - Hopefully fixed another secret error in the Vigor module.

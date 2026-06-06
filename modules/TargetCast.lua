@@ -55,6 +55,15 @@ function TargetCast.prototype:UpdateBar(scale, color)
 	self:UpdateInterruptibleColor()
 end
 
+-- OVERRIDE
+function TargetCast.prototype:Update()
+	TargetCast.super.prototype.Update(self)
+
+	self:UpdateAlpha()
+	self:ApplyColor(self:GetCurrentCastingColor())
+	self:UpdateInterruptibleColor()
+end
+
 function TargetCast.prototype:UpdateInterruptibleColor()
 	if self.moduleSettings.displayNonInterruptible then
 		if not IceHUD.CanAccessValue(self.notInterruptible) then
