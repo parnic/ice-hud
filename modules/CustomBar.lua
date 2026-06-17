@@ -883,7 +883,7 @@ function IceCustomBar.prototype:UpdateCustomBar(unit, fromUpdate)
 	end
 
 	if DogTag ~= nil then
-		DogTag:AddFontString(self.frame.bottomUpperText, self.frame, fullString, "Unit", { unit = self.unit })
+		DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self:GetDogTagOutline() .. fullString, "Unit", { unit = self.unit })
 	else
 		self:SetBottomText1(fullString)
 		self:SetBottomText2(self.moduleSettings.lowerText)

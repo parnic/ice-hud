@@ -1171,7 +1171,7 @@ do
 	local function SetFontString(self, textFrame, tag)
 		if textFrame and tag ~= '' then
 			---@diagnostic disable-next-line: need-check-nil, undefined-field
-			DogTag:AddFontString(textFrame, self.frame, tag, "Unit", { unit = self.unit })
+			DogTag:AddFontString(textFrame, self.frame, self:GetDogTagOutline() .. tag, "Unit", { unit = self.unit })
 		else
 			---@diagnostic disable-next-line: need-check-nil, undefined-field
 			DogTag:RemoveFontString(textFrame)

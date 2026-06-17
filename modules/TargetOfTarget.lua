@@ -606,16 +606,17 @@ end
 
 function TargetOfTarget.prototype:RegisterFontStrings()
 	if DogTag ~= nil then
+		local outline = self:GetDogTagOutline()
 		if self.frame.totName then
 			if self.moduleSettings.leftTag ~= '' then
-				DogTag:AddFontString(self.frame.totName, self.frame, self.moduleSettings.leftTag, "Unit", { unit = self.unit })
+				DogTag:AddFontString(self.frame.totName, self.frame, outline .. self.moduleSettings.leftTag, "Unit", { unit = self.unit })
 			else
 				DogTag:RemoveFontString(self.frame.totName)
 			end
 		end
 		if self.frame.totHealth then
 			if self.moduleSettings.rightTag ~= '' then
-				DogTag:AddFontString(self.frame.totHealth, self.frame, self.moduleSettings.rightTag, "Unit", { unit = self.unit })
+				DogTag:AddFontString(self.frame.totHealth, self.frame, outline .. self.moduleSettings.rightTag, "Unit", { unit = self.unit })
 			else
 				DogTag:RemoveFontString(self.frame.totHealth)
 			end

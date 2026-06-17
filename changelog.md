@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.16
+
+- Fixed the "Text appearance" outline settings not applying to DogTag text.
+
 ## v1.17.15
 
 - Fixed target castbar sometimes using the out-of-combat alpha after entering combat.

@@ -155,7 +155,7 @@ end
 
 function RangeCheck.prototype:RegisterFontStrings()
 	if DogTag and LibRange and not self.registered then
-		DogTag:AddFontString(self.frame.rangeFontString, self.frame, self.moduleSettings.rangeString, "Unit", { unit = "target" })
+		DogTag:AddFontString(self.frame.rangeFontString, self.frame, self:GetDogTagOutline() .. self.moduleSettings.rangeString, "Unit", { unit = "target" })
 		DogTag:UpdateAllForFrame(self.frame)
 		self.registered = true
 	end

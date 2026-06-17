@@ -140,11 +140,12 @@ end
 
 function IceBarElement.prototype:RegisterFontStrings()
 	if DogTag ~= nil and self.moduleSettings ~= nil and self.moduleSettings.usesDogTagStrings then
+		local outline = self:GetDogTagOutline()
 		if self.frame.bottomUpperText and self.moduleSettings.upperText then
-			DogTag:AddFontString(self.frame.bottomUpperText, self.frame, self.moduleSettings.upperText, "Unit", { unit = self.unit })
+			DogTag:AddFontString(self.frame.bottomUpperText, self.frame, outline .. self.moduleSettings.upperText, "Unit", { unit = self.unit })
 		end
 		if self.frame.bottomLowerText and self.moduleSettings.lowerText then
-			DogTag:AddFontString(self.frame.bottomLowerText, self.frame, self.moduleSettings.lowerText, "Unit", {unit = self.unit })
+			DogTag:AddFontString(self.frame.bottomLowerText, self.frame, outline .. self.moduleSettings.lowerText, "Unit", {unit = self.unit })
 		end
 	end
 end

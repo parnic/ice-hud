@@ -556,10 +556,9 @@ function IceElement.prototype:FontFactory(size, frame, font, flags)
 	end
 
 	if not flags then
-		if self.settings.TextDecoration == "Outline" then
-			flags = "OUTLINE"
-		elseif self.settings.TextDecoration == "ThickOutline" then
-			flags = "THICKOUTLINE"
+		flags = self:GetFontOutline()
+		if flags == "" then
+			flags = nil
 		end
 	end
 
@@ -575,6 +574,32 @@ function IceElement.prototype:FontFactory(size, frame, font, flags)
 	end
 
 	return fontString
+end
+
+
+-- Outline flags for SetFont. ThickOutline must match the string DogTag's
+-- [ThickOutline] tag applies so DogTag-managed text reaches the same steady
+-- state instead of resetting the font every update.
+function IceElement.prototype:GetFontOutline()
+	if self.settings.TextDecoration == "Outline" then
+		return "OUTLINE"
+	elseif self.settings.TextDecoration == "ThickOutline" then
+		return "OUTLINE, THICKOUTLINE"
+	end
+	return ""
+end
+
+
+-- DogTag re-asserts a registered FontString's outline on every update, wiping
+-- whatever FontFactory set. Prefixing the registered code with these tags makes
+-- it reapply the user's chosen outline instead of clearing it.
+function IceElement.prototype:GetDogTagOutline()
+	if self.settings.TextDecoration == "Outline" then
+		return "[Outline]"
+	elseif self.settings.TextDecoration == "ThickOutline" then
+		return "[ThickOutline]"
+	end
+	return ""
 end
 
 
