@@ -37,12 +37,8 @@ local LastValidPotentialSnDDuration = 0
 local CurrSndDuration = 0
 local CalculatedSnDEndTime = 0
 
-local sndTexture = 132306
+local oldSndSpellId = 5171
 local newSndSpellId = 315496
-if IceHUD.WowMain and IceHUD.WowVer < 80000 then
-	---@diagnostic disable-next-line: cast-local-type
-	sndTexture = "Ability_Rogue_SliceDice"
-end
 
 if IceHUD.WowVer >= 50000 then
 	baseTime = 12
@@ -350,15 +346,15 @@ end
 
 -- 'Protected' methods --------------------------------------------------------
 
-function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
+function SliceAndDice.prototype:GetBuffDuration(unitName, buffId)
 	local t = GetTime()
 
-	if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDataByAuraInstanceID and C_UnitAuras.GetAuraDuration then
+	if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDataByAuraInstanceID then
 		if InCombatLockdown() and CalculatedSnDEndTime > t then
 			return CurrSndDuration, CalculatedSnDEndTime - t
 		end
 
-		local info = C_UnitAuras.GetUnitAuraBySpellID(unitName, buffName)
+		local info = C_UnitAuras.GetUnitAuraBySpellID(unitName, buffId)
 		if not info or not info.auraInstanceID then
 			return nil, nil
 		end
@@ -374,15 +370,15 @@ function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
 	end
 
 	local i = 1
-	local buff, _, texture, duration, endTime, remaining
+	local buff, _, duration, endTime, remaining, spellId
 	if IceHUD.SpellFunctionsReturnRank then
-		buff, _, texture, _, _, duration, endTime = UnitBuff(unitName, i)
+		buff, _, _, _, _, duration, endTime, _, _, _, spellId = UnitBuff(unitName, i)
 	else
-		buff, texture, _, _, duration, endTime = UnitBuff(unitName, i)
+		buff, _, _, _, duration, endTime, _, _, _, spellId = UnitBuff(unitName, i)
 	end
 
 	while buff do
-		if (texture and (type(buffName) == 'string' and string.match(texture, buffName) or texture == buffName)) then
+		if spellId == buffId then
 			if endTime and not remaining then
 				remaining = endTime - t
 			end
@@ -392,9 +388,9 @@ function SliceAndDice.prototype:GetBuffDuration(unitName, buffName)
 		i = i + 1
 
 		if IceHUD.SpellFunctionsReturnRank then
-			buff, _, texture, _, _, duration, endTime = UnitBuff(unitName, i)
+			buff, _, _, _, _, duration, endTime, _, _, _, spellId = UnitBuff(unitName, i)
 		else
-			buff, texture, _, _, duration, endTime = UnitBuff(unitName, i)
+			buff, _, _, _, duration, endTime, _, _, _, spellId = UnitBuff(unitName, i)
 		end
 	end
 
@@ -451,10 +447,10 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 	local fromUpdate = event == "internal"
 
 	if not fromUpdate then
-		if C_UnitAuras and C_UnitAuras.GetAuraDuration then
+		if C_UnitAuras and C_UnitAuras.GetAuraDuration and IceHUD.IsPlayerSpell(newSndSpellId) then
 			sndDuration, remaining = self:GetBuffDuration(self.unit, newSndSpellId)
 		else
-			sndDuration, remaining = self:GetBuffDuration(self.unit, sndTexture)
+			sndDuration, remaining = self:GetBuffDuration(self.unit, oldSndSpellId)
 		end
 
 		if not remaining then

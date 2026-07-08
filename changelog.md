@@ -3,6 +3,8 @@
 ## v1.17.16
 
 - Fixed the "Text appearance" outline settings not applying to DogTag text.
+- Fixed Slice And Dice not tracking the buff on TBC Anniversary 2.5.6
+- Update TOCs for 12.1.0 and 2.5.6
 
 ## v1.17.15
 
