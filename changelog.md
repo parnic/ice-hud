@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.18
+
+- Fixed castbars being invisible on Midnight game clients after v1.17.17
+
 ## v1.17.17
 
 - Fixed bars in pre-Midnight clients sometimes failing to show when they should, most prominently noticeable with TargetHealth going from a dead target to a not-dead one.
