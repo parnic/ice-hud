@@ -158,6 +158,7 @@ IceHUD.ShellGameSpellID = 271571
 IceHUD.HasShellGame = GetSpellName(IceHUD.ShellGameSpellID)
 IceHUD.CatalogingSpellIDs = {366290, 372817, 385025, 385635, 386070, 386504, 400043, 403115}
 IceHUD.HasCataloging = GetSpellName(366290)
+IceHUD.SupportsAbsorbAmounts = IceHUD.WowVer >= 50200
 
 IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 

@@ -3,6 +3,7 @@
 ## v1.17.17
 
 - Fixed bars in pre-Midnight clients sometimes failing to show when they should, most prominently noticeable with TargetHealth going from a dead target to a not-dead one.
+- Disabled Absorb functionality in game versions where the Absorb APIs don't actually work but are still present (anything < game version 5.2.0)
 
 ## v1.17.16
 

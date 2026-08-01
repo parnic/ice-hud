@@ -120,7 +120,7 @@ function PlayerHealth.prototype:Enable(core)
 		self:RegisterEvent("UNIT_HEAL_PREDICTION", "IncomingHealPrediction")
 	end
 
-	if UnitGetTotalAbsorbs then
+	if IceHUD.SupportsAbsorbAmounts then
 		self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", "UpdateAbsorbAmount")
 	end
 
@@ -378,7 +378,7 @@ function PlayerHealth.prototype:GetOptions()
 			return IceHUD.IsSecretEnv()
 		end,
 		disabled = function()
-			return not (self.moduleSettings.enabled and UnitGetTotalAbsorbs)
+			return not (self.moduleSettings.enabled and IceHUD.SupportsAbsorbAmounts)
 		end,
 		order = 43.8
 	}
@@ -961,7 +961,7 @@ function PlayerHealth.prototype:CreateAbsorbBar()
 
 	self:UpdateBar(1, "undef")
 
-	if not self.moduleSettings.showAbsorbs or not UnitGetTotalAbsorbs then
+	if not self.moduleSettings.showAbsorbs or not IceHUD.SupportsAbsorbAmounts then
 		self.absorbFrame:Hide()
 	end
 end

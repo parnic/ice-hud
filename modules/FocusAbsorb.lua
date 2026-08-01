@@ -26,6 +26,6 @@ function FocusAbsorb.prototype:MyUnregisterCustomEvents()
 end
 
 -- Load us up
-if UnitGetTotalAbsorbs then
+if IceHUD.SupportsAbsorbAmounts then
 	IceHUD.FocusAbsorb = FocusAbsorb:new()
 end

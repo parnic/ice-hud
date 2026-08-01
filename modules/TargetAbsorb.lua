@@ -7,7 +7,7 @@ IceTargetAbsorb.prototype.ColorName = "TargetAbsorb"
 local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
 
 function IceTargetAbsorb.prototype:init(moduleName, unit, colorName)
-	if CreateUnitHealPredictionCalculator then
+	if IceHUD.IsSecretEnv() and CreateUnitHealPredictionCalculator then
 		self.calculator = CreateUnitHealPredictionCalculator()
 		---@diagnostic disable-next-line: undefined-field
 		self.calculator:SetDamageAbsorbClampMode(Enum.UnitDamageAbsorbClampMode.MaximumHealth)
@@ -180,6 +180,6 @@ function IceTargetAbsorb.prototype:IsHealthBar()
 	return true
 end
 
-if UnitGetTotalAbsorbs then
+if IceHUD.SupportsAbsorbAmounts then
 	IceHUD.TargetAbsorb = IceTargetAbsorb:new()
 end
