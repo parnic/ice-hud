@@ -665,7 +665,7 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 	end
 
 	self:Show(true)
-	self:SetBarVisibility(true)
+	self:SetBarVisibility(self.moduleSettings.barVisible['bar'])
 	if setupUpdates then
 		self:ConditionalSetupUpdate()
 	end
