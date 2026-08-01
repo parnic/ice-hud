@@ -1473,16 +1473,16 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 	if not scale then scale = 0 end
 	scale = IceHUD:Clamp(scale, 0, 1)
 
-	if self.moduleSettings.barVisible['bar'] then
-		if scale == 0 then
-			barFrame:Hide()
-		else
-			barFrame:Show()
-		end
+	if self.moduleSettings.barVisible['bar'] and scale == 0 then
+		barFrame:Hide()
 	end
 
 	if barFrame.SetValue then
 		barFrame:SetValue(scale, interp)
+
+		if self.moduleSettings.barVisible['bar'] and scale > 0 then
+			barFrame:Show()
+		end
 		return
 	end
 
@@ -1524,6 +1524,10 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 	self:SetBarFramePoints(barFrame, 0, offset_y)
 	barFrame:SetHeight(self.settings.barHeight * scale)
 	self.ActualScale = scale
+
+	if self.moduleSettings.barVisible['bar'] and scale > 0 then
+		barFrame:Show()
+	end
 end
 
 function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
@@ -1674,7 +1678,22 @@ function IceBarElement.prototype:UpdateBar(scale, color)
 		self.frame.bg:Show()
 	end
 
-	self:SetBarVisibility(self.moduleSettings.barVisible['bar'])
+	local shouldShowBar = self.moduleSettings.barVisible['bar']
+	local renderedScale = self.CurrScale
+	if IceHUD.CanAccessValue(renderedScale) and self:BarFillReverse() then
+		renderedScale = 1 - renderedScale
+	end
+
+	-- Keep a zero-height texture bar hidden until SetBarCoord() has applied
+	-- its first positive geometry. Secret StatusBars remain visible so they
+	-- can receive values that Lua isn't allowed to inspect.
+	if shouldShowBar
+		and IceHUD.CanAccessValue(renderedScale)
+		and renderedScale == 0 then
+		shouldShowBar = false
+	end
+
+	self:SetBarVisibility(shouldShowBar)
 
 	if DogTag ~= nil and self.moduleSettings.usesDogTagStrings then
 		DogTag:UpdateAllForFrame(self.frame)

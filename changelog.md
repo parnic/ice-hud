@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.17
+
+- Fixed bars in pre-Midnight clients sometimes failing to show when they should, most prominently noticeable with TargetHealth going from a dead target to a not-dead one.
+
 ## v1.17.16
 
 - Fixed the "Text appearance" outline settings not applying to DogTag text.
