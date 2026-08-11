@@ -11,7 +11,7 @@ body:
       description: A clear and concise description of what the problem is.
       placeholder: I'm always frustrated when [...]
     validations:
-      required: true
+      required: false
   - type: textarea
     id: solution
     attributes:
@@ -33,3 +33,16 @@ body:
       description: Add any other context or screenshots about the feature request here.
     validations:
       required: false
+  - type: input
+    id: game-version
+    attributes:
+      label: Game version
+      description: e.g. Retail, Classic, BC Anniversary
+    validations:
+      required: true
+  - type: input
+    id: icehud-version
+    attributes:
+      label: IceHUD version
+    validations:
+      required: true
