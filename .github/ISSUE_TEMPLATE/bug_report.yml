@@ -1,0 +1,53 @@
+name: Bug report
+description: Create a report to help us improve
+title: ""
+labels: []
+assignees:
+  - parnic
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: To Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Use class '...'
+        2. Enable option '....'
+        3. Activate ability '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots to help explain your problem.
+    validations:
+      required: false
+  - type: input
+    id: game-version
+    attributes:
+      label: Game version
+      description: e.g. Retail, Classic, BC Anniversary
+    validations:
+      required: true
+  - type: input
+    id: icehud-version
+    attributes:
+      label: IceHUD version
+    validations:
+      required: true
