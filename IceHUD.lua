@@ -135,7 +135,7 @@ IceHUD.CanShowTargetCasting = not IceHUD.WowClassic or LibClassicCasterino or (I
 IceHUD.GetPlayerAuraBySpellID = _G["C_UnitAuras"] and C_UnitAuras.GetPlayerAuraBySpellID
 IceHUD.GetUnitAuraBySpellID = _G["C_UnitAuras"] and C_UnitAuras.GetUnitAuraBySpellID
 IceHUD.GetAuraDataBySpellName = _G["C_UnitAuras"] and C_UnitAuras.GetAuraDataBySpellName
-IceHUD.AurasCanBeSecret = issecretvalue ~= nil
+IceHUD.ShouldAurasBeSecret = _G["C_Secrets"] and C_Secrets.ShouldAurasBeSecret
 -- Aura containers read secret aura data themselves and drive regions we hand them, so
 -- they're the only way left to show auras we aren't allowed to enumerate. These globals
 -- are published by another addon, so keep checking until they show up.
@@ -645,15 +645,11 @@ function IceHUD:MathRound(num, idp)
 	return math.floor(num  * mult + 0.5) / mult
 end
 
--- 12.1 made index- and slot-based aura lookups raise a Lua error for addons whenever
--- auras are secret (combat, encounters, mythic+, rated pvp). Nothing exposes that state,
--- so probe it. Anything that can be looked up by spell ID or name should be, instead.
-function IceHUD:CanIterateAuras(unit, filter)
-	if not IceHUD.AurasCanBeSecret then
-		return true
-	end
-
-	return (pcall(C_UnitAuras.GetAuraDataByIndex, unit, 1, filter))
+-- 12.1 made index- and slot-based aura lookups raise a Lua error for addons whenever auras
+-- are secret (combat, encounters, mythic+, rated pvp). Anything that can be looked up by
+-- spell ID or name should be, instead.
+function IceHUD:CanIterateAuras()
+	return not IceHUD.ShouldAurasBeSecret or not IceHUD.ShouldAurasBeSecret()
 end
 
 -- Auras with unreadable timing can't be rendered, and substituting zero would draw an
@@ -741,7 +737,7 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 		end
 	end
 
-	if not IceHUD:CanIterateAuras(unit, filter) then
+	if not IceHUD:CanIterateAuras() then
 		return 0, nil
 	end
 

@@ -121,10 +121,10 @@ end
 
 -- OVERRIDE
 function IceTargetInfo.prototype:Enable(core)
-	IceTargetInfo.super.prototype.Enable(self, core)
-
 	local _
 	_, self.playerClass = UnitClass("player")
+
+	IceTargetInfo.super.prototype.Enable(self, core)
 
 	if IceHUD.IceCore:ShouldUseDogTags() then
 		DogTag = LibStub("LibDogTag-3.0", true)
@@ -244,14 +244,15 @@ function IceTargetInfo.prototype:Disable(core)
 	self:UnregisterFontStrings()
 end
 
--- Where auras are secret, only the aura container can tell which ones the player cast or
--- put them in a chosen order, so these settings mean nothing without it.
+-- Every aura reads as cast by the player where auras are secret, even in the aura
+-- container, so the player's own auras can't be told apart to size them differently.
 function IceTargetInfo.prototype:CanSizeOwnAuras()
-	return not IceHUD.IsSecretEnv() or IceHUD.CanUseAuraContainer()
+	return not IceHUD.IsSecretEnv()
 end
 
+-- Sorting only needs durations compared, which the container does on our behalf.
 function IceTargetInfo.prototype:CanSortBuffs()
-	return self:CanSizeOwnAuras()
+	return not IceHUD.IsSecretEnv() or IceHUD.CanUseAuraContainer()
 end
 
 
@@ -1377,68 +1378,35 @@ function IceTargetInfo.prototype:CreateAuraFrame(aura, redraw)
 	end
 end
 
--- Aura groups can't be removed once added, so a settings change that alters which groups
--- are needed forces a fresh container rather than a reconfigure.
+-- Stealable buffs get their own group so mages keep the border that marks them. Splitting
+-- by caster isn't possible: every aura reads as the player's while auras are secret.
 function IceTargetInfo.prototype:GetAuraGroupDescriptions(aura)
 	local settings = self.moduleSettings.auras[aura]
-	local splitByCaster = settings.ownSize ~= settings.size
 	local splitByStealable = aura == "buff" and self.playerClass == "MAGE"
+	local descriptions = {}
 
-	local descriptions = {shape = tostring(splitByCaster) .. "-" .. tostring(splitByStealable)}
+	for stealIndex = 1, splitByStealable and 2 or 1 do
+		local isStealable
 
-	for casterIndex = 1, splitByCaster and 2 or 1 do
-		for stealIndex = 1, splitByStealable and 2 or 1 do
-			local isMine, isStealable
-
-			if splitByCaster then
-				isMine = casterIndex == 1
-			end
-			if splitByStealable then
-				isStealable = stealIndex == 1
-			end
-
-			tinsert(descriptions, {
-				key = "group" .. casterIndex .. stealIndex,
-				candidateFilters = (isMine ~= nil or isStealable ~= nil)
-					and {isFromPlayerOrPlayerPet = isMine, isStealable = isStealable} or nil,
-				size = isMine and settings.ownSize or settings.size,
-				stealable = isStealable == true,
-			})
+		if splitByStealable then
+			isStealable = stealIndex == 1
 		end
+
+		tinsert(descriptions, {
+			key = "group" .. stealIndex,
+			candidateFilters = isStealable ~= nil and {isStealable = isStealable} or nil,
+			size = settings.size,
+			stealable = isStealable == true,
+		})
 	end
 
 	return descriptions
 end
 
--- Aura groups can't be removed and their buttons can't be freed, so a container that no
--- longer matches is parked for the next time that shape comes back around.
-function IceTargetInfo.prototype:RetireAuraContainer(aura, container)
-	self.retiredAuraContainers = self.retiredAuraContainers or {}
-	self.retiredAuraContainers[aura .. container.iceGroupShape] = container
-
-	local ok, err = pcall(function()
-		container:SetEnabled(false)
-		container:Hide()
-	end)
-
-	if not ok then
-		IceHUD:Debug("retiring " .. aura .. " container failed: " .. tostring(err))
-	end
-end
-
-function IceTargetInfo.prototype:ReclaimAuraContainer(aura, shape)
-	local retired = self.retiredAuraContainers or {}
-	local container = retired[aura .. shape]
-
-	retired[aura .. shape] = nil
-
-	return container
-end
-
 -- The container invokes this through securecallfunction, which discards errors, so a
 -- broken button would otherwise just render nothing with no way to tell why.
-function IceTargetInfo.prototype:SafeInitializeAuraButton(aura, description, container, button)
-	local ok, err = pcall(self.InitializeAuraButton, self, aura, description, container, button)
+function IceTargetInfo.prototype:SafeInitializeAuraButton(aura, container, key, button)
+	local ok, err = pcall(self.InitializeAuraButton, self, aura, container, key, button)
 
 	if not ok and not container.iceReportedError then
 		container.iceReportedError = true
@@ -1446,7 +1414,12 @@ function IceTargetInfo.prototype:SafeInitializeAuraButton(aura, description, con
 	end
 end
 
-function IceTargetInfo.prototype:InitializeAuraButton(aura, description, container, button)
+-- Buttons are created on demand as auras appear, so the group's description has to be
+-- read now rather than captured when the group was added, or later buttons keep the
+-- sizes the settings had back then.
+function IceTargetInfo.prototype:InitializeAuraButton(aura, container, key, button)
+	local group = container.iceGroups[key]
+	local description = group.description
 	local inset = description.stealable and 4 or 1
 	local border = button:CreateTexture(nil, "BACKGROUND")
 	border:SetAllPoints(button)
@@ -1463,24 +1436,27 @@ function IceTargetInfo.prototype:InitializeAuraButton(aura, description, contain
 	local icon = button:CreateTexture(nil, "ARTWORK")
 	icon:SetPoint("TOPLEFT", button, "TOPLEFT", inset, -inset)
 	icon:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -inset, inset)
-	button:SetIcon(icon)
 
 	local cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
 	cooldown:SetAllPoints(button)
 	cooldown:SetReverse(true)
 	cooldown:SetDrawEdge(false)
-	button:SetDurationCooldown(cooldown)
 
 	local stack = button:CreateFontString()
 	stack:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 3, -1)
-	button:SetApplicationCount(stack)
-
-	button:SetTooltipAnchorPoint("ANCHOR_BOTTOMLEFT")
 
 	local record = {button = button, icon = icon, cooldown = cooldown, stack = stack}
 
-	tinsert(container.iceButtons[description.key], record)
+	-- The container starts drawing a region the moment it's handed one, and an unconfigured
+	-- region raises rather than drawing nothing, so everything is set up before handover.
 	self:ApplyAuraButtonSettings(record, description)
+
+	button:SetIcon(icon)
+	button:SetDurationCooldown(cooldown)
+	button:SetApplicationCount(stack)
+	button:SetTooltipAnchorPoint("ANCHOR_BOTTOMLEFT")
+
+	tinsert(group.buttons, record)
 end
 
 -- The container's layout only anchors buttons, so their size is ours to set. Buttons only
@@ -1505,22 +1481,19 @@ function IceTargetInfo.prototype:CreateAuraContainer(aura, auraFrame, point)
 		return
 	end
 
-	if container and container.iceGroupShape ~= descriptions.shape then
-		self:RetireAuraContainer(aura, container)
-		container = self:ReclaimAuraContainer(aura, descriptions.shape)
-		self.frame[auraFrame] = container
-	end
-
 	if not container then
 		container = CreateFrame("AuraContainer", nil, self.frame, "CustomAuraContainerTemplate")
 		container:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
 		container:SetUnit(self.unit)
-		container.iceGroupShape = descriptions.shape
 		container.iceGroupKeys = {}
-		container.iceButtons = {}
+		container.iceGroups = {}
 		self.frame[auraFrame] = container
+	end
 
-		for i = 1, #descriptions do
+	-- Groups are added on first sight rather than only at creation so a description that
+	-- shows up later still gets a group instead of failing every layout pass from then on.
+	for i = 1, #descriptions do
+		if not container.iceGroups[descriptions[i].key] then
 			self:AddAuraGroupSafely(aura, container, descriptions[i])
 		end
 	end
@@ -1529,28 +1502,42 @@ function IceTargetInfo.prototype:CreateAuraContainer(aura, auraFrame, point)
 	container:SetPoint(point, self.frame, settings.anchorTo, settings.offsetX, settings.offsetY)
 
 	local ok, err = pcall(self.ApplyAuraContainerSettings, self, aura, container, descriptions)
-	if not ok then
+	if not ok and not container.iceReportedLayoutError then
+		container.iceReportedLayoutError = true
 		IceHUD:Debug("aura container layout failed for " .. aura .. ": " .. tostring(err))
+	end
+
+	IceHUD:Debug(aura, "container show", tostring(settings.show))
+
+	for _, key in ipairs(container.iceGroupKeys) do
+		local group = container.iceGroups[key]
+		local filters = group.description.candidateFilters or {}
+
+		IceHUD:Debug(" ", key, "size", group.description.size, "buttons", #group.buttons,
+			"stealable", tostring(filters.isStealable))
 	end
 end
 
 -- One rejected group must not take down the rest of the module's frame creation.
 function IceTargetInfo.prototype:AddAuraGroupSafely(aura, container, description)
-	container.iceButtons[description.key] = {}
+	local key = description.key
 
-	local ok, err = pcall(container.AddAuraGroup, container, description.key, self:GetAuraFilterString(aura), {
-		initializeFrame = function(button) self:SafeInitializeAuraButton(aura, description, container, button) end,
+	container.iceGroups[key] = {buttons = {}, description = description}
+
+	local ok, err = pcall(container.AddAuraGroup, container, key, self:GetAuraFilterString(aura), {
+		initializeFrame = function(button) self:SafeInitializeAuraButton(aura, container, key, button) end,
 		candidateFilters = description.candidateFilters,
 		maxFrameCount = IceCore.BuffLimit,
 	})
 
+	-- A rejected group keeps its entry, marked, so it isn't retried on every layout pass.
 	if not ok then
-		container.iceButtons[description.key] = nil
-		IceHUD:Debug("aura group " .. description.key .. " rejected: " .. tostring(err))
+		container.iceGroups[key].rejected = true
+		IceHUD:Debug("aura group " .. key .. " rejected: " .. tostring(err))
 		return
 	end
 
-	tinsert(container.iceGroupKeys, description.key)
+	tinsert(container.iceGroupKeys, key)
 end
 
 function IceTargetInfo.prototype:ApplyAuraContainerSettings(aura, container, descriptions)
@@ -1558,29 +1545,23 @@ function IceTargetInfo.prototype:ApplyAuraContainerSettings(aura, container, des
 	local left = settings.growDirection == "Left"
 	local spacing = self.moduleSettings.spaceBetweenBuffs
 	local sortMethod = settings.sortByExpiration and AuraContainerSortMethod.Expiration or AuraContainerSortMethod.Default
-	-- One line size covers every group, so the largest icons are the ones that get to
-	-- honor the per-row count.
-	local widest = math.max(settings.size, settings.ownSize)
 
 	container:SetFlowLayoutAxis(AnchorUtil.FlowLayoutAxis.Horizontal)
 	container:SetFlowLayoutAnchorPoint(left and "TOPRIGHT" or "TOPLEFT")
 	container:SetFlowLayoutGrowthDirection(left and AnchorUtil.FlowDirection.Left or AnchorUtil.FlowDirection.Right,
 		AnchorUtil.FlowDirection.Down)
-	container:SetFlowLayoutMaximumLineSize(settings.perRow * widest + (settings.perRow - 1) * spacing)
+	container:SetFlowLayoutMaximumLineSize(settings.perRow * settings.size + (settings.perRow - 1) * spacing)
 
 	for i = 1, #descriptions do
 		local description = descriptions[i]
 
-		container:SetAuraGroupSortMethod(description.key, sortMethod, AuraContainerSortDirection.Normal)
-		container:SetAuraGroupLayout(description.key, {
+		self:ApplyAuraGroupSettings(container, description, sortMethod, {
 			elementSpacing = spacing,
 			lineSpacing = spacing,
 			elementWidth = description.size,
 			elementHeight = description.size,
 			layoutIndex = i,
 		})
-
-		self:ApplyAuraButtonSettingsForGroup(container, description)
 	end
 
 	container:SetEnabled(settings.show)
@@ -1589,8 +1570,18 @@ end
 
 -- Restrictions apply to buttons while auras are secret, so a settings change made in
 -- combat only reaches the ones it can. The next non-combat pass catches the rest.
-function IceTargetInfo.prototype:ApplyAuraButtonSettingsForGroup(container, description)
-	for _, record in ipairs(container.iceButtons[description.key] or {}) do
+function IceTargetInfo.prototype:ApplyAuraGroupSettings(container, description, sortMethod, layout)
+	local group = container.iceGroups[description.key]
+
+	if not group or group.rejected then
+		return
+	end
+
+	group.description = description
+	container:SetAuraGroupSortMethod(description.key, sortMethod, AuraContainerSortDirection.Normal)
+	container:SetAuraGroupLayout(description.key, layout)
+
+	for _, record in ipairs(group.buttons) do
 		pcall(self.ApplyAuraButtonSettings, self, record, description)
 	end
 end
@@ -1807,7 +1798,7 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 		-- Showing every aura on a unit means iterating them, which addons can't do while
 		-- auras are secret. The loop still runs so the icons clear instead of going stale.
 		local auraFilter = reaction .. (filter and "|PLAYER" or "")
-		local canIterate = IceHUD:CanIterateAuras(self.unit, auraFilter)
+		local canIterate = IceHUD:CanIterateAuras()
 
 		for i = 1, IceCore.BuffLimit do
 			local _, icon, count, duration, expirationTime, unitCaster, isStealable, auraInstanceID
@@ -2173,7 +2164,7 @@ function IceTargetInfo.prototype:UpdateAuraCooldownAlpha(auraFrame)
 		return
 	end
 
-	if not frame.iceButtons then
+	if not frame.iceGroups then
 		for i = 1, #frame.iconFrames do
 			self:SetAuraCooldownAlpha(frame.iconFrames[i].cd)
 		end
@@ -2182,8 +2173,8 @@ function IceTargetInfo.prototype:UpdateAuraCooldownAlpha(auraFrame)
 
 	-- These cooldowns belong to buttons that refuse tainted access while auras are secret,
 	-- so tinting them is best-effort.
-	for _, records in pairs(frame.iceButtons) do
-		for _, record in ipairs(records) do
+	for _, group in pairs(frame.iceGroups) do
+		for _, record in ipairs(group.buttons) do
 			pcall(self.SetAuraCooldownAlpha, self, record.cooldown)
 		end
 	end

@@ -713,7 +713,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 	end
 
 	local duration, remaining, count, texture, endTime = self:UnpackTrackedAura(aura)
-	if not duration and IceHUD:CanIterateAuras(unitName, buffFilter) then
+	if not duration and IceHUD:CanIterateAuras() then
 		duration, remaining, count, texture, endTime = self:ScanForTrackedAura(unitName, buffName, buffFilter, mySpellId)
 	end
 
