@@ -142,7 +142,7 @@ function IceCustomHealth.prototype:Update(unit)
 	end
 
 	if (self.moduleSettings.classColor) and (not self.moduleSettings.npcHostilityColor or UnitPlayerControlled("target")) then
-		self.color = self.unitClass
+		self.color = self.unitClass or self.color
 	end
 
 	if (self.moduleSettings.scaleHealthColor) then

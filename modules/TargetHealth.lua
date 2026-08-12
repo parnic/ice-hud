@@ -856,7 +856,7 @@ function IceTargetHealth.prototype:Update(unit)
 		end
 
 		if (self.moduleSettings.classColor) and (not self.moduleSettings.npcHostilityColor or UnitPlayerControlled("target")) then
-			self.color = self.unitClass
+			self.color = self.unitClass or self.color
 		end
 
 		if (self.moduleSettings.scaleHealthColor) then
@@ -1116,15 +1116,7 @@ function IceTargetHealth.prototype:CheckPartyRole()
 			local texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader
 			proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader = GetLFGProposal()
 
-			local p = self.unit
-			if not IceHUD.UnitGroupRolesReturnsRoleString then
-				isTank, isHeal, isDPS = UnitGroupRolesAssigned(p)
-			else
-				local grpRole = UnitGroupRolesAssigned(p)
-				isTank = (grpRole == "TANK")
-				isHeal = (grpRole == "HEALER")
-				isDPS = (grpRole == "DAMAGER")
-			end
+			isTank, isHeal, isDPS = IceHUD:GetUnitRoles(self.unit)
 
 			if proposalExists == true then
 				isTank = (role == "TANK")
@@ -1176,7 +1168,7 @@ end
 
 function IceTargetHealth.prototype:TargetChanged()
 	IceTargetHealth.super.prototype.TargetChanged(self)
-	_, self.unitClass = UnitClass(self.unit)
+	self:SetUnitClass()
 end
 
 -- Load us up

@@ -75,7 +75,7 @@ function TargetTargetMana.prototype:Update(unit)
 	end
 	self.color = "TargetTargetMana"
 
-	if self.moduleSettings.selfDisplayMode == "Hide" and UnitIsUnit("player", self.unit) then
+	if self.moduleSettings.selfDisplayMode == "Hide" and IceHUD:IsSameUnit("player", self.unit) then
 		self:Show(false)
 		return
 	end

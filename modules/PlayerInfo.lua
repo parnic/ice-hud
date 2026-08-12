@@ -70,9 +70,9 @@ function PlayerInfo.prototype:BuffClick(this,event)
     -- We also need to check for combat lockdown. The api won't allow cancelling during combat lockdown.
     if( event == "RightButton" ) and not InCombatLockdown() then
         if this.type == "mh" then
-            CancelItemTempEnchantment(1)
+            IceHUD.CancelItemTempEnchantment(1)
         elseif this.type == "oh" then
-            CancelItemTempEnchantment(2)
+            IceHUD.CancelItemTempEnchantment(2)
         else
             CancelUnitBuff(self.unit, this.id)
         end
@@ -160,7 +160,7 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 	end
 
 	local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID
-		= GetWeaponEnchantInfo()
+		= IceHUD.GetWeaponEnchantInfo()
 
 	local startingNum = 0
 

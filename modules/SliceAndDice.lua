@@ -479,7 +479,8 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 	else
 		self:UpdateBar(0, "SliceAndDice")
 
-		if self:SNDGetComboPoints(self.unit) == 0 or (not UnitExists("target") and not self:ShouldShowWithNoTarget()) or ShouldHide() then
+		local points = self:SNDGetComboPoints(self.unit)
+		if (IceHUD.CanAccessValue(points) and points == 0) or (not UnitExists("target") and not self:ShouldShowWithNoTarget()) or ShouldHide() then
 			if self.bIsVisible then
 				self.bUpdateSnd = nil
 			end
@@ -498,7 +499,8 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 end
 
 function SliceAndDice.prototype:TargetChanged()
-	if self:ShouldShowWithNoTarget() and self:SNDGetComboPoints(self.unit) > 0 then
+	local points = self:SNDGetComboPoints(self.unit)
+	if self:ShouldShowWithNoTarget() and IceHUD.CanAccessValue(points) and points > 0 then
 		self.target = true
 	else
 		self.target = UnitExists("target")
@@ -528,9 +530,10 @@ function SliceAndDice.prototype:UpdateDurationBar(event, unit)
 		self:UpdateSliceAndDice()
 	end
 
-	-- player doesn't want to show the percent of max or the alpha is zeroed out, so don't bother with the duration bar
-	if not self.moduleSettings.showAsPercentOfMax or self.moduleSettings.durationAlpha == 0 or (points == 0 and not self:IsVisible())
-		or ShouldHide() then
+	-- player doesn't want to show the percent of max or the alpha is zeroed out, so don't bother with the duration bar.
+	-- the whole bar is computed from the combo point count, so there's nothing to draw when that's secret.
+	if not self.moduleSettings.showAsPercentOfMax or self.moduleSettings.durationAlpha == 0 or not IceHUD.CanAccessValue(points)
+		or (points == 0 and not self:IsVisible()) or ShouldHide() then
 		self.durationFrame:Hide()
 		return
 	end

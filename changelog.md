@@ -2,8 +2,10 @@
 
 ## v1.17.19
 
-- Fix 12.1 problems with buff and debuff inspecting in various modules.
-- Fix 12.1 taint/secret errors with various newly-secret API values.
+- Fixed 12.1 problems with buff and debuff inspecting in various modules.
+- Fixed 12.1 taint/secret errors with various newly-secret API values.
+- Fixed class coloring, party role icons, and target-of-target self detection erroring on units whose identity is secret.
+- The threat bar now hides itself instead of erroring when threat values are secret, which happens against bosses in 12.1.
 
 ## v1.17.18
 

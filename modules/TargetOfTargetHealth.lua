@@ -134,7 +134,7 @@ function TargetTargetHealth.prototype:Update(unit)
 	end
 
 	if (self.moduleSettings.classColor) then
-		self.color = self.unitClass
+		self.color = self.unitClass or self.color
 	end
 
 	if (self.moduleSettings.scaleHealthColor) then
@@ -147,7 +147,7 @@ function TargetTargetHealth.prototype:Update(unit)
 		self.color = "Tapped"
 	end
 
-	if UnitIsUnit("player", self.unit) and not self:IsInConfigMode() then
+	if IceHUD:IsSameUnit("player", self.unit) and not self:IsInConfigMode() then
 		if self.moduleSettings.selfDisplayMode == "Color as SelfColor" then
 			self.color = "SelfColor"
 		elseif self.moduleSettings.selfDisplayMode == "Hide" then

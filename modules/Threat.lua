@@ -23,13 +23,6 @@ if not GetNumPartyMembers then
 	MAX_NUM_RAID_MEMBERS = MAX_RAID_MEMBERS
 end
 
-local UnitGroupRolesAssigned = UnitGroupRolesAssigned
-if not UnitGroupRolesAssigned then
-	UnitGroupRolesAssigned = function()
-		return "NONE"
-	end
-end
-
 ---@diagnostic disable-next-line: deprecated
 local GetItemInfo = GetItemInfo
 if not GetItemInfo and C_Item then
@@ -292,6 +285,13 @@ function IceThreat.prototype:Update(unit)
 	end
 
 	local isTanking, threatState, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("player", self.unit)
+	-- Threat values are secret against bosses (12.1+), and everything below this is comparisons
+	-- and arithmetic on them, so there's nothing to draw until they're readable again.
+	if not self:CanReadThreat(isTanking, threatState, scaledPercent, rawPercent, threatValue) then
+		self:Show(false)
+		return
+	end
+
 	local tankThreat = 0
 	local secondHighestThreat = 0
 	local rangeMulti = 1.1
@@ -308,6 +308,9 @@ threatValue = 100
 ]]
 	if not isTanking then
 		_, _, _, _, tankThreat = UnitDetailedThreatSituation("targettarget", self.unit) -- highest threat target of target (i.e. the tank)
+		if not IceHUD.CanAccessValue(tankThreat) then
+			tankThreat = 0
+		end
 	elseif self.moduleSettings.displaySecondPlaceThreat then
 		secondHighestThreat = self:GetSecondHighestThreat()
 	end
@@ -370,7 +373,8 @@ threatValue = 100
 		-- display the name of the current threat holder
 		local name = select(1, UnitName("targettarget"))
 		local color
-		if UnitGroupRolesAssigned("targettarget") == "TANK" or GetPartyAssignment("MAINTANK", "targettarget") then
+		local isTank = IceHUD:GetUnitRoles("targettarget")
+		if isTank or GetPartyAssignment("MAINTANK", "targettarget") then
 			color = "ThreatLow"
 		elseif GetPartyAssignment("MAINASSIST", "targettarget") then
 			color = "ThreatMedium"
@@ -432,6 +436,29 @@ function IceThreat.prototype:UpdateSecondHighestThreatBar(secondHighestThreat, t
 	end
 end
 
+-- Every value the module reads goes secret together against a boss, so one unreadable value
+-- means the whole bar has to sit out this update.
+function IceThreat.prototype:CanReadThreat(...)
+	for i = 1, select("#", ...) do
+		local value = (select(i, ...))
+		-- nils are normal here (no threat on this target) and are handled below, so they have
+		-- to pass. type() is the only way to spot one without comparing a possible secret.
+		if type(value) ~= "nil" and not IceHUD.CanAccessValue(value) then
+			return false
+		end
+	end
+
+	return true
+end
+
+function IceThreat.prototype:HigherThreat(highest, candidate)
+	if not IceHUD.CanAccessValue(candidate) or not candidate or candidate <= highest then
+		return highest
+	end
+
+	return candidate
+end
+
 function IceThreat.prototype:GetSecondHighestThreat()
 	local secondHighestThreat = 0
 	local i = 1
@@ -446,12 +473,10 @@ function IceThreat.prototype:GetSecondHighestThreat()
 		numMembers = GetNumRaidMembers()
 
 		while numFound < numMembers and i <= MAX_NUM_RAID_MEMBERS do
-			if UnitExists("raid"..i) and not UnitIsUnit("player", "raid"..i) then
+			if UnitExists("raid"..i) and not IceHUD:IsSameUnit("player", "raid"..i) then
 				numFound = numFound + 1
 				local _, _, _, _, temp = UnitDetailedThreatSituation("raid"..i, self.unit)
-				if temp ~= nil and temp > secondHighestThreat then
-					secondHighestThreat = temp
-				end
+				secondHighestThreat = self:HigherThreat(secondHighestThreat, temp)
 			end
 
 			i = i + 1
@@ -460,12 +485,10 @@ function IceThreat.prototype:GetSecondHighestThreat()
 		numMembers = GetNumPartyMembers()
 
 		while numFound < numMembers and i <= MAX_NUM_PARTY_MEMBERS do
-			if UnitExists("party"..i) and not UnitIsUnit("player", "party"..i) then
+			if UnitExists("party"..i) and not IceHUD:IsSameUnit("player", "party"..i) then
 				numFound = numFound + 1
 				local _, _, _, _, temp = UnitDetailedThreatSituation("party"..i, self.unit)
-				if temp ~= nil and temp > secondHighestThreat then
-					secondHighestThreat = temp
-				end
+				secondHighestThreat = self:HigherThreat(secondHighestThreat, temp)
 			end
 
 			i = i + 1
@@ -474,9 +497,7 @@ function IceThreat.prototype:GetSecondHighestThreat()
 
 	if UnitExists("pet") then
 		local _, _, _, _, temp = UnitDetailedThreatSituation("pet", self.unit)
-		if temp ~= nil and temp > secondHighestThreat then
-			secondHighestThreat = temp
-		end
+		secondHighestThreat = self:HigherThreat(secondHighestThreat, temp)
 	end
 
 	return secondHighestThreat

@@ -678,7 +678,7 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 
 	if unitName == "main hand weapon" or unitName == "off hand weapon" then
 		local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID
-			= GetWeaponEnchantInfo()
+			= IceHUD.GetWeaponEnchantInfo()
 
 		if unitName == "main hand weapon" and hasMainHandEnchant then
 			local duration =
@@ -800,9 +800,7 @@ function IceCustomBar.prototype:GetTrackedTotemDuration(buffName)
 	for i=1,MAX_TOTEMS do
 		local haveTotem, totemName, startTime, realDuration, icon = GetTotemInfo(i)
 
-		if haveTotem and totemName
-			and ((self.moduleSettings.exactMatch and totemName:upper() == buffName:upper())
-				or (not self.moduleSettings.exactMatch and string.match(totemName:upper(), buffName:upper()))) then
+		if self:TotemMatches(haveTotem, totemName, startTime, realDuration, buffName) then
 			local duration = realDuration
 			if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
 				duration = self.moduleSettings.maxDuration
@@ -814,6 +812,25 @@ function IceCustomBar.prototype:GetTrackedTotemDuration(buffName)
 	end
 
 	return nil
+end
+
+-- A totem slot goes secret during combat and encounters, and its name can't be matched or its
+-- timing drawn once that happens, so the slot is skipped rather than guessed at.
+function IceCustomBar.prototype:TotemMatches(haveTotem, totemName, startTime, realDuration, buffName)
+	if not IceHUD.CanAccessValue(haveTotem) or not IceHUD.CanAccessValue(totemName)
+		or not IceHUD.CanAccessValue(startTime) or not IceHUD.CanAccessValue(realDuration) then
+		return false
+	end
+
+	if not haveTotem or not totemName then
+		return false
+	end
+
+	if self.moduleSettings.exactMatch then
+		return totemName:upper() == buffName:upper()
+	end
+
+	return string.match(totemName:upper(), buffName:upper()) ~= nil
 end
 
 function IceCustomBar.prototype:UpdateCustomBarEvent(event, unit)

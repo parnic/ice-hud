@@ -371,7 +371,7 @@ function FocusHealth.prototype:Update(unit)
 	end
 
 	if (self.moduleSettings.classColor) then
-		self.color = self.unitClass
+		self.color = self.unitClass or self.color
 	end
 
 	if (self.moduleSettings.scaleHealthColor) then
@@ -497,7 +497,7 @@ end
 
 function FocusHealth.prototype:TargetChanged()
 	FocusHealth.super.prototype.TargetChanged(self)
-	_, self.unitClass = UnitClass(self.unit)
+	self:SetUnitClass()
 end
 
 -- Load us up

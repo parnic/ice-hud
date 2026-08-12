@@ -648,7 +648,7 @@ do
 	local antStacks
 
 	function ComboPoints.prototype:CheckAnticipation(e, unit) -- UNIT_AURA handler
-		if UnitIsUnit(unit, "player") then
+		if IceHUD:IsSameUnit(unit, "player") then
 			local newAntStacks = IceHUD:GetBuffCount("player", GetSpellName(AnticipationSpellId), true, true)
 			if newAntStacks ~= antStacks then
 				antStacks = newAntStacks

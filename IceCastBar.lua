@@ -591,7 +591,8 @@ function IceCastBar.prototype:StartBar(action, message, spellId)
 		return
 	end
 
-	if icon ~= nil then
+	-- a plain truthiness test, since comparing a secret icon id against nil isn't allowed
+	if icon then
 		self.barFrame.icon:SetTexture(icon)
 	end
 

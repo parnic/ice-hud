@@ -53,7 +53,7 @@ function TargetTargetCast.prototype:UpdateTargetTarget()
 		return
 	end
 
-	if self.moduleSettings.selfDisplayMode == "Hide" and UnitIsUnit("player", self.unit) then
+	if self.moduleSettings.selfDisplayMode == "Hide" and IceHUD:IsSameUnit("player", self.unit) then
 		self:StopBar()
 		return
 	end

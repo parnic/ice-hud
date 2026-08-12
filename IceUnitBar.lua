@@ -108,8 +108,14 @@ end
 
 function IceUnitBar.prototype:SetUnit(unit)
 	self.unit = unit
-	local _
-	_, self.unitClass = UnitClass(self.unit)
+	self:SetUnitClass()
+end
+
+-- A unit's class is secret while its identity is restricted (12.1+), and a secret string can't
+-- be used to look up a color or compared against a class name, so it's dropped entirely.
+function IceUnitBar.prototype:SetUnitClass()
+	local _, unitClass = UnitClass(self.unit)
+	self.unitClass = IceHUD.CanAccessValue(unitClass) and unitClass or nil
 end
 
 -- OVERRIDE
@@ -299,7 +305,9 @@ function IceUnitBar.prototype:Update()
 	local powerType = UnitPowerType(self.unit)
 	self.mana = UnitPower(self.unit, powerType)
 	self.maxMana = UnitPowerMax(self.unit, powerType)
-	if IceHUD.CanAccessValue(self.mana) then
+	-- power and max power have separate secrecy rules, so both have to be readable before
+	-- rescaling either of them.
+	if IceHUD.CanAccessValue(self.mana) and IceHUD.CanAccessValue(self.maxMana) then
 		if (powerType == SPELL_POWER_RAGE and self.maxMana >= 1000)
 			or (powerType == SPELL_POWER_RUNIC_POWER and self.maxMana >= 1000) then
 			self.mana = IceHUD:MathRound(self.mana / 10)

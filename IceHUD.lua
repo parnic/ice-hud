@@ -236,6 +236,32 @@ if not IceHUD.GetSpellCharges and C_Spell then
 	end
 end
 
+-- 12.1 deprecated the weapon enchant globals in favor of per-slot C_PaperDollInfo queries. The
+-- old ones still exist as shims, but only while the loadDeprecationFallbacks cvar is on, so
+-- prefer the replacements wherever they exist.
+---@diagnostic disable-next-line: deprecated
+IceHUD.GetWeaponEnchantInfo = GetWeaponEnchantInfo
+if C_PaperDollInfo and C_PaperDollInfo.GetTemporaryEnchantmentInfo then
+	IceHUD.GetWeaponEnchantInfo = function()
+		local mainHand = C_PaperDollInfo.GetTemporaryEnchantmentInfo(INVSLOT_MAINHAND)
+		local offHand = C_PaperDollInfo.GetTemporaryEnchantmentInfo(INVSLOT_OFFHAND)
+
+		return mainHand ~= nil, mainHand and mainHand.remainingTimeMs, mainHand and mainHand.chargesRemaining, mainHand and mainHand.enchantID,
+			offHand ~= nil, offHand and offHand.remainingTimeMs, offHand and offHand.chargesRemaining, offHand and offHand.enchantID
+	end
+end
+
+---@diagnostic disable-next-line: deprecated
+IceHUD.CancelItemTempEnchantment = CancelItemTempEnchantment
+if C_PaperDollInfo and C_PaperDollInfo.CancelTemporaryEnchantment then
+	IceHUD.CancelItemTempEnchantment = function(index)
+		local slot = ({INVSLOT_MAINHAND, INVSLOT_OFFHAND, INVSLOT_RANGED})[index]
+		if slot then
+			C_PaperDollInfo.CancelTemporaryEnchantment(slot)
+		end
+	end
+end
+
 IceHUD.SupportsExpandMode = not IceHUD.IsSecretEnv()
 
 --@debug@
@@ -686,6 +712,32 @@ function IceHUD:IsAuraFromPlayer(aura)
 	return not IceHUD.CanAccessValue(aura.isFromPlayerOrPlayerPet) or aura.isFromPlayerOrPlayerPet
 end
 
+-- Unit comparisons are secret on addon-restricted maps (12.1+), and compound tokens such as
+-- "targettarget" are always secret there, so an unreadable answer counts as "different units".
+function IceHUD:IsSameUnit(unit1, unit2)
+	local isSame = UnitIsUnit(unit1, unit2)
+	return IceHUD.CanAccessValue(isSame) and isSame or false
+end
+
+-- A unit's assigned role is secret while its identity is restricted (12.1+), and a secret string
+-- can't be compared against a role name, so no role is reported rather than a wrong one.
+function IceHUD:GetUnitRoles(unit)
+	if not UnitGroupRolesAssigned then
+		return false, false, false
+	end
+
+	if not IceHUD.UnitGroupRolesReturnsRoleString then
+		return UnitGroupRolesAssigned(unit)
+	end
+
+	local role = UnitGroupRolesAssigned(unit)
+	if not IceHUD.CanAccessValue(role) then
+		return false, false, false
+	end
+
+	return role == "TANK", role == "HEALER", role == "DAMAGER"
+end
+
 function IceHUD:GetBuffCount(unit, ability, onlyMine, matchByName)
 	return IceHUD:GetAuraCount("HELPFUL", unit, ability, onlyMine, matchByName)
 end
@@ -701,7 +753,7 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 
 	if unit == "main hand weapon" or unit == "off hand weapon" then
 		local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID
-			= GetWeaponEnchantInfo()
+			= IceHUD.GetWeaponEnchantInfo()
 
 		if unit == "main hand weapon" and hasMainHandEnchant then
 			return mainHandCharges, nil

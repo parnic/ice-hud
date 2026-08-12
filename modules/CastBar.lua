@@ -578,7 +578,9 @@ function CastBar.prototype:GetCurrentCastingColor()
 	local bCheckRange = true
 	local inRange
 
-	if not self.moduleSettings.rangeColor or not self.lastSpell or not self.action or not UnitExists("target") then
+	-- a secret spell name can't be handed to the range check, so range coloring sits out
+	if not self.moduleSettings.rangeColor or not self.lastSpell or not self.action or not UnitExists("target")
+		or not IceHUD.CanAccessValue(self.lastSpell) then
 		bCheckRange = false
 	else
 		inRange = IceHUD.IsSpellInRange(self.lastSpell, "target")

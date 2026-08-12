@@ -1101,14 +1101,7 @@ function PlayerHealth.prototype:CheckPartyRole()
 			proposalExists, id, typeID, subtypeID, name, texture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isleader = GetLFGProposal()
 
 			local p = self.unit
-			if not IceHUD.UnitGroupRolesReturnsRoleString then
-				isTank, isHeal, isDPS = UnitGroupRolesAssigned(p)
-			else
-				local grpRole = UnitGroupRolesAssigned(p)
-				isTank = (grpRole == "TANK")
-				isHeal = (grpRole == "HEALER")
-				isDPS = (grpRole == "DAMAGER")
-			end
+			isTank, isHeal, isDPS = IceHUD:GetUnitRoles(p)
 			IceHUD:Debug(".......")
 			IceHUD:Debug(p.."="..tostring(UnitName(p)))
 			IceHUD:Debug( tostring(proposalExists) .."**".. tostring(typeID) .."**".. tostring(id) .."**".. tostring(name) .."**".. tostring(texture) .."**".. tostring(role) .."**".. tostring(hasResponded) .."**".. tostring(totalEncounters) .."**".. tostring(completedEncounters) .."**".. tostring(numMembers) .."**".. tostring(isleader) )
@@ -1285,7 +1278,7 @@ function PlayerHealth.prototype:Update(unit)
 	local color = "PlayerHealth"
 
 	if (self.moduleSettings.classColor) then
-		color = self.unitClass
+		color = self.unitClass or color
 	end
 
 	if (self.moduleSettings.scaleHealthColor) then

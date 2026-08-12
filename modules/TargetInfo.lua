@@ -47,7 +47,7 @@ local UnitSelectionColor = function(unit)
 
 	if not UnitExists(unit) then
 		return 1, 1, 1, 1
-	elseif UnitIsUnit(unit, "player") or UnitIsUnit(unit, "pet") then
+	elseif IceHUD:IsSameUnit(unit, "player") or IceHUD:IsSameUnit(unit, "pet") then
 		if playerPvp then
 			return 0, 1, 0, 1 -- player is in pvp, unit is player or player's pet, return green
 		else
@@ -2015,10 +2015,11 @@ function IceTargetInfo.prototype:TargetName(event, unit)
 		self.guild = guildName and "<" .. guildName .. ">" or ""
 
 
-		if (self.classLocale and self.isPlayer) then
-			self.classLocale = "|c" .. self:GetHexColor(self.classEnglish) ..  self.classLocale .. "|r"
-		else
+		if not (self.classLocale and self.isPlayer) then
 			self.classLocale = UnitCreatureType(self.unit)
+		elseif IceHUD.CanAccessValue(self.classEnglish) then
+			-- a secret class can't be used to look up its color, so the name stays uncolored
+			self.classLocale = "|c" .. self:GetHexColor(self.classEnglish) ..  self.classLocale .. "|r"
 		end
 
 
