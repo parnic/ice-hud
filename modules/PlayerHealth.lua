@@ -1180,6 +1180,9 @@ function PlayerHealth.prototype:CheckLeader()
 	local isLeader
 	if UnitIsGroupLeader then
 		isLeader = UnitIsGroupLeader("player")
+		if not IceHUD.CanAccessValue(isLeader) then
+			isLeader = false
+		end
 	else
 		isLeader = IsPartyLeader()
 	end
@@ -1232,12 +1235,13 @@ end
 function PlayerHealth.prototype:CheckPvP()
 	local pvpMode = nil
 	local minx, maxx, miny, maxy
+	local unitIsPVP = UnitIsPVP(self.unit)
 
 	if configMode or UnitIsPVPFreeForAll(self.unit) then
 		pvpMode = "FFA"
 
 		minx, maxx, miny, maxy = 0.05, 0.605, 0.015, 0.57
-	elseif UnitIsPVP(self.unit) then
+	elseif IceHUD.CanAccessValue(unitIsPVP) and unitIsPVP then
 		pvpMode = UnitFactionGroup(self.unit)
 
 		if pvpMode == "Neutral" then

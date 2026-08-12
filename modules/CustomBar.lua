@@ -699,18 +699,65 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 		return nil
 	end
 
-	local i = 1
-	local remaining
 	local isBuff = self.moduleSettings.buffOrDebuff == "buff" and true or false
 	local buffFilter = (isBuff and "HELPFUL" or "HARMFUL") .. (self.moduleSettings.trackOnlyMine and "|PLAYER" or "")
+	local mySpellId = tonumber(self.moduleSettings.buffToTrack)
+
+	-- A spell ID or an exact name resolves without iterating, which addons can't do
+	-- while auras are secret. Anything else still needs the scan.
+	local aura
+	if mySpellId and IceHUD.GetUnitAuraBySpellID then
+		aura = IceHUD.GetUnitAuraBySpellID(unitName, mySpellId)
+	elseif self.moduleSettings.exactMatch and IceHUD.GetAuraDataBySpellName then
+		aura = IceHUD.GetAuraDataBySpellName(unitName, buffName, buffFilter)
+	end
+
+	local duration, remaining, count, texture, endTime = self:UnpackTrackedAura(aura)
+	if not duration and IceHUD:CanIterateAuras(unitName, buffFilter) then
+		duration, remaining, count, texture, endTime = self:ScanForTrackedAura(unitName, buffName, buffFilter, mySpellId)
+	end
+
+	if duration then
+		return duration, remaining, count, texture, endTime
+	end
+
+	return self:GetTrackedTotemDuration(buffName)
+end
+
+-- Turns a spell ID or name lookup into the same tuple the index scan produces. Timing
+-- that can't be read means the bar has nothing to draw, so the aura is treated as absent.
+function IceCustomBar.prototype:UnpackTrackedAura(aura)
+	if not IceHUD.CanAccessValue(aura) or not aura then
+		return nil
+	end
+
+	if self.moduleSettings.trackOnlyMine and not IceHUD:IsAuraFromPlayer(aura) then
+		return nil
+	end
+
+	if not IceHUD.CanAccessValue(aura.duration) or not IceHUD.CanAccessValue(aura.expirationTime) then
+		return nil
+	end
+
+	local duration = aura.duration
+	if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
+		duration = self.moduleSettings.maxDuration
+	end
+
+	local texture = IceHUD.CanAccessValue(aura.icon) and aura.icon or nil
+	return duration, aura.expirationTime - GetTime(), IceHUD:GetAuraApplications(aura), texture, aura.expirationTime
+end
+
+function IceCustomBar.prototype:ScanForTrackedAura(unitName, buffName, buffFilter, mySpellId)
+	local i = 1
+	local remaining
 	local buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId
 	if IceHUD.SpellFunctionsReturnRank then
 		buff, rank, texture, count, type, duration, endTime, unitCaster, _, _, spellId = IceHUD.UnitAura(unitName, i, buffFilter)
 	else
 		buff, texture, count, type, duration, endTime, unitCaster, _, _, spellId = IceHUD.UnitAura(unitName, i, buffFilter)
 	end
-	local isMine = unitCaster == "player"
-	local mySpellId = tonumber(self.moduleSettings.buffToTrack)
+	local isMine = not IceHUD.CanAccessValue(unitCaster) or unitCaster == "player"
 	local checkId = mySpellId ~= nil
 	local validId = true
 
@@ -739,27 +786,30 @@ function IceCustomBar.prototype:GetAuraDuration(unitName, buffName)
 		else
 			buff, texture, count, type, duration, endTime, unitCaster, _, _, spellId = IceHUD.UnitAura(unitName, i, buffFilter)
 		end
-		isMine = unitCaster == "player"
+		isMine = not IceHUD.CanAccessValue(unitCaster) or unitCaster == "player"
 	end
 
-	if self.unitClass == "SHAMAN" then
-		for i=1,MAX_TOTEMS do
-			local haveTotem, totemName, startTime, realDuration, icon = GetTotemInfo(i)
+	return nil
+end
 
-			if haveTotem and totemName then
-				if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
-					duration = self.moduleSettings.maxDuration
-				else
-					duration = realDuration
-				end
+function IceCustomBar.prototype:GetTrackedTotemDuration(buffName)
+	if self.unitClass ~= "SHAMAN" then
+		return nil
+	end
 
-				if ((self.moduleSettings.exactMatch and totemName:upper() == buffName:upper())
-					or (not self.moduleSettings.exactMatch and string.match(totemName:upper(), buffName:upper()))) then
-					endTime = startTime + realDuration
-					remaining = endTime - GetTime()
-					return duration, remaining, 1, icon, endTime
-				end
+	for i=1,MAX_TOTEMS do
+		local haveTotem, totemName, startTime, realDuration, icon = GetTotemInfo(i)
+
+		if haveTotem and totemName
+			and ((self.moduleSettings.exactMatch and totemName:upper() == buffName:upper())
+				or (not self.moduleSettings.exactMatch and string.match(totemName:upper(), buffName:upper()))) then
+			local duration = realDuration
+			if self.moduleSettings.maxDuration and self.moduleSettings.maxDuration ~= 0 then
+				duration = self.moduleSettings.maxDuration
 			end
+
+			local endTime = startTime + realDuration
+			return duration, endTime - GetTime(), 1, icon, endTime
 		end
 	end
 

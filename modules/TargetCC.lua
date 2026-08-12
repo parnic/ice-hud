@@ -260,6 +260,7 @@ function TargetCC.prototype:init(moduleName, unit)
 	self:SetDefaultColor("CC:Root", .1, 0.5, 1)
 
 	self.debuffList = {}
+	self.debuffSpellIds = {}
 	self:PopulateSpellList(self.debuffList, StunCCList, "Stun")
 	self:PopulateSpellList(self.debuffList, IncapacitateCCList, "Incapacitate")
 	self:PopulateSpellList(self.debuffList, FearCCList, "Fear")
@@ -283,6 +284,7 @@ function TargetCC.prototype:PopulateSpellList(debuffListVar, ccList, ccName)
 		if spellName and spellName ~= "" then
 			debuffListVar[spellName] = ccName
 			debuffListVar[ccList[i]] = ccName
+			tinsert(self.debuffSpellIds, ccList[i])
 		end
 	end
 end
@@ -365,6 +367,32 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
+	if IceHUD.GetUnitAuraBySpellID then
+		return self:GetMaxDebuffDurationBySpellID(unitName)
+	end
+
+	return self:GetMaxDebuffDurationByIndex(unitName, debuffNames)
+end
+
+-- The tracked spells are a fixed list, so querying each one avoids iterating the unit's
+-- debuffs, which addons can't do while auras are secret.
+function TargetCC.prototype:GetMaxDebuffDurationBySpellID(unitName)
+	local result = {nil, nil, nil}
+
+	for i = 1, #self.debuffSpellIds do
+		local aura = IceHUD.GetUnitAuraBySpellID(unitName, self.debuffSpellIds[i])
+		local remaining = IceHUD:GetAuraRemaining(aura)
+
+		if remaining and IceHUD.CanAccessValue(aura.name) and (not result[3] or result[3] < remaining)
+			and (not self.moduleSettings.onlyShowForMyDebuffs or IceHUD:IsAuraFromPlayer(aura)) then
+			result = {aura.name, aura.duration, remaining}
+		end
+	end
+
+	return unpack(result)
+end
+
+function TargetCC.prototype:GetMaxDebuffDurationByIndex(unitName, debuffNames)
 	local i = 1
 	local debuff, rank, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId
 	if IceHUD.SpellFunctionsReturnRank then
@@ -396,7 +424,7 @@ function TargetCC.prototype:GetMaxDebuffDuration(unitName, debuffNames)
 		else
 			debuff, texture, count, debuffType, duration, endTime, unitCaster, _, _, spellId = IceHUD.UnitAura(unitName, i, "HARMFUL")
 		end
-		isMine = unitCaster == "player"
+		isMine = not IceHUD.CanAccessValue(unitCaster) or unitCaster == "player"
 	end
 
 	return unpack(result)

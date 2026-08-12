@@ -437,8 +437,12 @@ function IceThreat.prototype:GetSecondHighestThreat()
 	local i = 1
 	local numFound = 0
 	local numMembers = 0
+	local inRaid = UnitInRaid("player")
+	if not IceHUD.CanAccessValue(inRaid) then
+		inRaid = false
+	end
 
-	if UnitInRaid("player") then
+	if inRaid then
 		numMembers = GetNumRaidMembers()
 
 		while numFound < numMembers and i <= MAX_NUM_RAID_MEMBERS do

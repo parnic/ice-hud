@@ -133,6 +133,20 @@ end
 -- compatibility/feature flags
 IceHUD.CanShowTargetCasting = not IceHUD.WowClassic or LibClassicCasterino or (IceHUD.WowClassic and IceHUD.WowVer >= 11500)
 IceHUD.GetPlayerAuraBySpellID = _G["C_UnitAuras"] and C_UnitAuras.GetPlayerAuraBySpellID
+IceHUD.GetUnitAuraBySpellID = _G["C_UnitAuras"] and C_UnitAuras.GetUnitAuraBySpellID
+IceHUD.GetAuraDataBySpellName = _G["C_UnitAuras"] and C_UnitAuras.GetAuraDataBySpellName
+IceHUD.AurasCanBeSecret = issecretvalue ~= nil
+-- Aura containers read secret aura data themselves and drive regions we hand them, so
+-- they're the only way left to show auras we aren't allowed to enumerate. These globals
+-- are published by another addon, so keep checking until they show up.
+local canUseAuraContainer = false
+IceHUD.CanUseAuraContainer = function()
+	if not canUseAuraContainer then
+		canUseAuraContainer = _G["CustomAuraContainerGroupDefaultOptions"] ~= nil and _G["AuraContainerSortMethod"] ~= nil
+	end
+
+	return canUseAuraContainer
+end
 IceHUD.SpellFunctionsReturnRank = IceHUD.WowMain and IceHUD.WowVer < 80000
 IceHUD.EventExistsPlayerPetChanged = IceHUD.WowMain and IceHUD.WowVer < 80000
 IceHUD.EventExistsPetBarChanged = IceHUD.WowMain and IceHUD.WowVer < 80000
@@ -631,6 +645,51 @@ function IceHUD:MathRound(num, idp)
 	return math.floor(num  * mult + 0.5) / mult
 end
 
+-- 12.1 made index- and slot-based aura lookups raise a Lua error for addons whenever
+-- auras are secret (combat, encounters, mythic+, rated pvp). Nothing exposes that state,
+-- so probe it. Anything that can be looked up by spell ID or name should be, instead.
+function IceHUD:CanIterateAuras(unit, filter)
+	if not IceHUD.AurasCanBeSecret then
+		return true
+	end
+
+	return (pcall(C_UnitAuras.GetAuraDataByIndex, unit, 1, filter))
+end
+
+-- Auras with unreadable timing can't be rendered, and substituting zero would draw an
+-- empty bar as though the aura had expired, so callers get nil and skip them.
+function IceHUD:GetAuraRemaining(aura)
+	if not IceHUD.CanAccessValue(aura) or not aura then
+		return nil
+	end
+
+	if not IceHUD.CanAccessValue(aura.duration) or not IceHUD.CanAccessValue(aura.expirationTime) then
+		return nil
+	end
+
+	return aura.expirationTime - GetTime()
+end
+
+-- A present aura whose stack count is secret counts as one so callers don't read it
+-- as absent.
+function IceHUD:GetAuraApplications(aura)
+	if not IceHUD.CanAccessValue(aura) or not aura then
+		return 0
+	end
+
+	if not IceHUD.CanAccessValue(aura.applications) then
+		return 1
+	end
+
+	return aura.applications
+end
+
+-- Spell ID lookups can't be filtered by caster, so this stands in for the old
+-- sourceUnit == "player" test. It also matches pet-cast auras, which that did not.
+function IceHUD:IsAuraFromPlayer(aura)
+	return not IceHUD.CanAccessValue(aura.isFromPlayerOrPlayerPet) or aura.isFromPlayerOrPlayerPet
+end
+
 function IceHUD:GetBuffCount(unit, ability, onlyMine, matchByName)
 	return IceHUD:GetAuraCount("HELPFUL", unit, ability, onlyMine, matchByName)
 end
@@ -657,8 +716,14 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 		return 0, nil
 	end
 
+	local filter = auraType..(onlyMine and "|PLAYER" or "")
+	local spellID = tonumber(ability)
+
 	-- Support for Spell IDs
-	if (IceHUD.GetPlayerAuraBySpellID and tonumber(ability) ~= nil) then
+	if spellID and IceHUD.GetUnitAuraBySpellID then
+		local aura = IceHUD.GetUnitAuraBySpellID(unit, spellID)
+		return IceHUD:GetAuraApplications(aura), nil
+	elseif spellID and IceHUD.GetPlayerAuraBySpellID then
 		local aura = C_UnitAuras.GetPlayerAuraBySpellID(ability)
 		if aura ~= nil then
 			return aura.applications, nil
@@ -667,12 +732,25 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 		end
 	end
 
+	-- An exact name hit avoids iterating, which the scan below can't do while auras
+	-- are secret. Misses still fall through so partial names keep working out of combat.
+	if matchByName and IceHUD.GetAuraDataBySpellName then
+		local aura = IceHUD.GetAuraDataBySpellName(unit, ability, filter)
+		if IceHUD.CanAccessValue(aura) and aura then
+			return IceHUD:GetAuraApplications(aura), nil
+		end
+	end
+
+	if not IceHUD:CanIterateAuras(unit, filter) then
+		return 0, nil
+	end
+
 	local i = 1
 	local name, _, texture, applications
 	if IceHUD.SpellFunctionsReturnRank then
-		name, _, texture, applications = IceHUD.UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+		name, _, texture, applications = IceHUD.UnitAura(unit, i, filter)
 	else
-		name, texture, applications = IceHUD.UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+		name, texture, applications = IceHUD.UnitAura(unit, i, filter)
 	end
 	while name and texture do
 		if (not matchByName and string.match(texture:upper(), ability:upper()))
@@ -682,9 +760,9 @@ function IceHUD:GetAuraCount(auraType, unit, ability, onlyMine, matchByName)
 
 		i = i + 1
 		if IceHUD.SpellFunctionsReturnRank then
-			name, _, texture, applications = IceHUD.UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+			name, _, texture, applications = IceHUD.UnitAura(unit, i, filter)
 		else
-			name, texture, applications = IceHUD.UnitAura(unit, i, auraType..(onlyMine and "|PLAYER" or ""))
+			name, texture, applications = IceHUD.UnitAura(unit, i, filter)
 		end
 	end
 
@@ -694,7 +772,24 @@ end
 do
 	local retval = {}
 
-	function IceHUD:HasBuffs(unit, spellIDs, filter)
+	-- The filter is unused here: a spell ID already implies helpful/harmful, and no
+	-- caller asks for the other filter flags.
+	local function HasBuffsBySpellID(unit, spellIDs, filter)
+		for i=1, #spellIDs do
+			local aura = IceHUD.GetUnitAuraBySpellID(unit, spellIDs[i])
+			if not IceHUD.CanAccessValue(aura) or not aura then
+				retval[i] = false
+			elseif not IceHUD.CanAccessValue(aura.applications) or aura.applications == 0 then
+				retval[i] = true
+			else
+				retval[i] = aura.applications
+			end
+		end
+
+		return retval
+	end
+
+	local function HasBuffsByIndex(unit, spellIDs, filter)
 		for i=1, #spellIDs do
 			retval[i] = false
 		end
@@ -714,7 +809,7 @@ do
 		while name do
 			for j=1, #spellIDs do
 				if IceHUD.CanAccessValue(auraID) and spellIDs[j] == auraID then
-					retval[i] = applications == 0 and true or applications
+					retval[j] = applications == 0 and true or applications
 					break
 				end
 			end
@@ -728,6 +823,16 @@ do
 		end
 
 		return retval
+	end
+
+	-- Index-based aura lookups hard error for addons while auras are secret (12.1+),
+	-- so query each spell ID directly wherever that API exists.
+	function IceHUD:HasBuffs(unit, spellIDs, filter)
+		if IceHUD.GetUnitAuraBySpellID then
+			return HasBuffsBySpellID(unit, spellIDs, filter)
+		end
+
+		return HasBuffsByIndex(unit, spellIDs, filter)
 	end
 
 	function IceHUD:HasDebuffs(unit, spellIDs, filter)

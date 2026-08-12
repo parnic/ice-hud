@@ -40,10 +40,15 @@ IceTargetInfo.prototype.isPlayer = nil
 IceTargetInfo.prototype.playerClass = nil
 
 local UnitSelectionColor = function(unit)
+	local playerPvp = UnitIsPVP("player")
+	if not IceHUD.CanAccessValue(playerPvp) then
+		playerPvp = false
+	end
+
 	if not UnitExists(unit) then
 		return 1, 1, 1, 1
 	elseif UnitIsUnit(unit, "player") or UnitIsUnit(unit, "pet") then
-		if UnitIsPVP("player") then
+		if playerPvp then
 			return 0, 1, 0, 1 -- player is in pvp, unit is player or player's pet, return green
 		else
 			return 0, 0, 1, 1 -- player is not pvp, unit is player or player's pet, return blue
@@ -56,8 +61,10 @@ local UnitSelectionColor = function(unit)
 		end
 
 		local unitPlayer = UnitIsPlayer(unit)
-		local playerPvp = UnitIsPVP("player")
 		local unitPvp = UnitIsPVP(unit)
+		if not IceHUD.CanAccessValue(unitPvp) then
+			unitPvp = false
+		end
 		local unitFaction = UnitFactionGroup(unit)
 		local playerFaction = UnitFactionGroup("player")
 
@@ -127,6 +134,11 @@ function IceTargetInfo.prototype:Enable(core)
 	end
 
 	self:RegisterEvent("UNIT_AURA", "AuraChanged")
+
+	-- The "In Combat" aura filter otherwise waits for the next aura event to notice
+	-- that combat started or ended.
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateBuffs")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "UpdateBuffs")
 
 	self:RegisterEvent("UNIT_NAME_UPDATE", "TargetName")
 	self:RegisterEvent("UNIT_FACTION", "TargetFaction")
@@ -232,8 +244,14 @@ function IceTargetInfo.prototype:Disable(core)
 	self:UnregisterFontStrings()
 end
 
+-- Where auras are secret, only the aura container can tell which ones the player cast or
+-- put them in a chosen order, so these settings mean nothing without it.
+function IceTargetInfo.prototype:CanSizeOwnAuras()
+	return not IceHUD.IsSecretEnv() or IceHUD.CanUseAuraContainer()
+end
+
 function IceTargetInfo.prototype:CanSortBuffs()
-	return not IceHUD.IsSecretEnv()
+	return self:CanSizeOwnAuras()
 end
 
 
@@ -450,7 +468,7 @@ function IceTargetInfo.prototype:GetOptions()
 					return not self.moduleSettings.enabled
 				end,
 				hidden = function()
-					return IceHUD.IsSecretEnv()
+					return not self:CanSizeOwnAuras()
 				end,
 				order = 35
 			},
@@ -628,7 +646,7 @@ function IceTargetInfo.prototype:GetOptions()
 					return not self.moduleSettings.enabled
 				end,
 				hidden = function()
-					return IceHUD.IsSecretEnv()
+					return not self:CanSizeOwnAuras()
 				end,
 				order = 35
 			},
@@ -726,38 +744,25 @@ function IceTargetInfo.prototype:GetOptions()
 		}
 	}
 
-		-- unable to sort buffs if we can't inspect their durations due to secret values
-	if self:CanSortBuffs() then
-		opts.buff.args.sorted = {
+	-- unable to sort buffs if we can't inspect their durations due to secret values. this is
+	-- checked when the options are shown because the aura container arrives after we load.
+	for _, aura in ipairs({"buff", "debuff"}) do
+		opts[aura].args.sorted = {
 			type = 'toggle',
 			name = L["Sort by expiration"],
 			desc = L["Toggles whether or not to sort by expiration time (otherwise they're sorted how the game sorts them - by application time)"],
 			get = function()
-				return self.moduleSettings.auras["buff"].sortByExpiration
+				return self.moduleSettings.auras[aura].sortByExpiration
 			end,
 			set = function(info, v)
-				self.moduleSettings.auras["buff"].sortByExpiration = v
+				self.moduleSettings.auras[aura].sortByExpiration = v
 				self:RedrawBuffs()
 			end,
 			disabled = function()
 				return not self.moduleSettings.enabled
 			end,
-			order = 32.2
-		}
-
-		opts.debuff.args.sorted = {
-			type = 'toggle',
-			name = L["Sort by expiration"],
-			desc = L["Toggles whether or not to sort by expiration time (otherwise they're sorted how the game sorts them - by application time)"],
-			get = function()
-				return self.moduleSettings.auras["debuff"].sortByExpiration
-			end,
-			set = function(info, v)
-				self.moduleSettings.auras["debuff"].sortByExpiration = v
-				self:RedrawBuffs()
-			end,
-			disabled = function()
-				return not self.moduleSettings.enabled
+			hidden = function()
+				return not self:CanSortBuffs()
 			end,
 			order = 32.2
 		}
@@ -1344,6 +1349,11 @@ function IceTargetInfo.prototype:CreateAuraFrame(aura, redraw)
 		error("Invalid Auraframe")
 	end
 
+	if IceHUD.CanUseAuraContainer() then
+		self:CreateAuraContainer(aura, auraFrame, point)
+		return
+	end
+
 	if (not self.frame[auraFrame]) then
 		self.frame[auraFrame] = CreateFrame("Frame", nil, self.frame)
 		self.frame[auraFrame]:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
@@ -1365,6 +1375,250 @@ function IceTargetInfo.prototype:CreateAuraFrame(aura, redraw)
 	else
 		self.frame[auraFrame]:Hide()
 	end
+end
+
+-- Aura groups can't be removed once added, so a settings change that alters which groups
+-- are needed forces a fresh container rather than a reconfigure.
+function IceTargetInfo.prototype:GetAuraGroupDescriptions(aura)
+	local settings = self.moduleSettings.auras[aura]
+	local splitByCaster = settings.ownSize ~= settings.size
+	local splitByStealable = aura == "buff" and self.playerClass == "MAGE"
+
+	local descriptions = {shape = tostring(splitByCaster) .. "-" .. tostring(splitByStealable)}
+
+	for casterIndex = 1, splitByCaster and 2 or 1 do
+		for stealIndex = 1, splitByStealable and 2 or 1 do
+			local isMine, isStealable
+
+			if splitByCaster then
+				isMine = casterIndex == 1
+			end
+			if splitByStealable then
+				isStealable = stealIndex == 1
+			end
+
+			tinsert(descriptions, {
+				key = "group" .. casterIndex .. stealIndex,
+				candidateFilters = (isMine ~= nil or isStealable ~= nil)
+					and {isFromPlayerOrPlayerPet = isMine, isStealable = isStealable} or nil,
+				size = isMine and settings.ownSize or settings.size,
+				stealable = isStealable == true,
+			})
+		end
+	end
+
+	return descriptions
+end
+
+-- Aura groups can't be removed and their buttons can't be freed, so a container that no
+-- longer matches is parked for the next time that shape comes back around.
+function IceTargetInfo.prototype:RetireAuraContainer(aura, container)
+	self.retiredAuraContainers = self.retiredAuraContainers or {}
+	self.retiredAuraContainers[aura .. container.iceGroupShape] = container
+
+	local ok, err = pcall(function()
+		container:SetEnabled(false)
+		container:Hide()
+	end)
+
+	if not ok then
+		IceHUD:Debug("retiring " .. aura .. " container failed: " .. tostring(err))
+	end
+end
+
+function IceTargetInfo.prototype:ReclaimAuraContainer(aura, shape)
+	local retired = self.retiredAuraContainers or {}
+	local container = retired[aura .. shape]
+
+	retired[aura .. shape] = nil
+
+	return container
+end
+
+-- The container invokes this through securecallfunction, which discards errors, so a
+-- broken button would otherwise just render nothing with no way to tell why.
+function IceTargetInfo.prototype:SafeInitializeAuraButton(aura, description, container, button)
+	local ok, err = pcall(self.InitializeAuraButton, self, aura, description, container, button)
+
+	if not ok and not container.iceReportedError then
+		container.iceReportedError = true
+		IceHUD:Debug("failed to set up " .. aura .. " display: " .. tostring(err))
+	end
+end
+
+function IceTargetInfo.prototype:InitializeAuraButton(aura, description, container, button)
+	local inset = description.stealable and 4 or 1
+	local border = button:CreateTexture(nil, "BACKGROUND")
+	border:SetAllPoints(button)
+
+	if description.stealable then
+		border:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Stealable")
+	elseif aura == "debuff" then
+		border:SetColorTexture(1, 1, 1, 1)
+		button:AddDispelTypeTexture(border)
+	else
+		border:SetColorTexture(0, 0, 0, 0.5)
+	end
+
+	local icon = button:CreateTexture(nil, "ARTWORK")
+	icon:SetPoint("TOPLEFT", button, "TOPLEFT", inset, -inset)
+	icon:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -inset, inset)
+	button:SetIcon(icon)
+
+	local cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
+	cooldown:SetAllPoints(button)
+	cooldown:SetReverse(true)
+	cooldown:SetDrawEdge(false)
+	button:SetDurationCooldown(cooldown)
+
+	local stack = button:CreateFontString()
+	stack:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 3, -1)
+	button:SetApplicationCount(stack)
+
+	button:SetTooltipAnchorPoint("ANCHOR_BOTTOMLEFT")
+
+	local record = {button = button, icon = icon, cooldown = cooldown, stack = stack}
+
+	tinsert(container.iceButtons[description.key], record)
+	self:ApplyAuraButtonSettings(record, description)
+end
+
+-- The container's layout only anchors buttons, so their size is ours to set. Buttons only
+-- deny tainted access while auras are secret, so settings changes reach them out of combat.
+function IceTargetInfo.prototype:ApplyAuraButtonSettings(record, description)
+	local zoom = self.moduleSettings.zoom
+
+	record.button:SetSize(description.size, description.size)
+	record.button:EnableMouse(self.moduleSettings.mouseBuff)
+	record.icon:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
+	record.cooldown:SetHideCountdownNumbers(self.moduleSettings.forceHideCooldownNumbers)
+	self:FontFactory(self.moduleSettings.stackFontSize, record.button, record.stack, "OUTLINE")
+end
+
+function IceTargetInfo.prototype:CreateAuraContainer(aura, auraFrame, point)
+	local settings = self.moduleSettings.auras[aura]
+	local descriptions = self:GetAuraGroupDescriptions(aura)
+	local container = self.frame[auraFrame]
+
+	-- Each group preallocates a batch of buttons, so don't build one until it's wanted.
+	if not container and not settings.show then
+		return
+	end
+
+	if container and container.iceGroupShape ~= descriptions.shape then
+		self:RetireAuraContainer(aura, container)
+		container = self:ReclaimAuraContainer(aura, descriptions.shape)
+		self.frame[auraFrame] = container
+	end
+
+	if not container then
+		container = CreateFrame("AuraContainer", nil, self.frame, "CustomAuraContainerTemplate")
+		container:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
+		container:SetUnit(self.unit)
+		container.iceGroupShape = descriptions.shape
+		container.iceGroupKeys = {}
+		container.iceButtons = {}
+		self.frame[auraFrame] = container
+
+		for i = 1, #descriptions do
+			self:AddAuraGroupSafely(aura, container, descriptions[i])
+		end
+	end
+
+	container:ClearAllPoints()
+	container:SetPoint(point, self.frame, settings.anchorTo, settings.offsetX, settings.offsetY)
+
+	local ok, err = pcall(self.ApplyAuraContainerSettings, self, aura, container, descriptions)
+	if not ok then
+		IceHUD:Debug("aura container layout failed for " .. aura .. ": " .. tostring(err))
+	end
+end
+
+-- One rejected group must not take down the rest of the module's frame creation.
+function IceTargetInfo.prototype:AddAuraGroupSafely(aura, container, description)
+	container.iceButtons[description.key] = {}
+
+	local ok, err = pcall(container.AddAuraGroup, container, description.key, self:GetAuraFilterString(aura), {
+		initializeFrame = function(button) self:SafeInitializeAuraButton(aura, description, container, button) end,
+		candidateFilters = description.candidateFilters,
+		maxFrameCount = IceCore.BuffLimit,
+	})
+
+	if not ok then
+		container.iceButtons[description.key] = nil
+		IceHUD:Debug("aura group " .. description.key .. " rejected: " .. tostring(err))
+		return
+	end
+
+	tinsert(container.iceGroupKeys, description.key)
+end
+
+function IceTargetInfo.prototype:ApplyAuraContainerSettings(aura, container, descriptions)
+	local settings = self.moduleSettings.auras[aura]
+	local left = settings.growDirection == "Left"
+	local spacing = self.moduleSettings.spaceBetweenBuffs
+	local sortMethod = settings.sortByExpiration and AuraContainerSortMethod.Expiration or AuraContainerSortMethod.Default
+	-- One line size covers every group, so the largest icons are the ones that get to
+	-- honor the per-row count.
+	local widest = math.max(settings.size, settings.ownSize)
+
+	container:SetFlowLayoutAxis(AnchorUtil.FlowLayoutAxis.Horizontal)
+	container:SetFlowLayoutAnchorPoint(left and "TOPRIGHT" or "TOPLEFT")
+	container:SetFlowLayoutGrowthDirection(left and AnchorUtil.FlowDirection.Left or AnchorUtil.FlowDirection.Right,
+		AnchorUtil.FlowDirection.Down)
+	container:SetFlowLayoutMaximumLineSize(settings.perRow * widest + (settings.perRow - 1) * spacing)
+
+	for i = 1, #descriptions do
+		local description = descriptions[i]
+
+		container:SetAuraGroupSortMethod(description.key, sortMethod, AuraContainerSortDirection.Normal)
+		container:SetAuraGroupLayout(description.key, {
+			elementSpacing = spacing,
+			lineSpacing = spacing,
+			elementWidth = description.size,
+			elementHeight = description.size,
+			layoutIndex = i,
+		})
+
+		self:ApplyAuraButtonSettingsForGroup(container, description)
+	end
+
+	container:SetEnabled(settings.show)
+	container:SetShown(settings.show)
+end
+
+-- Restrictions apply to buttons while auras are secret, so a settings change made in
+-- combat only reaches the ones it can. The next non-combat pass catches the rest.
+function IceTargetInfo.prototype:ApplyAuraButtonSettingsForGroup(container, description)
+	for _, record in ipairs(container.iceButtons[description.key] or {}) do
+		pcall(self.ApplyAuraButtonSettings, self, record, description)
+	end
+end
+
+-- The "In Combat" setting narrows to the player's own auras, which the filter string
+-- already expresses, so the container applies it instead of us inspecting casters.
+function IceTargetInfo.prototype:GetAuraFilterString(aura)
+	local reaction = aura == "buff" and "HELPFUL" or "HARMFUL"
+	local onlyMine = self.moduleSettings.auras[aura].filter == "Always"
+		or (self.moduleSettings.auras[aura].filter == "In Combat" and UnitAffectingCombat("player"))
+
+	return reaction .. (onlyMine and "|PLAYER" or "")
+end
+
+function IceTargetInfo.prototype:UpdateAuraContainer(aura)
+	local container = self.frame[aura .. "Frame"]
+
+	if not container or not container.iceGroupKeys then
+		return
+	end
+
+	for i = 1, #container.iceGroupKeys do
+		container:SetAuraGroupFilterString(container.iceGroupKeys[i], self:GetAuraFilterString(aura))
+	end
+
+	container:SetEnabled(self.moduleSettings.auras[aura].show)
+	container:SetUnit(self.unit)
+	container:UpdateAllAuras()
 end
 
 do
@@ -1518,6 +1772,10 @@ local function BuffExpirationSort(a, b)
 end
 
 function IceTargetInfo.prototype:UpdateBuffType(aura)
+	if IceHUD.CanUseAuraContainer() then
+		return self:UpdateAuraContainer(aura)
+	end
+
 	if not self.buffData then
 		self.buffData = {
 			buff = {},
@@ -1546,6 +1804,11 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 	end
 
 	if self.moduleSettings.auras[aura].show then
+		-- Showing every aura on a unit means iterating them, which addons can't do while
+		-- auras are secret. The loop still runs so the icons clear instead of going stale.
+		local auraFilter = reaction .. (filter and "|PLAYER" or "")
+		local canIterate = IceHUD:CanIterateAuras(self.unit, auraFilter)
+
 		for i = 1, IceCore.BuffLimit do
 			local _, icon, count, duration, expirationTime, unitCaster, isStealable, auraInstanceID
 
@@ -1553,12 +1816,14 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 			local spellID
 			---- end change by Fulzamoth
 
-			if IceHUD.SpellFunctionsReturnRank then
-				_, _, icon, count, _, duration, expirationTime, unitCaster, isStealable = IceHUD.UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
+			if not canIterate then
+				-- nothing to read; leave every field nil so the icon hides
+			elseif IceHUD.SpellFunctionsReturnRank then
+				_, _, icon, count, _, duration, expirationTime, unitCaster, isStealable = IceHUD.UnitAura(self.unit, i, auraFilter)
 			else
 				---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
 				-- 1. in addition to other info, get the spellID for for the (de)buff
-				_, icon, count, _, duration, expirationTime, unitCaster, isStealable, _, spellID, _, _, _, _, _, auraInstanceID = IceHUD.UnitAura(self.unit, i, reaction .. (filter and "|PLAYER" or ""))
+				_, icon, count, _, duration, expirationTime, unitCaster, isStealable, _, spellID, _, _, _, _, _, auraInstanceID = IceHUD.UnitAura(self.unit, i, auraFilter)
 				if IceHUD.CanAccessValue(duration) and duration == 0 and LibClassicDurations then
 					-- 2. if no duration defined for the (de)buff, look up the spell in LibClassicDurations
 					local classicDuration, classicExpirationTime = LibClassicDurations:GetAuraDurationByUnit(self.unit, spellID, unitCaster)
@@ -1771,6 +2036,9 @@ function IceTargetInfo.prototype:TargetName(event, unit)
 		else
 			self.leader = UnitIsGroupLeader(self.unit) and " |cffcccc11Leader|r" or ""
 		end
+		if not IceHUD.CanAccessValue(self.leader) then
+			self.leader = false
+		end
 		self:Update(unit)
 	end
 end
@@ -1816,7 +2084,11 @@ end
 function IceTargetInfo.prototype:TargetFaction(event, unit)
 	if (unit == self.unit or unit == internal) then
 		if (self.isPlayer) then
-			if (UnitIsPVP(self.unit)) then
+			local pvp = UnitIsPVP(self.unit)
+			if not IceHUD.CanAccessValue(pvp) then
+				pvp = false
+			end
+			if pvp then
 				local color = "ff10ff10" -- friendly
 				if (UnitFactionGroup(self.unit) ~= UnitFactionGroup("player")) then
 					color = "ffff1010" -- hostile
@@ -1890,14 +2162,36 @@ function IceTargetInfo.prototype:UpdateAlpha()
 	IceTargetInfo.super.prototype.UpdateAlpha(self)
 
 	-- Temp until Blizzard fixes their cooldown wipes. http://www.wowinterface.com/forums/showthread.php?t=49950
-	for i = 1, #self.frame["buffFrame"].iconFrames do
-		self.frame["buffFrame"].iconFrames[i].cd:SetSwipeColor(0, 0, 0, self.alpha)
-		self.frame["buffFrame"].iconFrames[i].cd:SetDrawEdge(false)
+	self:UpdateAuraCooldownAlpha("buffFrame")
+	self:UpdateAuraCooldownAlpha("debuffFrame")
+end
+
+function IceTargetInfo.prototype:UpdateAuraCooldownAlpha(auraFrame)
+	local frame = self.frame[auraFrame]
+
+	if not frame or not IceHUD.CanAccessValue(self.alpha) then
+		return
 	end
-	for i = 1, #self.frame["debuffFrame"].iconFrames do
-		self.frame["debuffFrame"].iconFrames[i].cd:SetSwipeColor(0, 0, 0, self.alpha)
-		self.frame["debuffFrame"].iconFrames[i].cd:SetDrawEdge(false)
+
+	if not frame.iceButtons then
+		for i = 1, #frame.iconFrames do
+			self:SetAuraCooldownAlpha(frame.iconFrames[i].cd)
+		end
+		return
 	end
+
+	-- These cooldowns belong to buttons that refuse tainted access while auras are secret,
+	-- so tinting them is best-effort.
+	for _, records in pairs(frame.iceButtons) do
+		for _, record in ipairs(records) do
+			pcall(self.SetAuraCooldownAlpha, self, record.cooldown)
+		end
+	end
+end
+
+function IceTargetInfo.prototype:SetAuraCooldownAlpha(cooldown)
+	cooldown:SetSwipeColor(0, 0, 0, self.alpha)
+	cooldown:SetDrawEdge(false)
 end
 
 function IceTargetInfo.prototype:OnEnter(frame)

@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.17.19
+
+- Fix 12.1 problems with buff and debuff inspecting in various modules.
+- Fix 12.1 taint/secret errors with various newly-secret API values.
+
 ## v1.17.18
 
 - Fixed castbars being invisible on Midnight game clients after v1.17.17

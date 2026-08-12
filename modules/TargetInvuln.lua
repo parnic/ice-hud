@@ -83,6 +83,7 @@ function TargetInvuln.prototype:init(moduleName, unit)
 	self:SetDefaultColor("CC:Invuln", 0.99, 0.99, 0.99)
 
 	self.buffList = {}
+	self.buffSpellIds = {}
 	self:PopulateSpellList(self.buffList, InvulnList,"Invuln")
 
 	self.previousbuff = nil
@@ -99,6 +100,7 @@ function TargetInvuln.prototype:PopulateSpellList(buffListVar, ccList, ccName)
 
 		if spellName and spellName ~= "" then
 			buffListVar[spellName] = ccName
+			tinsert(self.buffSpellIds, ccList[i])
 		end
 	end
 end
@@ -164,6 +166,39 @@ end
 -- 'Protected' methods --------------------------------------------------------
 
 function TargetInvuln.prototype:GetMaxbuffDuration(unitName, buffNames)
+	if IceHUD.GetUnitAuraBySpellID then
+		return self:GetMaxbuffDurationBySpellID(unitName)
+	end
+
+	return self:GetMaxbuffDurationByIndex(unitName, buffNames)
+end
+
+-- The tracked spells are a fixed list, so querying each one avoids iterating the unit's
+-- buffs, which addons can't do while auras are secret.
+function TargetInvuln.prototype:GetMaxbuffDurationBySpellID(unitName)
+	local result = {nil, nil, nil}
+
+	for i = 1, #self.buffSpellIds do
+		local aura = IceHUD.GetUnitAuraBySpellID(unitName, self.buffSpellIds[i])
+		local remaining = IceHUD:GetAuraRemaining(aura)
+		local duration = remaining and aura.duration
+
+		-- A permanent aura has no expiration time, so peg it to something drawable.
+		if remaining and duration == 0 and remaining < 0 then
+			duration = 100000
+			remaining = 100000
+		end
+
+		if remaining and IceHUD.CanAccessValue(aura.name) and (not result[3] or result[3] <= remaining)
+			and (not self.moduleSettings.onlyShowForMybuffs or IceHUD:IsAuraFromPlayer(aura)) then
+			result = {aura.name, duration, remaining}
+		end
+	end
+
+	return unpack(result)
+end
+
+function TargetInvuln.prototype:GetMaxbuffDurationByIndex(unitName, buffNames)
 	local i = 1
 	local buff, rank, texture, count, buffType, duration, endTime, unitCaster
 	if IceHUD.SpellFunctionsReturnRank then
@@ -202,7 +237,7 @@ function TargetInvuln.prototype:GetMaxbuffDuration(unitName, buffNames)
 		else
 			buff, texture, count, buffType, duration, endTime, unitCaster = IceHUD.UnitAura(unitName, i, "HELPFUL")
 		end
-		isMine = unitCaster == "player"
+		isMine = not IceHUD.CanAccessValue(unitCaster) or unitCaster == "player"
 	end
 
 	return unpack(result)
