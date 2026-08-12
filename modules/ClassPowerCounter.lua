@@ -213,7 +213,7 @@ function IceClassPowerCounter.prototype:GetOptions()
 		type = 'range',
 		name = L["Rune gap"],
 		desc = L["Spacing between each rune (only works for graphical mode)"],
-		min = 0,
+		min = -20,
 		max = 100,
 		step = 1,
 		get = function()

@@ -6,6 +6,7 @@
 - Fixed 12.1 taint/secret errors with various newly-secret API values.
 - Fixed class coloring, party role icons, and target-of-target self detection erroring on units whose identity is secret.
 - The threat bar now hides itself instead of erroring when threat values are secret, which happens against bosses in 12.1.
+- Allowed various "class power" modules to use negative "rune gap" values to cram points together when the textures have built-in margins.
 
 ## v1.17.18
 
