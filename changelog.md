@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.20
+
+- Fixed UnitIsGroupLeader secret error in 12.1.
+
 ## v1.17.19
 
 - Fixed 12.1 problems with buff and debuff inspecting in various modules.

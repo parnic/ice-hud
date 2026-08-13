@@ -2026,10 +2026,11 @@ function IceTargetInfo.prototype:TargetName(event, unit)
 		if UnitIsPartyLeader then
 			self.leader = UnitIsPartyLeader(self.unit) and " |cffcccc11Leader|r" or ""
 		else
-			self.leader = UnitIsGroupLeader(self.unit) and " |cffcccc11Leader|r" or ""
-		end
-		if not IceHUD.CanAccessValue(self.leader) then
-			self.leader = false
+			local leader = UnitIsGroupLeader(self.unit)
+			if not IceHUD.CanAccessValue(leader) then
+				leader = false
+			end
+			self.leader = leader and " |cffcccc11Leader|r" or ""
 		end
 		self:Update(unit)
 	end
