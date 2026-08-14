@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.22
+
+- Packaged a newer version of LibDogTag-Unit-3.0 to pick up another 12.1 fix.
+
 ## v1.17.21
 
 - Packaged a newer version of LibDogTag-Unit-3.0 to pick up a 12.1 fix.
