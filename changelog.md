@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.23
+
+- Packaged a newer version of LibDogTag-Unit-3.0 to pick up remaining 12.1 fixes verified with default IceHUD TargetInfo DogTags on a regular Midnight instance mob.
+
 ## v1.17.22
 
 - Packaged a newer version of LibDogTag-Unit-3.0 to pick up another 12.1 fix.
