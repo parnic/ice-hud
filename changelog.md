@@ -1,62 +1,67 @@
 # Changelog
 
+## v1.17.24
+
+- Fix errors thrown by PlayerInfo in some situations.
+- Add support for weapon enchants on PlayerInfo in 12.1.
+
 ## v1.17.23
 
-- Packaged a newer version of LibDogTag-Unit-3.0 to pick up remaining 12.1 fixes verified with default IceHUD TargetInfo DogTags on a regular Midnight instance mob.
+- Package a newer version of LibDogTag-Unit-3.0 to pick up remaining 12.1 fixes verified with default IceHUD TargetInfo DogTags on a regular Midnight instance mob.
 
 ## v1.17.22
 
-- Packaged a newer version of LibDogTag-Unit-3.0 to pick up another 12.1 fix.
+- Package a newer version of LibDogTag-Unit-3.0 to pick up another 12.1 fix.
 
 ## v1.17.21
 
-- Packaged a newer version of LibDogTag-Unit-3.0 to pick up a 12.1 fix.
+- Package a newer version of LibDogTag-Unit-3.0 to pick up a 12.1 fix.
 
 ## v1.17.20
 
-- Fixed UnitIsGroupLeader secret error in 12.1.
+- Fix UnitIsGroupLeader secret error in 12.1.
 
 ## v1.17.19
 
-- Fixed 12.1 problems with buff and debuff inspecting in various modules.
-- Fixed 12.1 taint/secret errors with various newly-secret API values.
-- Fixed class coloring, party role icons, and target-of-target self detection erroring on units whose identity is secret.
+- Fix 12.1 problems with buff and debuff inspecting in various modules.
+- Fix 12.1 taint/secret errors with various newly-secret API values.
+- Fix class coloring, party role icons, and target-of-target self detection erroring on units whose identity is secret.
 - The threat bar now hides itself instead of erroring when threat values are secret, which happens against bosses in 12.1.
-- Allowed various "class power" modules to use negative "rune gap" values to cram points together when the textures have built-in margins.
+- Allow various "class power" modules to use negative "rune gap" values to cram points together when the textures have built-in margins.
 
 ## v1.17.18
 
-- Fixed castbars being invisible on Midnight game clients after v1.17.17
+- Fix castbars being invisible on Midnight game clients after v1.17.17
 
 ## v1.17.17
 
-- Fixed bars in pre-Midnight clients sometimes failing to show when they should, most prominently noticeable with TargetHealth going from a dead target to a not-dead one.
-- Disabled Absorb functionality in game versions where the Absorb APIs don't actually work but are still present (anything < game version 5.2.0)
+- Fix bars in pre-Midnight clients sometimes failing to show when they should, most prominently noticeable with TargetHealth going from a dead target to a not-dead one.
+- Disable Absorb functionality in game versions where the Absorb APIs don't actually work but are still present (anything < game version 5.2.0)
 - Update Classic and Titan TOCs.
 
 ## v1.17.16
 
-- Fixed the "Text appearance" outline settings not applying to DogTag text.
-- Fixed Slice And Dice not tracking the buff on TBC Anniversary 2.5.6
+- Fix the "Text appearance" outline settings not applying to DogTag text.
+- Fix Slice And Dice not tracking the buff on TBC Anniversary 2.5.6
 - Update TOCs for 12.1.0 and 2.5.6
 
 ## v1.17.15
 
-- Fixed target castbar sometimes using the out-of-combat alpha after entering combat.
-- Ensured combo points stay centered even after adjusting the Gap value. Note: this may cause some peoples' combo points placement to be different if you've adjusted both Gap and Offset.
+- Fix target castbar sometimes using the out-of-combat alpha after entering combat.
+- Ensure combo points stay centered even after adjusting the Gap value. Note: this may cause some peoples' combo points placement to be different if you've adjusted both Gap and Offset.
 
 ## v1.17.14
 
-- Hopefully fixed another secret error in the Vigor module.
-- Updated TOCs for 12.0.7
-- Fixed configuration mode leaving "RangeCheck" text on the screen when LibRangeCheck is not available.
-- Fixed feature and behavior changes in non-Midnight clients. Classic's client code was recently updated to bring in Midnight's changes, and we were using the wrong function to determine whether Secrets were ever possible in the game or not.
-- Fixed Absorb modules always showing their upper text value even with no absorb in a pre-Midnight client.
+- Hopefully fix another secret error in the Vigor module.
+- Update TOCs for 12.0.7
+- Fix configuration mode leaving "RangeCheck" text on the screen when LibRangeCheck is not available.
+- Fix feature and behavior changes in non-Midnight clients. Classic's client code was recently updated to bring in Midnight's changes, and we were using the wrong function to determine whether Secrets were ever possible in the game or not.
+- Fix Absorb modules always showing their upper text value even with no absorb in a pre-Midnight client.
 
 ## v1.17.13
 
-- Added cast times back to the target castbar for not-the-player targets.
-- Fixed AlternatePower bar sometimes disappearing after mounting up and never coming back. This is used for some quests to indicate your progress in filling something up, among other things.
+- Add cast times back to the target castbar for not-the-player targets.
+- Fix AlternatePower bar sometimes disappearing after mounting up and never coming back. This is used for some quests to indicate your progress in filling something up, among other things.
 
 ## v1.17.12
 

@@ -2,6 +2,14 @@ local L = LibStub("AceLocale-3.0"):GetLocale("IceHUD", false)
 local PlayerInfo = IceCore_CreateClass(IceTargetInfo)
 
 local EPSILON = 0.5
+local ValidAnchors = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", "CENTER" }
+
+-- Aura containers create and own their buttons, so weapon enchants can't be appended to
+-- the buff display anymore. They get their own small strip of icon frames instead.
+local WeaponEnchantSlots = {
+	{type = "mh", inventorySlot = "MAINHANDSLOT", endTimeKey = "mainHandEnchantEndTime", timeSetKey = "mainHandEnchantTimeSet"},
+	{type = "oh", inventorySlot = "SECONDARYHANDSLOT", endTimeKey = "offHandEnchantEndTime", timeSetKey = "offHandEnchantTimeSet"},
+}
 
 PlayerInfo.prototype.mainHandEnchantTimeSet = 0
 PlayerInfo.prototype.mainHandEnchantEndTime = 0
@@ -20,6 +28,17 @@ function PlayerInfo.prototype:GetDefaultSettings()
 	settings["enabled"] = false
 	settings["vpos"] = -100
 	settings["hideBlizz"] = false
+
+	-- The strip is positioned on its own because the aura container's coordinates are
+	-- secret: we can't read where the buffs ended up and line up with them. Default it to
+	-- a row above the buff anchor, which is the one spot buffs can't grow into.
+	settings["weaponEnchants"] = {
+		show = true,
+		anchorTo = settings.auras.buff.anchorTo,
+		offsetX = settings.auras.buff.offsetX,
+		offsetY = settings.auras.buff.offsetY + settings.auras.buff.size + settings.spaceBetweenBuffs,
+		growDirection = settings.auras.buff.growDirection,
+	}
 
 	return settings
 end
@@ -46,6 +65,106 @@ function PlayerInfo.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		order = 33.1,
+	}
+
+	local function EnchantsDisabled()
+		return not self.moduleSettings.enabled or not self.moduleSettings.weaponEnchants.show
+	end
+
+	opts["weaponEnchants"] = {
+		type = 'group',
+		name = "|c"..self.configColor..L["Weapon Enchant Settings"].."|r",
+		desc = L["Weapon Enchant Settings"],
+		-- Only the aura container path uses this strip; everywhere else weapon enchants are
+		-- still appended to the buff display and follow its settings.
+		hidden = function()
+			return not IceHUD.CanUseAuraContainer()
+		end,
+		args = {
+			show = {
+				type = 'toggle',
+				name = L["Show weapon enchants"],
+				desc = L["Toggles whether or not temporary weapon enchants are displayed"],
+				get = function()
+					return self.moduleSettings.weaponEnchants.show
+				end,
+				set = function(info, v)
+					self.moduleSettings.weaponEnchants.show = v
+					self:CreateWeaponEnchantFrame(false)
+					self:UpdateWeaponEnchants()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
+				order = 41.1,
+			},
+			growDirection = {
+				type = 'select',
+				name = L["Grow direction"],
+				desc = L["Which direction the weapon enchants should grow from the anchor point"],
+				values = { "Left", "Right" },
+				get = function(info)
+					return IceHUD:GetSelectValue(info, self.moduleSettings.weaponEnchants.growDirection)
+				end,
+				set = function(info, v)
+					self.moduleSettings.weaponEnchants.growDirection = info.option.values[v]
+					self:CreateWeaponEnchantFrame(false)
+					self:UpdateWeaponEnchants()
+				end,
+				disabled = EnchantsDisabled,
+				order = 41.2,
+			},
+			anchorTo = {
+				type = 'select',
+				name = L["Anchor to"],
+				desc = L["The point on the PlayerInfo frame that the weapon enchant frame gets connected to"],
+				values = ValidAnchors,
+				get = function(info)
+					return IceHUD:GetSelectValue(info, self.moduleSettings.weaponEnchants.anchorTo)
+				end,
+				set = function(info, v)
+					self.moduleSettings.weaponEnchants.anchorTo = info.option.values[v]
+					self:PositionWeaponEnchantFrame()
+				end,
+				disabled = EnchantsDisabled,
+				order = 41.3,
+			},
+			offsetX = {
+				type = 'range',
+				name = L["Horizontal offset"],
+				desc = L["How far horizontally the weapon enchant frame should be offset from the anchor"],
+				min = -500,
+				max = 500,
+				step = 1,
+				get = function()
+					return self.moduleSettings.weaponEnchants.offsetX
+				end,
+				set = function(info, v)
+					self.moduleSettings.weaponEnchants.offsetX = v
+					self:PositionWeaponEnchantFrame()
+				end,
+				disabled = EnchantsDisabled,
+				order = 41.4,
+			},
+			offsetY = {
+				type = 'range',
+				name = L["Vertical offset"],
+				desc = L["How far vertically the weapon enchant frame should be offset from the anchor"],
+				min = -500,
+				max = 500,
+				step = 1,
+				get = function()
+					return self.moduleSettings.weaponEnchants.offsetY
+				end,
+				set = function(info, v)
+					self.moduleSettings.weaponEnchants.offsetY = v
+					self:PositionWeaponEnchantFrame()
+				end,
+				disabled = EnchantsDisabled,
+				order = 41.5,
+			},
+		},
+		order = 41,
 	}
 
 	return opts
@@ -79,14 +198,14 @@ function PlayerInfo.prototype:BuffClick(this,event)
 	end
 end
 
-function PlayerInfo.prototype:CreateIconFrames(parent, direction, buffs, type)
-	local buffs = PlayerInfo.super.prototype.CreateIconFrames(self, parent, direction, buffs, type)
+function PlayerInfo.prototype:CreateIconFrames(parent, direction, buffs, type, count)
+	local buffs = PlayerInfo.super.prototype.CreateIconFrames(self, parent, direction, buffs, type, count)
 
     if not self.MyOnClickBuffFunc then
         self.MyOnClickBuffFunc = function(this,event) self:BuffClick(this,event) end
     end
 
-	for i = 1, IceCore.BuffLimit do
+	for i = 1, #buffs do
 		if (self.moduleSettings.mouseBuff) then
 			buffs[i]:SetScript("OnMouseUp", self.MyOnClickBuffFunc)
 		else
@@ -104,11 +223,7 @@ function PlayerInfo.prototype:Enable(core)
 		self:HideBlizz()
 	end
 
-	-- The repeating update only exists to slot weapon enchants into our own icon frames.
-	-- Aura containers don't have any, so there's nothing for it to do there.
-	if not IceHUD.CanUseAuraContainer() then
-		self.scheduledEvent = self:ScheduleRepeatingTimer("RepeatingUpdateBuffs", 1)
-	end
+	self.scheduledEvent = self:ScheduleRepeatingTimer("RepeatingUpdateBuffs", 1)
 end
 
 function PlayerInfo.prototype:Disable(core)
@@ -163,10 +278,15 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 		PlayerInfo.super.prototype.UpdateBuffs(self)
 	end
 
-	-- Aura containers create and own their buttons, so there are no icon frames here to
-	-- append weapon enchants to. The buff frame is missing entirely when buffs are hidden,
+	-- The container path has no icon frames of ours to append to, so weapon enchants live
+	-- in a separate strip there. The buff frame is missing entirely when buffs are hidden,
 	-- since the container isn't built until something wants to show one.
-	if IceHUD.CanUseAuraContainer() or not self.frame.buffFrame or not self.frame.buffFrame.iconFrames then
+	if IceHUD.CanUseAuraContainer() then
+		self:UpdateWeaponEnchants()
+		return
+	end
+
+	if not self.frame.buffFrame or not self.frame.buffFrame.iconFrames then
 		return
 	end
 
@@ -217,7 +337,9 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 					true,
 					mainHandCharges,
 					nil,
-					"mh")
+					"mh",
+					nil,
+					true)
 			end
 
 			startingNum = startingNum + 1
@@ -239,7 +361,9 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 					true,
 					offHandCharges,
 					nil,
-					"oh")
+					"oh",
+					nil,
+					true)
 			end
 
 			startingNum = startingNum + 1
@@ -255,6 +379,159 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 			self.moduleSettings.auras["buff"].growDirection,
 			self.frame.buffFrame.iconFrames, "buff")
 	end
+end
+
+-- OVERRIDE
+function PlayerInfo.prototype:CreateFrame(redraw)
+	PlayerInfo.super.prototype.CreateFrame(self, redraw)
+
+	self:CreateWeaponEnchantFrame(redraw)
+end
+
+-- OVERRIDE
+function PlayerInfo.prototype:RedrawBuffs()
+	PlayerInfo.super.prototype.RedrawBuffs(self)
+
+	if self.moduleSettings.enabled then
+		self:CreateWeaponEnchantFrame(false)
+		self:UpdateWeaponEnchants()
+	end
+end
+
+-- OVERRIDE
+function PlayerInfo.prototype:UpdateAlpha()
+	PlayerInfo.super.prototype.UpdateAlpha(self)
+
+	self:UpdateAuraCooldownAlpha("weaponEnchantFrame")
+end
+
+function PlayerInfo.prototype:CreateWeaponEnchantFrame(redraw)
+	if not IceHUD.CanUseAuraContainer() then
+		return
+	end
+
+	local settings = self.moduleSettings.weaponEnchants
+
+	if not self.frame.weaponEnchantFrame then
+		self.frame.weaponEnchantFrame = CreateFrame("Frame", nil, self.frame)
+		self.frame.weaponEnchantFrame:SetWidth(1)
+		self.frame.weaponEnchantFrame:SetHeight(1)
+		self.frame.weaponEnchantFrame.iconFrames = {}
+	end
+
+	local frame = self.frame.weaponEnchantFrame
+
+	frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
+	self:PositionWeaponEnchantFrame()
+
+	if not redraw then
+		frame.iconFrames = self:CreateIconFrames(frame, settings.growDirection, frame.iconFrames, "buff", #WeaponEnchantSlots)
+	end
+
+	if settings.show then
+		frame:Show()
+	else
+		frame:Hide()
+	end
+end
+
+-- The strip can't be anchored to the aura container - it's restricted, so anything hung off
+-- it inherits UntrustedLayoutScriptExecution and the SetPoint is refused - and the
+-- container's coordinates are secret, so they can't be read and reused either. That leaves
+-- positioning it against our own frame from its own settings.
+function PlayerInfo.prototype:PositionWeaponEnchantFrame()
+	local frame = self.frame and self.frame.weaponEnchantFrame
+
+	if not frame then
+		return
+	end
+
+	local settings = self.moduleSettings.weaponEnchants
+
+	frame:ClearAllPoints()
+	frame:SetPoint(settings.growDirection == "Left" and "TOPRIGHT" or "TOPLEFT", self.frame,
+		settings.anchorTo, settings.offsetX, settings.offsetY)
+end
+
+function PlayerInfo.prototype:UpdateWeaponEnchants()
+	if not self.frame then
+		return
+	end
+
+	-- The container globals can show up after we've already built our frames, so make the
+	-- strip on first use rather than only at creation time.
+	if not self.frame.weaponEnchantFrame then
+		self:CreateWeaponEnchantFrame(false)
+	end
+
+	local frame = self.frame.weaponEnchantFrame
+
+	if not frame or not frame.iconFrames then
+		return
+	end
+
+	if not self.moduleSettings.weaponEnchants.show then
+		frame:Hide()
+		return
+	end
+
+	frame:Show()
+
+	local hasMainHandEnchant, mainHandExpiration, mainHandCharges, _, hasOffHandEnchant, offHandExpiration, offHandCharges
+		= IceHUD.GetWeaponEnchantInfo()
+	local currTime = GetTime()
+	local shown = 0
+
+	-- Icon frames keep the position they were laid out at, so an inactive slot would leave
+	-- a hole. Active enchants get packed into the frames from the front instead.
+	if hasMainHandEnchant then
+		shown = shown + 1
+		self:SetupWeaponEnchant(shown, 1, mainHandExpiration, mainHandCharges, currTime)
+	else
+		self:ClearWeaponEnchantState(1)
+	end
+
+	if hasOffHandEnchant then
+		shown = shown + 1
+		self:SetupWeaponEnchant(shown, 2, offHandExpiration, offHandCharges, currTime)
+	else
+		self:ClearWeaponEnchantState(2)
+	end
+
+	for i = shown + 1, #WeaponEnchantSlots do
+		frame.iconFrames[i]:Hide()
+	end
+end
+
+function PlayerInfo.prototype:ClearWeaponEnchantState(slotIndex)
+	local slot = WeaponEnchantSlots[slotIndex]
+
+	self[slot.endTimeKey] = 0
+	self[slot.timeSetKey] = 0
+end
+
+function PlayerInfo.prototype:SetupWeaponEnchant(index, slotIndex, expiration, charges, currTime)
+	local slot = WeaponEnchantSlots[slotIndex]
+
+	-- The remaining time shrinks on every update, so only re-base the duration when it
+	-- moves by more than the elapsed time - otherwise the cooldown swipe restarts each tick.
+	if self[slot.endTimeKey] == 0
+		or abs(self[slot.endTimeKey] - (expiration/1000)) > currTime - self[slot.timeSetKey] + EPSILON then
+		self[slot.endTimeKey] = expiration/1000
+		self[slot.timeSetKey] = currTime
+	end
+
+	self:SetupAura("weaponEnchant",
+		index,
+		GetInventoryItemTexture(self.unit, GetInventorySlotInfo(slot.inventorySlot)),
+		self[slot.endTimeKey],
+		currTime + (expiration/1000),
+		true,
+		charges,
+		nil,
+		slot.type,
+		nil,
+		true)
 end
 
 -- Load us up

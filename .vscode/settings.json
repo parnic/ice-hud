@@ -173,7 +173,11 @@
         "CombatLogGetCurrentEventInfo",
         "FindSpellOverrideByID",
         "OverlayPlayerCastingBarFrame",
-        "GetTotemDuration"
+        "GetTotemDuration",
+        "INVSLOT_MAINHAND",
+        "INVSLOT_OFFHAND",
+        "INVSLOT_RANGED",
+        "AnchorUtil"
     ],
     "Lua.runtime.version": "Lua 5.1",
     "Lua.runtime.builtin": {

@@ -1627,7 +1627,10 @@ do
 		return texture
 	end
 
-	function IceTargetInfo.prototype:CreateIconFrames(parent, direction, iconFrames, type)
+	-- count defaults to a full aura display; callers that only ever show a couple of icons
+	-- (weapon enchants) pass their own so we don't build 40 frames they'll never use.
+	function IceTargetInfo.prototype:CreateIconFrames(parent, direction, iconFrames, type, count)
+		local numFrames = count or IceCore.BuffLimit
 		local lastX = 0
 		local lastAuraSize = 0
 		local lastY = 0
@@ -1642,7 +1645,7 @@ do
 			self.MyOnLeaveBuffFunc = function() GameTooltip:Hide() end
 		end
 
-		for i = 1, IceCore.BuffLimit do
+		for i = 1, numFrames do
 			-- Setup --
 			local anchor, spaceOffset
 			local perRow = self.moduleSettings.auras.buff.perRow
