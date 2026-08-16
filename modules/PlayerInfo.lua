@@ -104,7 +104,11 @@ function PlayerInfo.prototype:Enable(core)
 		self:HideBlizz()
 	end
 
-	self.scheduledEvent = self:ScheduleRepeatingTimer("RepeatingUpdateBuffs", 1)
+	-- The repeating update only exists to slot weapon enchants into our own icon frames.
+	-- Aura containers don't have any, so there's nothing for it to do there.
+	if not IceHUD.CanUseAuraContainer() then
+		self.scheduledEvent = self:ScheduleRepeatingTimer("RepeatingUpdateBuffs", 1)
+	end
 end
 
 function PlayerInfo.prototype:Disable(core)
@@ -157,6 +161,13 @@ function PlayerInfo.prototype:UpdateBuffs(unit, fromRepeated)
 
 	if not fromRepeated then
 		PlayerInfo.super.prototype.UpdateBuffs(self)
+	end
+
+	-- Aura containers create and own their buttons, so there are no icon frames here to
+	-- append weapon enchants to. The buff frame is missing entirely when buffs are hidden,
+	-- since the container isn't built until something wants to show one.
+	if IceHUD.CanUseAuraContainer() or not self.frame.buffFrame or not self.frame.buffFrame.iconFrames then
+		return
 	end
 
 	local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID
