@@ -323,10 +323,10 @@ function PlayerHealth.prototype:GetOptions()
 			self:Update()
 		end,
 		hidden = function()
-			return IceHUD.IsSecretEnv()
+			return IceHUD.IsSecretEnv() or not (IceHUD.SupportsHealPrediction or HealComm)
 		end,
 		disabled = function()
-			return not (self.moduleSettings.enabled and (IceHUD.SupportsHealPrediction or HealComm))
+			return not self.moduleSettings.enabled
 		end,
 		order = 43.6
 	}
@@ -346,11 +346,9 @@ function PlayerHealth.prototype:GetOptions()
 			self.moduleSettings.healAlpha = v / 100.0
 			self:Redraw()
 		end,
-		hidden = function()
-			return IceHUD.IsSecretEnv()
-		end,
+		hidden = opts.showIncomingHeals.hidden,
 		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.showIncomingHeals
+			return opts.showIncomingHeals.disabled() or not self.moduleSettings.showIncomingHeals
 		end,
 		order = 43.7
 	}
@@ -375,10 +373,10 @@ function PlayerHealth.prototype:GetOptions()
 			self:Update()
 		end,
 		hidden = function()
-			return IceHUD.IsSecretEnv()
+			return IceHUD.IsSecretEnv() or not IceHUD.SupportsAbsorbAmounts
 		end,
 		disabled = function()
-			return not (self.moduleSettings.enabled and IceHUD.SupportsAbsorbAmounts)
+			return not self.moduleSettings.enabled
 		end,
 		order = 43.8
 	}
@@ -398,11 +396,9 @@ function PlayerHealth.prototype:GetOptions()
 			self.moduleSettings.absorbAlpha = v / 100.0
 			self:Redraw()
 		end,
-		hidden = function()
-			return IceHUD.IsSecretEnv()
-		end,
+		hidden = opts.showAbsorbs.hidden,
 		disabled = function()
-			return not self.moduleSettings.enabled or not self.moduleSettings.showAbsorbs
+			return opts.showAbsorbs.disabled() or not self.moduleSettings.showAbsorbs
 		end,
 		order = 43.9
 	}
