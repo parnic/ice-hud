@@ -494,6 +494,20 @@ function PlayerInfo.prototype:UpdateWeaponEnchants()
 
 	frame:Show()
 
+	-- Nothing may actually be enchanted while the strip is being positioned, so config mode
+	-- fills every slot the same way the buff placeholders do.
+	if self:IsInConfigMode() then
+		local currTime = GetTime()
+
+		for i = 1, #frame.iconFrames do
+			self:SetupAura("weaponEnchant", i, GetInventoryItemTexture(self.unit,
+				GetInventorySlotInfo(WeaponEnchantSlots[i].inventorySlot)) or [[Interface\Icons\Spell_Frost_Frost]],
+				60, currTime + 59, true, math.random(5), nil, WeaponEnchantSlots[i].type, nil, true)
+		end
+
+		return
+	end
+
 	local hasMainHandEnchant, mainHandExpiration, mainHandCharges, _, hasOffHandEnchant, offHandExpiration, offHandCharges
 		= IceHUD.GetWeaponEnchantInfo()
 	local currTime = GetTime()

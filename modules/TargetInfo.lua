@@ -1352,6 +1352,7 @@ function IceTargetInfo.prototype:CreateAuraFrame(aura, redraw)
 
 	if IceHUD.CanUseAuraContainer() then
 		self:CreateAuraContainer(aura, auraFrame, point)
+		self:CreateConfigAuraFrame(aura, point, redraw)
 		return
 	end
 
@@ -1375,6 +1376,92 @@ function IceTargetInfo.prototype:CreateAuraFrame(aura, redraw)
 		self.frame[auraFrame]:Show()
 	else
 		self.frame[auraFrame]:Hide()
+	end
+end
+
+-- An aura container only ever draws real auras, so config mode gets a parallel strip of
+-- our own icon frames standing in for them - the placeholders UpdateBuffType fabricates
+-- inline have no icon frames to live in on this path. Like the weapon enchant strip, it's
+-- anchored to our own frame rather than to the restricted container.
+function IceTargetInfo.prototype:CreateConfigAuraFrame(aura, point, redraw)
+	if not IceHUD.CanUseAuraContainer() then
+		return
+	end
+
+	local settings = self.moduleSettings.auras[aura]
+	local frame = self.frame[self:GetConfigAuraFrameKey(aura)]
+
+	-- A full grid of icon frames per aura type isn't free, so don't build the strip until
+	-- config mode asks for it. Once it exists, keep it in step with the settings.
+	if not frame and not self:IsInConfigMode() then
+		return
+	end
+
+	if not frame then
+		frame = CreateFrame("Frame", nil, self.frame)
+		frame:SetWidth(1)
+		frame:SetHeight(1)
+		frame.iconFrames = {}
+		self.frame[self:GetConfigAuraFrameKey(aura)] = frame
+	end
+
+	frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
+	frame:ClearAllPoints()
+	frame:SetPoint(point, self.frame, settings.anchorTo, settings.offsetX, settings.offsetY)
+
+	if not redraw or #frame.iconFrames == 0 then
+		frame.iconFrames = self:CreateIconFrames(frame, settings.growDirection, frame.iconFrames, aura)
+
+		-- These stand in for auras that aren't there, so there's nothing to hand a tooltip.
+		for i = 1, #frame.iconFrames do
+			frame.iconFrames[i]:EnableMouse(false)
+			frame.iconFrames[i]:SetScript("OnEnter", nil)
+			frame.iconFrames[i]:SetScript("OnLeave", nil)
+		end
+	end
+
+	frame:Hide()
+end
+
+function IceTargetInfo.prototype:GetConfigAuraFrameKey(aura)
+	return aura .. "ConfigFrame"
+end
+
+-- Matches what the pre-container path fabricates in UpdateBuffType: every slot filled, so
+-- the whole grid can be sized and positioned.
+function IceTargetInfo.prototype:UpdateConfigAuras(aura)
+	local frameKey = self:GetConfigAuraFrameKey(aura)
+
+	-- The container globals can show up after our frames were built, so make the strip on
+	-- first use rather than only at creation time.
+	if not self.frame[frameKey] then
+		self:CreateConfigAuraFrame(aura, aura == "buff" and "TOPRIGHT" or "TOPLEFT", false)
+	end
+
+	local frame = self.frame[frameKey]
+
+	if not frame or not frame.iconFrames then
+		return
+	end
+
+	if not self.moduleSettings.auras[aura].show or not UnitExists(self.unit) then
+		frame:Hide()
+		return
+	end
+
+	frame:Show()
+
+	for i = 1, #frame.iconFrames do
+		self:SetupAura(aura, i, [[Interface\Icons\Spell_Frost_Frost]], 60, GetTime() + 59, false,
+			math.random(5), nil, aura, nil, true, frameKey)
+	end
+end
+
+function IceTargetInfo.prototype:HideConfigAuras(aura)
+	local frame = self.frame[self:GetConfigAuraFrameKey(aura)]
+
+	if frame then
+		frame:Hide()
 	end
 end
 
@@ -1599,6 +1686,20 @@ end
 function IceTargetInfo.prototype:UpdateAuraContainer(aura)
 	local container = self.frame[aura .. "Frame"]
 
+	-- The container has no way to show anything but the unit's real auras, so config mode
+	-- puts it away and shows the placeholder strip in its place.
+	if self:IsInConfigMode() then
+		if container then
+			pcall(container.SetEnabled, container, false)
+			pcall(container.SetShown, container, false)
+		end
+
+		self:UpdateConfigAuras(aura)
+		return
+	end
+
+	self:HideConfigAuras(aura)
+
 	if not container or not container.iceGroupKeys then
 		return
 	end
@@ -1608,6 +1709,7 @@ function IceTargetInfo.prototype:UpdateAuraContainer(aura)
 	end
 
 	container:SetEnabled(self.moduleSettings.auras[aura].show)
+	pcall(container.SetShown, container, self.moduleSettings.auras[aura].show)
 	container:SetUnit(self.unit)
 	container:UpdateAllAuras()
 end
@@ -1872,9 +1974,9 @@ function IceTargetInfo.prototype:UpdateBuffType(aura)
 	self.frame[auraFrame].iconFrames = self:CreateIconFrames(self.frame[auraFrame], self.moduleSettings.auras[aura].growDirection, self.frame[auraFrame].iconFrames, aura)
 end
 
-function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, auraType, auraInstanceID, isActive)
+function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTime, isFromMe, count, isStealable, auraType, auraInstanceID, isActive, frameKey)
 	local zoom = self.moduleSettings.zoom
-	local auraFrame = aura.."Frame"
+	local auraFrame = frameKey or aura.."Frame"
 
 	local frame = self.frame[auraFrame].iconFrames[i]
 	frame.id = i
@@ -2160,6 +2262,8 @@ function IceTargetInfo.prototype:UpdateAlpha()
 	-- Temp until Blizzard fixes their cooldown wipes. http://www.wowinterface.com/forums/showthread.php?t=49950
 	self:UpdateAuraCooldownAlpha("buffFrame")
 	self:UpdateAuraCooldownAlpha("debuffFrame")
+	self:UpdateAuraCooldownAlpha(self:GetConfigAuraFrameKey("buff"))
+	self:UpdateAuraCooldownAlpha(self:GetConfigAuraFrameKey("debuff"))
 end
 
 function IceTargetInfo.prototype:UpdateAuraCooldownAlpha(auraFrame)
