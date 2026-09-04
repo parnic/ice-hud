@@ -388,6 +388,12 @@ function PlayerInfo.prototype:CreateFrame(redraw)
 	self:CreateWeaponEnchantFrame(redraw)
 end
 
+function PlayerInfo.prototype:Redraw()
+	PlayerInfo.super.prototype.Redraw(self)
+
+	self:ReapplyWeaponEnchantSettings()
+end
+
 -- OVERRIDE
 function PlayerInfo.prototype:RedrawBuffs()
 	PlayerInfo.super.prototype.RedrawBuffs(self)
@@ -403,6 +409,17 @@ function PlayerInfo.prototype:UpdateAlpha()
 	PlayerInfo.super.prototype.UpdateAlpha(self)
 
 	self:UpdateAuraCooldownAlpha("weaponEnchantFrame")
+end
+
+function PlayerInfo.prototype:ReapplyWeaponEnchantSettings()
+	if not self.frame.weaponEnchantFrame then
+		return
+	end
+	for i=1,#self.frame.weaponEnchantFrame.iconFrames do
+		if self.frame.weaponEnchantFrame.iconFrames[i].cd.SetHideCountdownNumbers then
+			self.frame.weaponEnchantFrame.iconFrames[i].cd:SetHideCountdownNumbers(self.moduleSettings.forceHideCooldownNumbers)
+		end
+	end
 end
 
 function PlayerInfo.prototype:CreateWeaponEnchantFrame(redraw)

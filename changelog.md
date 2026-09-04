@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.25
+
+- Fix "force hide cooldown numbers" option in the PlayerInfo module not applying to weapon enchants until a reload.
+
 ## v1.17.24
 
 - Fix errors thrown by PlayerInfo in some situations.
