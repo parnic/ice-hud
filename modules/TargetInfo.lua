@@ -12,6 +12,8 @@ local internal = "internal"
 
 local ValidAnchors = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", "CENTER" }
 
+local CooldownSwipeAlpha = 0.65
+
 ---- Fulzamoth - 2019-09-04 : support for cooldowns on target buffs/debuffs (classic)
 local LibClassicDurations = LibStub("LibClassicDurations", true)
 ---- end change by Fulzamoth
@@ -1565,6 +1567,7 @@ function IceTargetInfo.prototype:ApplyAuraButtonSettings(record, description)
 	record.icon:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
 	record.cooldown:SetHideCountdownNumbers(self.moduleSettings.forceHideCooldownNumbers)
 	self:FontFactory(self.moduleSettings.stackFontSize, record.button, record.stack, "OUTLINE")
+	self:ApplyAuraCooldownAlpha(record)
 end
 
 function IceTargetInfo.prototype:CreateAuraContainer(aura, auraFrame, point)
@@ -2293,13 +2296,26 @@ function IceTargetInfo.prototype:UpdateAuraCooldownAlpha(auraFrame)
 	-- so tinting them is best-effort.
 	for _, group in pairs(frame.iceGroups) do
 		for _, record in ipairs(group.buttons) do
-			pcall(self.SetAuraCooldownAlpha, self, record.cooldown)
+			self:ApplyAuraCooldownAlpha(record)
 		end
 	end
 end
 
+-- Buttons hand their cooldown out to secret aura data, after which tinting it can be
+-- refused, so the applied value is remembered: a button that missed an alpha change is
+-- retried on later passes, and one that's current isn't poked at all.
+function IceTargetInfo.prototype:ApplyAuraCooldownAlpha(record)
+	if not IceHUD.CanAccessValue(self.alpha) or record.cooldownAlpha == self.alpha then
+		return
+	end
+
+	if pcall(self.SetAuraCooldownAlpha, self, record.cooldown) then
+		record.cooldownAlpha = self.alpha
+	end
+end
+
 function IceTargetInfo.prototype:SetAuraCooldownAlpha(cooldown)
-	cooldown:SetSwipeColor(0, 0, 0, self.alpha)
+	cooldown:SetSwipeColor(0, 0, 0, CooldownSwipeAlpha)
 	cooldown:SetDrawEdge(false)
 end
 
