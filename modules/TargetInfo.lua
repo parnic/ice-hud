@@ -1337,18 +1337,27 @@ do
 	end
 end
 
+-- The corner an aura strip hangs from has to be the one it grows away from, or the strip
+-- walks its own first icon around as auras come and go: an aura container sizes itself to
+-- its contents, so pinning the edge the icons grow *toward* leaves the other edge - the one
+-- icon 1 sits on - moving. The old icon frames were 1x1 holders whose corners all landed on
+-- the same pixel, so they never cared which one we named.
+function IceTargetInfo.prototype:GetAuraFramePoint(aura)
+	return self.moduleSettings.auras[aura].growDirection == "Left" and "TOPRIGHT" or "TOPLEFT"
+end
+
 function IceTargetInfo.prototype:CreateAuraFrame(aura, redraw)
 	local auraFrame, point
 
 	if (aura == "buff") then
 		auraFrame = "buffFrame"
-		point = "TOPRIGHT"
 	elseif (aura == "debuff") then
 		auraFrame = "debuffFrame"
-		point = "TOPLEFT"
 	else
 		error("Invalid Auraframe")
 	end
+
+	point = self:GetAuraFramePoint(aura)
 
 	if IceHUD.CanUseAuraContainer() then
 		self:CreateAuraContainer(aura, auraFrame, point)
@@ -1435,7 +1444,7 @@ function IceTargetInfo.prototype:UpdateConfigAuras(aura)
 	-- The container globals can show up after our frames were built, so make the strip on
 	-- first use rather than only at creation time.
 	if not self.frame[frameKey] then
-		self:CreateConfigAuraFrame(aura, aura == "buff" and "TOPRIGHT" or "TOPLEFT", false)
+		self:CreateConfigAuraFrame(aura, self:GetAuraFramePoint(aura), false)
 	end
 
 	local frame = self.frame[frameKey]

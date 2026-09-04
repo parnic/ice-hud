@@ -4,6 +4,7 @@
 
 - Fix "force hide cooldown numbers" option in the PlayerInfo module not applying to weapon enchants until a reload.
 - Fix Configuration Mode not showing placeholder buffs and debuffs on Info modules on 12.1+ clients.
+- Fix Info module buffs and debuffs not always respecting the configured anchors and grow directions correctly on 12.1+ clients.
 
 ## v1.17.24
 
