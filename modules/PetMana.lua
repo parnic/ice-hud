@@ -250,7 +250,7 @@ function PetMana.prototype:ExitingVehicle(event, unit)
 end
 
 function PetMana.prototype:EnteringWorld()
-	self:TargetChanged()
+	self:CheckCombat()
 	self:Update(self.unit)
 
 	if UnitHasVehicleUI then

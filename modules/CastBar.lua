@@ -356,7 +356,7 @@ function CastBar.prototype:Enable(core)
 		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "EnteringVehicle")
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
 	end
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckVehicle")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
 
 	self:RegisterEvent("CVAR_UPDATE", "CVarUpdate")
 
@@ -387,6 +387,11 @@ function CastBar.prototype:ExitingVehicle(event, unit)
 	end
 end
 
+
+function CastBar.prototype:EnteringWorld()
+	self:CheckCombat()
+	self:CheckVehicle()
+end
 
 function CastBar.prototype:CheckVehicle()
 	if UnitHasVehicleUI then

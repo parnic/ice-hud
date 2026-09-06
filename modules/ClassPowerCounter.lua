@@ -610,7 +610,8 @@ function IceClassPowerCounter.prototype:Disable(core)
 end
 
 function IceClassPowerCounter.prototype:EnteringWorld()
-	self:TargetChanged()
+	self:CheckCombat()
+	self:Redraw()
 	self:UpdateRunePower()
 end
 

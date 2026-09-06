@@ -296,7 +296,6 @@ function TargetCC.prototype:Enable(core)
 	TargetCC.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_AURA", "UpdateTargetDebuffs")
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateTargetDebuffs")
 
 	self:Show(false)
 end
@@ -433,6 +432,13 @@ end
 function TargetCC.prototype:MyOnUpdate()
 	TargetCC.super.prototype.MyOnUpdate(self)
 	self:UpdateTargetDebuffs("internal", self.unit)
+end
+
+-- OVERRIDE
+function TargetCC.prototype:TargetChanged()
+	TargetCC.super.prototype.TargetChanged(self)
+
+	self:UpdateTargetDebuffs()
 end
 
 function TargetCC.prototype:UpdateTargetDebuffs(event, unit)

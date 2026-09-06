@@ -112,7 +112,6 @@ function TargetInvuln.prototype:Enable(core)
 	TargetInvuln.super.prototype.Enable(self, core)
 
 	self:RegisterEvent("UNIT_AURA", "UpdateTargetBuffs")
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "UpdateTargetBuffs")
 
 	self:Show(false)
 end
@@ -246,6 +245,13 @@ end
 function TargetInvuln.prototype:MyOnUpdate()
 	TargetInvuln.super.prototype.MyOnUpdate(self)
 	self:UpdateTargetBuffs("internal", self.unit)
+end
+
+-- OVERRIDE
+function TargetInvuln.prototype:TargetChanged()
+	TargetInvuln.super.prototype.TargetChanged(self)
+
+	self:UpdateTargetBuffs()
 end
 
 function TargetInvuln.prototype:Update()

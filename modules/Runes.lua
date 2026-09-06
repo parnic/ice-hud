@@ -319,7 +319,8 @@ function Runes.prototype:Enable(core)
 end
 
 function Runes.prototype:EnteringWorld()
-	self:TargetChanged()
+	self:CheckCombat()
+	self:Redraw()
 	self:ResetRuneAvailability()
 end
 

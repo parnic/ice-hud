@@ -246,7 +246,8 @@ function Totems.prototype:Disable(core)
 end
 
 function Totems.prototype:EnteringWorld()
-	self:TargetChanged()
+	self:CheckCombat()
+	self:Redraw()
 	self:ResetTotemAvailability()
 end
 

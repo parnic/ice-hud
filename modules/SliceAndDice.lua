@@ -119,7 +119,6 @@ function SliceAndDice.prototype:Enable(core)
 	-- in a Secrets world (at least in 12.0), we need to infer the cast time during combat since the normal aura data is hidden
 	if IceHUD.IsSecretEnv() then
 		self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "SpellcastSucceeded")
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateSliceAndDice")
 	end
 
 	if not self.moduleSettings.alwaysFullAlpha then

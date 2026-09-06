@@ -265,7 +265,7 @@ function IceCustomCounterBar.prototype:Enable(core)
 end
 
 function IceCustomCounterBar.prototype:TargetChanged()
-	IceCustomCount.super.prototype.TargetChanged(self)
+	IceCustomCounterBar.super.prototype.TargetChanged(self)
 	self:UpdateCustomCount()
 end
 
