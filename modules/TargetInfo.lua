@@ -137,11 +137,6 @@ function IceTargetInfo.prototype:Enable(core)
 
 	self:RegisterEvent("UNIT_AURA", "AuraChanged")
 
-	-- The "In Combat" aura filter otherwise waits for the next aura event to notice
-	-- that combat started or ended.
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateBuffs")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "UpdateBuffs")
-
 	self:RegisterEvent("UNIT_NAME_UPDATE", "TargetName")
 	self:RegisterEvent("UNIT_FACTION", "TargetFaction")
 	self:RegisterEvent("UNIT_LEVEL", "TargetLevel")
@@ -2046,6 +2041,27 @@ function IceTargetInfo.prototype:SetupAura(aura, i, icon, duration, expirationTi
 	end
 
 	frame:Show()
+end
+
+-- OVERRIDE
+-- The base class only tracks the combat state here, but this module ignores an Update()
+-- that doesn't name its unit, so the alpha change has to be pushed through explicitly.
+-- Refreshing the auras also keeps the "In Combat" filter from waiting for the next aura
+-- event to notice that combat started or ended.
+function IceTargetInfo.prototype:InCombat()
+	IceTargetInfo.super.prototype.InCombat(self)
+	self:CombatStateChanged()
+end
+
+-- OVERRIDE
+function IceTargetInfo.prototype:OutCombat()
+	IceTargetInfo.super.prototype.OutCombat(self)
+	self:CombatStateChanged()
+end
+
+function IceTargetInfo.prototype:CombatStateChanged()
+	self:UpdateBuffs()
+	self:Update(self.unit)
 end
 
 function IceTargetInfo.prototype:UpdateBuffs()

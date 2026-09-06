@@ -1,11 +1,17 @@
 # Changelog
 
+## v1.17.26
+
+- Fix Info modules not using appropriate in-combat/out-of-combat alpha values after 12.1.
+
 ## v1.17.25
 
+- Hide Absorb and Incoming Heals options on clients that don't support the necessary APIs (some Classic variants).
 - Fix "force hide cooldown numbers" option in the PlayerInfo module not applying to weapon enchants until a reload.
 - Fix Configuration Mode not showing placeholder buffs and debuffs on Info modules on 12.1+ clients.
 - Fix Info module buffs and debuffs not always respecting the configured anchors and grow directions correctly on 12.1+ clients.
 - Fix cooldown wipes on Info modules to not be fully opaque.
+- Update TOC for 12.1.5.
 
 ## v1.17.24
 
