@@ -1534,6 +1534,7 @@ function IceTargetInfo.prototype:InitializeAuraButton(aura, container, key, butt
 	cooldown:SetAllPoints(button)
 	cooldown:SetReverse(true)
 	cooldown:SetDrawEdge(false)
+	cooldown:SetDrawBling(false)
 
 	local stack = button:CreateFontString()
 	stack:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 3, -1)
@@ -1711,13 +1712,24 @@ function IceTargetInfo.prototype:UpdateAuraContainer(aura)
 		return
 	end
 
-	for i = 1, #container.iceGroupKeys do
-		container:SetAuraGroupFilterString(container.iceGroupKeys[i], self:GetAuraFilterString(aura))
+	local filterString = self:GetAuraFilterString(aura)
+
+	if container.iceFilterString ~= filterString then
+		container.iceFilterString = filterString
+
+		for i = 1, #container.iceGroupKeys do
+			container:SetAuraGroupFilterString(container.iceGroupKeys[i], filterString)
+		end
 	end
 
 	container:SetEnabled(self.moduleSettings.auras[aura].show)
 	pcall(container.SetShown, container, self.moduleSettings.auras[aura].show)
-	container:SetUnit(self.unit)
+
+	if container.iceUnit ~= self.unit then
+		container.iceUnit = self.unit
+		container:SetUnit(self.unit)
+	end
+
 	container:UpdateAllAuras()
 end
 
@@ -2333,6 +2345,7 @@ end
 function IceTargetInfo.prototype:SetAuraCooldownAlpha(cooldown)
 	cooldown:SetSwipeColor(0, 0, 0, CooldownSwipeAlpha)
 	cooldown:SetDrawEdge(false)
+	cooldown:SetDrawBling(false)
 end
 
 function IceTargetInfo.prototype:OnEnter(frame)

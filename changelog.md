@@ -3,6 +3,7 @@
 ## v1.17.26
 
 - Fix Info modules not using appropriate in-combat/out-of-combat alpha values after 12.1.
+- Fix "ready" flashes ("bling") playing in 12.1 clients on Info module cooldowns when they shouldn't.
 
 ## v1.17.25
 
