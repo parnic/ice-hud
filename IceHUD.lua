@@ -66,7 +66,8 @@ IceHUD.CurrTagVersion = 3
 IceHUD.debugging = false
 
 IceHUD.WowVer = select(4, GetBuildInfo())
-IceHUD.WowMain = not WOW_PROJECT_ID or WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+IceHUD.WowForever = IceHUD.WowVer >= 16000 and IceHUD.WowVer < 20000
+IceHUD.WowMain = (not WOW_PROJECT_ID or WOW_PROJECT_ID == WOW_PROJECT_MAINLINE) and not IceHUD.WowForever
 if GetClassicExpansionLevel then
 	IceHUD.WowClassic = GetClassicExpansionLevel() == 0
 	IceHUD.WowClassicBC = GetClassicExpansionLevel() == 1
@@ -155,7 +156,7 @@ IceHUD.EventExistsUnitComboPoints = IceHUD.WowMain and IceHUD.WowVer < 70000
 IceHUD.EventExistsUnitMaxPower = IceHUD.WowMain and IceHUD.WowVer >= 40000
 IceHUD.EventExistsGroupRosterUpdate = IceHUD.WowVer >= 50000 or not IceHUD.WowMain
 IceHUD.EventExistsUnitDynamicFlags = IceHUD.WowMain and IceHUD.WowVer < 80000
-IceHUD.EventExistsUnitHealthFrequent = not IceHUD.WowMain or (IceHUD.WowVer >= 40000 and IceHUD.WowVer < 90000)
+IceHUD.EventExistsUnitHealthFrequent = (not IceHUD.WowMain and not IceHUD.WowForever) or (IceHUD.WowVer >= 40000 and IceHUD.WowVer < 90000)
 IceHUD.PerPowerEventsExist = IceHUD.WowMain and IceHUD.WowVer < 40000
 IceHUD.PerTargetComboPoints = IceHUD.WowVer < 60000
 IceHUD.CanTrackOtherUnitBuffs = not IceHUD.WowClassic or IceHUD.WowVer >= 11500
@@ -173,6 +174,7 @@ IceHUD.HasShellGame = GetSpellName(IceHUD.ShellGameSpellID)
 IceHUD.CatalogingSpellIDs = {366290, 372817, 385025, 385635, 386070, 386504, 400043, 403115}
 IceHUD.HasCataloging = GetSpellName(366290)
 IceHUD.SupportsAbsorbAmounts = IceHUD.WowVer >= 50200
+IceHUD.SupportsManaTicker = not IceHUD.WowForever and (IceHUD.WowVer < 30000 or (IceHUD.WowVer < 70100 and not GetCVarBool("predictedPower") and not IceHUD.WowClassicWrath and not IceHUD.WowClassicMists))
 
 IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 

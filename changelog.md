@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.27
+
+- Add support for WoW Forever.
+
 ## v1.17.26
 
 - Fix Info modules not using appropriate in-combat/out-of-combat alpha values after 12.1.

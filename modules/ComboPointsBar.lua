@@ -145,16 +145,21 @@ function ComboPointsBar.prototype:UpdateComboPoints(...)
 		points = GetComboPoints("player", "target")
 	end
 
-	if (points == 0) then
+	local wasSecret = false
+	if IceHUD.IsSecretValue(points) then
+		wasSecret = true
+		points = nil
+	end
+	if points == 0 then
 		points = nil
 	end
 
 	local isCharged = self:IsChargedPoint(points) and self.moduleSettings.bShowCharged
 
-	if points == nil or points == 0 or (not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget) then
+	if not wasSecret and (points == nil or points == 0 or (not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget)) then
 		self:Show(self.moduleSettings.alwaysDisplay)
 		self:UpdateBar(0, "undef")
-	else
+	elseif not wasSecret then --todo:forever: we are pretty hamstrung by this being secret. find a workaround.
 		self:Show(true)
 		if isCharged then
 			color.r, color.g, color.b = self:GetColor("ChargedComboPointBar")

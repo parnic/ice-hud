@@ -593,7 +593,7 @@ function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints, withCutToTheChase
 		end
 
 		local rank = 0
-		if GetTalentInfo then
+		if GetTalentInfo and not IceHUD.WowForever then -- todo:forever: there's a new TalentInfoQuery thing i don't know how to use yet
 			local _
 			---@diagnostic disable-next-line: cast-local-type - in WoW < 5.0, argument 5 is rank which is a number
 			_, _, _, _, rank = GetTalentInfo(impSndTalentPage, impSndTalentIdx)

@@ -68,7 +68,7 @@ end
 function PlayerMana.prototype:GetOptions()
 	local opts = PlayerMana.super.prototype.GetOptions(self)
 
-if self:ShouldUseTicker() then
+if IceHUD.SupportsManaTicker then
 	opts["tickerEnabled"] = {
 		type = "toggle",
 		name = L["Show rogue/cat energy ticker"],
@@ -203,10 +203,6 @@ function PlayerMana.prototype:CheckVehicle()
 	end
 end
 
-function PlayerMana.prototype:ShouldUseTicker()
-	return IceHUD.WowVer < 30000 or (IceHUD.WowVer < 70100 and not GetCVarBool("predictedPower") and not IceHUD.WowClassicWrath and not IceHUD.WowClassicMists)
-end
-
 function PlayerMana.prototype:SetupOnUpdate(enable)
 	if enable then
 		IceHUD.IceCore:RequestUpdates(self, self.CustomOnUpdate)
@@ -281,7 +277,7 @@ function PlayerMana.prototype:ManaType(event, unit)
 	local powerName
 	self.manaType, powerName = UnitPowerType(self.unit)
 
-	if self:ShouldUseTicker() then
+	if IceHUD.SupportsManaTicker then
 		-- register ticker for rogue energy
 		if self.moduleSettings.tickerEnabled and self.manaType == SPELL_POWER_ENERGY then
 			self.tickerFrame:Show()
@@ -340,13 +336,12 @@ function PlayerMana.prototype:Update(unit, powertype)
 		self:Show(true)
 	end
 
-	local useTicker = self:ShouldUseTicker()
 	-- the user can toggle the predictedPower cvar at any time and the addon will not get notified. handle it.
-	if not self.tickerFrame and useTicker then
+	if not self.tickerFrame and IceHUD.SupportsManaTicker then
 		self:CreateTickerFrame()
 	end
 
-	if (self.manaType ~= SPELL_POWER_ENERGY and useTicker) then
+	if (self.manaType ~= SPELL_POWER_ENERGY and IceHUD.SupportsManaTicker) then
 		self.tickerFrame:Hide()
 	end
 
@@ -392,7 +387,7 @@ function PlayerMana.prototype:Update(unit, powertype)
 		end
 	end
 
-	if useTicker then
+	if IceHUD.SupportsManaTicker then
 		-- hide ticker if rest of the bar is not visible
 		if IceHUD.CanAccessValue(self.alpha) and self.alpha == 0 then
 	 		self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", 0))
@@ -435,7 +430,7 @@ function PlayerMana.prototype:UpdateEnergy(event, unit)
 		return
 	end
 
-	if self:ShouldUseTicker() and
+	if IceHUD.SupportsManaTicker and
 		((not (self.previousEnergy) or (self.previousEnergy < UnitPower(self.unit, self.manaType))) and
 		(self.moduleSettings.tickerEnabled) and self.manaType == SPELL_POWER_ENERGY) then
 			self.tickStart = GetTime()
@@ -450,7 +445,7 @@ end
 
 
 function PlayerMana.prototype:EnergyTick()
-	if not self:ShouldUseTicker() then
+	if not IceHUD.SupportsManaTicker then
 		return
 	end
 
@@ -477,7 +472,7 @@ end
 
 
 function PlayerMana.prototype:CreateTickerFrame()
-	if not self:ShouldUseTicker() then
+	if not IceHUD.SupportsManaTicker then
 		return
 	end
 

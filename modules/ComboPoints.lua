@@ -145,7 +145,7 @@ function ComboPoints.prototype:GetOptions()
 		end,
 		values = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or IceHUD.WowForever -- todo:forever: as of writing, GetComboPoints() in Forever returns a secret value. we can't use that for graphical displays
 		end,
 		order = 33
 	}
@@ -301,7 +301,7 @@ function ComboPoints.prototype:GetDefaultSettings()
 	defaults["graphicalLayout"] = "Horizontal"
 	defaults["comboGap"] = 0
 	defaults["showAnticipation"] = true
-	defaults["bShowWithNoTarget"] = true
+	defaults["bShowWithNoTarget"] = not IceHUD.PerTargetComboPoints
 	defaults["bShowCharged"] = true
 	return defaults
 end
@@ -608,7 +608,7 @@ function ComboPoints.prototype:UpdateComboPoints(...)
 			pointsText = pointsText.."+"..tostring(anticipate)
 		end
 
-		if (points == 0 and anticipate == 0) or (not UnitExists("target") and not self:ShouldShowWithNoTarget()) then
+		if (not IceHUD.IsSecretValue(points) and points == 0 and anticipate == 0) or (not UnitExists("target") and not self:ShouldShowWithNoTarget()) then
 			self.frame.numeric:SetText(nil)
 		else
 			self.frame.numeric:SetText(pointsText)
