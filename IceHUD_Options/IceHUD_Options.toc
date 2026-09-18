@@ -1,4 +1,4 @@
-## Interface: 11509, 20506, 38002, 50504, 120100, 120105
+## Interface: 11509, 20506, 38002, 50504, 120100, 120105, 16001
 ## Title: IceHUD |cff7fff7f-Options-|r
 ## Author: Parnic
 ## Version: @project-version@
