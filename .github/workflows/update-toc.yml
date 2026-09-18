@@ -27,6 +27,7 @@ jobs:
             wrath
             mists
             retail
+            forever
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v8
