@@ -1167,8 +1167,9 @@ function IceTargetHealth.prototype:IsHealthBar()
 end
 
 function IceTargetHealth.prototype:TargetChanged()
-	IceTargetHealth.super.prototype.TargetChanged(self)
+	-- read the class before the base class redraws the bar, or the bar keeps the previous unit's class color
 	self:SetUnitClass()
+	IceTargetHealth.super.prototype.TargetChanged(self)
 end
 
 -- Load us up

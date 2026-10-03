@@ -496,8 +496,9 @@ function FocusHealth.prototype:ToggleConfigMode(enabled)
 end
 
 function FocusHealth.prototype:TargetChanged()
-	FocusHealth.super.prototype.TargetChanged(self)
+	-- read the class before the base class redraws the bar, or the bar keeps the previous unit's class color
 	self:SetUnitClass()
+	FocusHealth.super.prototype.TargetChanged(self)
 end
 
 -- Load us up
