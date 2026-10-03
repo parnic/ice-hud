@@ -3,6 +3,7 @@
 ## v1.17.27
 
 - Add support for WoW Forever.
+- Fix TargetHealth and FocusHealth showing the previous unit's class color after changing target/focus when Class Color is enabled.
 
 ## v1.17.26
 

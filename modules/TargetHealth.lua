@@ -1167,8 +1167,8 @@ function IceTargetHealth.prototype:IsHealthBar()
 end
 
 function IceTargetHealth.prototype:TargetChanged()
-	IceTargetHealth.super.prototype.TargetChanged(self)
 	self:SetUnitClass()
+	IceTargetHealth.super.prototype.TargetChanged(self)
 end
 
 -- Load us up

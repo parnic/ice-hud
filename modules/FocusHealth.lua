@@ -496,8 +496,8 @@ function FocusHealth.prototype:ToggleConfigMode(enabled)
 end
 
 function FocusHealth.prototype:TargetChanged()
-	FocusHealth.super.prototype.TargetChanged(self)
 	self:SetUnitClass()
+	FocusHealth.super.prototype.TargetChanged(self)
 end
 
 -- Load us up
