@@ -111,6 +111,7 @@ modules\RollTheBones.lua
 modules\EssencePower.lua
 modules\DruidEnergy.lua
 modules\DragonridingVigor.lua
+modules\SwingTimer.lua
 
 #@do-not-package@
 IceHUD_Options\Json.lua
