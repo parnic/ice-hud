@@ -42,7 +42,7 @@ end
 function SwingTimer.prototype:Enable(core)
 	SwingTimer.super.prototype.Enable(self, core)
 
-	self.playerGUID = UnitGUID(self.unit)
+	self.unitGUID = UnitGUID(self.unit)
 
 	if IceHUD.HasNativeSwingTimer then
 		self:RegisterEvent("PLAYER_SWING", "PlayerSwing")
@@ -174,7 +174,7 @@ end
 function SwingTimer.prototype:CombatLogEvent()
 	local _, subevent, _, sourceGUID = CombatLogGetCurrentEventInfo()
 	local argIdx = offHandArg[subevent]
-	if not argIdx or sourceGUID ~= self.playerGUID then
+	if not argIdx or sourceGUID ~= self.unitGUID then
 		return
 	end
 
@@ -209,11 +209,6 @@ end
 function SwingTimer.prototype:MyOnUpdate()
 	SwingTimer.super.prototype.MyOnUpdate(self)
 
-	if self:IsInConfigMode() then
-		self:Show(true)
-		return
-	end
-
 	if not self.startTime or not self.duration then
 		return
 	end
@@ -239,8 +234,13 @@ end
 
 function SwingTimer.prototype:ToggleMoveHint()
 	local enabled = SwingTimer.super.prototype.ToggleMoveHint(self)
-	self:Show(enabled)
+	self:ToggleConfigMode(enabled)
 	self:Redraw()
+end
+
+-- A swing that is still running stays up when config mode ends.
+function SwingTimer.prototype:ToggleConfigMode(enabled)
+	self:Show(enabled or self.startTime ~= nil)
 end
 
 -- Load us up

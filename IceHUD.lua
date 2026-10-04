@@ -161,7 +161,7 @@ IceHUD.PerPowerEventsExist = IceHUD.WowMain and IceHUD.WowVer < 40000
 IceHUD.PerTargetComboPoints = IceHUD.WowVer < 60000
 IceHUD.CanTrackOtherUnitBuffs = not IceHUD.WowClassic or IceHUD.WowVer >= 11500
 IceHUD.CanTrackGCD = not IceHUD.WowClassic or IceHUD.WowVer >= 11500
-IceHUD.HasNativeSwingTimer = C_SwingTimer ~= nil and Enum.PlayerSwingType ~= nil
+IceHUD.HasNativeSwingTimer = Enum.PlayerSwingType ~= nil
 -- Without the client reporting swings, the only way to know one landed is the combat log,
 -- which the secret environment does not hand out.
 IceHUD.CanTrackSwings = IceHUD.HasNativeSwingTimer or not IceHUD.IsSecretEnv()
