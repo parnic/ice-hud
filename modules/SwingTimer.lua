@@ -10,10 +10,22 @@ local nativeSwingTypes = IceHUD.HasNativeSwingTimer and {
 	Ranged = Enum.PlayerSwingType.Ranged,
 } or nil
 
--- SWING_DAMAGE carries isOffHand as the last of ten payload arguments, SWING_MISSED as the
--- second of four. Both sit after the eleven arguments every combat log event starts with.
+-- Where isOffHand sits, after the eleven arguments every combat log event starts with.
+--
+-- SWING_MISSED is a plain suffix event, so its position is fixed: missType, isOffHand.
+--
+-- SWING_DAMAGE is not. It is an advanced-log event, and MoP inserts seventeen parameters
+-- between the base arguments and the payload, so a fixed 21 lands inside that block on 5.x and
+-- later rather than on isOffHand. The .toc covers 50504, where this path is the one that runs
+-- (no Enum.PlayerSwingType, and the secret environment that rules the combat log out is retail
+-- only), and a number read from the advanced block is truthy, so every main-hand swing would
+-- have looked like an off-hand one and the bar would never have started there.
+--
+-- Nothing is inserted AFTER the payload, so for SWING_DAMAGE the last argument is the one
+-- position that holds on every flavour.
+local LAST_ARGUMENT = true
 local offHandArg = {
-	SWING_DAMAGE = 21,
+	SWING_DAMAGE = LAST_ARGUMENT,
 	SWING_MISSED = 13,
 }
 
@@ -176,6 +188,10 @@ function SwingTimer.prototype:CombatLogEvent()
 	local argIdx = offHandArg[subevent]
 	if not argIdx or sourceGUID ~= self.unitGUID then
 		return
+	end
+
+	if argIdx == LAST_ARGUMENT then
+		argIdx = select("#", CombatLogGetCurrentEventInfo())
 	end
 
 	local isOffHand = select(argIdx, CombatLogGetCurrentEventInfo()) and true or false
