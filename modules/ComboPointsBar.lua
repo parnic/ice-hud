@@ -159,7 +159,7 @@ function ComboPointsBar.prototype:UpdateComboPoints(...)
 	if not wasSecret and (points == nil or points == 0 or (not UnitExists("target") and not self.moduleSettings.bShowWithNoTarget)) then
 		self:Show(self.moduleSettings.alwaysDisplay)
 		self:UpdateBar(0, "undef")
-	elseif not wasSecret then --todo:forever: we are pretty hamstrung by this being secret. find a workaround.
+	elseif not wasSecret then
 		self:Show(true)
 		if isCharged then
 			color.r, color.g, color.b = self:GetColor("ChargedComboPointBar")

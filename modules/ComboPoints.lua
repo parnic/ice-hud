@@ -145,7 +145,7 @@ function ComboPoints.prototype:GetOptions()
 		end,
 		values = { "Numeric", "Graphical Bar", "Graphical Circle", "Graphical Glow", "Graphical Clean Circle" },
 		disabled = function()
-			return not self.moduleSettings.enabled or IceHUD.WowForever -- todo:forever: as of writing, GetComboPoints() in Forever returns a secret value. we can't use that for graphical displays
+			return not self.moduleSettings.enabled
 		end,
 		order = 33
 	}
