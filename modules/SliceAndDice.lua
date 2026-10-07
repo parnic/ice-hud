@@ -26,6 +26,7 @@ local glyphBonusSec = 6
 local impSndTalentPage = 2
 local impSndTalentIdx = 4
 local impSndBonusPerRank = 0.25
+local impSndSpecializationIndex = 1
 local maxComboPoints = 5
 local sndEndTime = 0
 local sndDuration = 0
@@ -44,7 +45,11 @@ if IceHUD.WowVer >= 50000 then
 	baseTime = 12
 	gapPerComboPoint = 6
 end
-if IceHUD.WowClassic then
+if IceHUD.WowForever then
+	impSndBonusPerRank = 0.15
+	impSndTalentPage = 2
+	impSndTalentIdx = 4
+elseif IceHUD.WowClassic then
 	impSndBonusPerRank = 0.15
 	impSndTalentPage = 1
 	impSndTalentIdx = 6
@@ -76,8 +81,19 @@ if not UnitBuff and C_UnitAuras and AuraUtil then
 end
 
 local GetTalentInfo = GetTalentInfo
-if not GetTalentInfo and C_SpecializationInfo then
-	GetTalentInfo = C_SpecializationInfo.GetTalentInfo
+if not GetTalentInfo and C_SpecializationInfo and C_SpecializationInfo.GetTalentInfo then
+	local talentInfoQuery = {specializationIndex = impSndSpecializationIndex, tier = impSndTalentPage, column = impSndTalentIdx}
+	GetTalentInfo = function()
+		local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery)
+		if not talentInfo then
+			return nil
+		end
+
+		return talentInfo.name, talentInfo.icon, talentInfo.tier, talentInfo.column, talentInfo.rank,
+			talentInfo.maxRank, talentInfo.meetsPrereq, talentInfo.previewRank,
+			talentInfo.meetsPreviewPrereq, talentInfo.isExceptional, talentInfo.hasGoldBorder,
+			talentInfo.talentID
+	end
 end
 
 -- Constructor --
@@ -593,10 +609,13 @@ function SliceAndDice.prototype:GetMaxBuffTime(numComboPoints, withCutToTheChase
 		end
 
 		local rank = 0
-		if GetTalentInfo and not IceHUD.WowForever then -- todo:forever: there's a new TalentInfoQuery thing i don't know how to use yet
+		if GetTalentInfo then
 			local _
 			---@diagnostic disable-next-line: cast-local-type - in WoW < 5.0, argument 5 is rank which is a number
 			_, _, _, _, rank = GetTalentInfo(impSndTalentPage, impSndTalentIdx)
+			if not rank then
+				rank = 0
+			end
 		end
 
 		maxduration = maxduration * (1 + (rank * impSndBonusPerRank))
