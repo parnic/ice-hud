@@ -66,7 +66,7 @@ IceHUD.CurrTagVersion = 3
 IceHUD.debugging = false
 
 IceHUD.WowVer = select(4, GetBuildInfo())
-IceHUD.WowForever = IceHUD.WowVer >= 16000 and IceHUD.WowVer < 20000
+IceHUD.WowForever = WOW_PROJECT_ID == (WOW_PROJECT_CAMELOT or 18) -- todo:forever: i don't know if WOW_PROJECT_CAMELOT is the final constant for this or if it will change before coming out of beta
 IceHUD.WowMain = (not WOW_PROJECT_ID or WOW_PROJECT_ID == WOW_PROJECT_MAINLINE) and not IceHUD.WowForever
 if GetClassicExpansionLevel then
 	IceHUD.WowClassic = GetClassicExpansionLevel() == 0

@@ -177,7 +177,8 @@
         "INVSLOT_MAINHAND",
         "INVSLOT_OFFHAND",
         "INVSLOT_RANGED",
-        "AnchorUtil"
+        "AnchorUtil",
+        "WOW_PROJECT_CAMELOT"
     ],
     "Lua.runtime.version": "Lua 5.1",
     "Lua.runtime.builtin": {
