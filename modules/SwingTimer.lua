@@ -166,12 +166,19 @@ function SwingTimer.prototype:StartSwing(duration)
 	self:ConditionalSetupUpdate()
 end
 
+-- Config mode keeps the bar up whether or not a swing is running, and a swing that is still
+-- running keeps it up after config mode ends.
+function SwingTimer.prototype:ShouldShowBar()
+	return self:IsInConfigMode() or self.startTime ~= nil
+end
+
 function SwingTimer.prototype:StopSwing()
 	self.startTime = nil
 	self.duration = nil
 
-	self:SetBottomText1()
-	self:Show(false)
+	-- Hand the label IceCore put under the bar back to it, now that there is no time to show.
+	self:SetBottomText1(self:IsInConfigMode() and self.elementName or nil)
+	self:Show(self:ShouldShowBar())
 	IceHUD.IceCore:RequestUpdates(self, nil)
 end
 
@@ -254,9 +261,8 @@ function SwingTimer.prototype:ToggleMoveHint()
 	self:Redraw()
 end
 
--- A swing that is still running stays up when config mode ends.
 function SwingTimer.prototype:ToggleConfigMode(enabled)
-	self:Show(enabled or self.startTime ~= nil)
+	self:Show(self:ShouldShowBar())
 end
 
 -- Load us up
