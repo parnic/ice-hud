@@ -161,6 +161,10 @@ IceHUD.PerPowerEventsExist = IceHUD.WowMain and IceHUD.WowVer < 40000
 IceHUD.PerTargetComboPoints = IceHUD.WowVer < 60000
 IceHUD.CanTrackOtherUnitBuffs = not IceHUD.WowClassic or IceHUD.WowVer >= 11500
 IceHUD.CanTrackGCD = not IceHUD.WowClassic or IceHUD.WowVer >= 11500
+IceHUD.HasNativeSwingTimer = Enum.PlayerSwingType ~= nil
+-- Without the client reporting swings, the only way to know one landed is the combat log,
+-- which the secret environment does not hand out.
+IceHUD.CanTrackSwings = IceHUD.HasNativeSwingTimer or not IceHUD.IsSecretEnv()
 IceHUD.GetSpellInfoReturnsFunnel = IceHUD.WowMain and IceHUD.WowVer < 60000
 IceHUD.CanHookDestroyTotem = IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath or IceHUD.WowClassicCataclysm or IceHUD.WowClassicMists
 IceHUD.ShouldUpdateTargetHealthEveryTick = (IceHUD.WowClassic or IceHUD.WowClassicBC) and GetCVarBool("predictedHealth")
