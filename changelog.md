@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.28
+
+- Add the option to center-justify bar text in addition to left/right.
+
 ## v1.17.27
 
 - Add a Swing Timer bar.
