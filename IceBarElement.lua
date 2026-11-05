@@ -708,7 +708,7 @@ do
 						self.moduleSettings.forceJustifyText = value
 						self:Redraw()
 					end,
-					values = { NONE = "None", LEFT = "Left", RIGHT = "Right" },
+					values = { NONE = "None", LEFT = "Left", CENTER = "Center", RIGHT = "Right" },
 					disabled = function()
 						return not self.moduleSettings.enabled
 					end,
@@ -1401,8 +1401,10 @@ function IceBarElement.prototype:CreateTexts()
 		offgap = self.moduleSettings.textVerticalGap
 	end
 
-	self.frame.bottomUpperText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, offy)
-	self.frame.bottomLowerText:SetPoint("TOP"..ownPoint , self.frame, "BOTTOM"..parentPoint, offx, offy - (14 + offgap))
+	local textAnchor = ownPoint == "CENTER" and "TOP" or ("TOP" .. ownPoint)
+
+	self.frame.bottomUpperText:SetPoint(textAnchor, self.frame, "BOTTOM"..parentPoint, offx, offy)
+	self.frame.bottomLowerText:SetPoint(textAnchor, self.frame, "BOTTOM"..parentPoint, offx, offy - (14 + offgap))
 
 	if (self.moduleSettings.textVisible["upper"]) then
 		self.frame.bottomUpperText:Show()
