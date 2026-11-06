@@ -228,9 +228,6 @@ function CastBar.prototype:GetOptions()
 		name = "|c"..self.configColor..L["Text Settings"].."|r",
 		desc = L["Settings related to texts"],
 		order = 32,
-		disabled = function()
-			return not self.moduleSettings.enabled
-		end,
 		args = {
 			-- Shared text options.
 			fontsize = textOptions.fontsize,
@@ -251,6 +248,9 @@ function CastBar.prototype:GetOptions()
 					self.moduleSettings.lockLowerTextAlpha = v
 					self:Redraw()
 				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
+				end,
 				order = 13
 			},
 
@@ -264,6 +264,9 @@ function CastBar.prototype:GetOptions()
 				set = function(info, v)
 					self.moduleSettings.textVisible['upper'] = v
 					self:Redraw()
+				end,
+				disabled = function()
+					return not self.moduleSettings.enabled
 				end,
 				order = 14
 			},
