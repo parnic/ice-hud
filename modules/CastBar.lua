@@ -229,13 +229,11 @@ function CastBar.prototype:GetOptions()
 		desc = L["Settings related to texts"],
 		order = 32,
 		args = {
-			-- Shared text options.
 			fontsize = textOptions.fontsize,
 			textVerticalOffset = textOptions.textVerticalOffset,
 			textHorizontalOffset = textOptions.textHorizontalOffset,
 			forceJustifyText = textOptions.forceJustifyText,
 
-			-- Cast Bar-specific text options.
 			lockFontAlpha = {
 				type = "toggle",
 				name = L["Lock Bar Text Alpha"],
