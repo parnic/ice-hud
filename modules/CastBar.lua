@@ -215,79 +215,56 @@ function CastBar.prototype:GetOptions()
 	}
 
 	local textOptions = opts["textSettings"].args
+	local lockFontAlphaOrder = textOptions.lockUpperFontAlpha.order
+	local empowerStageOrder = textOptions.upperTextString.order
 
-	-- Preserve the Cast Bar's offset range and option ordering.
-	textOptions.textVerticalOffset.min = -250
-	textOptions.textVerticalOffset.order = nil
-	textOptions.textHorizontalOffset.order = nil
-	textOptions.forceJustifyText.order = nil
+	textOptions.textHeader.name = L["Cast Text"]
+	textOptions.textHeader2 = nil
+	textOptions.upperTextString = nil
+	textOptions.lowerTextString = nil
+	textOptions.lockUpperFontAlpha = nil
+	textOptions.lockLowerFontAlpha = nil
+	textOptions.lowerTextVisible = nil
 
-	opts["textSettings"] =
-	{
-		type = 'group',
-		name = "|c"..self.configColor..L["Text Settings"].."|r",
-		desc = L["Settings related to texts"],
-		order = 32,
-		args = {
-			fontsize = textOptions.fontsize,
-			textVerticalOffset = textOptions.textVerticalOffset,
-			textHorizontalOffset = textOptions.textHorizontalOffset,
-			forceJustifyText = textOptions.forceJustifyText,
+	textOptions.upperTextVisible.name = L["Spell cast text visible"]
+	textOptions.upperTextVisible.desc = L["Toggle spell cast text visibility"]
 
-			lockFontAlpha = {
-				type = "toggle",
-				name = L["Lock Bar Text Alpha"],
-				desc = L["Locks text alpha to 100%"],
-				get = function()
-					return self.moduleSettings.lockUpperTextAlpha
-				end,
-				set = function(info, v)
-					self.moduleSettings.lockUpperTextAlpha = v
-					self.moduleSettings.lockLowerTextAlpha = v
-					self:Redraw()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 13
-			},
+	textOptions.lockFontAlpha = {
+		type = "toggle",
+		name = L["Lock Bar Text Alpha"],
+		desc = L["Locks text alpha to 100%"],
+		get = function()
+			return self.moduleSettings.lockUpperTextAlpha
+		end,
+		set = function(info, v)
+			self.moduleSettings.lockUpperTextAlpha = v
+			self.moduleSettings.lockLowerTextAlpha = v
+			self:Redraw()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = lockFontAlphaOrder,
+	}
 
-			upperTextVisible = {
-				type = 'toggle',
-				name = L["Spell cast text visible"],
-				desc = L["Toggle spell cast text visibility"],
-				get = function()
-					return self.moduleSettings.textVisible['upper']
-				end,
-				set = function(info, v)
-					self.moduleSettings.textVisible['upper'] = v
-					self:Redraw()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				order = 14
-			},
-
-			empowerStageText = {
-				type = 'select',
-				name = L["Empower stage label display"],
-				desc = L["How to display the stage of an empowered spell"],
-				get = function()
-					return self.moduleSettings.empowerStageTextDisplay
-				end,
-				set = function(info, value)
-					self.moduleSettings.empowerStageTextDisplay = value
-				end,
-				values = { NONE = L["Don't show"], TOPLINE = L["After spell name"], BOTTOMLINE = L["Below spell name"] },
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				hidden = function()
-					return not GetUnitEmpowerMinHoldTime
-				end,
-			},
-		}
+	textOptions.empowerStageText = {
+		type = 'select',
+		name = L["Empower stage label display"],
+		desc = L["How to display the stage of an empowered spell"],
+		get = function()
+			return self.moduleSettings.empowerStageTextDisplay
+		end,
+		set = function(info, value)
+			self.moduleSettings.empowerStageTextDisplay = value
+		end,
+		values = { NONE = L["Don't show"], TOPLINE = L["After spell name"], BOTTOMLINE = L["Below spell name"] },
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return not GetUnitEmpowerMinHoldTime
+		end,
+		order = empowerStageOrder,
 	}
 
 	return opts
