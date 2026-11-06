@@ -214,6 +214,14 @@ function CastBar.prototype:GetOptions()
 		order = 30
 	}
 
+	local textOptions = opts["textSettings"].args
+
+	-- Preserve the Cast Bar's offset range and option ordering.
+	textOptions.textVerticalOffset.min = -250
+	textOptions.textVerticalOffset.order = nil
+	textOptions.textHorizontalOffset.order = nil
+	textOptions.forceJustifyText.order = nil
+
 	opts["textSettings"] =
 	{
 		type = 'group',
@@ -224,23 +232,13 @@ function CastBar.prototype:GetOptions()
 			return not self.moduleSettings.enabled
 		end,
 		args = {
-			fontsize = {
-				type = 'range',
-				name = L["Bar Font Size"],
-				desc = L["Bar Font Size"],
-				get = function()
-					return self.moduleSettings.barFontSize
-				end,
-				set = function(info, v)
-					self.moduleSettings.barFontSize = v
-					self:Redraw()
-				end,
-				min = 8,
-				max = 20,
-				step = 1,
-				order = 11
-			},
+			-- Shared text options.
+			fontsize = textOptions.fontsize,
+			textVerticalOffset = textOptions.textVerticalOffset,
+			textHorizontalOffset = textOptions.textHorizontalOffset,
+			forceJustifyText = textOptions.forceJustifyText,
 
+			-- Cast Bar-specific text options.
 			lockFontAlpha = {
 				type = "toggle",
 				name = L["Lock Bar Text Alpha"],
@@ -268,61 +266,6 @@ function CastBar.prototype:GetOptions()
 					self:Redraw()
 				end,
 				order = 14
-			},
-
-			textVerticalOffset = {
-				type = 'range',
-				name = L["Text Vertical Offset"],
-				desc = L["Offset of the text from the bar vertically (negative is farther below)"],
-				min = -250,
-				max = 350,
-				step = 1,
-				get = function()
-					return self.moduleSettings.textVerticalOffset
-				end,
-				set = function(info, v)
-					self.moduleSettings.textVerticalOffset = v
-					self:Redraw()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end
-			},
-
-			textHorizontalOffset = {
-				type = 'range',
-				name = L["Text Horizontal Offset"],
-				desc = L["Offset of the text from the bar horizontally"],
-				min = -350,
-				max = 350,
-				step = 1,
-				get = function()
-					return self.moduleSettings.textHorizontalOffset
-				end,
-				set = function(info, v)
-					self.moduleSettings.textHorizontalOffset = v
-					self:Redraw()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end
-			},
-
-			forceJustifyText = {
-				type = 'select',
-				name = L["Force Text Justification"],
-				desc = L["This sets the alignment for the text on this bar"],
-				get = function()
-					return self.moduleSettings.forceJustifyText
-				end,
-				set = function(info, value)
-					self.moduleSettings.forceJustifyText = value
-					self:Redraw()
-				end,
-				values = { NONE = "None", LEFT = "Left", CENTER = "Center", RIGHT = "Right" },
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
 			},
 
 			empowerStageText = {
