@@ -319,7 +319,7 @@ function CastBar.prototype:GetOptions()
 					self.moduleSettings.forceJustifyText = value
 					self:Redraw()
 				end,
-				values = { NONE = "None", LEFT = "Left", RIGHT = "Right" },
+				values = { NONE = "None", LEFT = "Left", CENTER = "Center", RIGHT = "Right" },
 				disabled = function()
 					return not self.moduleSettings.enabled
 				end,
