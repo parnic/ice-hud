@@ -38,8 +38,17 @@ local LastValidPotentialSnDDuration = 0
 local CurrSndDuration = 0
 local CalculatedSnDEndTime = 0
 
-local oldSndSpellId = 5171
-local newSndSpellId = 315496
+-- every spell ID Slice and Dice has had: Classic-style ranks (also used by Forever) and the modern single-rank version.
+-- the buff carries the ID of whichever one was cast, so lookups and cast detection have to accept all of them.
+local SndSpellIds = {
+	5171, -- Classic rank 1
+	6774, -- Classic rank 2
+	315496, -- modern
+}
+local IsSndSpellId = {}
+for i=1,#SndSpellIds do
+	IsSndSpellId[SndSpellIds[i]] = true
+end
 
 if IceHUD.WowVer >= 50000 then
 	baseTime = 12
@@ -151,7 +160,7 @@ function SliceAndDice.prototype:SpellcastSucceeded(event, unit, castGuid, spellI
 		return
 	end
 
-	if spellId == newSndSpellId then
+	if IsSndSpellId[spellId] then
 		-- note that there seem to be some cases where the applied duration is different from our calculations here
 		-- but the difference only seems to apply when overriding an existing SnD (with or without CttC bonus) with
 		-- a more "powerful" version (e.g. initially activated with 1 combo point, re-activating with 3).
@@ -361,7 +370,7 @@ end
 
 -- 'Protected' methods --------------------------------------------------------
 
-function SliceAndDice.prototype:GetBuffDuration(unitName, buffId)
+function SliceAndDice.prototype:GetBuffDuration(unitName)
 	local t = GetTime()
 
 	if C_UnitAuras and C_UnitAuras.GetUnitAuraBySpellID and C_UnitAuras.GetAuraDataByAuraInstanceID then
@@ -369,7 +378,13 @@ function SliceAndDice.prototype:GetBuffDuration(unitName, buffId)
 			return CurrSndDuration, CalculatedSnDEndTime - t
 		end
 
-		local info = C_UnitAuras.GetUnitAuraBySpellID(unitName, buffId)
+		local info
+		for i=1,#SndSpellIds do
+			info = C_UnitAuras.GetUnitAuraBySpellID(unitName, SndSpellIds[i])
+			if info then
+				break
+			end
+		end
 		if not info or not info.auraInstanceID then
 			return nil, nil
 		end
@@ -393,7 +408,7 @@ function SliceAndDice.prototype:GetBuffDuration(unitName, buffId)
 	end
 
 	while buff do
-		if spellId == buffId then
+		if IsSndSpellId[spellId] then
 			if endTime and not remaining then
 				remaining = endTime - t
 			end
@@ -462,11 +477,7 @@ function SliceAndDice.prototype:UpdateSliceAndDice(event, unit)
 	local fromUpdate = event == "internal"
 
 	if not fromUpdate then
-		if C_UnitAuras and C_UnitAuras.GetAuraDuration and IceHUD.IsPlayerSpell(newSndSpellId) then
-			sndDuration, remaining = self:GetBuffDuration(self.unit, newSndSpellId)
-		else
-			sndDuration, remaining = self:GetBuffDuration(self.unit, oldSndSpellId)
-		end
+		sndDuration, remaining = self:GetBuffDuration(self.unit)
 
 		if not remaining then
 			sndEndTime = 0
