@@ -3,6 +3,7 @@
 ## v1.17.28
 
 - Add the option to center-justify bar text in addition to left/right.
+- Fixed Slice and Dice not showing while in combat on Forever.
 
 ## v1.17.27
 
