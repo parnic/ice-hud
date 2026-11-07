@@ -214,136 +214,58 @@ function CastBar.prototype:GetOptions()
 		order = 30
 	}
 
-	opts["textSettings"] =
-	{
-		type = 'group',
-		name = "|c"..self.configColor..L["Text Settings"].."|r",
-		desc = L["Settings related to texts"],
-		order = 32,
+	local textOptions = opts["textSettings"].args
+	local lockFontAlphaOrder = textOptions.lockUpperFontAlpha.order
+	local empowerStageOrder = textOptions.upperTextString.order
+
+	textOptions.textHeader.name = L["Cast Text"]
+	textOptions.textHeader2 = nil
+	textOptions.upperTextString = nil
+	textOptions.lowerTextString = nil
+	textOptions.lockUpperFontAlpha = nil
+	textOptions.lockLowerFontAlpha = nil
+	textOptions.lowerTextVisible = nil
+	textOptions.textVerticalGap = nil
+
+	textOptions.upperTextVisible.name = L["Spell cast text visible"]
+	textOptions.upperTextVisible.desc = L["Toggle spell cast text visibility"]
+
+	textOptions.lockFontAlpha = {
+		type = "toggle",
+		name = L["Lock Bar Text Alpha"],
+		desc = L["Locks text alpha to 100%"],
+		get = function()
+			return self.moduleSettings.lockUpperTextAlpha
+		end,
+		set = function(info, v)
+			self.moduleSettings.lockUpperTextAlpha = v
+			self.moduleSettings.lockLowerTextAlpha = v
+			self:Redraw()
+		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
-		args = {
-			fontsize = {
-				type = 'range',
-				name = L["Bar Font Size"],
-				desc = L["Bar Font Size"],
-				get = function()
-					return self.moduleSettings.barFontSize
-				end,
-				set = function(info, v)
-					self.moduleSettings.barFontSize = v
-					self:Redraw()
-				end,
-				min = 8,
-				max = 20,
-				step = 1,
-				order = 11
-			},
+		order = lockFontAlphaOrder,
+	}
 
-			lockFontAlpha = {
-				type = "toggle",
-				name = L["Lock Bar Text Alpha"],
-				desc = L["Locks text alpha to 100%"],
-				get = function()
-					return self.moduleSettings.lockUpperTextAlpha
-				end,
-				set = function(info, v)
-					self.moduleSettings.lockUpperTextAlpha = v
-					self.moduleSettings.lockLowerTextAlpha = v
-					self:Redraw()
-				end,
-				order = 13
-			},
-
-			upperTextVisible = {
-				type = 'toggle',
-				name = L["Spell cast text visible"],
-				desc = L["Toggle spell cast text visibility"],
-				get = function()
-					return self.moduleSettings.textVisible['upper']
-				end,
-				set = function(info, v)
-					self.moduleSettings.textVisible['upper'] = v
-					self:Redraw()
-				end,
-				order = 14
-			},
-
-			textVerticalOffset = {
-				type = 'range',
-				name = L["Text Vertical Offset"],
-				desc = L["Offset of the text from the bar vertically (negative is farther below)"],
-				min = -250,
-				max = 350,
-				step = 1,
-				get = function()
-					return self.moduleSettings.textVerticalOffset
-				end,
-				set = function(info, v)
-					self.moduleSettings.textVerticalOffset = v
-					self:Redraw()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end
-			},
-
-			textHorizontalOffset = {
-				type = 'range',
-				name = L["Text Horizontal Offset"],
-				desc = L["Offset of the text from the bar horizontally"],
-				min = -350,
-				max = 350,
-				step = 1,
-				get = function()
-					return self.moduleSettings.textHorizontalOffset
-				end,
-				set = function(info, v)
-					self.moduleSettings.textHorizontalOffset = v
-					self:Redraw()
-				end,
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end
-			},
-
-			forceJustifyText = {
-				type = 'select',
-				name = L["Force Text Justification"],
-				desc = L["This sets the alignment for the text on this bar"],
-				get = function()
-					return self.moduleSettings.forceJustifyText
-				end,
-				set = function(info, value)
-					self.moduleSettings.forceJustifyText = value
-					self:Redraw()
-				end,
-				values = { NONE = "None", LEFT = "Left", RIGHT = "Right" },
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-			},
-
-			empowerStageText = {
-				type = 'select',
-				name = L["Empower stage label display"],
-				desc = L["How to display the stage of an empowered spell"],
-				get = function()
-					return self.moduleSettings.empowerStageTextDisplay
-				end,
-				set = function(info, value)
-					self.moduleSettings.empowerStageTextDisplay = value
-				end,
-				values = { NONE = L["Don't show"], TOPLINE = L["After spell name"], BOTTOMLINE = L["Below spell name"] },
-				disabled = function()
-					return not self.moduleSettings.enabled
-				end,
-				hidden = function()
-					return not GetUnitEmpowerMinHoldTime
-				end,
-			},
-		}
+	textOptions.empowerStageText = {
+		type = 'select',
+		name = L["Empower stage label display"],
+		desc = L["How to display the stage of an empowered spell"],
+		get = function()
+			return self.moduleSettings.empowerStageTextDisplay
+		end,
+		set = function(info, value)
+			self.moduleSettings.empowerStageTextDisplay = value
+		end,
+		values = { NONE = L["Don't show"], TOPLINE = L["After spell name"], BOTTOMLINE = L["Below spell name"] },
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return not GetUnitEmpowerMinHoldTime
+		end,
+		order = empowerStageOrder,
 	}
 
 	return opts
