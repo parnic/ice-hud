@@ -225,6 +225,7 @@ function CastBar.prototype:GetOptions()
 	textOptions.lockUpperFontAlpha = nil
 	textOptions.lockLowerFontAlpha = nil
 	textOptions.lowerTextVisible = nil
+	textOptions.textVerticalGap = nil
 
 	textOptions.upperTextVisible.name = L["Spell cast text visible"]
 	textOptions.upperTextVisible.desc = L["Toggle spell cast text visibility"]
