@@ -4,7 +4,7 @@
 
 - Add the option to center-justify bar text in addition to left/right.
 - Fixed Slice and Dice not showing while in combat on Forever.
-- Disable dismissing totems in Forever to match other versions of the game where Blizzard doesn't support the action cleanly.
+- Allow right-clicking totems to dismiss them in Forever.
 - Fix totems placed during combat not appearing in the Totems module until combat ended.
 - Update defaults for Info modules and TargetOfTarget to use full names (name and surname) where available, i.e. Forever.
 

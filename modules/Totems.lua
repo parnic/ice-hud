@@ -14,6 +14,11 @@ local AIR_TOTEM_SLOT = 4;
 
 local MAX_TOTEMS = 4;
 
+-- On some clients (WoW Forever) DestroyTotem() is protected and can't be called from addon code.
+-- There we put invisible secure action buttons over the totem icons and let Blizzard's
+-- "destroytotem" secure action do the work on right-click.
+local UseSecureDestroy = IceHUD.UseSecureTotemButtons
+
 local TOTEM_PRIORITIES =
 {
 	AIR_TOTEM_SLOT,
@@ -207,7 +212,7 @@ function Totems.prototype:GetDefaultSettings()
 	defaults["totemFontSize"] = 20
 	defaults["totemMode"] = "Graphical"
 	defaults["usesDogTagStrings"] = false
-	defaults["hideBlizz"] = IceHUD.CanHookDestroyTotem
+	defaults["hideBlizz"] = IceHUD.CanHookDestroyTotem or IceHUD.UseSecureTotemButtons
 	defaults["alwaysFullAlpha"] = false
 	defaults["displayMode"] = "Horizontal"
 	defaults["cooldownMode"] = "Cooldown"
@@ -235,6 +240,16 @@ function Totems.prototype:Enable(core)
 	if self.moduleSettings.hideBlizz then
 		self:HideBlizz()
 	end
+
+	if UseSecureDestroy then
+		self:RegisterEvent("UI_SCALE_CHANGED", "QueueSecureOverlaySync")
+		self:RegisterEvent("DISPLAY_SIZE_CHANGED", "QueueSecureOverlaySync")
+		-- secure frames can't be created during combat lockdown, so make them up front
+		-- (e.g. so a /reload in combat still leaves totems dismissable)
+		for i = 1, self.numTotems do
+			self:GetSecureOverlay(i)
+		end
+	end
 end
 
 function Totems.prototype:Disable(core)
@@ -242,6 +257,13 @@ function Totems.prototype:Disable(core)
 
 	if self.moduleSettings.hideBlizz then
 		self:ShowBlizz()
+	end
+
+	if self.secureOverlays then
+		-- protected frames can't be hidden in combat; re-check (and hide) as soon as we're allowed to
+		IceHUD:RunOnLeaveCombat(function()
+			self:SyncSecureOverlays()
+		end)
 	end
 end
 
@@ -285,9 +307,159 @@ function Totems.prototype:UpdateTotem(event, totem, ...)
 		self.frame.graphical[totem].cd:Show()
 		self.frame.graphical[totem]:Show()
 		self.frame.graphical[totem].name = name
+		self.frame.graphical[totem].isEmpty = false
 	else
 		self.frame.graphical[totem].cd:Hide()
-		self.frame.graphical[totem]:Hide()
+		self.frame.graphical[totem].name = nil
+		self.frame.graphical[totem].isEmpty = true
+		if self:ShowEmptyTotemSlots() then
+			self.frame.graphical[totem].totem:SetColorTexture(0, 0, 0, 0.5)
+			self.frame.graphical[totem]:Show()
+		else
+			self.frame.graphical[totem]:Hide()
+		end
+	end
+
+	if UseSecureDestroy then
+		self:QueueSecureOverlaySync()
+	end
+end
+
+-- Secure buttons can't be shown, hidden, or moved during combat, so every slot keeps its click button
+-- for the whole fight. Draw empty slots as placeholders then so those buttons aren't invisible.
+function Totems.prototype:ShowEmptyTotemSlots()
+	return UseSecureDestroy and self.combat and self.moduleSettings.allowMouseClick
+end
+
+function Totems.prototype:ShowTotemTooltip(owner, slot)
+	local g = self.frame.graphical[slot]
+	if g and g.isEmpty then
+		return
+	end
+
+	GameTooltip:SetOwner(owner, "ANCHOR_BOTTOMRIGHT")
+	if IceHUD.WowClassic or not GameTooltip.SetTotem then
+		if g and g.name then
+			GameTooltip:SetText(g.name)
+		end
+	else
+		GameTooltip:SetTotem(slot)
+	end
+end
+
+-- Secure right-click-to-dismiss overlays (see UseSecureDestroy) ---------------
+--
+-- These are parented/anchored to UIParent rather than to our own frames: anything a protected
+-- frame is anchored to (or parented under) becomes protected as well, and this module moves,
+-- shows and hides its frames during combat. The trade-off is that the overlays have to be
+-- positioned by hand, and like any protected frame they can only be changed out of combat.
+
+local GetCVarBool = (C_CVar and C_CVar.GetCVarBool) or GetCVarBool
+
+local function GetClickEdge()
+	-- secure action buttons act on either the down or the up edge depending on this CVar;
+	-- register only that edge so a click can't fire the action twice
+	if GetCVarBool and GetCVarBool("ActionButtonUseKeyDown") then
+		return "RightButtonDown"
+	end
+	return "RightButtonUp"
+end
+
+function Totems.prototype:GetSecureOverlay(i)
+	self.secureOverlays = self.secureOverlays or {}
+	local b = self.secureOverlays[i]
+	if b or InCombatLockdown() then
+		return b
+	end
+
+	b = CreateFrame("Button", nil, UIParent, "SecureActionButtonTemplate")
+	b:RegisterForClicks(GetClickEdge())
+	b:SetAttribute("*type2", "destroytotem")
+	b:SetAttribute("totem-slot", i)
+	b.slot = i
+	b:SetScript("OnEnter", function(btn)
+		local g = self.frame and self.frame.graphical and self.frame.graphical[btn.slot]
+		if g and g:IsVisible() then
+			self:ShowTotemTooltip(btn, btn.slot)
+		end
+	end)
+	b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	b:Hide()
+
+	self.secureOverlays[i] = b
+	return b
+end
+
+-- Places overlay i on top of totem icon i, or hides it when it shouldn't take clicks.
+-- showAlways keeps it clickable even if that slot is empty right now: used when entering
+-- combat, because an overlay can't be shown later for a totem dropped during combat.
+function Totems.prototype:SyncSecureOverlay(i, showAlways)
+	if InCombatLockdown() then
+		return
+	end
+
+	local b = self:GetSecureOverlay(i)
+	if not b then
+		return
+	end
+
+	local g = self.frame and self.frame.graphical and self.frame.graphical[i]
+	if not g or not self.moduleSettings.enabled or not self.moduleSettings.allowMouseClick
+		or not self.frame:IsVisible() or self:IsInConfigMode()
+		or (not showAlways and not self.combat and g:GetEffectiveAlpha() <= 0) then
+		-- hidden HUD, config/move mode (where the move hint needs the mouse), or an icon that's
+		-- faded out out of combat. (In combat the layout is locked in before alpha settles.)
+		b:Hide()
+		return
+	end
+
+	local left, bottom, width, height = g:GetRect()
+	if left then
+		local s = g:GetEffectiveScale() / UIParent:GetEffectiveScale()
+		b:SetFrameStrata(g:GetFrameStrata())
+		b:SetFrameLevel(g:GetFrameLevel() + 5)
+		b:ClearAllPoints()
+		b:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", left * s, bottom * s)
+		b:SetWidth(width * s)
+		b:SetHeight(height * s)
+		b.placed = true
+	elseif not b.placed then
+		-- never laid out yet, so there's nowhere sensible to put it
+		b:Hide()
+		return
+	end
+	-- (if the rect is temporarily unavailable, keep the last known position)
+
+	b:RegisterForClicks(GetClickEdge())
+
+	if showAlways or g:IsShown() then
+		b:Show()
+	else
+		b:Hide()
+	end
+end
+
+function Totems.prototype:SyncSecureOverlays(showAlways)
+	for i = 1, self.numTotems do
+		self:SyncSecureOverlay(i, showAlways)
+	end
+end
+
+-- Layout isn't resolved until the next frame after a Redraw, so batch everything into one
+-- deferred sync. Requests during combat are dropped: OutCombat redraws, which re-syncs.
+function Totems.prototype:QueueSecureOverlaySync()
+	if self.overlaySyncQueued or InCombatLockdown() then
+		return
+	end
+	self.overlaySyncQueued = true
+	local function run()
+		self.overlaySyncQueued = false
+		self:SyncSecureOverlays(self.combat)
+	end
+	if C_Timer and C_Timer.After then
+		C_Timer.After(0, run)
+	else
+		run()
 	end
 end
 
@@ -304,6 +476,13 @@ function Totems.prototype:CreateFrame()
 	self.frame:SetHeight(28)
 	self.frame:ClearAllPoints()
 	self:SetFramePosition()
+
+	if UseSecureDestroy and not self.overlayVisibilityHooked then
+		-- e.g. the whole HUD being hidden for a pet battle or the barber shop
+		self.overlayVisibilityHooked = true
+		self.frame:HookScript("OnShow", function() self:QueueSecureOverlaySync() end)
+		self.frame:HookScript("OnHide", function() self:QueueSecureOverlaySync() end)
+	end
 
 	self:CreateTotemFrame()
 end
@@ -356,6 +535,14 @@ end
 function Totems.prototype:InCombat()
 	Totems.super.prototype.InCombat(self)
 	self:Redraw()
+
+	-- PLAYER_REGEN_DISABLED is the last chance before combat lockdown, so this can't wait for
+	-- the deferred sync. Make every slot right-clickable so totems dropped during combat can
+	-- be dismissed too. (Redraw just re-applied the same anchors, so the totem frames' rects
+	-- are unchanged.)
+	if UseSecureDestroy then
+		self:SyncSecureOverlays(true)
+	end
 end
 
 function Totems.prototype:OutCombat()
@@ -395,12 +582,7 @@ function Totems.prototype:CreateTotem(i, name)
 
 	if not self.graphicalOnEnter then
 		self.graphicalOnEnter = function(button)
-			GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
-			if IceHUD.WowClassic then
-				GameTooltip:SetText(button.name)
-			else
-				GameTooltip:SetTotem(button.slot)
-			end
+			self:ShowTotemTooltip(button, button.slot)
 		end
 	end
 	if not self.graphicalOnLeave then
@@ -447,7 +629,14 @@ function Totems.prototype:CreateTotem(i, name)
 	self.frame.graphical[i].shine:SetHeight(self.totemSize + 10)
 	self.frame.graphical[i].shine:Hide()
 
-	if self.moduleSettings.allowMouseClick then
+	if UseSecureDestroy then
+		-- the secure overlay button handles tooltip + right-click
+		self.frame.graphical[i]:EnableMouse(false)
+		self.frame.graphical[i]:SetScript("OnEnter", nil)
+		self.frame.graphical[i]:SetScript("OnLeave", nil)
+		self.frame.graphical[i]:SetScript("OnMouseUp", nil)
+		self:QueueSecureOverlaySync()
+	elseif self.moduleSettings.allowMouseClick then
 		self.frame.graphical[i]:EnableMouse(true)
 		self.frame.graphical[i]:SetScript("OnEnter", self.graphicalOnEnter)
 		self.frame.graphical[i]:SetScript("OnLeave", self.graphicalOnLeave)
