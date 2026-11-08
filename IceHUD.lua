@@ -166,7 +166,8 @@ IceHUD.HasNativeSwingTimer = Enum.PlayerSwingType ~= nil
 -- which the secret environment does not hand out.
 IceHUD.CanTrackSwings = IceHUD.HasNativeSwingTimer or not IceHUD.IsSecretEnv()
 IceHUD.GetSpellInfoReturnsFunnel = IceHUD.WowMain and IceHUD.WowVer < 60000
-IceHUD.CanHookDestroyTotem = IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath or IceHUD.WowClassicCataclysm or IceHUD.WowClassicMists
+-- DestroyTotem is protected in Forever, so calling it from a click handler gets IceHUD blocked.
+IceHUD.CanHookDestroyTotem = not IceHUD.WowForever and (IceHUD.WowClassic or IceHUD.WowClassicBC or IceHUD.WowClassicWrath or IceHUD.WowClassicCataclysm or IceHUD.WowClassicMists)
 IceHUD.ShouldUpdateTargetHealthEveryTick = (IceHUD.WowClassic or IceHUD.WowClassicBC) and GetCVarBool("predictedHealth")
 IceHUD.UsesUIPanelButtonTemplate = IceHUD.WowVer >= 50000 or not IceHUD.WowMain
 IceHUD.EventExistsSpellcastInterruptible = IceHUD.WowVer >= 30200 and not IceHUD.WowClassicWrath

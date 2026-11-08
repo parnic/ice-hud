@@ -4,6 +4,7 @@
 
 - Add the option to center-justify bar text in addition to left/right.
 - Fixed Slice and Dice not showing while in combat on Forever.
+- Disable dismissing totems in Forever to match other versions of the game where Blizzard doesn't support the action cleanly.
 
 ## v1.17.27
 
