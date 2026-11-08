@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.17.29
+
+- Allow right-clicking totems to dismiss them in Forever.
+- Fix totems placed during combat not appearing in the Totems module until combat ended.
+
 ## v1.17.28
 
 - Add the option to center-justify bar text in addition to left/right.
