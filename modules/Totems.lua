@@ -263,9 +263,25 @@ function Totems.prototype:UpdateTotem(event, totem, ...)
 	end
 
 	local haveTotem, name, startTime, duration, icon = self:GetTotemInfo(totem)
- 	if IceHUD.CanAccessValue(duration) and duration > 0 then
+	local active = false
+	if IceHUD.CanAccessValue(haveTotem) and not haveTotem then
+		-- definitely an empty slot
+	elseif IceHUD.CanAccessValue(duration) then
+		if duration and duration > 0 then
+			CooldownFrame_SetTimer(self.frame.graphical[totem].cd, startTime, duration, true)
+			active = true
+		end
+	elseif GetTotemDuration then
+		-- duration is a secret value (e.g. in combat): let the cooldown frame read it directly
+		local durationObj = GetTotemDuration(totem)
+		if durationObj then
+			self.frame.graphical[totem].cd:SetCooldownFromDurationObject(durationObj)
+			active = true
+		end
+	end
+
+	if active then
 		self.frame.graphical[totem].totem:SetTexture(icon)
-		CooldownFrame_SetTimer(self.frame.graphical[totem].cd, startTime, duration, true)
 		self.frame.graphical[totem].cd:Show()
 		self.frame.graphical[totem]:Show()
 		self.frame.graphical[totem].name = name
