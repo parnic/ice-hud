@@ -1126,7 +1126,7 @@ function IceTargetInfo.prototype:GetDefaultSettings()
 	defaults["mouseTarget"] = true
 	defaults["mouseBuff"] = true
 	defaults["mouseTooltip"] = true
-	defaults["line1Tag"] = "[Name:HostileColor]"
+	defaults["line1Tag"] = "[FullName:HostileColor]"
 --  defaults["line2Tag"] = "[Level:DifficultyColor] [[IsPlayer ? Race ! CreatureType]:ClassColor] [[IsPlayer ? Class]:ClassColor] [[~PvP ? \"PvE\" ! \"PvP\"]:HostileColor] [IsLeader ? \"Leader\":Yellow] [InCombat ? \"Combat\":Red] [Classification]"
 	defaults["line2Tag"] = "[Level:DifficultyColor] [SmartRace:ClassColor] [SmartClass:ClassColor] [PvPIcon] [IsLeader ? 'Leader':Yellow] [InCombat ? 'Combat':Red] [Classification]"
 	defaults["line3Tag"] = "[Guild:Angle]"

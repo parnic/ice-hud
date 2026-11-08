@@ -278,7 +278,7 @@ function TargetOfTarget.prototype:GetDefaultSettings()
 	defaults["texture"] = "Blizzard"
 	defaults["sizeToGap"] = true
 	defaults["totWidth"] = 200
-	defaults["leftTag"] = "[Name]"
+	defaults["leftTag"] = "[FullName]"
 	defaults["rightTag"] = "[PercentHP:Round]"
 	defaults["moduleHeight"] = 15
 	return defaults
