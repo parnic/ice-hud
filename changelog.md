@@ -4,6 +4,7 @@
 
 - Allow right-clicking totems to dismiss them in Forever.
 - Fix totems placed during combat not appearing in the Totems module until combat ended.
+- Restored the ability to cancel buffs from the PlayerInfo buff panel on supported game clients (e.g. Forever).
 
 ## v1.17.28
 

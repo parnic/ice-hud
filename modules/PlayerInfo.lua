@@ -170,15 +170,6 @@ function PlayerInfo.prototype:GetOptions()
 	return opts
 end
 
-StaticPopupDialogs["ICEHUD_BUFF_DISMISS_UNAVAILABLE"] =
-{
-	text = "Sorry, but there is currently no simple way for custom mods to cancel buffs while retaining flexibility in how buffs are displayed. This will be fixed whenever the API is more accessible and I get some free time.",
-	button1 = OKAY,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = 0,
-}
-
 -- playerinfo buffclick event handle
 function PlayerInfo.prototype:BuffClick(this,event)
 	if not self:AllowMouseBuffInteraction(this) then
@@ -214,6 +205,17 @@ function PlayerInfo.prototype:CreateIconFrames(parent, direction, buffs, type, c
 	end
 
 	return buffs
+end
+
+-- OVERRIDE
+-- The aura container path never goes through CreateIconFrames, so right-click dismissal is
+-- left to the container's own buttons there.
+function PlayerInfo.prototype:GetAuraCancelButtons(aura)
+	if aura == "buff" then
+		return "RightButtonUp"
+	end
+
+	return nil
 end
 
 function PlayerInfo.prototype:Enable(core)

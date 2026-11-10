@@ -1539,7 +1539,7 @@ function IceTargetInfo.prototype:InitializeAuraButton(aura, container, key, butt
 	local stack = button:CreateFontString()
 	stack:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 3, -1)
 
-	local record = {button = button, icon = icon, cooldown = cooldown, stack = stack}
+	local record = {button = button, icon = icon, cooldown = cooldown, stack = stack, aura = aura}
 
 	-- The container starts drawing a region the moment it's handed one, and an unconfigured
 	-- region raises rather than drawing nothing, so everything is set up before handover.
@@ -1553,6 +1553,13 @@ function IceTargetInfo.prototype:InitializeAuraButton(aura, container, key, butt
 	tinsert(group.buttons, record)
 end
 
+-- Container buttons cancel their own aura when clicked with one of these buttons; we can't
+-- do it ourselves since we never learn which aura a button is showing. Nothing by default,
+-- since only the player's own buffs can be cancelled.
+function IceTargetInfo.prototype:GetAuraCancelButtons(aura)
+	return nil
+end
+
 -- The container's layout only anchors buttons, so their size is ours to set. Buttons only
 -- deny tainted access while auras are secret, so settings changes reach them out of combat.
 function IceTargetInfo.prototype:ApplyAuraButtonSettings(record, description)
@@ -1560,6 +1567,15 @@ function IceTargetInfo.prototype:ApplyAuraButtonSettings(record, description)
 
 	record.button:SetSize(description.size, description.size)
 	record.button:EnableMouse(self.moduleSettings.mouseBuff)
+
+	local cancelButtons = self.moduleSettings.mouseBuff and self:GetAuraCancelButtons(record.aura) or nil
+	if record.button.SetCancelAuraButtons then
+		record.button:SetCancelAuraButtons(cancelButtons)
+	end
+	if record.button.SetMouseClickEnabled then
+		record.button:SetMouseClickEnabled(cancelButtons ~= nil)
+	end
+
 	record.icon:SetTexCoord(zoom, 1-zoom, zoom, 1-zoom)
 	record.cooldown:SetHideCountdownNumbers(self.moduleSettings.forceHideCooldownNumbers)
 	self:FontFactory(self.moduleSettings.stackFontSize, record.button, record.stack, "OUTLINE")
