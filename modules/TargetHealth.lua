@@ -1096,12 +1096,12 @@ function IceTargetHealth.prototype:HideBlizz()
 
 	self.OriginalTargetFrameParent = TargetFrame:GetParent()
 	TargetFrame:SetParent(self.TargetFrameParent)
-	-- Reparenting only hides the frame: it still handles its events, and on every target change it
-	-- re-renders its 3D portrait (SetPortraitTexture), costing ~24 ms per target switch. Silence it too.
+
 	if not self.OriginalTargetFrameOnEvent then
 		self.OriginalTargetFrameOnEvent = TargetFrame:GetScript("OnEvent")
 		TargetFrame:SetScript("OnEvent", nil)
 	end
+
 	self.OriginalComboFrameParent = ComboFrame:GetParent()
 	ComboFrame:SetParent(self.ComboFrameParent)
 end
