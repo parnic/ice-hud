@@ -1075,6 +1075,11 @@ end
 
 function IceTargetHealth.prototype:ShowBlizz()
 	TargetFrame:SetParent(self.OriginalTargetFrameParent or UIParent)
+	if self.OriginalTargetFrameOnEvent then
+		TargetFrame:SetScript("OnEvent", self.OriginalTargetFrameOnEvent)
+		self.OriginalTargetFrameOnEvent = nil
+		if TargetFrame.Update then TargetFrame:Update() end
+	end
 	ComboFrame:SetParent(self.OriginalComboFrameParent or UIParent)
 end
 
@@ -1091,6 +1096,12 @@ function IceTargetHealth.prototype:HideBlizz()
 
 	self.OriginalTargetFrameParent = TargetFrame:GetParent()
 	TargetFrame:SetParent(self.TargetFrameParent)
+
+	if not self.OriginalTargetFrameOnEvent then
+		self.OriginalTargetFrameOnEvent = TargetFrame:GetScript("OnEvent")
+		TargetFrame:SetScript("OnEvent", nil)
+	end
+
 	self.OriginalComboFrameParent = ComboFrame:GetParent()
 	ComboFrame:SetParent(self.ComboFrameParent)
 end
