@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.30
+
+- Package a new version of LibDogTag to fix the SeparateDigits tag not working with secret values.
+
 ## v1.17.29
 
 - Allow right-clicking totems to dismiss them in Forever.
