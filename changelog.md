@@ -11,6 +11,7 @@
 - Fixed cast/GCD lag indicators and bar markers not rotating with rotated bars on Secrets-enabled clients (Midnight, Forever).
 - Fixed PlayerHealth incoming heals and absorbs covering the entire health bar instead of only the portion above current health on Classic clients.
 - Fixed LibHealComm incoming heals ignoring healing modifiers, or compounding them each time a modifier changed.
+- Fixed the CastBar lag indicator never appearing on Classic clients.
 
 ## v1.17.30
 
