@@ -1,17 +1,21 @@
 # Changelog
 
+## v1.17.32
+
+- Add a Five-Second Rule ticker for clients where that's a mechanic (Classic, Forever). Disable the option on the PlayerMana module to opt out.
+
 ## v1.17.31
 
 - Ensure PetInfo strings stay updated for users who have disabled DogTag integration.
 - Add a FocusInfo module, disabled by default.
 - Add an option to have PlayerMana and PlayerAltMana swap positions for Shadow Priests so that Mana is always in the same place.
-- Re-enabled PlayerHealth absorbs on Secrets-enabled clients (Midnight, Forever).
-- Re-enabled PlayerHealth incoming heals on Secrets-enabled clients (Midnight, Forever).
-- Re-enabled alternate bar-fill styles on Secrets-enabled clients (Midnight, Forever).
-- Fixed cast/GCD lag indicators and bar markers not rotating with rotated bars on Secrets-enabled clients (Midnight, Forever).
-- Fixed PlayerHealth incoming heals and absorbs covering the entire health bar instead of only the portion above current health on Classic clients.
-- Fixed LibHealComm incoming heals ignoring healing modifiers, or compounding them each time a modifier changed.
-- Fixed the CastBar lag indicator never appearing on Classic clients.
+- Re-enable PlayerHealth absorbs on Secrets-enabled clients (Midnight, Forever).
+- Re-enable PlayerHealth incoming heals on Secrets-enabled clients (Midnight, Forever).
+- Re-enable alternate bar-fill styles on Secrets-enabled clients (Midnight, Forever).
+- Fix cast/GCD lag indicators and bar markers not rotating with rotated bars on Secrets-enabled clients (Midnight, Forever).
+- Fix PlayerHealth incoming heals and absorbs covering the entire health bar instead of only the portion above current health on Classic clients.
+- Fix LibHealComm incoming heals ignoring healing modifiers, or compounding them each time a modifier changed.
+- Fix the CastBar lag indicator never appearing on Classic clients.
 
 ## v1.17.30
 

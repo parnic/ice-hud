@@ -29,12 +29,18 @@ end
 PlayerMana.prototype.manaType = nil
 PlayerMana.prototype.tickStart = nil
 PlayerMana.prototype.previousEnergy = nil
+PlayerMana.prototype.previousMana = nil
+PlayerMana.prototype.fiveSecondRuleStart = nil
+
+local FIVE_SECOND_RULE_DURATION = 5
+local GetSpellPowerCost = C_Spell and C_Spell.GetSpellPowerCost or GetSpellPowerCost
 
 -- Constructor --
 function PlayerMana.prototype:init()
 	PlayerMana.super.prototype.init(self, "PlayerMana", "player")
 
 	self:SetDefaultColor("PlayerMana", 62, 54, 152)
+	self:SetDefaultColor("PlayerFiveSecondRule", 62, 54, 152)
 	self:SetDefaultColor("PlayerRage", 171, 59, 59)
 	self:SetDefaultColor("PlayerEnergy", 218, 231, 31)
 	self:SetDefaultColor("PlayerFocus", 242, 149, 98)
@@ -57,6 +63,8 @@ function PlayerMana.prototype:GetDefaultSettings()
 	settings["offset"] = 1
 	settings["tickerEnabled"] = true
 	settings["tickerAlpha"] = 0.5
+	settings["fiveSecondRuleEnabled"] = true
+	settings["fiveSecondRuleAlpha"] = 0.9
 	settings["upperText"] = "[PercentMP:Round]"
 	settings["lowerText"] = "[[[MP:Short:PowerColor] '/' [MaxMP:Short:PowerColor]]:Bracket]"
 
@@ -99,12 +107,52 @@ if IceHUD.SupportsManaTicker then
 		end,
 		set = function(info, value)
 			self.moduleSettings.tickerAlpha = value
-			self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
+			self:UpdateTickerColor()
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
 		order = 52
+	}
+end
+
+if IceHUD.SupportsFiveSecondRule then
+	opts["fiveSecondRuleEnabled"] = {
+		type = "toggle",
+		name = L["Show mana five second rule timer"],
+		desc = L["Shows a ticker on the mana bar counting the 5 seconds after spending mana during which spirit-based mana regeneration is reduced"],
+		get = function()
+			return self.moduleSettings.fiveSecondRuleEnabled
+		end,
+		set = function(info, value)
+			self.moduleSettings.fiveSecondRuleEnabled = value
+			self:ManaType(nil, self.unit)
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		order = 52.5
+	}
+
+	opts["fiveSecondRuleAlpha"] =
+	{
+		type = 'range',
+		name = L["Five second rule timer alpha"],
+		desc = L["Five second rule timer alpha"],
+		min = 0.1,
+		max = 1,
+		step = 0.05,
+		get = function()
+			return self.moduleSettings.fiveSecondRuleAlpha
+		end,
+		set = function(info, value)
+			self.moduleSettings.fiveSecondRuleAlpha = value
+			self:UpdateTickerColor()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled or not self.moduleSettings.fiveSecondRuleEnabled
+		end,
+		order = 52.6
 	}
 end
 	opts["scaleManaColor"] = {
@@ -180,6 +228,10 @@ function PlayerMana.prototype:Enable(core)
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", "ExitingVehicle")
 	end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorld")
+
+	if IceHUD.SupportsFiveSecondRule and GetSpellPowerCost then
+		self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "FiveSecondRuleSpellCast")
+	end
 
 	if not self.CustomOnUpdate then
 		self.CustomOnUpdate = function() self:Update(self.unit) end
@@ -297,19 +349,27 @@ function PlayerMana.prototype:ManaType(event, unit)
 	local powerName
 	self.manaType, powerName = UnitPowerType(self.unit)
 
-	if IceHUD.SupportsManaTicker then
-		-- register ticker for rogue energy
-		if self.moduleSettings.tickerEnabled and self.manaType == SPELL_POWER_ENERGY then
-			self.tickerFrame:Show()
+	if self.tickerFrame then
+		local tickFunc
+		if self:ShouldShowEnergyTicker() then
 			if not self.energyTickerUpdateFunc then
 				self.energyTickerUpdateFunc = function() self:EnergyTick() end
 			end
-			self.tickerFrame:SetScript("OnUpdate", self.energyTickerUpdateFunc)
+			tickFunc = self.energyTickerUpdateFunc
+		elseif self:ShouldShowFiveSecondRule() then
+			if not self.fiveSecondRuleUpdateFunc then
+				self.fiveSecondRuleUpdateFunc = function() self:FiveSecondRuleTick() end
+			end
+			tickFunc = self.fiveSecondRuleUpdateFunc
+		end
+
+		self.tickerFrame:SetScript("OnUpdate", tickFunc)
+		if tickFunc then
+			self:UpdateTickerColor()
+			self.tickerFrame:Show()
 		else
 			self.tickerFrame:Hide()
-			self.tickerFrame:SetScript("OnUpdate", nil)
 		end
-	else
 	end
 
 	self.bTreatEmptyAsFull = self:TreatEmptyAsFull()
@@ -353,6 +413,8 @@ function PlayerMana.prototype:Update(unit, powertype)
 		self:UpdateEnergy(nil, unit)
 	end
 
+	self:UpdateFiveSecondRule()
+
 	if self.unit == "vehicle" and (not UnitExists(self.unit) or self.maxMana == 0) then
 		self:Show(false)
 		return
@@ -361,11 +423,11 @@ function PlayerMana.prototype:Update(unit, powertype)
 	end
 
 	-- the user can toggle the predictedPower cvar at any time and the addon will not get notified. handle it.
-	if not self.tickerFrame and IceHUD.SupportsManaTicker then
+	if not self.tickerFrame then
 		self:CreateTickerFrame()
 	end
 
-	if (self.manaType ~= SPELL_POWER_ENERGY and IceHUD.SupportsManaTicker) then
+	if self.tickerFrame and not self:ShouldShowEnergyTicker() and not self:ShouldShowFiveSecondRule() then
 		self.tickerFrame:Hide()
 	end
 
@@ -411,13 +473,11 @@ function PlayerMana.prototype:Update(unit, powertype)
 		end
 	end
 
-	if IceHUD.SupportsManaTicker then
-		-- hide ticker if rest of the bar is not visible
-		if IceHUD.CanAccessValue(self.alpha) and self.alpha == 0 then
-	 		self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", 0))
-	 	else
-	 		self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
-	 	end
+	-- hide ticker if rest of the bar is not visible
+	if IceHUD.CanAccessValue(self.alpha) and self.alpha == 0 then
+		self:UpdateTickerColor(0)
+	else
+		self:UpdateTickerColor()
 	end
 
 	if not IceHUD.IceCore:ShouldUseDogTags() then
@@ -495,8 +555,125 @@ function PlayerMana.prototype:EnergyTick()
 end
 
 
+function PlayerMana.prototype:ShouldShowEnergyTicker()
+	return IceHUD.SupportsManaTicker and self.moduleSettings.tickerEnabled and self.manaType == SPELL_POWER_ENERGY
+end
+
+
+function PlayerMana.prototype:ShouldTrackFiveSecondRule()
+	return IceHUD.SupportsFiveSecondRule and self.moduleSettings.fiveSecondRuleEnabled and self.unit == "player"
+end
+
+
+function PlayerMana.prototype:ShouldShowFiveSecondRule()
+	return self:ShouldTrackFiveSecondRule() and self.manaType == SPELL_POWER_MANA
+end
+
+
+function PlayerMana.prototype:UpdateTickerColor(alpha)
+	if not self.tickerFrame then
+		return
+	end
+
+	if self.manaType == SPELL_POWER_MANA then
+		self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerFiveSecondRule", alpha or self.moduleSettings.fiveSecondRuleAlpha))
+	else
+		self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", alpha or self.moduleSettings.tickerAlpha))
+	end
+end
+
+
+function PlayerMana.prototype:UpdateFiveSecondRule()
+	if not self:ShouldTrackFiveSecondRule() then
+		self.previousMana = nil
+		return
+	end
+
+	local mana = UnitPower(self.unit, SPELL_POWER_MANA)
+	if not IceHUD.CanAccessValue(mana) then
+		self.previousMana = nil
+		return
+	end
+
+	if self.previousMana and mana < self.previousMana then
+		self:StartFiveSecondRule()
+	end
+
+	self.previousMana = mana
+end
+
+
+-- mana is secret on some clients, so fall back to watching for casts that cost mana
+function PlayerMana.prototype:FiveSecondRuleSpellCast(event, unit, castGuid, spellId)
+	if unit ~= "player" or not self:ShouldTrackFiveSecondRule() then
+		return
+	end
+
+	if IceHUD.CanAccessValue(UnitPower("player", SPELL_POWER_MANA)) then
+		return
+	end
+
+	if self:SpellCostsMana(spellId) then
+		self:StartFiveSecondRule()
+	end
+end
+
+
+function PlayerMana.prototype:SpellCostsMana(spellId)
+	if not spellId or not IceHUD.CanAccessValue(spellId) then
+		return false
+	end
+
+	local costs = GetSpellPowerCost(spellId)
+	if not costs then
+		return false
+	end
+
+	for _, cost in ipairs(costs) do
+		if IceHUD.CanAccessValue(cost.type) and cost.type == SPELL_POWER_MANA
+			and IceHUD.CanAccessValue(cost.cost) and IceHUD.CanAccessValue(cost.costPerSec)
+			and ((cost.cost or 0) > 0 or (cost.costPerSec or 0) > 0) then
+			return true
+		end
+	end
+
+	return false
+end
+
+
+function PlayerMana.prototype:StartFiveSecondRule()
+	self.fiveSecondRuleStart = GetTime()
+	if self.tickerFrame and self:ShouldShowFiveSecondRule() then
+		self.tickerFrame:Show()
+	end
+end
+
+
+function PlayerMana.prototype:FiveSecondRuleTick()
+	if not self.fiveSecondRuleStart or not self.alive then
+		self.tickerFrame:Hide()
+		return
+	end
+
+	local elapsed = GetTime() - self.fiveSecondRuleStart
+	if elapsed >= FIVE_SECOND_RULE_DURATION then
+		self.fiveSecondRuleStart = nil
+		self.tickerFrame:Hide()
+		return
+	end
+
+	local pos = elapsed / FIVE_SECOND_RULE_DURATION
+	local y = pos * (self.settings.barHeight-2)
+
+	self.tickerFrame.spark:SetTexCoord(0, 1, 1-pos-0.01, 1-pos)
+	self.tickerFrame.spark:SetHeight(self.settings.barHeight * 0.01)
+
+	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", 0, y)
+end
+
+
 function PlayerMana.prototype:CreateTickerFrame()
-	if not IceHUD.SupportsManaTicker then
+	if not IceHUD.SupportsManaTicker and not IceHUD.SupportsFiveSecondRule then
 		return
 	end
 
@@ -520,7 +697,7 @@ function PlayerMana.prototype:CreateTickerFrame()
 	self.tickerFrame.spark:SetPoint("BOTTOMRIGHT",self.tickerFrame,"BOTTOMRIGHT")
 	self.tickerFrame.spark:SetHeight(0)
 
-	self.tickerFrame.spark:SetVertexColor(self:GetColor("PlayerEnergy", self.moduleSettings.tickerAlpha))
+	self:UpdateTickerColor()
 
 	self.tickerFrame:ClearAllPoints()
 	self.tickerFrame:SetPoint("BOTTOMLEFT", self.frame, "BOTTOMLEFT", 0, 0)

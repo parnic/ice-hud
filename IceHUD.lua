@@ -182,6 +182,7 @@ IceHUD.CatalogingSpellIDs = {366290, 372817, 385025, 385635, 386070, 386504, 400
 IceHUD.HasCataloging = GetSpellName(366290)
 IceHUD.SupportsAbsorbAmounts = IceHUD.WowVer >= 50200 or IceHUD.WowForever
 IceHUD.SupportsManaTicker = not IceHUD.WowForever and (IceHUD.WowVer < 30000 or (IceHUD.WowVer < 70100 and not GetCVarBool("predictedPower") and not IceHUD.WowClassicWrath and not IceHUD.WowClassicMists))
+IceHUD.SupportsFiveSecondRule = IceHUD.WowVer < 40000
 
 IceHUD.UnitPowerEvent = "UNIT_POWER_UPDATE"
 
