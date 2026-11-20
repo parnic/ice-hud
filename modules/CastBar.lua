@@ -397,9 +397,7 @@ function CastBar.prototype:SetExpandLagCoords(scale)
 
 	for _, info in ipairs({ { self.lagBar, 0, half, offset }, { self.lagBar2, 1 - half, 1, -offset } }) do
 		local frame, minY, maxY, offsetY = info[1], info[2], info[3], info[4]
-		self:GetBarFrameTexture(frame):SetTexCoord(0, 1, minY, maxY)
-		self:SetBarFramePoints(frame, 0, offsetY)
-		frame:SetHeight(self.settings.barHeight * half)
+		self:SetPlainBarSegment(frame, minY, maxY, offsetY, self.settings.barHeight * half)
 		if self.moduleSettings.barVisible['bar'] and half > 0 then
 			frame:Show()
 		else

@@ -1705,14 +1705,41 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 		end
 	end
 
-	self:GetBarFrameTexture(barFrame):SetTexCoord(0, 1, min_y, max_y)
-	self:SetBarFramePoints(barFrame, 0, offset_y)
-	barFrame:SetHeight(self.settings.barHeight * scale)
+	self:SetPlainBarSegment(barFrame, min_y, max_y, offset_y, self.settings.barHeight * scale)
 	self.ActualScale = scale
 
 	if self.moduleSettings.barVisible['bar'] and scale > 0 then
 		barFrame:Show()
 	end
+end
+
+local RotatedAnchor = { BOTTOMLEFT = "TOPLEFT", TOPLEFT = "TOPRIGHT", LEFT = "TOP" }
+
+-- a rotated StatusBar leaves plain frames vertical, so lay them out along the rotated axis ourselves
+function IceBarElement.prototype:SetPlainBarSegment(barFrame, minY, maxY, offsetY, length)
+	local texture = self:GetBarFrameTexture(barFrame)
+	if not self.barFrame.rotated then
+		texture:SetTexCoord(0, 1, minY, maxY)
+		self:SetBarFramePoints(barFrame, 0, offsetY)
+		barFrame:SetHeight(length)
+		return
+	end
+
+	local anchor
+	if self:BarFillInverse() then
+		anchor = "TOPLEFT"
+	elseif self:BarFillExpand() then
+		anchor = "LEFT"
+	else
+		anchor = "BOTTOMLEFT"
+	end
+	anchor = RotatedAnchor[anchor]
+
+	texture:SetTexCoord(0, maxY, 1, maxY, 0, minY, 1, minY)
+	barFrame:ClearAllPoints()
+	barFrame:SetPoint(anchor, self.frame, anchor, offsetY or 0, 0)
+	barFrame:SetWidth(length)
+	barFrame:SetHeight(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 end
 
 function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
@@ -2059,6 +2086,7 @@ function IceBarElement.prototype:RotateHorizontal()
 			self.barFrame:SetOrientation("HORIZONTAL")
 			self.barFrame.rotated = true
 			self:SetBarFramePoints(self.barFrame)
+			self:RepositionMarkers()
 		end
 	else
 		self:RotateFrame(self.frame)
@@ -2086,6 +2114,10 @@ function IceBarElement.prototype:ResetRotation()
 		self.barFrame:SetOrientation("VERTICAL")
 		self.barFrame.rotated = false
 		self:SetBarFramePoints(self.barFrame)
+		for i=1, #self.Markers do
+			self:UpdateMarker(i)
+		end
+		self:RepositionMarkers()
 	end
 end
 
@@ -2197,6 +2229,9 @@ function IceBarElement.prototype:UpdateMarker(idx)
 		"Bad marker passed to UpdateMarker. idx="..idx..", #Markers="..#self.Markers..", #settings.markers="..#self.moduleSettings.markers)
 	self.Markers[idx]:SetWidth(self.settings.barWidth + (self.moduleSettings.widthModifier or 0))
 	self.Markers[idx]:SetHeight(self.moduleSettings.markers[idx].height)
+	if self.barFrame.rotated then
+		self:PositionMarker(idx, self.moduleSettings.markers[idx].position)
+	end
 end
 
 function IceBarElement.prototype:PositionMarker(idx, pos)
@@ -2222,8 +2257,7 @@ function IceBarElement.prototype:PositionMarker(idx, pos)
 		max_y = IceHUD:Clamp(1-pos, 0, 1)
 	end
 
-	self.Markers[idx].texture:SetTexCoord(0, 1, min_y, max_y)
-	self:SetBarFramePoints(self.Markers[idx], 0, offset_y)
+	self:SetPlainBarSegment(self.Markers[idx], min_y, max_y, offset_y, self.moduleSettings.markers[idx].height)
 	self.Markers[idx].texture:Show()
 end
 

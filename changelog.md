@@ -8,6 +8,7 @@
 - Re-enabled PlayerHealth absorbs on Secrets-enabled clients (Midnight, Forever).
 - Re-enabled PlayerHealth incoming heals on Secrets-enabled clients (Midnight, Forever).
 - Re-enabled alternate bar-fill styles on Secrets-enabled clients (Midnight, Forever).
+- Fixed cast/GCD lag indicators and bar markers not rotating with rotated bars on Secrets-enabled clients (Midnight, Forever).
 
 ## v1.17.30
 
