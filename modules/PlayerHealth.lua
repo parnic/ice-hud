@@ -8,6 +8,8 @@ PlayerHealth.prototype.pendingBlizzardPartyHide = false
 PlayerHealth.prototype.absorbAmount = 0
 
 local configMode = false
+local ABSORB_PAD = 2
+local MASK_TEXTURE = "Interface\\Buttons\\WHITE8X8"
 local HealComm
 local incomingHealAmt = 0
 local groupEvent = IceHUD.EventExistsGroupRosterUpdate and "GROUP_ROSTER_UPDATE" or "PARTY_MEMBERS_CHANGED"
@@ -43,6 +45,7 @@ function PlayerHealth.prototype:GetDefaultSettings()
 	settings["lockIconAlpha"] = false
 	settings["showIncomingHeals"] = true
 	settings["showAbsorbs"] = true
+	settings["absorbOverlay"] = false
 
 	settings["showStatusIcon"] = true
 	settings["statusIconOffset"] = {x=110, y=0}
@@ -362,23 +365,38 @@ function PlayerHealth.prototype:GetOptions()
 			return self.moduleSettings.showAbsorbs
 		end,
 		set = function(info, v)
-			if not v then
-				self.absorbFrame:Hide()
-			else
-				self.absorbFrame:Show()
-			end
-
 			self.moduleSettings.showAbsorbs = v
-
+			self:UpdateAbsorbVisibility()
 			self:Update()
 		end,
 		hidden = function()
-			return IceHUD.IsSecretEnv() or not IceHUD.SupportsAbsorbAmounts
+			return not IceHUD.SupportsAbsorbAmounts
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
 		end,
 		order = 43.8
+	}
+
+	opts["absorbOverlay"] =
+	{
+		type = 'toggle',
+		name = L["Show absorbs over health"],
+		desc = L["Whether to draw absorbs on top of your current health instead of extending past it. This shows absorbs even when your health is full, but an absorb larger than your current health will be cut off."],
+		get = function()
+			return self.moduleSettings.absorbOverlay
+		end,
+		set = function(info, v)
+			self.moduleSettings.absorbOverlay = v
+			self:Redraw()
+		end,
+		hidden = function()
+			return opts.showAbsorbs.hidden() or not self:SupportsAbsorbOverlay()
+		end,
+		disabled = function()
+			return opts.showAbsorbs.disabled() or not self.moduleSettings.showAbsorbs
+		end,
+		order = 43.85
 	}
 
 	opts["absorbAlpha"] =
@@ -951,6 +969,11 @@ function PlayerHealth.prototype:CreateHealBar()
 end
 
 function PlayerHealth.prototype:CreateAbsorbBar()
+	if self.barFrame.isStatusBar then
+		self:CreateMaskedAbsorbBar()
+		return
+	end
+
 	self.absorbFrame = self:BarFactory(self.absorbFrame, IceElement.aboveDefaultStrata, "BACKGROUND", "Absorb")
 
 	self:SetBarFrameColorRGBA(self.absorbFrame, self:GetColor("PlayerHealthAbsorbAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.absorbAlpha))
@@ -960,6 +983,112 @@ function PlayerHealth.prototype:CreateAbsorbBar()
 	if not self.moduleSettings.showAbsorbs or not IceHUD.SupportsAbsorbAmounts then
 		self.absorbFrame:Hide()
 	end
+end
+
+-- the driver is padded by ABSORB_PAD px because a 0px fill stops updating its rect.
+-- limitMask clips that padding to the correct side of the health fill.
+function PlayerHealth.prototype:CreateMaskedAbsorbBar()
+	local healthFill = self.barFrame:GetStatusBarTexture()
+
+	if not self.absorbDriver then
+		self.absorbDriver = CreateFrame("StatusBar", nil, self.frame)
+		self.absorbDriver:SetStatusBarTexture(MASK_TEXTURE)
+		self.absorbDriver:GetStatusBarTexture():SetAlpha(0)
+		self.absorbDriver:SetMinMaxValues(-ABSORB_PAD / self.settings.barHeight, 1)
+		self.absorbDriver:SetValue(0)
+
+		self.absorbFrame = CreateFrame("StatusBar", "IceHUD_"..self.elementName.."_Absorb", self.frame)
+		self.absorbFrame:SetMinMaxValues(0, 1)
+		self.absorbFrame:SetValue(1)
+		self.absorbFrame.texture = self.absorbFrame:CreateTexture(nil, "ARTWORK")
+		self.absorbFrame:SetStatusBarTexture(self.absorbFrame.texture)
+		self.absorbFrame.absorbMask = self:CreateAbsorbMask()
+		self.absorbFrame.limitMask = self:CreateAbsorbMask()
+		self.absorbFrame.texture:AddMaskTexture(self.absorbFrame.absorbMask)
+		self.absorbFrame.texture:AddMaskTexture(self.absorbFrame.limitMask)
+	end
+
+	local driver = self.absorbDriver
+	local frame = self.absorbFrame
+	local overlay = self.moduleSettings.absorbOverlay and true or false
+	local rotated = self.barFrame.rotated and true or false
+	local orientation = rotated and "HORIZONTAL" or "VERTICAL"
+	local fillStart = rotated and "LEFT" or "BOTTOM"
+	local fillEnd = rotated and "RIGHT" or "TOP"
+	local length = self.settings.barHeight + ABSORB_PAD
+	local thickness = self.settings.barWidth + (self.moduleSettings.widthModifier or 0)
+
+	driver:SetOrientation(orientation)
+	driver:SetReverseFill(overlay)
+	if rotated then
+		driver:SetSize(length, thickness)
+	else
+		driver:SetSize(thickness, length)
+	end
+
+	local pad = overlay and ABSORB_PAD or -ABSORB_PAD
+	driver:ClearAllPoints()
+	driver:SetPoint(overlay and fillEnd or fillStart, healthFill, fillEnd, rotated and pad or 0, rotated and 0 or pad)
+
+	frame:SetOrientation(orientation)
+	frame:SetRotatesTexture(rotated)
+	frame:SetFrameStrata(self.barFrame:GetFrameStrata())
+	frame:SetFrameLevel(self.barFrame:GetFrameLevel() + 1)
+	frame:ClearAllPoints()
+	frame:SetAllPoints(self.barFrame)
+	frame.texture:SetTexture(self:GetBarTexturePath())
+
+	frame.absorbMask:ClearAllPoints()
+	frame.absorbMask:SetAllPoints(driver:GetStatusBarTexture())
+
+	frame.limitMask:ClearAllPoints()
+	if overlay then
+		frame.limitMask:SetAllPoints(healthFill)
+	elseif rotated then
+		frame.limitMask:SetPoint("TOPLEFT", healthFill, "TOPRIGHT")
+		frame.limitMask:SetPoint("BOTTOMRIGHT", self.barFrame, "BOTTOMRIGHT")
+	else
+		frame.limitMask:SetPoint("BOTTOMLEFT", healthFill, "TOPLEFT")
+		frame.limitMask:SetPoint("TOPRIGHT", self.barFrame, "TOPRIGHT")
+	end
+
+	self:SetBarFrameColorRGBA(frame, self:GetColor("PlayerHealthAbsorbAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.absorbAlpha))
+	self:UpdateAbsorbVisibility()
+end
+
+function PlayerHealth.prototype:CreateAbsorbMask()
+	local mask = self.absorbFrame:CreateMaskTexture()
+	-- NEAREST keeps the mask edge hard; linear filtering fades it into the clamped black border
+	mask:SetTexture(MASK_TEXTURE, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE", "NEAREST")
+	mask:SetSnapToPixelGrid(false)
+	mask:SetTexelSnappingBias(0)
+	return mask
+end
+
+function PlayerHealth.prototype:SupportsAbsorbOverlay()
+	return self.absorbDriver ~= nil
+end
+
+function PlayerHealth.prototype:UpdateAbsorbVisibility()
+	if not self.absorbFrame then
+		return
+	end
+
+	if self.moduleSettings.showAbsorbs and IceHUD.SupportsAbsorbAmounts then
+		self.absorbFrame:Show()
+	else
+		self.absorbFrame:Hide()
+	end
+end
+
+function PlayerHealth.prototype:UpdateMaskedAbsorb()
+	local maxHealth = self.maxHealth or 0
+	if IceHUD.CanAccessValue(maxHealth) then
+		self.absorbDriver:SetMinMaxValues(-maxHealth * ABSORB_PAD / self.settings.barHeight, maxHealth)
+	else
+		self.absorbDriver:SetMinMaxValues(0, maxHealth)
+	end
+	self.absorbDriver:SetValue(self.absorbAmount or 0)
 end
 
 
@@ -1001,6 +1130,9 @@ function PlayerHealth.prototype:EnteringWorld()
 	self:CheckLeader()
 	self:CheckPartyRole()
 	self:CheckPvP()
+	if IceHUD.SupportsAbsorbAmounts then
+		self.absorbAmount = UnitGetTotalAbsorbs(self.unit) or 0
+	end
 	-- Parnic - moved :Resting to the end because it calls Update which sets alpha on everything
 	self:Resting()
 end
@@ -1316,7 +1448,9 @@ function PlayerHealth.prototype:Update(unit)
 		self:SetBarCoord(self.healFrame, percent)
 	end
 
-	if self.moduleSettings.showAbsorbs
+	if self.absorbDriver then
+		self:UpdateMaskedAbsorb()
+	elseif self.moduleSettings.showAbsorbs
 		and self.absorbFrame
 		and self.absorbAmount
 		and IceHUD.CanAccessValue(self.absorbAmount) then
