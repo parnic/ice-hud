@@ -3,6 +3,7 @@
 ## v1.17.31
 
 - Ensure PetInfo strings stay updated for users who have disabled DogTag integration.
+- Add a FocusInfo module, disabled by default.
 
 ## v1.17.30
 

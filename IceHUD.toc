@@ -81,6 +81,7 @@ modules\CustomCounterBar.lua
 # - make sure PlayerInfo loads after TargetInfo since it inherits
 modules\PlayerInfo.lua
 modules\PetInfo.lua
+modules\FocusInfo.lua
 modules\TargetOfTargetCast.lua
 modules\CustomCDBar.lua
 modules\Totems.lua
