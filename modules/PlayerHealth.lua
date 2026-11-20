@@ -8,7 +8,7 @@ PlayerHealth.prototype.pendingBlizzardPartyHide = false
 PlayerHealth.prototype.absorbAmount = 0
 
 local configMode = false
-local ABSORB_PAD = 2
+local SEGMENT_PAD = 2
 local MASK_TEXTURE = "Interface\\Buttons\\WHITE8X8"
 local HealComm
 local incomingHealAmt = 0
@@ -326,7 +326,7 @@ function PlayerHealth.prototype:GetOptions()
 			self:Update()
 		end,
 		hidden = function()
-			return IceHUD.IsSecretEnv() or not (IceHUD.SupportsHealPrediction or HealComm)
+			return not (IceHUD.SupportsHealPrediction or HealComm) or (IceHUD.IsSecretEnv() and not self.healDriver)
 		end,
 		disabled = function()
 			return not self.moduleSettings.enabled
@@ -917,8 +917,13 @@ end
 function PlayerHealth.prototype:CreateFrame()
 	PlayerHealth.super.prototype.CreateFrame(self)
 
-	self:CreateHealBar()
-	self:CreateAbsorbBar()
+	if self.barFrame.isStatusBar then
+		self:CreateMaskedAbsorbBar()
+		self:CreateMaskedHealBar()
+	else
+		self:CreateHealBar()
+		self:CreateAbsorbBar()
+	end
 end
 
 
@@ -959,7 +964,7 @@ end
 function PlayerHealth.prototype:CreateHealBar()
 	self.healFrame = self:BarFactory(self.healFrame, IceElement.aboveDefaultStrata, "BACKGROUND", "Heal")
 
-	self:SetBarFrameColorRGBA(self.healFrame, self:GetColor("PlayerHealthHealAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.healAlpha))
+	self:SetSegmentColor(self.healFrame, "PlayerHealthHealAmount", self.moduleSettings.healAlpha)
 
 	self:UpdateBar(1, "undef")
 
@@ -969,14 +974,9 @@ function PlayerHealth.prototype:CreateHealBar()
 end
 
 function PlayerHealth.prototype:CreateAbsorbBar()
-	if self.barFrame.isStatusBar then
-		self:CreateMaskedAbsorbBar()
-		return
-	end
-
 	self.absorbFrame = self:BarFactory(self.absorbFrame, IceElement.aboveDefaultStrata, "BACKGROUND", "Absorb")
 
-	self:SetBarFrameColorRGBA(self.absorbFrame, self:GetColor("PlayerHealthAbsorbAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.absorbAlpha))
+	self:SetSegmentColor(self.absorbFrame, "PlayerHealthAbsorbAmount", self.moduleSettings.absorbAlpha)
 
 	self:UpdateBar(1, "undef")
 
@@ -985,50 +985,78 @@ function PlayerHealth.prototype:CreateAbsorbBar()
 	end
 end
 
--- the driver is padded by ABSORB_PAD px because a 0px fill stops updating its rect.
--- limitMask clips that padding to the correct side of the health fill.
 function PlayerHealth.prototype:CreateMaskedAbsorbBar()
-	local healthFill = self.barFrame:GetStatusBarTexture()
-
 	if not self.absorbDriver then
-		self.absorbDriver = CreateFrame("StatusBar", nil, self.frame)
-		self.absorbDriver:SetStatusBarTexture(MASK_TEXTURE)
-		self.absorbDriver:GetStatusBarTexture():SetAlpha(0)
-		self.absorbDriver:SetMinMaxValues(-ABSORB_PAD / self.settings.barHeight, 1)
-		self.absorbDriver:SetValue(0)
-
-		self.absorbFrame = CreateFrame("StatusBar", "IceHUD_"..self.elementName.."_Absorb", self.frame)
-		self.absorbFrame:SetMinMaxValues(0, 1)
-		self.absorbFrame:SetValue(1)
-		self.absorbFrame.texture = self.absorbFrame:CreateTexture(nil, "ARTWORK")
-		self.absorbFrame:SetStatusBarTexture(self.absorbFrame.texture)
-		self.absorbFrame.absorbMask = self:CreateAbsorbMask()
-		self.absorbFrame.limitMask = self:CreateAbsorbMask()
-		self.absorbFrame.texture:AddMaskTexture(self.absorbFrame.absorbMask)
-		self.absorbFrame.texture:AddMaskTexture(self.absorbFrame.limitMask)
+		self.absorbDriver, self.absorbFrame = self:CreateMaskedSegment("Absorb")
 	end
 
-	local driver = self.absorbDriver
-	local frame = self.absorbFrame
 	local overlay = self.moduleSettings.absorbOverlay and true or false
+	self:LayoutMaskedSegment(self.absorbDriver, self.absorbFrame, self.barFrame:GetStatusBarTexture(), overlay)
+
+	self:SetSegmentColor(self.absorbFrame, "PlayerHealthAbsorbAmount", self.moduleSettings.absorbAlpha)
+	self:UpdateAbsorbVisibility()
+end
+
+function PlayerHealth.prototype:CreateMaskedHealBar()
+	if not self.healDriver then
+		self.healDriver, self.healFrame = self:CreateMaskedSegment("Heal")
+	end
+
+	local prev = self.moduleSettings.absorbOverlay and self.barFrame:GetStatusBarTexture() or self.absorbDriver:GetStatusBarTexture()
+	self:LayoutMaskedSegment(self.healDriver, self.healFrame, prev, false)
+
+	self:SetSegmentColor(self.healFrame, "PlayerHealthHealAmount", self.moduleSettings.healAlpha)
+
+	if self.moduleSettings.showIncomingHeals and (IceHUD.SupportsHealPrediction or HealComm) then
+		self.healFrame:Show()
+	else
+		self.healFrame:Hide()
+	end
+end
+
+-- the driver is padded by SEGMENT_PAD px because a 0px fill stops updating its rect;
+-- limitMask clips that padding to the far side of the previous segment.
+function PlayerHealth.prototype:CreateMaskedSegment(name)
+	local driver = CreateFrame("StatusBar", nil, self.frame)
+	driver:SetStatusBarTexture(MASK_TEXTURE)
+	driver:GetStatusBarTexture():SetAlpha(0)
+	driver:SetMinMaxValues(-SEGMENT_PAD / self.settings.barHeight, 1)
+	driver:SetValue(0)
+
+	local frame = CreateFrame("StatusBar", "IceHUD_"..self.elementName.."_"..name, self.frame)
+	frame:SetMinMaxValues(0, 1)
+	frame:SetValue(1)
+	frame.texture = frame:CreateTexture(nil, "ARTWORK")
+	frame:SetStatusBarTexture(frame.texture)
+	frame.fillMask = self:CreateSegmentMask(frame)
+	frame.limitMask = self:CreateSegmentMask(frame)
+	frame.texture:AddMaskTexture(frame.fillMask)
+	frame.texture:AddMaskTexture(frame.limitMask)
+	frame.isMaskedSegment = true
+
+	return driver, frame
+end
+
+-- reverse grows the segment back from prev's end over prev (overlay) instead of past it
+function PlayerHealth.prototype:LayoutMaskedSegment(driver, frame, prev, reverse)
 	local rotated = self.barFrame.rotated and true or false
 	local orientation = rotated and "HORIZONTAL" or "VERTICAL"
 	local fillStart = rotated and "LEFT" or "BOTTOM"
 	local fillEnd = rotated and "RIGHT" or "TOP"
-	local length = self.settings.barHeight + ABSORB_PAD
+	local length = self.settings.barHeight + SEGMENT_PAD
 	local thickness = self.settings.barWidth + (self.moduleSettings.widthModifier or 0)
 
 	driver:SetOrientation(orientation)
-	driver:SetReverseFill(overlay)
+	driver:SetReverseFill(reverse)
 	if rotated then
 		driver:SetSize(length, thickness)
 	else
 		driver:SetSize(thickness, length)
 	end
 
-	local pad = overlay and ABSORB_PAD or -ABSORB_PAD
+	local pad = reverse and SEGMENT_PAD or -SEGMENT_PAD
 	driver:ClearAllPoints()
-	driver:SetPoint(overlay and fillEnd or fillStart, healthFill, fillEnd, rotated and pad or 0, rotated and 0 or pad)
+	driver:SetPoint(reverse and fillEnd or fillStart, prev, fillEnd, rotated and pad or 0, rotated and 0 or pad)
 
 	frame:SetOrientation(orientation)
 	frame:SetRotatesTexture(rotated)
@@ -1038,26 +1066,23 @@ function PlayerHealth.prototype:CreateMaskedAbsorbBar()
 	frame:SetAllPoints(self.barFrame)
 	frame.texture:SetTexture(self:GetBarTexturePath())
 
-	frame.absorbMask:ClearAllPoints()
-	frame.absorbMask:SetAllPoints(driver:GetStatusBarTexture())
+	frame.fillMask:ClearAllPoints()
+	frame.fillMask:SetAllPoints(driver:GetStatusBarTexture())
 
 	frame.limitMask:ClearAllPoints()
-	if overlay then
-		frame.limitMask:SetAllPoints(healthFill)
+	if reverse then
+		frame.limitMask:SetAllPoints(prev)
 	elseif rotated then
-		frame.limitMask:SetPoint("TOPLEFT", healthFill, "TOPRIGHT")
+		frame.limitMask:SetPoint("TOPLEFT", prev, "TOPRIGHT")
 		frame.limitMask:SetPoint("BOTTOMRIGHT", self.barFrame, "BOTTOMRIGHT")
 	else
-		frame.limitMask:SetPoint("BOTTOMLEFT", healthFill, "TOPLEFT")
+		frame.limitMask:SetPoint("BOTTOMLEFT", prev, "TOPLEFT")
 		frame.limitMask:SetPoint("TOPRIGHT", self.barFrame, "TOPRIGHT")
 	end
-
-	self:SetBarFrameColorRGBA(frame, self:GetColor("PlayerHealthAbsorbAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.absorbAlpha))
-	self:UpdateAbsorbVisibility()
 end
 
-function PlayerHealth.prototype:CreateAbsorbMask()
-	local mask = self.absorbFrame:CreateMaskTexture()
+function PlayerHealth.prototype:CreateSegmentMask(frame)
+	local mask = frame:CreateMaskTexture()
 	-- NEAREST keeps the mask edge hard; linear filtering fades it into the clamped black border
 	mask:SetTexture(MASK_TEXTURE, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE", "NEAREST")
 	mask:SetSnapToPixelGrid(false)
@@ -1081,14 +1106,24 @@ function PlayerHealth.prototype:UpdateAbsorbVisibility()
 	end
 end
 
-function PlayerHealth.prototype:UpdateMaskedAbsorb()
+function PlayerHealth.prototype:SetSegmentColor(frame, color, segmentAlpha)
+	if frame.isMaskedSegment then
+		-- self.alpha may be secret, so let the frame multiply it in instead of doing it here
+		self:SetBarFrameColorRGBA(frame, self:GetColor(color, segmentAlpha))
+		frame:SetAlpha(self.alpha)
+	else
+		self:SetBarFrameColorRGBA(frame, self:GetColor(color, (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * segmentAlpha))
+	end
+end
+
+function PlayerHealth.prototype:UpdateMaskedSegment(driver, value)
 	local maxHealth = self.maxHealth or 0
 	if IceHUD.CanAccessValue(maxHealth) then
-		self.absorbDriver:SetMinMaxValues(-maxHealth * ABSORB_PAD / self.settings.barHeight, maxHealth)
+		driver:SetMinMaxValues(-maxHealth * SEGMENT_PAD / self.settings.barHeight, maxHealth)
 	else
-		self.absorbDriver:SetMinMaxValues(0, maxHealth)
+		driver:SetMinMaxValues(0, maxHealth)
 	end
-	self.absorbDriver:SetValue(self.absorbAmount or 0)
+	driver:SetValue(value)
 end
 
 
@@ -1427,7 +1462,9 @@ function PlayerHealth.prototype:Update(unit)
 	self:UpdateBar(self.healthPercentage, color)
 
 	-- sadly, animation uses bar-local variables so we can't use the animation for 2 bar textures on the same bar element
-	if self.moduleSettings.showIncomingHeals
+	if self.healDriver then
+		self:UpdateMaskedSegment(self.healDriver, incomingHealAmt or 0)
+	elseif self.moduleSettings.showIncomingHeals
 		and self.healFrame
 		and incomingHealAmt
 		and IceHUD.CanAccessValue(incomingHealAmt) then
@@ -1449,7 +1486,8 @@ function PlayerHealth.prototype:Update(unit)
 	end
 
 	if self.absorbDriver then
-		self:UpdateMaskedAbsorb()
+		-- hidden absorbs still drive the heal segment's position, so they must read as empty
+		self:UpdateMaskedSegment(self.absorbDriver, self.moduleSettings.showAbsorbs and self.absorbAmount or 0)
 	elseif self.moduleSettings.showAbsorbs
 		and self.absorbFrame
 		and self.absorbAmount
@@ -1675,10 +1713,10 @@ function PlayerHealth.prototype:UpdateBar(scale, color)
 	PlayerHealth.super.prototype.UpdateBar(self, scale, color)
 
 	if self.healFrame then
-		self:SetBarFrameColorRGBA(self.healFrame, self:GetColor("PlayerHealthHealAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.healAlpha))
+		self:SetSegmentColor(self.healFrame, "PlayerHealthHealAmount", self.moduleSettings.healAlpha)
 	end
 	if self.absorbFrame then
-		self:SetBarFrameColorRGBA(self.absorbFrame, self:GetColor("PlayerHealthAbsorbAmount", (IceHUD.CanAccessValue(self.alpha) and self.alpha or 1) * self.moduleSettings.absorbAlpha))
+		self:SetSegmentColor(self.absorbFrame, "PlayerHealthAbsorbAmount", self.moduleSettings.absorbAlpha)
 	end
 --[[ seems to be causing taint. oh well
 	if self.frame.button then

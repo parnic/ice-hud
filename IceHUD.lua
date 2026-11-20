@@ -174,7 +174,7 @@ IceHUD.ShouldUpdateTargetHealthEveryTick = (IceHUD.WowClassic or IceHUD.WowClass
 IceHUD.UsesUIPanelButtonTemplate = IceHUD.WowVer >= 50000 or not IceHUD.WowMain
 IceHUD.EventExistsSpellcastInterruptible = IceHUD.WowVer >= 30200 and not IceHUD.WowClassicWrath
 IceHUD.DeathKnightUnholyFrostRunesSwapped = IceHUD.WowVer < 70300 and not IceHUD.WowClassicWrath and not IceHUD.WowClassicCataclysm and not IceHUD.WowClassicMists
-IceHUD.SupportsHealPrediction = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
+IceHUD.SupportsHealPrediction = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath or IceHUD.WowForever
 IceHUD.UnitGroupRolesReturnsRoleString = IceHUD.WowVer >= 40000 or IceHUD.WowClassicWrath
 IceHUD.ShellGameSpellID = 271571
 IceHUD.HasShellGame = GetSpellName(IceHUD.ShellGameSpellID)
