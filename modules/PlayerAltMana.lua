@@ -13,6 +13,9 @@ if Enum and Enum.PowerType then
 	SPELL_POWER_INSANITY = Enum.PowerType.Insanity
 end
 
+local canUseInsanity = unitClass == "PRIEST" and SPELL_POWER_INSANITY ~= nil
+local swapPositionOptions = {"side", "offset", "barVerticalOffset", "barHorizontalAdjust"}
+
 -- Constructor --
 function PlayerAltMana.prototype:init()
 	PlayerAltMana.super.prototype.init(self, "PlayerAltMana", "player")
@@ -31,8 +34,97 @@ function PlayerAltMana.prototype:GetDefaultSettings()
 	settings["textVisible"] = {upper = true, lower = false}
 	settings["upperText"] = "[PercentMana:Round]"
 	settings["lowerText"] = "[FractionalMana:Color('3071bf'):Bracket]"
+	settings["swapWithInsanity"] = true
 
 	return settings
+end
+
+function PlayerAltMana.prototype:GetOptions()
+	local opts = PlayerAltMana.super.prototype.GetOptions(self)
+
+	opts["swapWithInsanity"] = {
+		type = "toggle",
+		name = L["Swap with Mana bar for Insanity"],
+		desc = L["When your primary resource is Insanity, this bar and the Mana bar switch places so that your mana stays in the same spot."],
+		width = 'double',
+		get = function()
+			return self.moduleSettings.swapWithInsanity
+		end,
+		set = function(info, value)
+			self.moduleSettings.swapWithInsanity = value
+			self:UpdateInsanitySwap()
+		end,
+		disabled = function()
+			return not self.moduleSettings.enabled
+		end,
+		hidden = function()
+			return not canUseInsanity
+		end,
+		order = 30.02
+	}
+
+	self:HookSwapPositionOptions(opts)
+
+	return opts
+end
+
+function PlayerAltMana.prototype:HookSwapPositionOptions(opts)
+	if not canUseInsanity then
+		return
+	end
+
+	for i = 1, #swapPositionOptions do
+		local opt = opts[swapPositionOptions[i]]
+		if opt and opt.set then
+			local origSet = opt.set
+			opt.set = function(...)
+				origSet(...)
+				if self:ShouldSwapWithPlayerMana() then
+					self:RefreshSwappedBars()
+				end
+			end
+		end
+	end
+end
+
+function PlayerAltMana.prototype:ShouldSwapWithPlayerMana()
+	local playerMana = IceHUD.PlayerMana
+	return canUseInsanity
+		and self.moduleSettings and self.moduleSettings.enabled and self.moduleSettings.swapWithInsanity
+		and playerMana and playerMana.moduleSettings and playerMana.moduleSettings.enabled
+		and playerMana.unit == "player"
+		and UnitPowerType("player") == SPELL_POWER_INSANITY
+		or false
+end
+
+function PlayerAltMana.prototype:GetBarPositionSettings()
+	if self:ShouldSwapWithPlayerMana() then
+		return IceHUD.PlayerMana.moduleSettings
+	end
+
+	return PlayerAltMana.super.prototype.GetBarPositionSettings(self)
+end
+
+function PlayerAltMana.prototype:UpdateInsanitySwap()
+	local swapped = self:ShouldSwapWithPlayerMana()
+	if swapped == self.insanitySwapped then
+		return
+	end
+
+	self.insanitySwapped = swapped
+	self:RefreshSwappedBars()
+end
+
+function PlayerAltMana.prototype:RefreshSwappedBars()
+	local playerMana = IceHUD.PlayerMana
+	if self.frame and self.moduleSettings.enabled then
+		self:Redraw()
+		self:Update()
+	end
+	if playerMana and playerMana.frame and playerMana.moduleSettings.enabled then
+		playerMana:Redraw()
+		playerMana:Update(playerMana.unit)
+	end
 end
 
 function GetEventsToRegister()
@@ -56,11 +148,15 @@ function PlayerAltMana.prototype:Enable(core)
 	end
 	self:RegisterEvent("UNIT_POWER_FREQUENT", "Update")
 	self:RegisterEvent("UNIT_MAXPOWER", "Update")
+
+	self:UpdateInsanitySwap()
 end
 
 
 function PlayerAltMana.prototype:Disable(core)
 	PlayerAltMana.super.prototype.Disable(self, core)
+
+	self:UpdateInsanitySwap()
 end
 
 function ShouldShow(unit)

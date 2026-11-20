@@ -924,16 +924,19 @@ do
 end
 
 function IceBarElement.prototype:MoveHintGetOffsets()
-	return self.moduleSettings.barHorizontalOffset, self.moduleSettings.barVerticalOffset
+	local pos = self:GetBarPositionSettings()
+	return pos.barHorizontalOffset, pos.barVerticalOffset
 end
 
 function IceBarElement.prototype:MoveHintMouseDown()
 	IceBarElement.super.prototype.MoveHintMouseDown(self)
 
+	local pos = self:GetBarPositionSettings()
+
 	if IsMouseButtonDown("MiddleButton") then
 		if self.moveHintOrigOffset and self.moveHintOrigSide then
-			self.moduleSettings.offset = self.moveHintOrigOffset
-			self.moduleSettings.side = self.moveHintOrigSide
+			pos.offset = self.moveHintOrigOffset
+			pos.side = self.moveHintOrigSide
 
 			self:Redraw()
 			IceHUD:NotifyOptionsChange()
@@ -941,13 +944,14 @@ function IceBarElement.prototype:MoveHintMouseDown()
 		end
 	end
 
-	self.moveHintOrigOffset = self.moduleSettings.offset
-	self.moveHintOrigSide = self.moduleSettings.side
+	self.moveHintOrigOffset = pos.offset
+	self.moveHintOrigSide = pos.side
 end
 
 function IceBarElement.prototype:MoveHintMoveBy(dx, dy)
+	local pos = self:GetBarPositionSettings()
 	if IsAltKeyDown() then
-		self:MoveHintMoveTo(self.moduleSettings.barHorizontalOffset + dx, self.moduleSettings.barVerticalOffset + dy)
+		self:MoveHintMoveTo(pos.barHorizontalOffset + dx, pos.barVerticalOffset + dy)
 		return true
 	end
 
@@ -958,18 +962,18 @@ function IceBarElement.prototype:MoveHintMoveBy(dx, dy)
 	end
 
 	local increase
-	if self.moduleSettings.side == IceCore.Side.Left then
+	if pos.side == IceCore.Side.Left then
 		increase = dx < 0
 	else
 		increase = dx > 0
 	end
 
-	self.moduleSettings.offset = self.moduleSettings.offset + (increase and 1 or -1)
-	if self.moduleSettings.offset < -10 then
-		if self.moduleSettings.side == IceCore.Side.Left then
-			self.moduleSettings.side = IceCore.Side.Right
+	pos.offset = pos.offset + (increase and 1 or -1)
+	if pos.offset < -10 then
+		if pos.side == IceCore.Side.Left then
+			pos.side = IceCore.Side.Right
 		else
-			self.moduleSettings.side = IceCore.Side.Left
+			pos.side = IceCore.Side.Left
 		end
 
 		self:Redraw()
@@ -978,8 +982,9 @@ function IceBarElement.prototype:MoveHintMoveBy(dx, dy)
 end
 
 function IceBarElement.prototype:MoveHintMoveTo(x, y)
-	self.moduleSettings.barHorizontalOffset = x
-	self.moduleSettings.barVerticalOffset = y
+	local pos = self:GetBarPositionSettings()
+	pos.barHorizontalOffset = x
+	pos.barVerticalOffset = y
 end
 
 function IceBarElement.prototype:MoveHintGetTooltip()
@@ -1177,7 +1182,7 @@ function IceBarElement.prototype:CreateBackground()
 		self.frame.bg:SetHeight(self.settings.barHeight)
 	end
 
-	if self.moduleSettings.side == IceCore.Side.Left then
+	if self:GetBarPositionSettings().side == IceCore.Side.Left then
 		if rotated then
 			RotateTexture(self.frame.bg, 90)
 		else
@@ -1198,21 +1203,26 @@ function IceBarElement.prototype:CreateBackground()
 end
 
 
+function IceBarElement.prototype:GetBarPositionSettings()
+	return self.moduleSettings
+end
+
 function IceBarElement.prototype:SetFramePosition()
+	local pos = self:GetBarPositionSettings()
 	local ownPoint = "LEFT"
-	if self.moduleSettings.side == ownPoint then
+	if pos.side == ownPoint then
 		ownPoint = "RIGHT"
 	end
 
 	-- ofxx = (bar width) + (extra space in between the bars)
-	local offx = (self.settings.barProportion * self.settings.barWidth * self.moduleSettings.offset)
-		+ (self.moduleSettings.offset * self.settings.barSpace)
-	if self.moduleSettings.side == IceCore.Side.Left then
+	local offx = (self.settings.barProportion * self.settings.barWidth * pos.offset)
+		+ (pos.offset * self.settings.barSpace)
+	if pos.side == IceCore.Side.Left then
 		offx = offx * -1
 	end
-	offx = offx + (self.moduleSettings.barHorizontalOffset or 0)
+	offx = offx + (pos.barHorizontalOffset or 0)
 
-	self.frame:SetPoint("BOTTOM"..ownPoint, self.parent, "BOTTOM"..self.moduleSettings.side, offx, self.moduleSettings.barVerticalOffset)
+	self.frame:SetPoint("BOTTOM"..ownPoint, self.parent, "BOTTOM"..pos.side, offx, pos.barVerticalOffset)
 end
 
 
@@ -1322,7 +1332,7 @@ function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer,
 end
 
 function IceBarElement.prototype:GetBarTexturePath()
-	return IceElement.TexturePath .. self:GetMyBarTextureName() .. (self.moduleSettings.side == IceCore.Side.Left and "-flipped" or "")
+	return IceElement.TexturePath .. self:GetMyBarTextureName() .. (self:GetBarPositionSettings().side == IceCore.Side.Left and "-flipped" or "")
 end
 
 function IceBarElement.prototype:GetMyBarTextureName()
@@ -1349,14 +1359,15 @@ function IceBarElement.prototype:CreateTexts()
 	self.frame.bottomUpperText:SetHeight(14)
 	self.frame.bottomLowerText:SetHeight(14)
 
-	local ownPoint = self.moduleSettings.side
-	if (self.moduleSettings.offset > 1) then
+	local pos = self:GetBarPositionSettings()
+	local ownPoint = pos.side
+	if (pos.offset > 1) then
 		ownPoint = self:Flip(ownPoint)
 	end
 
 	local justify = "RIGHT"
-	if ((self.moduleSettings.side == "LEFT" and self.moduleSettings.offset <= 1) or
-		(self.moduleSettings.side == "RIGHT" and self.moduleSettings.offset > 1))
+	if ((pos.side == "LEFT" and pos.offset <= 1) or
+		(pos.side == "RIGHT" and pos.offset > 1))
 	then
 		justify = "LEFT"
 	end
@@ -1370,17 +1381,17 @@ function IceBarElement.prototype:CreateTexts()
 	self.frame.bottomLowerText:SetJustifyH(justify)
 
 
-	local parentPoint = self:Flip(self.moduleSettings.side)
+	local parentPoint = self:Flip(pos.side)
 
 
 	local offx = 0
 	-- adjust offset for bars where text is aligned to the outer side
-	if (self.moduleSettings.offset <= 1) then
+	if (pos.offset <= 1) then
 		offx = self.settings.barProportion * self.settings.barWidth - offx
 	end
 
 
-	if (self.moduleSettings.side == IceCore.Side.Left) then
+	if (pos.side == IceCore.Side.Left) then
 		offx = offx * -1
 	end
 

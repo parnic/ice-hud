@@ -4,6 +4,7 @@
 
 - Ensure PetInfo strings stay updated for users who have disabled DogTag integration.
 - Add a FocusInfo module, disabled by default.
+- Add an option to have PlayerMana and PlayerAltMana swap positions for Shadow Priests so that Mana is always in the same place.
 
 ## v1.17.30
 

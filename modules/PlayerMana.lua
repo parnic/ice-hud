@@ -145,6 +145,10 @@ end
 		order = 53.1
 	}
 
+	if IceHUD.PlayerAltMana then
+		IceHUD.PlayerAltMana:HookSwapPositionOptions(opts)
+	end
+
 	return opts
 end
 
@@ -186,6 +190,22 @@ function PlayerMana.prototype:Enable(core)
 	self:RegisterEvent("UNIT_DISPLAYPOWER", "ManaType")
 
 	self:ManaType(nil, self.unit)
+end
+
+function PlayerMana.prototype:Disable(core)
+	PlayerMana.super.prototype.Disable(self, core)
+
+	if IceHUD.PlayerAltMana then
+		IceHUD.PlayerAltMana:UpdateInsanitySwap()
+	end
+end
+
+function PlayerMana.prototype:GetBarPositionSettings()
+	if IceHUD.PlayerAltMana and IceHUD.PlayerAltMana:ShouldSwapWithPlayerMana() then
+		return IceHUD.PlayerAltMana.moduleSettings
+	end
+
+	return PlayerMana.super.prototype.GetBarPositionSettings(self)
 end
 
 function PlayerMana.prototype:EnteringWorld()
@@ -296,6 +316,10 @@ function PlayerMana.prototype:ManaType(event, unit)
 
 	if self.manaType ~= prevManaType then
 		self:Redraw()
+	end
+
+	if IceHUD.PlayerAltMana then
+		IceHUD.PlayerAltMana:UpdateInsanitySwap()
 	end
 
 	self:Update(self.unit, powerName)
