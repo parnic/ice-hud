@@ -159,18 +159,19 @@ function PlayerHealth.prototype:HealComm_HealEvent(event, casterGUID, spellID, s
 		return
 	end
 
-	incomingHealAmt = HealComm:GetHealAmount(UnitGUID("player"), HealComm.ALL_HEALS)
-	if incomingHealAmt == nil then
-		incomingHealAmt = 0
-	end
-	self:Update()
+	self:UpdateHealCommAmount()
 end
 
 function PlayerHealth.prototype:HealComm_ModifierChanged(event, guid)
 	if guid == UnitGUID("player") then
-		incomingHealAmt = incomingHealAmt * HealComm:GetHealModifier(guid)
-		self:Update()
+		self:UpdateHealCommAmount()
 	end
+end
+
+function PlayerHealth.prototype:UpdateHealCommAmount()
+	local guid = UnitGUID("player")
+	incomingHealAmt = (HealComm:GetHealAmount(guid, HealComm.ALL_HEALS) or 0) * HealComm:GetHealModifier(guid)
+	self:Update()
 end
 
 function PlayerHealth.prototype:IncomingHealPrediction(event, unit)
@@ -964,7 +965,8 @@ function PlayerHealth.prototype:CreateBackground(redraw)
 end
 
 function PlayerHealth.prototype:CreateHealBar()
-	self.healFrame = self:BarFactory(self.healFrame, IceElement.aboveDefaultStrata, "BACKGROUND", "Heal")
+	self.healFrame = self:BarFactory(self.healFrame, IceElement.defaultStrata, "BACKGROUND", "Heal")
+	self:PlaceSegmentBelowHealth(self.healFrame, 2)
 
 	self:SetSegmentColor(self.healFrame, "PlayerHealthHealAmount", self.moduleSettings.healAlpha)
 
@@ -976,7 +978,8 @@ function PlayerHealth.prototype:CreateHealBar()
 end
 
 function PlayerHealth.prototype:CreateAbsorbBar()
-	self.absorbFrame = self:BarFactory(self.absorbFrame, IceElement.aboveDefaultStrata, "BACKGROUND", "Absorb")
+	self.absorbFrame = self:BarFactory(self.absorbFrame, IceElement.defaultStrata, "BACKGROUND", "Absorb")
+	self:PlaceSegmentBelowHealth(self.absorbFrame, 1)
 
 	self:SetSegmentColor(self.absorbFrame, "PlayerHealthAbsorbAmount", self.moduleSettings.absorbAlpha)
 
@@ -985,6 +988,16 @@ function PlayerHealth.prototype:CreateAbsorbBar()
 	if not self.moduleSettings.showAbsorbs or not IceHUD.SupportsAbsorbAmounts then
 		self.absorbFrame:Hide()
 	end
+end
+
+-- plain segments fill from the bottom, so they must sit under the health fill; heal spans past absorb, so it goes lowest
+function PlayerHealth.prototype:PlaceSegmentBelowHealth(frame, depth)
+	local barLevel = self.barFrame:GetFrameLevel()
+	if barLevel < depth then
+		self.barFrame:SetFrameLevel(depth)
+		barLevel = depth
+	end
+	frame:SetFrameLevel(barLevel - depth)
 end
 
 function PlayerHealth.prototype:CreateMaskedAbsorbBar()

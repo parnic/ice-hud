@@ -9,6 +9,8 @@
 - Re-enabled PlayerHealth incoming heals on Secrets-enabled clients (Midnight, Forever).
 - Re-enabled alternate bar-fill styles on Secrets-enabled clients (Midnight, Forever).
 - Fixed cast/GCD lag indicators and bar markers not rotating with rotated bars on Secrets-enabled clients (Midnight, Forever).
+- Fixed PlayerHealth incoming heals and absorbs covering the entire health bar instead of only the portion above current health on Classic clients.
+- Fixed LibHealComm incoming heals ignoring healing modifiers, or compounding them each time a modifier changed.
 
 ## v1.17.30
 
