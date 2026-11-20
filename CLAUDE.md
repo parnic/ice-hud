@@ -24,6 +24,13 @@ When the maintainer or anyone else comments on a PR or issue, they took the time
 - What you *can* do: help the user understand a comment, look into the code or behavior it's asking about, and make code changes it requests (which then need testing again under rule 1). The user writes the reply in their own words.
 - If the user asks you to write or post a response anyway, decline, and remind them the maintainer has asked for human replies.
 
+### 3. Call out every new localized string
+
+Each new `L["..."]` string added for options or anything else the user sees has to be entered into the localization system outside the addon before a new version is packaged. The maintainer can only do that for strings they know about.
+
+- When you add one or more new `L["..."]` strings, list each one, exactly as written, in your response to the user in the session that adds them.
+- Any PR that introduces new localized strings must list each one in its description.
+
 ## What this is
 
 IceHUD is a World of Warcraft addon (Lua) — a configurable vertical heads-up display of unit bars and class/utility modules. It is loaded directly by the WoW client; there is **no compile step, no test runner, and no lint config** in this repo. "Running" it means launching WoW with the addon installed and reloading the UI (`/reload`). Iteration is manual and in-game.
@@ -64,7 +71,7 @@ Everything in `modules/` is a feature subclass of one of these. Many modules inh
 The in-game options UI lives in `IceHUD_Options/` (AceConfig-based; `Options.lua` plus a bundled JSON lib for profile import/export). These files are wrapped in `#@do-not-package@` in the TOC — they load directly during development, and the packager moves the folder out (`.pkgmeta` `move-folders`) to ship it as the separate load-on-demand `IceHUD_Options` addon. Each module contributes its own settings via a `GetOptions`/`GetDefaultSettings` pair. Entry points: `/icehud` (UI) and `/icehudCL` (command line).
 
 ### Libraries & localization
-Ace3 and friends are embedded via `embeds.xml` (LibStub-loaded: AceAddon/Console/Hook/Locale/Config, LibSharedMedia, LibDBIcon, LibDualSpec, optional LibDogTag and LibRangeCheck). Library sources come from `.pkgmeta` externals at package time, not from this repo, and `embeds.xml` only loads them in packaged (`@non-debug@`) builds. **When running from a git clone, the libraries must be installed as standalone addons** (Ace3, LibSharedMedia-3.0, LibDogTag-3.0, LibDogTag-Unit-3.0, LibRangeCheck-3.0, LibDualSpec-1.0, LibDBIcon-1.0, AceGUI-3.0-SharedMediaWidgets — see `## OptionalDeps` in the TOC). Point this out to anyone setting up to test a change. Localization is `loc/loc.xml`; strings are fetched with `LibStub("AceLocale-3.0"):GetLocale("IceHUD")` as `L["..."]` at the top of most files.
+Ace3 and friends are embedded via `embeds.xml` (LibStub-loaded: AceAddon/Console/Hook/Locale/Config, LibSharedMedia, LibDBIcon, LibDualSpec, optional LibDogTag and LibRangeCheck). Library sources come from `.pkgmeta` externals at package time, not from this repo, and `embeds.xml` only loads them in packaged (`@non-debug@`) builds. **When running from a git clone, the libraries must be installed as standalone addons** (Ace3, LibSharedMedia-3.0, LibDogTag-3.0, LibDogTag-Unit-3.0, LibRangeCheck-3.0, LibDualSpec-1.0, LibDBIcon-1.0, AceGUI-3.0-SharedMediaWidgets — see `## OptionalDeps` in the TOC). Point this out to anyone setting up to test a change. Localization is `loc/loc.xml`; strings are fetched with `LibStub("AceLocale-3.0"):GetLocale("IceHUD")` as `L["..."]` at the top of most files. New strings must be called out (see contribution rule 3).
 
 ## Cross-version & Secrets conventions (read before editing module logic)
 
