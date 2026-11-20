@@ -314,13 +314,15 @@ function PlayerHealth.prototype:GetOptions()
 			return self.moduleSettings.showIncomingHeals
 		end,
 		set = function(info, v)
+			self.moduleSettings.showIncomingHeals = v
+
 			if not v then
 				self.healFrame:Hide()
+			elseif self.healDriver then
+				self:UpdateHealVisibility()
 			else
 				self.healFrame:Show()
 			end
-
-			self.moduleSettings.showIncomingHeals = v
 
 			incomingHealAmt = 0
 			self:Update()
@@ -329,7 +331,7 @@ function PlayerHealth.prototype:GetOptions()
 			return not (IceHUD.SupportsHealPrediction or HealComm) or (IceHUD.IsSecretEnv() and not self.healDriver)
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or self:SegmentsUnsupported()
 		end,
 		order = 43.6
 	}
@@ -373,7 +375,7 @@ function PlayerHealth.prototype:GetOptions()
 			return not IceHUD.SupportsAbsorbAmounts
 		end,
 		disabled = function()
-			return not self.moduleSettings.enabled
+			return not self.moduleSettings.enabled or self:SegmentsUnsupported()
 		end,
 		order = 43.8
 	}
@@ -1006,8 +1008,16 @@ function PlayerHealth.prototype:CreateMaskedHealBar()
 	self:LayoutMaskedSegment(self.healDriver, self.healFrame, prev, false)
 
 	self:SetSegmentColor(self.healFrame, "PlayerHealthHealAmount", self.moduleSettings.healAlpha)
+	self:UpdateHealVisibility()
+end
 
-	if self.moduleSettings.showIncomingHeals and (IceHUD.SupportsHealPrediction or HealComm) then
+-- segments are laid out against a plain bottom-up health fill, so masked fill modes hide them
+function PlayerHealth.prototype:SegmentsUnsupported()
+	return self.barFrame and self.barFrame.fillMasked and true or false
+end
+
+function PlayerHealth.prototype:UpdateHealVisibility()
+	if self.moduleSettings.showIncomingHeals and (IceHUD.SupportsHealPrediction or HealComm) and not self:SegmentsUnsupported() then
 		self.healFrame:Show()
 	else
 		self.healFrame:Hide()
@@ -1099,7 +1109,7 @@ function PlayerHealth.prototype:UpdateAbsorbVisibility()
 		return
 	end
 
-	if self.moduleSettings.showAbsorbs and IceHUD.SupportsAbsorbAmounts then
+	if self.moduleSettings.showAbsorbs and IceHUD.SupportsAbsorbAmounts and not self:SegmentsUnsupported() then
 		self.absorbFrame:Show()
 	else
 		self.absorbFrame:Hide()

@@ -370,7 +370,7 @@ function RollTheBones.prototype:UpdateRollTheBones(event, unit)
         self.barFrame:SetTimerDuration(
           rtbDuration,
           Enum.StatusBarInterpolation.Immediate,
-          self:ShouldReverseFill() and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
+          Enum.StatusBarTimerDirection.RemainingTime
         )
       end
 		end

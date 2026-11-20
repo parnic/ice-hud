@@ -223,14 +223,16 @@ function GlobalCoolDown.prototype:CooldownStateChanged(event, unit, castGuid, sp
 
 	if C_Spell and C_Spell.GetSpellCooldownDuration and self.barFrame.SetTimerDuration then
 		local dur = C_Spell.GetSpellCooldownDuration(self.CDSpellId)
+		local expired = dur and dur.HasExpired and dur:HasExpired()
 
-		if dur then
+		if dur and not (IceHUD.CanAccessValue(expired) and expired) then
 			self.barFrame:SetTimerDuration(
 				dur,
 				Enum.StatusBarInterpolation.Immediate,
-				self:ShouldReverseFill() and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
+				Enum.StatusBarTimerDirection.RemainingTime
 			)
 			self:Show(true)
+			self.timerDuration = dur
 			self.startTime = GetTime()
 			self.duration = 1.5 -- we can't inspect the actual duration, so assume the worst
 			self:ConditionalSetupUpdate()
@@ -291,7 +293,13 @@ function GlobalCoolDown.prototype:MyOnUpdate()
 
 	local scaleReachedZero = self.startTime ~= nil and self.duration ~= nil and self.CurrScale <= 0.01
 	local fallbackMaxDuration = self.startTime and self.duration and GetTime() >= self.startTime + self.duration
-	if self:IsVisible() and (scaleReachedZero or fallbackMaxDuration) then
+	local timerExpired = false
+	if self.timerDuration and self.timerDuration.HasExpired then
+		local expired = self.timerDuration:HasExpired()
+		timerExpired = IceHUD.CanAccessValue(expired) and expired
+	end
+	if self:IsVisible() and (scaleReachedZero or fallbackMaxDuration or timerExpired) then
+		self.timerDuration = nil
 		self:Show(false)
 		IceHUD.IceCore:RequestUpdates(self, nil)
 	end

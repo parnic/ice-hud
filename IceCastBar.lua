@@ -365,7 +365,7 @@ function IceCastBar.prototype:IsCastOrChannel(action)
 	return action == IceCastBar.Actions.Cast or action == IceCastBar.Actions.Channel or action == IceCastBar.Actions.ReverseChannel
 end
 
--- this is an IceBarElement utility that controls low-level text coordinate placement. we use our own SetTimerDuration-based methods of inverting for castbars instead.
+-- this is an IceBarElement utility that controls low-level text coordinate placement. castbars don't use it.
 function IceCastBar.prototype:ShouldReverseFill()
 	return false
 end
@@ -674,12 +674,6 @@ end
 
 function IceCastBar.prototype:SetTimerDuration(duration, action)
 	local direction = action == IceCastBar.Actions.ReverseChannel and Enum.StatusBarTimerDirection.RemainingTime or Enum.StatusBarTimerDirection.ElapsedTime
-
-	local invert = IceCastBar.super.prototype.ShouldReverseFill(self)
-	if invert then
-		direction = direction == Enum.StatusBarTimerDirection.RemainingTime and Enum.StatusBarTimerDirection.ElapsedTime or Enum.StatusBarTimerDirection.RemainingTime
-	end
-
 	self.barFrame:SetTimerDuration(duration, Enum.StatusBarInterpolation.Immediate, direction)
 end
 

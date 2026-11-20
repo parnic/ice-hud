@@ -271,8 +271,6 @@ if C_PaperDollInfo and C_PaperDollInfo.CancelTemporaryEnchantment then
 	end
 end
 
-IceHUD.SupportsExpandMode = not IceHUD.IsSecretEnv()
-
 --@debug@
 IceHUD.optionsLoaded = true
 --@end-debug@

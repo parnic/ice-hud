@@ -384,6 +384,28 @@ function CastBar.prototype:CreateLagBar()
 
 	self:SetBarFrameColorRGBA(self.lagBar, r, g, b, self.moduleSettings.lagAlpha)
 	self.lagBar:Hide()
+
+	self.lagBar2 = self:BarFactory(self.lagBar2, IceElement.aboveDefaultStrata, "OVERLAY", "Lag2", true)
+	self:SetBarFrameColorRGBA(self.lagBar2, r, g, b, self.moduleSettings.lagAlpha)
+	self.lagBar2:Hide()
+end
+
+-- an expanding cast ends at both edges, so the lag shows as a half-size chunk at each
+function CastBar.prototype:SetExpandLagCoords(scale)
+	local half = scale / 2
+	local offset = self.settings.barHeight * (0.5 - half / 2)
+
+	for _, info in ipairs({ { self.lagBar, 0, half, offset }, { self.lagBar2, 1 - half, 1, -offset } }) do
+		local frame, minY, maxY, offsetY = info[1], info[2], info[3], info[4]
+		self:GetBarFrameTexture(frame):SetTexCoord(0, 1, minY, maxY)
+		self:SetBarFramePoints(frame, 0, offsetY)
+		frame:SetHeight(self.settings.barHeight * half)
+		if self.moduleSettings.barVisible['bar'] and half > 0 then
+			frame:Show()
+		else
+			frame:Hide()
+		end
+	end
 end
 
 
@@ -477,7 +499,12 @@ function CastBar.prototype:UpdateLagBar(isChannel)
 		end
 	end
 
-	self:SetBarCoord(self.lagBar, scale, not isChannel, true)
+	if not isChannel and self:BarFillExpand() and not self:BarFillReverse() then
+		self:SetExpandLagCoords(scale)
+	else
+		self.lagBar2:Hide()
+		self:SetBarCoord(self.lagBar, scale, not isChannel, true)
+	end
 
 	self.spellCastSent = nil
 end

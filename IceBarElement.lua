@@ -199,7 +199,7 @@ do
 			["NORMAL"] = "Normal",
 			["INVERSE"] = "Inverse",
 		}
-		if self.moduleSettings.bAllowExpand and IceHUD.SupportsExpandMode then
+		if self.moduleSettings.bAllowExpand then
 			values["EXPAND"] = "Expanding"
 		end
 
@@ -306,9 +306,6 @@ do
 			disabled = function()
 				return not self.moduleSettings.enabled
 			end,
-			hidden = function()
-				return IceHUD.IsSecretEnv()
-			end,
 			order = 30.03
 		}
 
@@ -327,9 +324,6 @@ do
 			end,
 			disabled = function()
 				return not self.moduleSettings.enabled
-			end,
-			hidden = function()
-				return IceHUD.IsSecretEnv()
 			end,
 			order = 30.04
 		}
@@ -995,6 +989,11 @@ function IceBarElement.prototype:MoveHintGetTooltip()
 end
 
 function IceBarElement.prototype:ShouldReverseFill()
+	-- StatusBars take raw values; the fill masks apply reverse/inverse
+	if self.barFrame and self.barFrame.isStatusBar then
+		return false
+	end
+
 	if self:BarFillReverse() then
 		return self:BarFillNormal()
 	end
@@ -1011,11 +1010,11 @@ function IceBarElement.prototype:SetBarVisibility(visible)
 end
 
 function IceBarElement.prototype:SetBarFramePoints(frame, offset_x, offset_y)
-	local anchor
-
-	if frame.isStatusBar then
-		frame:SetReverseFill(self:ShouldReverseFill())
+	if frame.isStatusBar and self:LayoutStatusBarFill(frame) then
+		return
 	end
+
+	local anchor
 
 	frame:ClearAllPoints()
 	if self:BarFillInverse() then
@@ -1228,7 +1227,11 @@ end
 
 -- Creates the actual bar
 function IceBarElement.prototype:CreateBar()
+	local isNew = not self.barFrame
 	self.barFrame = self:BarFactory(self.barFrame, IceElement.defaultStrata, "ARTWORK", "Bar")
+	if isNew and self.barFrame.isStatusBar then
+		self:SetBarFramePoints(self.barFrame)
+	end
 
 	self:SetBarCoord(self.barFrame)
 
@@ -1276,14 +1279,55 @@ function IceBarElement.prototype:SetBarFrameColorRGBA(frame, r, g, b, a)
 	texture:SetVertexColor(r, g, b, a)
 end
 
-function IceBarElement.prototype:OnUpdate()
-	if not self.barFrame or not self.barFrame.isStatusBar or not self:ShouldReverseFill() then
-		return
+local FILL_MASK_TEXTURE = "Interface\\Buttons\\WHITE8X8"
+-- a StatusBar fill that rounds to 0px stops updating its rect, so drivers keep at least this much fill
+local FILL_PAD = 2
+local OPPOSITE_EDGE = { TOP = "BOTTOM", BOTTOM = "TOP", LEFT = "RIGHT", RIGHT = "LEFT" }
+local EDGE_OUTWARD = { TOP = {0, 1}, BOTTOM = {0, -1}, LEFT = {-1, 0}, RIGHT = {1, 0} }
+
+local function ApplyStatusBarRange(bar)
+	local minValue, maxValue = bar.rangeMin, bar.rangeMax
+	if bar.fillPad and IceHUD.CanAccessValue(minValue) and IceHUD.CanAccessValue(maxValue) then
+		minValue = minValue - (maxValue - minValue) * bar.fillPad
 	end
 
-	if self.barFrame:GetReverseFill() then
-		self:GetBarTexture():SetTexCoord(0, 1, 0, self.CurrScale)
+	bar.baseSetMinMaxValues(bar, minValue, maxValue)
+	if bar.fillDriver2 then
+		bar.fillDriver2:SetMinMaxValues(minValue, maxValue)
 	end
+end
+
+local function InstallStatusBarForwarding(bar)
+	bar.baseSetMinMaxValues = bar.SetMinMaxValues
+	bar.SetMinMaxValues = function(self, minValue, maxValue)
+		self.rangeMin, self.rangeMax = minValue, maxValue
+		ApplyStatusBarRange(self)
+	end
+
+	local baseSetValue = bar.SetValue
+	bar.SetValue = function(self, ...)
+		baseSetValue(self, ...)
+		if self.fillDriver2 then
+			self.fillDriver2:SetValue(...)
+		end
+	end
+
+	local baseSetTimerDuration = bar.SetTimerDuration
+	if baseSetTimerDuration then
+		bar.SetTimerDuration = function(self, ...)
+			baseSetTimerDuration(self, ...)
+			if self.fillDriver2 then
+				self.fillDriver2:SetTimerDuration(...)
+			end
+		end
+	end
+end
+
+local function CreateFillDriver(parent)
+	local driver = CreateFrame("StatusBar", nil, parent)
+	driver:SetStatusBarTexture(FILL_MASK_TEXTURE)
+	driver:GetStatusBarTexture():SetAlpha(0)
+	return driver
 end
 
 -- Returns a barFrame
@@ -1298,13 +1342,9 @@ function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer,
 		else
 			barFrame = CreateFrame("StatusBar", "IceHUD_"..self.elementName.."_"..(nameSuffix or "Bar"), self.frame)
 			barFrame.isStatusBar = true
+			InstallStatusBarForwarding(barFrame)
 			barFrame:SetMinMaxValues(0, 1)
 			barFrame:SetOrientation("VERTICAL")
-			-- removed; this was a shim to try and patch up reverse-fill bugs with StatusBars in Midnight.
-			-- ultimately i chose to disable the reverse/inverse features and reported the game client bug
-			-- to Blizzard, so if they fix it, we can take advantage of the fix. until then, no need to
-			-- sacrifice the perf for a fix that wasn't 100% anyway.
-			-- barFrame:SetScript("OnUpdate", function() self:OnUpdate() end)
 		end
 	end
 
@@ -1317,18 +1357,153 @@ function IceBarElement.prototype:BarFactory(barFrame, frameStrata, textureLayer,
 	barFrame:SetWidth(width)
 	barFrame:SetHeight(height)
 
-	if not barFrame.texture then
-		barFrame.texture = barFrame:CreateTexture(nil, (textureLayer and textureLayer or "ARTWORK"))
-	end
-	barFrame.texture:SetTexture(self:GetBarTexturePath())
-	if nonStatusFrameBar then
-		barFrame.texture:SetAllPoints(barFrame)
+	local layer = textureLayer and textureLayer or "ARTWORK"
+	if barFrame.isStatusBar then
+		if not barFrame.fillTexture then
+			barFrame.fillTexture = barFrame:CreateTexture(nil, layer)
+			barFrame:SetStatusBarTexture(barFrame.fillTexture)
+			barFrame.texture = barFrame.fillTexture
+		end
+		barFrame.fillTexture:SetTexture(self:GetBarTexturePath())
+		barFrame.fillLayer = layer
+		if barFrame.fillVisual then
+			barFrame.fillVisual.texture:SetTexture(self:GetBarTexturePath())
+		end
 	else
-		barFrame:SetStatusBarTexture(barFrame.texture)
+		if not barFrame.texture then
+			barFrame.texture = barFrame:CreateTexture(nil, layer)
+		end
+		barFrame.texture:SetTexture(self:GetBarTexturePath())
+		barFrame.texture:SetAllPoints(barFrame)
 	end
 	self:SetBarFramePoints(barFrame)
 
 	return barFrame
+end
+
+-- main bar values are raw, so reverse shows the unfilled part; other frames' callers pre-reverse
+function IceBarElement.prototype:GetStatusBarFillLayout(frame)
+	local expand = self:BarFillExpand() and true or false
+	local inverse = self:BarFillInverse() and true or false
+	local reverse = self:BarFillReverse() and true or false
+
+	if frame == self.barFrame then
+		return expand, inverse, reverse
+	end
+
+	local flip = IceHUD:xor(reverse and not frame.fillOverrideReverse, frame.fillTop) and true or false
+	return expand, inverse ~= flip, false
+end
+
+-- StatusBar texcoords are wrong under reverse fills, so those use the bar as a hidden driver for a mask
+function IceBarElement.prototype:LayoutStatusBarFill(frame)
+	local expand, fromEnd, complement = self:GetStatusBarFillLayout(frame)
+	frame.fillMasked = expand or fromEnd or complement
+
+	if not frame.fillMasked then
+		frame:SetReverseFill(false)
+		frame.fillTexture:SetAlpha(1)
+		frame.texture = frame.fillTexture
+		if frame.fillVisual then
+			frame.fillVisual:Hide()
+			frame.fillDriver2:Hide()
+		end
+		if frame.fillPad then
+			frame.fillPad = nil
+			ApplyStatusBarRange(frame)
+		end
+		return false
+	end
+
+	local rotated = frame.rotated and true or false
+	local startEdge = rotated and "LEFT" or "BOTTOM"
+	local endEdge = rotated and "RIGHT" or "TOP"
+	local length = self.settings.barHeight
+	if expand then
+		length = length / 2
+	end
+	local thickness = self.settings.barWidth + (self.moduleSettings.widthModifier or 0)
+	local bounds = self.frame
+
+	if not frame.fillVisual then
+		local visual = CreateFrame("StatusBar", nil, frame)
+		visual:SetMinMaxValues(0, 1)
+		visual:SetValue(1)
+		visual.texture = visual:CreateTexture(nil, frame.fillLayer)
+		visual:SetStatusBarTexture(visual.texture)
+		visual.mask = visual:CreateMaskTexture()
+		-- NEAREST keeps the mask edge hard; linear filtering fades it into the clamped black border
+		visual.mask:SetTexture(FILL_MASK_TEXTURE, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE", "NEAREST")
+		visual.mask:SetSnapToPixelGrid(false)
+		visual.mask:SetTexelSnappingBias(0)
+		visual.texture:AddMaskTexture(visual.mask)
+		frame.fillVisual = visual
+
+		frame.fillDriver2 = CreateFillDriver(frame)
+	end
+
+	local visual = frame.fillVisual
+	local driver2 = frame.fillDriver2
+	local orientation = rotated and "HORIZONTAL" or "VERTICAL"
+
+	visual:SetOrientation(orientation)
+	visual:SetRotatesTexture(rotated)
+	visual:ClearAllPoints()
+	visual:SetAllPoints(bounds)
+	visual.texture:SetTexture(self:GetBarTexturePath())
+	visual:Show()
+
+	frame.fillTexture:SetAlpha(0)
+	frame.texture = visual.texture
+
+	local function placeDriver(driver, originEdge, boundsPoint)
+		local outward = EDGE_OUTWARD[originEdge]
+		driver:SetOrientation(orientation)
+		driver:SetReverseFill(originEdge == endEdge)
+		if rotated then
+			driver:SetSize(length + FILL_PAD, thickness)
+		else
+			driver:SetSize(thickness, length + FILL_PAD)
+		end
+		driver:ClearAllPoints()
+		driver:SetPoint(originEdge, bounds, boundsPoint, outward[1] * FILL_PAD, outward[2] * FILL_PAD)
+		return driver:GetStatusBarTexture(), OPPOSITE_EDGE[originEdge]
+	end
+
+	local lowRegion, lowEdge, highRegion, highEdge
+	if expand then
+		driver2:Show()
+		if complement then
+			highRegion, highEdge = placeDriver(frame, endEdge, endEdge)
+			lowRegion, lowEdge = placeDriver(driver2, startEdge, startEdge)
+		else
+			highRegion, highEdge = placeDriver(frame, startEdge, "CENTER")
+			lowRegion, lowEdge = placeDriver(driver2, endEdge, "CENTER")
+		end
+	else
+		driver2:Hide()
+		local fillRegion, fillEdge = placeDriver(frame, fromEnd and endEdge or startEdge, fromEnd and endEdge or startEdge)
+		if fromEnd == complement then
+			lowRegion, lowEdge, highRegion, highEdge = bounds, startEdge, fillRegion, fillEdge
+		else
+			lowRegion, lowEdge, highRegion, highEdge = fillRegion, fillEdge, bounds, endEdge
+		end
+	end
+
+	visual.mask:ClearAllPoints()
+	visual.mask:SetPoint("BOTTOMLEFT", lowRegion, rotated and ("BOTTOM"..lowEdge) or (lowEdge.."LEFT"))
+	visual.mask:SetPoint("TOPRIGHT", highRegion, rotated and ("TOP"..highEdge) or (highEdge.."RIGHT"))
+
+	local pad = FILL_PAD / length
+	if frame.fillPad ~= pad then
+		frame.fillPad = pad
+		ApplyStatusBarRange(frame)
+	end
+	if expand then
+		driver2:SetValue(frame:GetValue())
+	end
+
+	return true
 end
 
 function IceBarElement.prototype:GetBarTexturePath()
@@ -1440,34 +1615,18 @@ function IceBarElement.prototype:Flip(side)
 end
 
 function IceBarElement.prototype:BarFillNormal()
-	if IceHUD.IsSecretEnv() then
-		return true
-	end
-
 	return self.moduleSettings.inverse == "NORMAL"
 end
 
 function IceBarElement.prototype:BarFillExpand()
-	if IceHUD.IsSecretEnv() then
-		return false
-	end
-
 	return self.moduleSettings.inverse == "EXPAND"
 end
 
 function IceBarElement.prototype:BarFillReverse()
-	if IceHUD.IsSecretEnv() then
-		return false
-	end
-
 	return self.moduleSettings.reverse
 end
 
 function IceBarElement.prototype:BarFillInverse()
-	if IceHUD.IsSecretEnv() then
-		return false
-	end
-
 	return self.moduleSettings.inverse == "INVERSE"
 end
 
@@ -1478,6 +1637,16 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 		interp = (self.moduleSettings.shouldAnimate and not self:ShouldReverseFill()) and Enum.StatusBarInterpolation.ExponentialEaseOut or Enum.StatusBarInterpolation.Immediate
 	end
 
+	if barFrame.isStatusBar and barFrame ~= self.barFrame then
+		top = top and true or false
+		overrideReverse = overrideReverse and true or false
+		if barFrame.fillTop ~= top or barFrame.fillOverrideReverse ~= overrideReverse then
+			barFrame.fillTop = top
+			barFrame.fillOverrideReverse = overrideReverse
+			self:SetBarFramePoints(barFrame)
+		end
+	end
+
 	if not IceHUD.CanAccessValue(scale) then
 		barFrame:SetValue(scale, interp)
 		return
@@ -1486,14 +1655,17 @@ function IceBarElement.prototype:SetBarCoord(barFrame, scale, top, overrideRever
 	if not scale then scale = 0 end
 	scale = IceHUD:Clamp(scale, 0, 1)
 
-	if self.moduleSettings.barVisible['bar'] and scale == 0 then
+	-- masked fills are padded so an empty fill stays correct, and timer-driven bars leave scale stale
+	local shownScale = barFrame.fillMasked and 1 or scale
+
+	if self.moduleSettings.barVisible['bar'] and shownScale == 0 then
 		barFrame:Hide()
 	end
 
 	if barFrame.SetValue then
 		barFrame:SetValue(scale, interp)
 
-		if self.moduleSettings.barVisible['bar'] and scale > 0 then
+		if self.moduleSettings.barVisible['bar'] and shownScale > 0 then
 			barFrame:Show()
 		end
 		return
@@ -1561,7 +1733,7 @@ function IceBarElement.prototype:SetScale(inScale, force, skipLerp)
 
 	if force or oldScale ~= self.CurrScale then
 		local scale = self.CurrScale
-		if self:BarFillReverse() then
+		if self:BarFillReverse() and not self.barFrame.isStatusBar then
 			scale = 1 - scale
 		end
 
@@ -1701,6 +1873,7 @@ function IceBarElement.prototype:UpdateBar(scale, color)
 	-- its first positive geometry. Secret StatusBars remain visible so they
 	-- can receive values that Lua isn't allowed to inspect.
 	if shouldShowBar
+		and not self.barFrame.fillMasked
 		and IceHUD.CanAccessValue(renderedScale)
 		and renderedScale == 0 then
 		shouldShowBar = false
@@ -1885,6 +2058,7 @@ function IceBarElement.prototype:RotateHorizontal()
 			self.barFrame:SetRotatesTexture(true)
 			self.barFrame:SetOrientation("HORIZONTAL")
 			self.barFrame.rotated = true
+			self:SetBarFramePoints(self.barFrame)
 		end
 	else
 		self:RotateFrame(self.frame)
@@ -1911,6 +2085,7 @@ function IceBarElement.prototype:ResetRotation()
 		self.barFrame:SetRotatesTexture(false)
 		self.barFrame:SetOrientation("VERTICAL")
 		self.barFrame.rotated = false
+		self:SetBarFramePoints(self.barFrame)
 	end
 end
 
@@ -2008,7 +2183,7 @@ function IceBarElement.prototype:CreateMarker(idx)
 		self.Markers[idx] = nil
 	end
 
-	self.Markers[idx] = self:BarFactory(self.Markers[idx], "MEDIUM", "OVERLAY", "Marker"..idx)
+	self.Markers[idx] = self:BarFactory(self.Markers[idx], "MEDIUM", "OVERLAY", "Marker"..idx, true)
 
 	local color = self.moduleSettings.markers[idx].color
 	self:SetBarFrameColorRGBA(self.Markers[idx], color.r, color.g, color.b, self.alpha)
