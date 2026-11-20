@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.17.31
+
+- Ensure PetInfo strings stay updated for users who have disabled DogTag integration.
+
 ## v1.17.30
 
 - Package a new version of LibDogTag to fix the SeparateDigits tag not working with secret values.

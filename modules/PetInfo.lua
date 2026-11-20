@@ -16,5 +16,17 @@ function PetInfo.prototype:GetDefaultSettings()
 	return settings
 end
 
+function PetInfo.prototype:Enable(core)
+	PetInfo.super.prototype.Enable(self, core)
+
+	self:RegisterEvent("UNIT_PET", "PetChanged")
+end
+
+function PetInfo.prototype:PetChanged(event, unit)
+	if unit == "player" then
+		self:TargetChanged()
+	end
+end
+
 -- Load us up
 IceHUD.PetInfo = PetInfo:new()
