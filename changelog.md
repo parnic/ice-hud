@@ -3,6 +3,7 @@
 ## v1.17.32
 
 - Add a Five-Second Rule ticker for clients where that's a mechanic (Classic, Forever). Disable the option on the PlayerMana module to opt out.
+- Fix DruidEnergy not respecting alpha settings properly.
 
 ## v1.17.31
 

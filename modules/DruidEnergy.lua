@@ -118,6 +118,10 @@ function DruidEnergy.prototype:Update()
 	self:UpdateBar(self.DruidEnergyPercentage, "DruidEnergy")
 end
 
+function DruidEnergy.prototype:IsPowerBar()
+	return SPELL_POWER_ENERGY
+end
+
 if unitClass == "DRUID" then
 	IceHUD.DruidEnergy = DruidEnergy:new()
 end
