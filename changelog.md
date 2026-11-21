@@ -4,6 +4,9 @@
 
 - Add a Five-Second Rule ticker for clients where that's a mechanic (Classic, Forever). Disable the option on the PlayerMana module to opt out.
 - Fix DruidEnergy not respecting alpha settings properly.
+- Remove placeholder boxes for Totems during combat on non-Shaman characters.
+- Fix overlap between placeholder boxes on Totems module that was causing darkened strips between each box.
+- Make Totems Gap setting stretch from the center rather than the starting edge.
 
 ## v1.17.31
 

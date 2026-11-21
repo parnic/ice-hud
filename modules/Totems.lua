@@ -19,6 +19,9 @@ local MAX_TOTEMS = 4;
 -- "destroytotem" secure action do the work on right-click.
 local UseSecureDestroy = IceHUD.UseSecureTotemButtons
 
+local _, unitClass = UnitClass("player")
+local IsShaman = unitClass == "SHAMAN"
+
 local TOTEM_PRIORITIES =
 {
 	AIR_TOTEM_SLOT,
@@ -208,7 +211,7 @@ function Totems.prototype:GetDefaultSettings()
 	local defaults =  Totems.super.prototype.GetDefaultSettings(self)
 
 	defaults["vpos"] = 0
-	defaults["hpos"] = 10
+	defaults["hpos"] = 0
 	defaults["totemFontSize"] = 20
 	defaults["totemMode"] = "Graphical"
 	defaults["usesDogTagStrings"] = false
@@ -325,10 +328,10 @@ function Totems.prototype:UpdateTotem(event, totem, ...)
 	end
 end
 
--- Secure buttons can't be shown, hidden, or moved during combat, so every slot keeps its click button
--- for the whole fight. Draw empty slots as placeholders then so those buttons aren't invisible.
+-- Secure buttons can't be shown, hidden, or moved during combat, so for Shamans every slot keeps its
+-- click button for the whole fight. Draw empty slots as placeholders then so those buttons aren't invisible.
 function Totems.prototype:ShowEmptyTotemSlots()
-	return UseSecureDestroy and self.combat and self.moduleSettings.allowMouseClick
+	return UseSecureDestroy and IsShaman and self.combat and self.moduleSettings.allowMouseClick
 end
 
 function Totems.prototype:ShowTotemTooltip(owner, slot)
@@ -440,6 +443,7 @@ function Totems.prototype:SyncSecureOverlay(i, showAlways)
 end
 
 function Totems.prototype:SyncSecureOverlays(showAlways)
+	showAlways = showAlways and IsShaman
 	for i = 1, self.numTotems do
 		self:SyncSecureOverlay(i, showAlways)
 	end
@@ -472,7 +476,11 @@ function Totems.prototype:CreateFrame()
 	self:CreateMoveHintFrame()
 
 	self.frame:SetFrameStrata(IceHUD.IceCore:DetermineStrata(IceElement.defaultStrata))
-	self.frame:SetWidth(self.totemSize*self.numTotems)
+	if self.moduleSettings.displayMode == "Horizontal" then
+		self.frame:SetWidth(self.totemSize*self.numTotems + self.moduleSettings.totemGap*(self.numTotems - 1))
+	else
+		self.frame:SetWidth(self.totemSize*self.numTotems)
+	end
 	self.frame:SetHeight(28)
 	self.frame:ClearAllPoints()
 	self:SetFramePosition()
@@ -574,10 +582,13 @@ function Totems.prototype:CreateTotem(i, name)
 	self.frame.graphical[i]:SetWidth(self.totemSize)
 	self.frame.graphical[i]:SetHeight(self.totemSize)
 
+	local offset = (i-1) * (self.totemSize + self.moduleSettings.totemGap)
 	if self.moduleSettings.displayMode == "Horizontal" then
-		self.frame.graphical[i]:SetPoint("TOPLEFT", (i-1) * (self.totemSize-(MAX_TOTEMS - 1)) + (i-1) + ((i-1) * self.moduleSettings.totemGap), 0)
+		self.frame.graphical[i]:SetPoint("TOPLEFT", offset, 0)
 	else
-		self.frame.graphical[i]:SetPoint("TOPLEFT", 0, -1 * ((i-1) * (self.totemSize-(MAX_TOTEMS - 1)) + (i-1) + ((i-1) * self.moduleSettings.totemGap)))
+		-- keep the column centered where it sits with no gap
+		offset = offset - self.moduleSettings.totemGap * (self.numTotems - 1) / 2
+		self.frame.graphical[i]:SetPoint("TOPLEFT", 0, -offset)
 	end
 
 	if not self.graphicalOnEnter then
@@ -656,7 +667,6 @@ function Totems.prototype:CreateTotem(i, name)
 end
 
 -- Load us up
-local _, unitClass = UnitClass("player")
-if IceHUD.WowVer >= 90000 or (unitClass == "SHAMAN") or (unitClass == "DRUID") then
+if IceHUD.WowVer >= 90000 or IsShaman or unitClass == "DRUID" then
 	IceHUD.Totems = Totems:new()
 end
