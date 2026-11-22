@@ -4,6 +4,7 @@
 
 - Fix Absorb modules showing while empty on Secrets-enabled clients (Midnight, Forever).
 - Show Absorb modules at the "not full" alpha whenever an absorb is active, so a fresh shield is visible out of combat even with OOC alpha at 0.
+- Disable PlayerAbsorb module by default since it was confusing people.
 
 ## v1.17.32
 
