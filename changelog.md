@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.17.33
+
+- Fix Absorb modules showing while empty on Secrets-enabled clients (Midnight, Forever).
+- Show Absorb modules at the "not full" alpha whenever an absorb is active, so a fresh shield is visible out of combat even with OOC alpha at 0.
+
 ## v1.17.32
 
 - Add a Five-Second Rule ticker for clients where that's a mechanic (Classic, Forever). Disable the option on the PlayerMana module to opt out.

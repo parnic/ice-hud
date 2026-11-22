@@ -105,6 +105,9 @@ function IceTargetAbsorb.prototype:UpdateAbsorbAmount(event, unit)
 	end
 
 	if self:IsInConfigMode() then
+		if self.calculator then
+			self.masterFrame:SetAlpha(1)
+		end
 		self:UpdateBar(self.calculator and UnitHealthMax(self.unit) or 1, self.ColorName)
 		self:Show(true)
 		return
@@ -119,6 +122,8 @@ function IceTargetAbsorb.prototype:UpdateAbsorbAmount(event, unit)
 		UnitGetDetailedHealPrediction(self.unit, nil, self.calculator)
 		---@diagnostic disable-next-line: undefined-field
 		local amount = self.calculator:GetDamageAbsorbs()
+		-- amount can be secret; SetAlpha clamps it to [0, 1], hiding the module only when it's 0
+		self.masterFrame:SetAlpha(amount)
 
 		if IceHUD.CanAccessValue(amount) and amount <= 0 then
 			self:Show(false)
@@ -172,11 +177,8 @@ function IceTargetAbsorb.prototype:Disable(core)
 	self:MyUnregisterCustomEvents()
 end
 
--- in a client with secrets, we can't calculate bar alpha based on the absorb amount because
--- the absorb information is secret, so we need to pretend to be a health bar in order to follow
--- health bar alpha rules. this is not completely ideal, but it more or less follows what the
--- player is probably expecting.
-function IceTargetAbsorb.prototype:IsHealthBar()
+-- an empty absorb is always hidden, so a visible one is never empty
+function IceTargetAbsorb.prototype:UseTargetAlpha()
 	return true
 end
 
