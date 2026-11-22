@@ -168,7 +168,7 @@ function MirrorBarHandler.prototype:GetDefaultSettings()
 	local settings = MirrorBarHandler.super.prototype.GetDefaultSettings(self)
 
 	settings["side"] = IceCore.Side.Left
-	settings["offset"] = 3
+	settings["offset"] = 4
 	settings["barFontSize"] = 13
 	settings["barFontBold"] = true
 	settings["lockTextAlpha"] = true

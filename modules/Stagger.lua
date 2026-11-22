@@ -93,7 +93,7 @@ function StaggerBar.prototype:GetDefaultSettings()
 	settings["shouldAnimate"] = true
 	settings["lowThreshold"] = 0
 	settings["side"] = IceCore.Side.Left
-	settings["offset"] = 3
+	settings["offset"] = 5
 	settings["upperText"]=""
 	settings["showAsPercentOfMax"] = true
 	settings["maxPercent"] = 20
