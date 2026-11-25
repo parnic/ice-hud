@@ -24,11 +24,13 @@ IceHUD is a highly configurable and customizable HUD addon in the spirit of DHUD
 * /icehud - opens the configuration UI to tweak any setting
 * /icehudCL - command-line access to tweak IceHUD settings (for use with macros, etc.)
 
-## **A Note on WoW Midnight**
+## **A Note on WoW Midnight, Forever**
 
-The 12.0 patch, for the Midnight expansion, made significant, sweeping changes to how addons work in the game. As a result, many features previously available are no longer allowed by the game. If IceHUD is no longer doing something it used to do, the most likely reason is that it's not possible (or much more difficult) in the new patch. Feel free to create a GitHub issue for any errors you find; it's expected that there will be some errors for a while due to the extent of changes required.
+The 12.0 patch, for the Midnight expansion, and carried into Forever, made significant, sweeping changes to how addons work in the game. As a result, many features previously available are no longer allowed by the game. If IceHUD is no longer doing something it used to do, the most likely reason is that it's not possible (or much more difficult) in the new patch.
 
-See [the wiki page](https://github.com/parnic/ice-hud/wiki/List-of-missing-or-changed-features-in-Midnight) for an exhaustive list of Midnight/12.0 changes.
+If you have any custom DogTags using `Fractional*:Short`, they will no longer work in Midnight - use something like `[[HP:Short] '/' [MaxHP:Short]]` instead. Many other enemy-HP-or-buff-dependent features, such as Low Threshold flashing or in-combat buff/debuff tracking, are no longer allowed by the game.
+
+See [the wiki page](https://github.com/parnic/ice-hud/wiki/List-of-missing-or-changed-features-in-Midnight-&-Forever) for an exhaustive list of Midnight/12.0 changes.
 
 ## **Frequently Asked Questions**
 
@@ -66,7 +68,7 @@ See [the wiki page](https://github.com/parnic/ice-hud/wiki/List-of-missing-or-ch
 
 1. **IceHUD needs a bar or counter for buff/debuff X!**
 
-   Good news: as of v1.5, you can create as many bars and counters for any buffs or debuffs you want! Type /icehud, select one of the custom module types in the drop-down at the top of the settings page, and press the Create button. This will create a custom module and automatically select it in the list. It is highly recommend that you rename the bar as soon as possible to avoid any confusion later.
+   Good news: as of v1.5 (excluding Midnight, Forever, and later clients), you can create as many bars and counters for any buffs or debuffs you want! Type /icehud, select one of the custom module types in the drop-down at the top of the settings page, and press the Create button. This will create a custom module and automatically select it in the list. It is highly recommend that you rename the bar as soon as possible to avoid any confusion later.
 
 1. **How do I turn off the resting/combat/PvP/etc. icons on the player or target?**
 
@@ -78,7 +80,7 @@ See [the wiki page](https://github.com/parnic/ice-hud/wiki/List-of-missing-or-ch
 
 1. **How do I turn off these big huge bars that pulse whenever one of my abilities procs?**
 
-   This isn't IceHUD - it's Blizzard's Spell Alerts they added in 4.0.1. Interface options => Combat => "Spell Alert Opacity" to turn them off or search for a mod to tweak their positioning/size/etc.
+   This isn't IceHUD - it's Blizzard's Spell Alerts. Interface options => Combat => "Spell Alert Opacity" to turn them off or search for a mod to tweak their positioning/size/etc.
 
 1. **I don't like where some of the bars are placed. How do I put the health/mana on the left/right?**
 
@@ -90,7 +92,7 @@ See [the wiki page](https://github.com/parnic/ice-hud/wiki/List-of-missing-or-ch
 
 1. **How do I add commas/periods into big numbers like health?**
 
-   If you have DogTags enabled, you can open the Text Settings for the module in question and add SeparateDigits() around the tag you're trying to split up. To display Health/MaxHealth with commas, use: [(SeparateDigits(HP):HPColor "/" SeparateDigits(MaxHP):HPColor):Bracket]. To use periods instead of commas, use: [(SeparateDigits(HP, "."):HPColor "/" SeparateDigits(MaxHP, "."):HPColor):Bracket]. Use the /dog help menu to build your own similar tags for Mana, etc.
+   If you have DogTags enabled, you can open the Text Settings for the module in question and add SeparateDigits() around the tag you're trying to split up. To display Health/MaxHealth with commas, use: [(SeparateDigits(HP):HPColor "/" SeparateDigits(MaxHP):HPColor):Bracket]. To use periods instead of commas (on non-Secret values), use: [(SeparateDigits(HP, "."):HPColor "/" SeparateDigits(MaxHP, "."):HPColor):Bracket]. Use the /dog help menu to build your own similar tags for Mana, etc.
 
 1. **The countdown timers on buffs and debuffs completely obscure the icon. How do I disable or adjust the text?**
 
@@ -98,7 +100,7 @@ See [the wiki page](https://github.com/parnic/ice-hud/wiki/List-of-missing-or-ch
 
 1. **When I rotate some modules 90 degrees, such as the castbar, the bar appears to wiggle up and down as it fills or empties. How do I fix this?**
 
-   Note: the described behavior is expected to be gone on WoW 12.0+.
+   Note: the described behavior should be gone on WoW 12.0+ and Forever.
    This is a side effect of the animation API that I'm co-opting to force a rotation without having to provide duplicates of every bar texture in the mod. Any bar moving sufficiently quickly and updating rapidly will cause this. IceHUD is intended to be a vertically-oriented mod, so the rotation feature is there for people who are willing to accept the side effects that come with it. My suggestion is to use one of the many horizontally-oriented bar mods out there if you're wanting horizontal bars. Quartz is a good castbar replacement that you can use and disable IceHUD's built-in castbar, for example.
 
 1. **How do I get rid of the bars that showed up beneath the player in the 7.0 patch?**
